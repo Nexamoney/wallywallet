@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">بله</string>
+    <string name="no">خیر</string>
+    <string name="at">در</string>
+    <string name="of">از</string>
+    <string name="choose">انتخاب</string>
+    <string name="accept">پذیرش</string>
+    <string name="reject">رد</string>
+    <string name="remove">حذف</string>
+    <string name="confirm">تأیید</string>
+    <string name="cancel">انصراف</string>
+    <string name="Back">بازگشت</string>
+    <string name="removeAll">حذف همه</string>
+    <string name="done">تمام</string>
+    <string name="dismiss">بستن</string>
+    <string name="deny">اجازه ندادن</string>
+    <string name="ask">پرسش</string>
+    <string name="badSignature">امضای نامعتبر</string>
+    <string name="unknownCurrency">ارز ناشناخته</string>
+    <string name="unknownCryptoCurrency">رمزارز یا بلاک‌چین ناشناخته</string>
+    <string name="Processing">در حال پردازش...</string>
+    <string name="receiving">در حال دریافت</string>
+    <string name="sending">در حال ارسال</string>
+    <string name="noAdditionalDetails">جزئیات بیشتری نیست</string>
+    <string name="unspecified">نامشخص</string>
+    <string name="removed">حذف شد</string>
+    <string name="synced">همگام</string>
+    <string name="unsynced">در حال همگام‌سازی</string>
+    <string name="connected">متصل</string>
+    <string name="connectionEstablished">اتصال برقرار شد</string>
+    <string name="connectionClosed">اتصال بسته شد</string>
+    <string name="connectionException">اتصال به سایت ممکن نیست</string>
+    <string name="balance">موجودی فعلی</string>
+    <string name="totalReceived">کل دریافتی</string>
+    <string name="inProgress">در حال انجام</string>
+    <string name="staleTransaction">تراکنش منسوخ</string>
+    <string name="staleTransactionDetails">این تراکنش توسط یک نود کامل رد شد. احتمالاً منسوخ است (قبلاً شخص دیگری آن وجه را خرج کرده)، اما ممکن است تراکنش از ابتدا نامعتبر بوده باشد، یا سالم باشد و نودهایی که از آن‌ها پرسیدیم صادق نباشند. کیف پول این تراکنش را نادیده می‌گیرد مگر اینکه تأیید شود.</string>
+    <string name="NoPermission">بدون مجوز</string>
+    <string name="NoPermissionDetails" formatted="false">برای استفاده از این قابلیت باید مجوز %perm را فعال کنید. این کار را در تنظیمات Android -> برنامه‌ها -> Wally -> مجوزها انجام دهید</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...در حال بارگذاری...</h1></center></body>]]></string>
+    <string name="loading">در حال بارگذاری</string>
+    <string name="Untitled">بدون عنوان</string>
+    <string name="nothing">هیچ</string>
+    <string name="breakIt">شکستن</string>
+    <string name="or">یا</string>
+    <string name="onBlockchain">روی</string>
+    <string name="NotImplemented">به‌زودی</string>
+    <string name="NoNodes">دسترسی به بلاک‌چین نیست</string>
+    <string name="cancelled">لغو شد</string>
+    <string name="refreshQR">اتصال به سرور قطع شد</string>
+    <string name="pleaseWait">لطفاً صبر کنید</string>
+    <string name="trying">در حال تلاش</string>
+    <string name="clear">پاک کردن</string>
+    <string name="thousand">* هزار</string>
+    <string name="million">* میلیون</string>
+    <string name="required">الزامی</string>
+    <string name="account">حساب</string>
+    <string name="addAccountPlus">+ افزودن حساب</string>
+    <string name="receivingTokens">دریافت توکن</string>
+    <string name="spendingTokens">پرداخت توکن</string>
+    <string name="version" formatted="false">نسخه: %ver (%date)</string>
+    <string name="enableDeveloperView">حالت پیشرفته/توسعه‌دهنده</string>
+    <string name="enableRecompositionCounts">شمارش بازترسیم صفحه</string>
+    <string name="enableExperimentalUx">رابط آزمایشی</string>
+    <string name="enableDarkMode">حالت تیره</string>
+    <string name="enableSound">فعال کردن صدا</string>
+    <string name="enableIdentityMenu">فعال کردن صفحه هویت</string>
+    <string name="enableTricklePayMenu">فعال کردن صفحه Trickle Pay</string>
+    <string name="enableAssetsMenu">فعال کردن صفحه دارایی‌ها</string>
+    <string name="only">فقط</string>
+    <string name="prefer">ترجیحاً</string>
+    <string name="rediscoverWalletTx">کشف مجدد همه تراکنش‌ها</string>
+    <string name="searchWalletTx">جست‌وجوی تراکنش‌های جاافتاده</string>
+    <string name="rediscoverBlockchain">کشف مجدد هدرهای بلاک‌چین</string>
+    <string name="logDebugData">ثبت داده‌های اشکال‌زدایی</string>
+    <string name="clearIdentityDomains">پاک کردن دامنه‌های هویت</string>
+    <string name="rediscoverTooltip">حذف وضعیت بلاک‌چین و جست‌وجوی دوباره همه تراکنش‌های مرتبط با کیف پول</string>
+    <string name="wordSeed">عبارت بازیابی حساب</string>
+    <string name="deleteWalletAccount">حذف حساب</string>
+    <string name="more">بیشتر</string>
+    <string name="darkMode">حالت تیره</string>
+    <string name="ConsolidationNeeded">ابتدا حساب را یکپارچه کنید</string>
+    <string name="SetChangePin">تنظیم یا تغییر رمز قفل</string>
+    <string name="CurrentPin">رمز فعلی</string>
+    <string name="NewPin">رمز جدید</string>
+    <string name="PinChanged">رمز تغییر کرد</string>
+    <string name="PinRemoved">رمز حذف شد</string>
+    <string name="PinInvalid">رمز نامعتبر</string>
+    <string name="PinTooShort">رمز جدید خیلی کوتاه است</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">هشدار: عبارت بازیابی برخی حساب‌ها را یادداشت نکرده‌اید! برای اینکه با گم شدن یا خراب شدن این دستگاه پول شما از بین نرود، کلمات بازیابی را روی کاغذ یا هر شکل غیرالکترونیکی دیگر بنویسید.</string>
+    <string name="WroteRecoveryPhraseDown">یادداشت کردم</string>
+    <string name="RecoveryPhraseKeepRemindingMe">یادآوری مجدد</string>
+    <string name="ViewRecoveryPhrase">نمایش عبارت بازیابی حساب</string>
+    <string name="localCurrency">ارز محلی</string>
+    <string name="assessUnconfirmed">بررسی تراکنش‌های تأییدنشده</string>
+    <string name="rediscoverNotice">کشف مجدد حساب آغاز شد</string>
+    <string name="searchNotice">جست‌وجوی حساب آغاز شد</string>
+    <string name="unconfAssessmentNotice">بررسی تأییدنشده‌ها آغاز شد</string>
+    <string name="accountDeleteNotice">حساب حذف شد</string>
+    <string name="rediscoverConfirmation">کشف مجدد یک حساب، کیف پول را صفر می‌کند و بلاک‌چین را برای یافتن پرداخت‌ها جست‌وجو می‌کند، انگار حساب تازه ساخته شده است. این فرایند می‌تواند زمان زیادی ببرد. با این حال ممکن است دکمه «پیش‌روی سریع» ظاهر شود که به شما امکان می‌دهد فعالیت کیف پول خود را از یک پایگاه داده بگیرید. اگر تاریخ بالا نادرست است، چند ثانیه صبر کنید تا به‌روز شود.</string>
+    <string name="searchConfirmation">این قابلیت بلاک‌چین را برای یافتن پرداخت‌های جاافتاده جست‌وجو می‌کند. این فرایند می‌تواند زمان زیادی ببرد. با این حال ممکن است دکمه «پیش‌روی سریع» ظاهر شود که به شما امکان می‌دهد فعالیت کیف پول خود را از یک پایگاه داده بگیرید.</string>
+    <string name="rediscoverBlockchainConfirmation">کشف مجدد بلاک‌چین همه داده‌های هدر بلاک‌چین را از این کیف پول حذف می‌کند و دوباره از نودهای کامل دانلود می‌کند. این فرایند می‌تواند زمان زیادی ببرد. فقط وقتی استفاده کنید که مطمئن هستید هدرهای بلاک‌چین مشکل دارند.</string>
+    <string name="deleteConfirmation" formatted="false">حذف حساب باعث می‌شود همه موجودی‌ها، هویت‌ها و تاریخچه از دسترس خارج شوند، مگر اینکه حساب با عبارت بازیابی حساب بازیابی شود! فقط وقتی این کار را انجام دهید که کاملاً مطمئن هستید!\n\nحساب «%accountName» (در %blockchain) حذف شود؟</string>
+    <string name="reassessConfirmation">این عملیات بلاک‌چین را برای تراکنش‌هایی که اخیراً ارسال کرده‌اید بررسی می‌کند و بر اساس وجود یا نبود آن‌ها، آن‌ها را یا تأیید می‌کند یا پاک می‌کند. اگر تراکنش‌ها پاک شوند، پول شما ناپدید به نظر می‌رسد و برای بازیابی موجودی خرج‌شده باید «کشف مجدد» را اجرا کنید. اگر به‌تازگی تراکنشی فرستاده‌اید از این کار استفاده نکنید، چون ممکن است آن تراکنش هنوز در شبکه در انتظار تأیید باشد.</string>
+    <string name="recoveryPhrase">این عبارت 12 کلمه‌ای برای بازیابی کیف پول شما به کار می‌رود. هر کسی این عبارت را داشته باشد می‌تواند پول شما را خرج کند. آن را با خودکار روی کاغذ بنویسید (یا روی فلز حک کنید) و در جای امن نگه دارید!</string>
+    <string name="recoveryWarning">ایست! به‌هیچ‌وجه به شکل دیجیتال ذخیره نکنید!\nآن را در کلیپ‌بورد کپی نکنید، عکس نگیرید، فتوکپی نکنید و اسکرین‌شات نگیرید.</string>
+    <string name="flickerReason">چشمک زدن یک اقدام امنیتی است</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">در کلیپ‌بورد کپی شد. اما کپی و جای‌گذاری این عبارت بازیابی در هر برنامه‌ای کار بسیار بدی است! ایمیل، بیشتر برنامه‌ها، سرویس‌های پشتیبان‌گیری و مانند آن‌ها آن‌قدر امن نیستند که بتوانند عبارتی را نگه دارند که عملاً پول شماست.</string>
+    <string name="primaryAccountConfirmation">حساب اصلی شما حسابی است که برای هویت شما و انجام پرداخت‌های خودکار به کار می‌رود. همچنین اولین حسابی است که در جاهای مختلف این برنامه نمایش داده می‌شود. این حساب باید روی بلاک‌چین Nexa باشد.</string>
+    <string name="primaryAccountSuccess">حساب اصلی: %name</string>
+    <string name="AccountActions">عملیات حساب</string>
+    <string name="GeneralSettings">تنظیمات عمومی</string>
+    <string name="BlockchainSettings">منابع بلاک‌چین</string>
+    <string name="AccessPriceData">دسترسی به داده‌های قیمت</string>
+    <string name="oldUi">رابط کاربری قدیمی</string>
+    <string name="SplitBillDescription">شما صورت‌حساب را (به فیات) پرداخت می‌کنید، سپس دوستانتان سهم خود را با کد QR زیر به شما می‌پردازند. خودتان را هم در تعداد سهم‌ها حساب کنید، مگر اینکه مهمان دوستانتان باشید!</string>
+    <string name="BillAmount">مبلغ صورت‌حساب</string>
+    <string name="TipAmount">مبلغ انعام</string>
+    <string name="TipPercentage">درصد انعام</string>
+    <string name="Total">مبلغ کل برای تقسیم</string>
+    <string name="OR">یا</string>
+    <string name="QRCodeFor">کد QR برای:</string>
+    <string name="Ways">تعداد سهم:</string>
+    <string name="Tip">انعام:</string>
+    <string name="Amount">مبلغ:</string>
+    <string name="AmountWithValue" formatted="false">مبلغ: %amt</string>
+    <string name="QuantityWithValue" formatted="false">مقدار: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">در تاریخ %date</string>
+    <string name="fastSync">همگام‌سازی سریع</string>
+    <string name="refresh">تازه‌سازی</string>
+    <string name="goodQR">کد QR خوانا</string>
+    <string name="badQR">کد QR ناخوانا</string>
+    <string name="badImageQR">تصویر QR نامناسب. بیشتر...</string>
+    <string name="badImageQRhelp">اگر از نزدیک از کد QR عکس گرفته‌اید، از فاصله دورتر عکس بگیرید. حاشیه سفید بخشی از کد QR است و اگر از نزدیک از صفحه‌نمایش عکس بگیرید ممکن است الگوهای مواج گیج‌کننده ایجاد شود.</string>
+    <string name="GoThere">رفتن به آنجا</string>
+    <string name="unlock">باز کردن قفل</string>
+    <string name="share">اشتراک‌گذاری</string>
+    <string name="Send">ارسال</string>
+    <string name="OpenSend">ارسال</string>
+    <string name="SendCancel">انصراف</string>
+    <string name="ignoredInsecureRequest">درخواست ناامن نادیده گرفته شد</string>
+    <string name="fromAccountColon">ارسال از حساب:</string>
+    <string name="chooseAccountError">یک حساب انتخاب کنید</string>
+    <string name="toColon">به:</string>
+    <string name="To">به</string>
+    <string name="ByAuthor">از</string>
+    <string name="assetsColon">دارایی‌ها:</string>
+    <string name="assets">دارایی‌ها</string>
+    <string name="NoAssets">هیچ دارایی‌ای در حساب %act موجود نیست</string>
+    <string name="NoAssetsAccount">در حال حاضر هیچ دارایی‌ای در حساب شما موجود نیست.</string>
+    <string name="fromColon">از:</string>
+    <string name="ReceiveIntoAccount">دریافت در حساب</string>
+    <string name="Receive">دریافت</string>
+    <string name="YourAddress">آدرس %blockchain شما</string>
+    <string name="CopyAddress">کپی آدرس</string>
+    <string name="AccountListHeader">حساب‌ها</string>
+    <string name="Address">آدرس</string>
+    <string name="clipboard">کلیپ‌بورد</string>
+    <string name="settings">تنظیمات</string>
+    <string name="help">راهنما</string>
+    <string name="invalidQuantity">مقدار نامعتبر</string>
+    <string name="needNonexistentAuthority">نیازمند مجوز توکن</string>
+    <string name="invalidQuantityTooManyDecimalDigits">ارقام اعشاری بیش از حد</string>
+    <string name="roundedUpClickSendAgain">گرد شد؛ برای پذیرش دوباره ارسال را بزنید</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">خرید</string>
+    <string name="scanPaymentQRcode">اسکن کد QR آدرس پرداخت</string>
+    <string name="ScanQRCodeButton">اسکن کد QR</string>
+    <string name="PasteDestinationAddressButton">چسباندن</string>
+    <string name="NewAccountButton">راه‌اندازی حساب جدید</string>
+    <string name="NewAccountSearchingForTransactions">...جست‌وجوی اولین تراکنش...</string>
+    <string name="NewAccountSearchingForAllTransactions">...جست‌وجوی همه تراکنش‌ها...</string>
+    <string name="NewAccountSearchFailure">جست‌وجوی تراکنش ناموفق بود</string>
+    <string name="receiveAddressQRCode">کد QR دریافت</string>
+    <string name="paymentProposal">طبق پیشنهاد پرداخت دریافت‌شده</string>
+    <string name="pasteIsEmpty">کلیپ‌بورد خالی است</string>
+    <string name="pasteIgnored">چسباندن نادیده گرفته شد</string>
+    <string name="pasteUnintelligible">متن چسبانده‌شده نامفهوم است</string>
+    <string name="chainIncompatibleWithAddress">آدرس با حساب سازگار نیست</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">ارز حساب %walletCrypto است و آدرس %addressCrypto. با فهرست کشویی، حساب مبدأ ارسال را به حسابی تغییر دهید که با بلاک‌چین آدرس هم‌خوانی دارد.</string>
+    <string name="incoming" formatted="false">شامل %delta %unit در انتظار</string>
+    <string name="approximatelyT" formatted="false">تقریباً %qty %fiat</string>
+    <string name="fastForward" formatted="false">پیش‌روی سریع</string>
+    <string name="fastforwardStatus" formatted="false">تحلیل پیش‌روی سریع: %info</string>
+    <string name="fastforwardStart" formatted="false">آغاز شد</string>
+    <string name="exchangeRate" formatted="false">(نرخ تبدیل: 1 %fiat برابر %amt %crypto است)</string>
+    <string name="moreThanAvailable">(بیش از موجودی)</string>
+    <string name="moreThanConfirmedAvailable">(بیش از موجودی تأییدشده)</string>
+    <string name="actuallySendingT" formatted="false">ارسال واقعی %qty %crypto</string>
+    <string name="copiedToClipboard">در کلیپ‌بورد\nکپی شد</string>
+    <string name="copyId">کپی شناسه</string>
+    <string name="openInBrowser">باز کردن در مرورگر</string>
+    <string name="cannotCopyToClipboard">کپی در کلیپ‌بورد ممکن نیست</string>
+    <string name="tooLargeForClipboard">حجم داده برای کلیپ‌بورد زیاد است</string>
+    <string name="scanFailed">اسکن ناموفق بود</string>
+    <string name="scanSuccess">اسکن موفق بود</string>
+    <string name="sendSuccess">ارسال موفق بود</string>
+    <string name="sendQuantityHint">مقدار ارسال</string>
+    <string name="sendRequestNotification">درخواست ارسال</string>
+    <string name="sendToAddressHint">آدرس مقصد</string>
+    <string name="sendAll">همه</string>
+    <string name="editSendNoteHint">یادداشت شخصی درباره این انتقال</string>
+    <string name="subSatoshiQuantities">ارقام اعشاری بیش از حد — این ارز به این دقت تقسیم نمی‌شود</string>
+    <string name="retrievingExchangeRate">هنوز در حال دریافت نرخ تبدیل</string>
+    <string name="unavailableExchangeRate">نرخ تبدیل در دسترس نیست</string>
+    <string name="SigningWithAccount" formatted="false">امضا با حساب: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">هویت مشترک برای حساب: %act</string>
+    <string name="identityRequestNotification">درخواست هویت</string>
+    <string name="IdentityDataMissing">اطلاعات هویت ناقص</string>
+    <string name="newDomainRequestingIdentity">سرویس جدید درخواست ثبت‌نام دارد</string>
+    <string name="domainRequestingAdditionalIdentityInfo">درخواست اطلاعات بیشتر</string>
+    <string name="useUniqueIdentityToolTip">روشن کنید تا هویت شما در اینجا از سایر سایت‌ها جدا بماند.</string>
+    <string name="provideAlias">نام کاربری/شناسه/نام مستعار ارائه شود؟</string>
+    <string name="provideAliasToolTip">با انتخاب این گزینه، در صورت درخواست، نام مستعار شما (طبق تنظیمات، نه نام واقعی شما) به این وب‌سایت داده می‌شود</string>
+    <string name="provideSocialMedia">اطلاعات شبکه‌های اجتماعی ارائه شود؟</string>
+    <string name="provideSocialMediaToolTip">با انتخاب این گزینه، در صورت درخواست، اطلاعات شبکه‌های اجتماعی شما (طبق تنظیمات) به این وب‌سایت داده می‌شود</string>
+    <string name="providePostalAddress">نشانی پستی ارائه شود؟</string>
+    <string name="providePostalAddressToolTip">با انتخاب این گزینه، در صورت درخواست، نشانی شما (طبق تنظیمات) به این وب‌سایت داده می‌شود</string>
+    <string name="provideBillingAddress">نشانی صورت‌حساب ارائه شود؟</string>
+    <string name="provideBillingAddressToolTip">با انتخاب این گزینه، در صورت درخواست، نشانی صورت‌حساب شما (طبق تنظیمات) به این وب‌سایت داده می‌شود</string>
+    <string name="provideEmail">نشانی ایمیل ارائه شود؟</string>
+    <string name="provideAvatar">تصویر آواتار ارائه شود؟</string>
+    <string name="provideRealName">نام واقعی ارائه شود؟</string>
+    <string name="provideRealNameToolTip">با انتخاب این گزینه، نام واقعی شما (طبق تنظیمات) به این وب‌سایت داده می‌شود</string>
+    <string name="provideBirthday">تاریخ تولد ارائه شود؟</string>
+    <string name="providePhone">شماره تلفن ارائه شود؟</string>
+    <string name="provideAttestations">گواهی‌ها ارائه شوند؟</string>
+    <string name="provideAttestationsToolTip">گواهی‌ها امضاهای شخص ثالث هستند که داده‌های ارائه‌شده شما را تأیید می‌کنند</string>
+    <string name="primaryAccountRequired" formatted="false">برای استفاده از این قابلیت به یک حساب %primCurrency نیاز است</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">برخی قابلیت‌ها به رمزارزهای مشخصی وابسته‌اند. پیش از استفاده از این قابلیت باید حسابی روی آن رمزارز بسازید یا قفل آن را باز کنید.</string>
+    <string name="UnknownDomainRegisterFirst">سرویس ناشناخته؛ ابتدا ثبت‌نام کنید</string>
+    <string name="Provider" formatted="false">ارائه‌دهنده: %provider</string>
+    <string name="QrCode">کد QR</string>
+    <string name="unknownOperation" formatted="false">عملیات %op ناشناخته است</string>
+    <string name="alreadyRegistered">قبلاً ثبت شده</string>
+    <string name="existingRegistration" formatted="false">حساب انتخاب‌شده فعلی «%act» در این سرویس ثبت شده است.</string>
+    <string name="nonexistentRegistration" formatted="false">حساب انتخاب‌شده فعلی «%act» هنوز در این سرویس ثبت نشده است.</string>
+    <string name="provideLoginQuestion">وارد این سایت می‌شوید؟</string>
+    <string name="provideInfoQuestion">درخواست اطلاعات هویت از سوی</string>
+    <string name="signDataQuestion">درخواست امضا از سوی</string>
+    <string name="nothingToSign">هیچ پیامی ارائه نشده است</string>
+    <string name="binaryToSign">این داده باینری امضا شود؟</string>
+    <string name="textToSign">این پیام امضا شود؟</string>
+    <string name="sigInClipboard">امضا در کلیپ‌بورد کپی شد</string>
+    <string name="SocialMediaText">شبکه‌های اجتماعی</string>
+    <string name="SocialMediaSummary">به صورت فهرست سرویس:شناسه وارد کنید، مثلاً twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">نام کاربری/شناسه/نام مستعار</string>
+    <string name="NameText">نام کامل</string>
+    <string name="PostalAddressText">نشانی پستی</string>
+    <string name="BillingAddressText">نشانی صورت‌حساب</string>
+    <string name="PostalCodeText">کد پستی</string>
+    <string name="EmailText">نشانی ایمیل</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">اطلاعات هویت مرتبط</string>
+    <string name="ServiceAssociatedWith">این سرویس هم‌اکنون مرتبط است با:</string>
+    <string name="IdentityInfoNote">وارد کردن این اطلاعات اختیاری است و فقط به سرویس‌هایی داده می‌شود که خودتان انتخاب می‌کنید. هدف این است که فیلدهای رایج فرم‌ها در سایت‌های دارای قابلیت هویت، تنها با اسکن یک کد QR پر شوند.</string>
+    <string name="areYouSure">مطمئن هستید؟</string>
+    <string name="WhenAskSure">تأیید موارد بالا:</string>
+    <string name="SendConfirmSummary" formatted="false">ارسال %amt %currency %inFiat%assets به آدرس %dest را تأیید می‌کنید؟</string>
+    <string name="firstName">نام</string>
+    <string name="lastName">نام خانوادگی</string>
+    <string name="withholdingMandatoryInfo">سایت به اطلاعاتی نیاز دارد که ارائه آن را نپذیرفته‌اید</string>
+    <string name="badLink">لینک نامعتبر</string>
+    <string name="BadWebLink">لینک وب نامعتبر</string>
+    <string name="connectionAborted">سایت ورود را لغو کرد</string>
+    <string name="HintAdjustCostBasis">بها یا سود سرمایه‌ای</string>
+    <string name="CostBasis">بهای تمام‌شده</string>
+    <string name="CapitalLoss">زیان سرمایه‌ای</string>
+    <string name="CapitalGain">سود سرمایه‌ای</string>
+    <string name="OverrideSalesPrice">قیمت هنگام فروش</string>
+    <string name="AccountHistory">تراکنش‌ها</string>
+    <string name="NoAccountActivity">فعالیتی در حساب نیست</string>
+    <string name="AccountAddresses">آدرس‌ها</string>
+    <string name="ActiveAddresses">آدرس‌های فعال</string>
+    <string name="UsedAddresses">آدرس‌های استفاده‌شده</string>
+    <string name="UnusedAddresses">آدرس‌های استفاده‌نشده</string>
+    <string name="txHistoryButton">مشاهده یا خروجی فعالیت حساب</string>
+    <string name="setAsPrimaryAccountButton">این را حساب اصلی خود کنید</string>
+    <string name="AccountStatistics">آمار حساب</string>
+    <string name="AccountBlockchainSync" formatted="false">در حال حاضر %sync روی بلاک‌چین %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">در %actBlockDate، بلاک %actBlock از %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">اولین استفاده: بلاک %actPrehistoryBlock در %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">متصل به %num نود: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num آدرس</string>
+    <string name="CurrentAddress" formatted="false">در آدرس %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">اولین واریز در بلاک %first، آخرین در بلاک %last.</string>
+    <string name="FirstLastSend" formatted="false">اولین برداشت در بلاک %first، آخرین در بلاک %last.</string>
+    <string name="FirstWithdraw">اولین برداشت</string>
+    <string name="FirstDeposit">اولین واریز</string>
+    <string name="never">هرگز</string>
+    <string name="FirstUse" formatted="false">اولین استفاده: %date</string>
+    <string name="LastUse" formatted="false">آخرین استفاده: %date</string>
+    <string name="Block" formatted="false">بلاک: %block</string>
+    <string name="AccountNumTx" formatted="false">%num تراکنش</string>
+    <string name="AccountNumUtxos" formatted="false">%num رکورد دفتر کل</string>
+    <string name="title_activity_assets">دارایی‌ها</string>
+    <string name="title_activity_scan">اسکن</string>
+    <string name="title_activity_new_account">حساب جدید</string>
+    <string name="AccountName">نام حساب</string>
+    <string name="AccountNameHint">1 تا 8 حرف</string>
+    <string name="Blockchain">بلاک‌چین</string>
+    <string name="AccountRecoveryPhrase">عبارت بازیابی</string>
+    <string name="LeaveEmptyNewWallet">برای ایجاد حساب جدید خالی بگذارید</string>
+    <string name="PinSuggestions"><font size="15">این عدد محرمانه برای دسترسی به حساب لازم است</font></string>
+    <string name="createNewAccount">ایجاد حساب جدید</string>
+    <string name="createSyncAccount">بازیابی حساب با همگام‌سازی دقیق (و طولانی)</string>
+    <string name="createDiscoveredAccount">بازیابی فوری حساب</string>
+    <string name="invalidRecoveryPhrase">عبارت بازیابی نامعتبر</string>
+    <string name="invalidAccountName">نام نامعتبر</string>
+    <string name="PassPhrase">عبارت عبور (اختیاری)</string>
+    <string name="Bip44ActivityNotice">فعالیت حساب پیدا شد</string>
+    <string name="NoBip44ActivityNotice">هشدار: هیچ تراکنشی پیدا نشد!</string>
+    <string name="Bip44BtcActivityNotice">فعالیت غیراستاندارد یا پیش از فورک پیدا شد</string>
+    <string name="NoBip44BtcActivityNotice">تراکنش پیش از فورک پیدا نشد</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">شروع از %date (بلاک %height)</string>
+    <string name="NotEnoughRecoveryWords">کلمات بازیابی بیشتری لازم است</string>
+    <string name="TooManyRecoveryWords">کلمات بازیابی بیش از حد است</string>
+    <string name="IncorrectRecoveryWords" formatted="false">کلمات نامعتبر: %words</string>
+    <string name="ElectrumNetworkUnavailable">شبکه Electrum در دسترس نیست. بازیابی کیف پول کند خواهد بود و تراکنش‌های پیش از 1 ژانویه 2020 را پیدا نمی‌کند</string>
+    <string name="PinHidesAccount">حساب تا وارد شدن رمز پنهان بماند؟</string>
+    <string name="HiddenAccountExplainer">پنهان کردن حساب تا زمانی که رمز وارد شود</string>
+    <string name="HiddenAccount">حساب پنهان</string>
+    <string name="AutomaticNewAddress">حریم خصوصی آدرس</string>
+    <string name="AutomaticNewAddressToolTip">هر بار که آدرس فعلی استفاده شود، آدرس جدیدی به‌طور خودکار نمایش داده می‌شود.</string>
+    <string name="CreatePIN">رمز (اختیاری)</string>
+    <string name="PinSpendingUnprotected">پرداخت بدون رمز فعال است (رمزی وارد نشده)</string>
+    <string name="PinSpendingProtected">پرداخت نیازمند رمز است</string>
+    <string name="InvalidPIN">رمز نامعتبر</string>
+    <string name="creatingNoHistoryAccountWarning">شما در حال ایجاد حساب با یک عبارت بازیابی مشخص هستید، اما هیچ فعالیتی روی بلاک‌چین پیدا نشد.\nآیا این درست است؟\nاگر بله، دوباره روی دکمه ایجاد بزنید تا یک حساب خالی ساخته شود. اما اگر این حساب باید فعالیت داشته باشد، بلاک‌چین انتخابی و عبارت بازیابی خود را دوباره بررسی کنید. اگر مشکل این نیست، یا شبکه بلاک‌چین در حال حاضر در دسترس نیست (بعداً دوباره تلاش کنید)، یا حساب با یک برنامه کیف پول غیراستاندارد ساخته شده است. اکنون این حساب را نسازید.</string>
+    <string name="accountLocked">حساب قفل است</string>
+    <string name="unknownError">خطا</string>
+    <string name="insufficentBalance">موجودی کافی نیست</string>
+    <string name="insufficentTokenBalance">موجودی توکن کافی نیست</string>
+    <string name="excessiveFee">کارمزد بیش از حد</string>
+    <string name="sendDustError">مبلغ کمتر از حداقل</string>
+    <string name="sendingDustWarning">مبلغ کمتر از حداقل شبکه است</string>
+    <string name="feeExceedsFlatMax">کارمزد از حداکثر کارمزد ثابت تنظیم‌شده بیشتر است</string>
+    <string name="notSupported">پشتیبانی نمی‌شود</string>
+    <string name="expired">پرداخت منقضی شد</string>
+    <string name="PaymentDataMissing">اطلاعات پرداخت ناقص است</string>
+    <string name="headersNotForthcoming">هدرها ارائه نمی‌شوند</string>
+    <string name="cantConvert">تبدیل موقتاً در دسترس نیست</string>
+    <string name="walletDisconnectedFromBlockchain">کیف پول قطع شد</string>
+    <string name="badTransaction">تراکنش نامعتبر</string>
+    <string name="badAddress">آدرس نامعتبر</string>
+    <string name="unknownAddress">آدرس ناشناخته</string>
+    <string name="badAmount">مبلغ نامعتبر</string>
+    <string name="NoAccounts">حسابی در دسترس نیست</string>
+    <string name="badCryptoCode">هیچ حساب بازشده‌ای برای این ارز یا بلاک‌چین وجود ندارد</string>
+    <string name="badCryptoCodeDetails" formatted="false">ارز ناشناخته یا خارج از دسترس: %currency</string>
+    <string name="badCurrencyUnit">ارز نیست</string>
+    <string name="incompatibleAccount">ارز نادرست</string>
+    <string name="incompatibleAccountDetails" formatted="false">شما پرداخت از حسابی حاوی %cryptoAct را انتخاب کردید اما %cryptoPay لازم است</string>
+    <string name="detailsOfBadAmountFromIntent">برنامه فراخوان هنگام ارائه مقدار ارسالی، عددی با قالب
+        نادرست داد. باید مقدار را خودتان وارد کنید
+    </string>
+    <string name="blankAddress">آدرس خالی</string>
+    <string name="unavailable">در دسترس نیست</string>
+    <string name="blockNotForthcoming">بلاک در دسترس نیست</string>
+    <string name="receiveAddressUnavailable">آدرس دریافت جدید در حال محاسبه است. لطفاً صبر کنید...
+    </string>
+    <string name="accountLimitReached">حداکثر تعداد حساب</string>
+    <string name="accountUnavailableDetails">یا هیچ حساب موجودی با این بلاک‌چین مطابقت ندارد، یا قفل حساب باز نشده است.</string>
+    <string name="accountUnavailable">حساب سازگار بازشده‌ای وجود ندارد</string>
+    <string name="sendMoreThanBalance">شما در حال تلاش برای ارسال وجهی بیش از موجودی در دسترس خود هستید.\n\nاگر فکر می‌کنید بیش از موجودی خود خرج نمی‌کنید، شاید فراموش کرده‌اید که تراکنش‌ها کارمزد کوچکی دارند، یا اگر همه موجودی شما تأییدنشده است، شاید تراکنش‌های زیادی را پشت سر هم انجام داده‌اید.\n\nمیزان «جلو زدن» از بلاک‌چین محدودیت دارد. بگذارید موجودی تأییدنشده شما تأیید شود و دوباره تلاش کنید.</string>
+    <string name="sendMoreTokensThanBalance">شما در حال تلاش برای ارسال توکن بیشتر از مقدار در دسترس خود هستید.</string>
+    <string name="deductedFeeLargerThanSendAmount">کارمزد کسرشده از مبلغ ارسالی بیشتر است</string>
+    <string name="badWalletImplementation">پیاده‌سازی کیف پول نادرست است. این ایراد را گزارش کنید!</string>
+    <string name="CannotCompleteTransaction">خطا: امکان تکمیل نیست</string>
+    <string name="title_split_bill">تقسیم صورت‌حساب</string>
+    <string name="title_activity_settings">تنظیمات</string>
+    <string name="title_activity_exchange">صرافی</string>
+    <string name="title_activity_shopping">لینک‌ها</string>
+    <string name="ecosystem">اکوسیستم</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">خانه</string>
+    <string name="title_dashboard">آزمایش</string>
+    <string name="title_notifications">اعلان‌ها</string>
+    <string name="title_activity_invoices">فاکتورها</string>
+    <string name="title_activity_identity">هویت</string>
+    <string name="title_activity_identity_op">هویت</string>
+    <string name="title_activity_domain_identity_settings">تنظیمات هویت دامنه</string>
+    <string name="title_activity_tx_history" formatted="false">تاریخچه تراکنش: %account</string>
+    <string name="title_activity_address_history" formatted="false">تاریخچه آدرس: %account</string>
+    <string name="title_activity_account_details" formatted="false">حساب: %account</string>
+    <string name="title_test">آزمایش</string>
+    <string name="useUniqueIdentity">استفاده از هویت رمزنگاری یکتا</string>
+    <string name="title_activity_identity_settings">تنظیمات هویت</string>
+    <string name="IdentityRegistrations">سرویس‌های ثبت‌شده</string>
+    <string name="NoIdentitiesRegistered">هیچ هویتی ثبت نشده است</string>
+    <string name="title_activity_welcome">خوش آمدید</string>
+    <string name="next">بعدی</string>
+    <string name="previous">قبلی</string>
+    <string name="EnterPIN">رمز را وارد کنید</string>
+    <string name="EnterPINorBlankToRemove">رمز جدید (خالی = حذف)</string>
+    <string name="ButtonTextHere">تنظیم متن دکمه</string>
+    <string name="ButtonLinkHere">لینک وب را وارد کنید</string>
+    <string name="ShoppingWarning">هشدار: موارد این صفحه لینک‌هایی به سرویس‌ها و وب‌سایت‌های شخص ثالث هستند که برای راحتی شما اینجا قرار گرفته‌اند. این سایت‌ها و سرویس‌ها توسط کیف پول Wally بررسی نشده‌اند.\n\nاستفاده از آن‌ها بر عهده خود شماست!</string>
+    <string name="NFTs">توکن‌های غیرمثلی (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: ایجاد و معامله تصاویر یکتا و نمایش دیجیتال اقلام یکتا</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">هشدار: جعلی یا نادرست ساخته شده است!</string>
+    <string name="TokenSourceWebsite">منبع توکن:</string>
+    <string name="TokenBadSig">اطلاعات این توکن به‌درستی امضا نشده است. این توکن ممکن است جعلی یا تقلبی باشد. همچنین ممکن است خالق توکن صرفاً آن را به‌درستی امضا نکرده باشد.</string>
+    <string name="OpenWebsite" formatted="false">دسترسی به %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">وب‌سایت در دسترس نیست</string>
+    <string name="ExplainBitmart">bitmart.com: معامله NEXA با سایر رمزارزها</string>
+    <string name="ExplainMexc">mexc.com: معامله NEXA با سایر رمزارزها</string>
+    <string name="ExplainBiconomy">biconomy.com: معامله NEXA با سایر رمزارزها</string>
+    <string name="CexButton">صرافی</string>
+    <string name="SharedNotification" formatted="false">%what به اشتراک گذاشته شد</string>
+    <string name="AuthAutopayTitle">پرداخت مجاز</string>
+    <string name="AuthAutopayDeniedTitle">پرداخت مجاز رد شد</string>
+    <string name="AuthAutopay" formatted="false">%amt به %domain</string>
+    <string name="TpToBeDone">اتصال‌های Trickle Pay شما اینجا نمایش داده می‌شود</string>
+    <string name="TpHistoryTbd">تاریخچه Trickle Pay شما اینجا نمایش داده می‌شود</string>
+    <string name="AcceptTpRegistration">پذیرش ثبت‌نام از:</string>
+    <string name="EditTpRegistration">تنظیمات موجودیت:</string>
+    <string name="AcceptTpRegistrationTopic">هدف:</string>
+    <string name="TpMaxSpendHint">حداکثر پرداخت خودکار</string>
+    <string name="TpAssetInfoRequest">درخواست‌های اطلاعات دارایی</string>
+    <string name="TpAssociatedAccount" formatted="false">مرتبط با: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">درخواست مجوز تراکنش</string>
+    <string name="AssetNotif">درخواست اطلاعات دارایی</string>
+    <string name="PaymentRequest">درخواست پرداخت</string>
+    <string name="IdentityNotif">درخواست هویت/ورود</string>
+    <string name="TpMaxHeading">محدودیت‌های پرداخت خودکار</string>
+    <string name="TpMaxPer">حداکثر هر درخواست</string>
+    <string name="TpMaxPerDay">حداکثر روزانه</string>
+    <string name="TpMaxPerWeek">حداکثر هفتگی</string>
+    <string name="TpMaxPerMonth">حداکثر ماهانه</string>
+    <string name="TpEnableAutopay">فعال کردن پرداخت خودکار (اگر تیک نخورد، همه پرداخت‌ها از کاربر اجازه می‌گیرند و محدودیت‌های زیر نادیده گرفته می‌شود)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">بدون ثبت‌نام Trickle Pay</string>
+    <string name="TpNoSession">درخواست Trickle Pay وجود ندارد</string>
+    <string name="TpRegistrations">ثبت‌نام‌ها</string>
+    <string name="TpRegDenied">ثبت‌نام رد شد</string>
+    <string name="TpRegAccepted">ثبت‌نام پذیرفته شد</string>
+    <string name="TpRegUnchanged">ثبت‌نام بدون تغییر</string>
+    <string name="TpRequestAutoDeny">درخواست رد شد (خودکار)</string>
+    <string name="TpRequestAutoAccept">درخواست پذیرفته شد (خودکار)</string>
+    <string name="TpTxDenied">تراکنش رد شد</string>
+    <string name="TpTxAccepted">تراکنش پذیرفته شد</string>
+    <string name="TpNetworkTimeout">اتمام زمان تراکنش</string>
+    <string name="TpPartialSubmitted">پیشنهاد ارسال شد</string>
+    <string name="TpAssetRequestDenied">اطلاعات دارایی ارسال نشد</string>
+    <string name="TpAssetRequestAccepted">ارسال اطلاعات دارایی</string>
+    <string name="Actions">عملیات</string>
+    <string name="SpecialTpTransactionFrom">تراکنش ویژه از</string>
+    <string name="IncompleteTpTransactionFrom">پیشنهاد قطعی از</string>
+    <string name="TpEntails">در بر دارد</string>
+    <string name="TpInAccount">با حساب</string>
+    <string name="TpAssetRequestFrom">درخواست اطلاعات دارایی از سوی</string>
+    <string name="TpHandledByAccount">با حساب شما قابل انجام است</string>
+    <string name="TpAssetMatches" formatted="false">اطلاعات %num دارایی متعلق به شما در اختیار این سرویس قرار می‌گیرد.</string>
+    <string name="TpAssetInfoNotXfer">پذیرش این درخواست فقط اطلاعات مالکیت شما را به سرویس می‌دهد. هیچ انتقالی را مجاز نمی‌کند.</string>
+    <string name="ForAFeeOf" formatted="false">شامل کارمزد %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">و تبادل توکن (ارسال %tokSnd، دریافت %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal نوع توکن آشکار می‌شود (به خودتان پرداخت می‌شود تا مالکیت آن‌ها اثبات شود).</string>
+    <string name="TpSendingTokens" formatted="false">و ارسال %tokSnd نوع توکن.</string>
+    <string name="TpReceivingTokens" formatted="false">و دریافت %tokRcv نوع توکن.</string>
+    <string name="TpHasNoPurpose">این درخواست هیچ تأثیری بر این حساب ندارد.</string>
+    <string name="TpSendToTitle">درخواست پرداخت از سوی</string>
+    <string name="TpSpends">پرداخت</string>
+    <string name="TpSendRequestDenied">پرداخت رد شد</string>
+    <string name="TpSendAutoReject">پرداخت به‌طور خودکار رد شد</string>
+    <string name="TpSendRequestAccepted">پرداخت پذیرفته شد</string>
+    <string name="TpWhyNotAuto">به‌طور خودکار امضا نمی‌شود، زیرا</string>
+    <string name="TpAutomaticDisabled">پرداخت خودکار غیرفعال است</string>
+    <string name="TpExceededMaxPer">بیشتر از حداکثر هر درخواست</string>
+    <string name="TpExceededMaxDaily">بیشتر از حداکثر روزانه</string>
+    <string name="TpExceededMaxWeekly">بیشتر از حداکثر هفتگی</string>
+    <string name="TpExceededMaxMonthly">بیشتر از حداکثر ماهانه</string>
+    <string name="title_activity_alert_history">پیام‌های اخیر</string>
+    <string name="IssueReportInstructions">این اطلاعات را به توسعه‌دهندگان بدهید:</string>
+    <string name="AssetApplication">اجرا</string>
+    <string name="AssetMarketplace">معامله</string>
+    <string name="AssetAddedToTransferList">به «ارسال» در زبانه اصلی افزوده شد</string>
+    <string name="NftCardFront">رو</string>
+    <string name="NftCardBack">پشت</string>
+    <string name="NftPublicMedia">محتویات</string>
+    <string name="NftOwnerMedia">محتوای مالک</string>
+    <string name="Content">محتوا</string>
+    <string name="Private">خصوصی</string>
+    <string name="NftPrivateDescription">این محتوا متعلق به مالک دارایی است</string>
+    <string name="NftInfo">اطلاعات</string>
+    <string name="NftLegal">مجوز</string>
+    <string name="NftSeries" formatted="false">سری: %series</string>
+    <string name="NftAuthor" formatted="false">خالق: %author</string>
+    <string name="NftNoInfoProvided">...اطلاعاتی ارائه نشده است...</string>
+    <string name="IssuedToConnection">در سایت متصل باز شد</string>
+    <string name ="demonstratingOwnership">اثبات مالکیت</string>
+    <string name="AndSomeAssets"> و مقداری دارایی</string>
+    <string name="AssetTypes" formatted="false">%assetTypes نوع دارایی</string>
+    <string name="ExplainRestaurant">سرویس‌های سفارش آنلاین غذا (تحویل یا دریافت حضوری) ممکن است رمزارز بپذیرند، حتی اگر خود رستوران نپذیرد.</string>
+    <string name="RestaurantButton">سفارش غذا از Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">مکان‌های نزدیک خود را که رمزارز می‌پذیرند پیدا کنید.</string>
+    <string name="StoreMapButton">نقشه فروشگاه‌ها</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: تبدیل NEXA به سایر رمزارزها</string>
+    <string name="welcome1Label">خوش آمدید</string>
+    <string name="welcome1">به Wally، یک کیف پول رمزارز، خوش آمدید!\n\nدر صفحه‌های بعدی، اولین حساب بلاک‌چین Nexa خود (NEX) را می‌سازید و سرویس‌های دیگر مانند مدیریت رمز عبور را تنظیم می‌کنید.\n\nیا می‌توانید برای رد کردن این راه‌اندازی راهنما، فلش بازگشت را بزنید.</string>
+    <string name="welcome2_title">تنظیمات حساب NEXA</string>
+    <string name="welcome2">در صفحه بعد، اولین حساب Nexa خود را می‌سازید.\n\nاین حساب پول Nexa و هویت‌های شما را نگه می‌دارد. هویت‌ها قابلیتی تازه در کیف پول Wally هستند و به شما امکان می‌دهند به‌طور خودکار وارد وب‌سایت‌های پشتیبانی‌شده شوید.\n\nمی‌توانید حساب‌های خود را با یک رمز عددی شخصی محافظت کنید، اما به کاربران تازه توصیه می‌کنیم برای اولین حساب خود رمز نگذارند (و موجودی کمی نگه دارند). برای حفاظت از کاربر، حساب‌های محافظت‌شده با رمز تا وارد شدن رمز درست دیده نمی‌شوند (و اشتباه بودن رمز واردشده اعلام نمی‌شود).\n\nاگر می‌خواهید حساب NEXA موجودی را بازیابی کنید، عبارت بازیابی را وارد کنید. اگر این خط خالی بماند، حساب تازه‌ای ساخته می‌شود.</string>
+    <string name="welcome3_title" formatted="false">عبارت بازیابی حساب Nexa</string>
+    <string name="welcome3">خوش‌آمد 3 ! (این متن خوش‌آمد قابل بهبود است)</string>
+    <string name="welcome4_title">هویت</string>
+    <string name="welcome4">در ادامه به صفحه اطلاعات هویت می‌روید. این اطلاعات زمانی به کار می‌رود که از Wally به‌عنوان مدیر هویت و ورود استفاده می‌کنید (برای ورود خودکار به وب‌سایت‌های مختلف یا ارائه اطلاعات هنگام خرید). Wally به‌شدت بر حریم خصوصی متمرکز است!
+این اطلاعات بدون اجازه صریح شما با هیچ وب‌سایتی به اشتراک گذاشته نمی‌شود و هیچ اطلاعاتی از این کیف پول هرگز برای سازندگان این برنامه فرستاده نمی‌شود. می‌توانید همه فیلدها را هم خالی بگذارید.
+پس از پایان، فلش بازگشت (بالای صفحه) را بزنید.</string>
+    <string name="welcomeComplete">راه‌اندازی به پایان رسید. اگر هر یک از مرحله‌های این خوش‌آمدگویی را کامل نکردید، همه فیلدها از خود برنامه در دسترس هستند.
+سپاسگزاریم؛ از کیف پول تازه خود لذت ببرید!</string>
+    <string name="ExplainGiftCards">خرید کارت هدیه به شما دسترسی به صدها فروشگاه می‌دهد که رمزارز را مستقیم نمی‌پذیرند.</string>
+    <string name="GiftCardButton">کارت هدیه eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">این عدد محرمانه برای دسترسی به حساب لازم است</font>
+</string>
+    <string name="sync_title">همگام‌سازی ایمیل در بازه‌های منظم</string>
+    <string name="attachment_title">دانلود پیوست‌های دریافتی</string>
+    <string name="attachment_summary_on">دانلود خودکار پیوست‌های ایمیل</string>
+    <string name="attachment_summary_off">دانلود پیوست‌ها فقط در صورت درخواست</string>
+    <string name="signature_title">امضای شما</string>
+    <string name="reply_title">عمل پیش‌فرض هنگام پاسخ</string>
+    <string name="discoveredAccountDetails" formatted="false">موجودی %bal %units کشف شد\nدر %addr آدرس و %tx تراکنش</string>
+    <string name="discoveredWarning">اگر درست به نظر می‌رسد، می‌توانید همین حالا این حساب را بسازید</string>
+    <string name="backgroundSync">همگام‌سازی در پس‌زمینه</string>
+    <string name="scanQr">اسکن QR</string>
+    <string name="imageQr">QR از تصویر</string>
+    <string name="paste">چسباندن</string>
+    <string name="recentTransactions">تراکنش‌های اخیر</string>
+    <string name="sendingFrom">ارسال از</string>
+    <string name="enterAddress">آدرس را وارد کنید...</string>
+    <string name="noteOptional">یادداشت (اختیاری)</string>
+    <string name="clearNote">پاک کردن یادداشت</string>
+    <string name="clearAddress">پاک کردن آدرس</string>
+    <string name="clearAmount">پاک کردن مبلغ</string>
+    <string name="available">موجود</string>
+    <string name="amountPlain">مبلغ</string>
+    <string name="enterNEXAmount">مبلغ NEX را وارد کنید...</string>
+    <string name="note">یادداشت</string>
+    <string name="confirmSend">تأیید ارسال</string>
+    <string name="syncing">در حال همگام‌سازی...</string>
+    <string name="enterAmount" formatted="false">مقدار %assetName را وارد کنید</string>
+    <string name="fee">کارمزد</string>
+    <string name="connectionWarning">هشدار: هیچ اتصالی به بلاک‌چین/شبکه در دسترس نیست. اگر اکنون ارسال کنید، گیرنده این انتقال را بلافاصله نمی‌بیند. ارسال پس از برقراری دوباره اتصال انجام می‌شود.</string>
+    <string name="NetworkUnstable">شبکه ناپایدار</string>
+    <string name="TokenMissing">توکن روی بلاک‌چین نیست </string>
+    <string name="Sell">فروش</string>
+    <string name="CreateAnOffer">ایجاد پیشنهاد</string>
+    <string name="Price">قیمت</string>
+    <string name="NexaPrice">قیمت Nexa را وارد کنید</string>
+    <string name="AssetAmountName" formatted="false">شما %amount %assetName دارید</string>
+    <string name="scanToBuyOne">برای خرید %name اسکن کنید</string>
+    <string name="scanToBuySeveral">برای خرید %amount %name اسکن کنید</string>
+    <string name="nexaOfferAmount" formatted="false">به مبلغ %amount NEXA</string>
+    <string name="purchaseComplete">خرید کامل شد</string>
+    <string name="setTheNexaPrice">تعیین قیمت Nexa</string>
+    <string name="setTheAssetAmount">تعیین مقدار دارایی</string>
+    <string name="publishOnline">انتشار آنلاین پیشنهاد</string>
+    <string name="offerCreated">پیشنهاد ایجاد شد!</string>
+    <string name="ConfigureService">تنظیم سرویس</string>
+    <string name="AcceptOrRejectService">پذیرش یا رد سرویس</string>
+    <string name="Domain">دامنه</string>
+    <string name="Services">سرویس‌ها</string>
+    <string name="Purpose">هدف</string>
+    <string name="AutoPay">پرداخت خودکار</string>
+    <string name="AutoPayInstructions">اگر کادر زیر غیرفعال باشد، همه درخواست‌های پرداخت این سرویس از شما اجازه می‌گیرند و محدودیت‌های زیر نادیده گرفته می‌شوند.</string>
+    <string name="LimitedAutoApproval">اجازه تأیید خودکار محدود</string>
+    <string name="AutoPayMaxPerRequest">حداکثر هر درخواست</string>
+    <string name="AutoPayMaxPerDay">حداکثر روزانه</string>
+    <string name="AutoPayMaxPerWeek">حداکثر هفتگی</string>
+    <string name="AutoPayMaxPerMonth">حداکثر ماهانه</string>
+    <string name="EnableServices">فعال کردن صفحه سرویس‌ها</string>
+    <string name="NoServicesRegistered">هیچ سرویسی ثبت نشده است.</string>
+    <string name="Start">شروع</string>
+    <string name="Meditation">مدیتیشن</string>
+    <string name="Meditate">مدیتیشن</string>
+    <string name="Sound">صدا</string>
+    <string name="OneMinuteIntervalSound">صدا در فواصل 1 دقیقه‌ای</string>
+    <string name="MeditationVersion">نسخه: 1.0.3 (ساخت 156)</string>
+    <string name="Meditating">در حال مدیتیشن...</string>
+    <string name="MediationComplete">مدیتیشن به پایان رسید!</string>
+    <string name="Okay">باشه</string>
+    <string name="Minutes">دقیقه</string>
+    <string name="Camouflage">استتار</string>
+    <string name="CamouflageAsMeditationTimer">برنامه را به شکل یک تایمر مدیتیشن استتار کنید.</string>
+    <string name="CamouflageDescriptionAndroid">با فعال کردن استتار، برنامه بسته می‌شود و به شکل برنامه‌ای به نام Meditate استتار می‌شود. برای غیرفعال کردن استتار برنامه Meditate، منوی برنامه را باز کنید و پنج بار روی شماره نسخه بزنید.</string>
+    <string name="CamouflageDescriptionOther">برای غیرفعال کردن استتار برنامه Meditate، منوی برنامه را باز کنید و پنج بار روی شماره نسخه بزنید.</string>
+    <string name="CamouflageAsMeditateAppAndroid">استتار به شکل برنامه Meditate</string>
+</resources>

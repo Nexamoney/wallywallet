@@ -1,0 +1,634 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="at">在</string>
+    <string name="of">共</string>
+    <string name="choose">选择</string>
+    <string name="accept">接受</string>
+    <string name="reject">拒绝</string>
+    <string name="remove">移除</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="Back">返回</string>
+    <string name="removeAll">全部移除</string>
+    <string name="done">完成</string>
+    <string name="dismiss">忽略</string>
+    <string name="deny">禁止</string>
+    <string name="ask">询问</string>
+    <string name="badSignature">签名无效</string>
+    <string name="unknownCurrency">未知货币</string>
+    <string name="unknownCryptoCurrency">未知的加密货币或区块链</string>
+    <string name="Processing">处理中…</string>
+    <string name="receiving">接收中</string>
+    <string name="sending">发送中</string>
+    <string name="noAdditionalDetails">无更多详情</string>
+    <string name="unspecified">未指定</string>
+    <string name="removed">已移除</string>
+    <string name="synced">已同步</string>
+    <string name="unsynced">同步中</string>
+    <string name="connected">已连接</string>
+    <string name="connectionEstablished">连接已建立</string>
+    <string name="connectionClosed">连接已关闭</string>
+    <string name="connectionException">无法连接到该站点</string>
+    <string name="balance">当前余额</string>
+    <string name="totalReceived">累计接收</string>
+    <string name="inProgress">进行中</string>
+    <string name="staleTransaction">失效交易</string>
+    <string name="staleTransactionDetails">该交易被全节点拒绝，很可能已失效（所用资金已被他人花费），但也可能这笔交易从未有效，或者交易本身没有问题而我们询问的节点不诚实。除非该交易获得确认，否则钱包将忽略该交易。</string>
+    <string name="NoPermission">无权限</string>
+    <string name="NoPermissionDetails" formatted="false">使用此功能需先启用 %perm 权限。您可在 Android 设置 -> 应用 -> Wally -> 权限 中开启。</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>…加载中…</h1></center></body>]]></string>
+    <string name="loading">加载中</string>
+    <string name="Untitled">无标题</string>
+    <string name="nothing">无</string>
+    <string name="breakIt">破坏</string>
+    <string name="or">或</string>
+    <string name="onBlockchain">于</string>
+    <string name="NotImplemented">敬请期待</string>
+    <string name="NoNodes">无区块链连接</string>
+    <string name="cancelled">已取消</string>
+    <string name="refreshQR">服务器连接已断开</string>
+    <string name="pleaseWait">请稍候</string>
+    <string name="trying">尝试中</string>
+    <string name="clear">清除</string>
+    <string name="thousand">* 千</string>
+    <string name="million">* 百万</string>
+    <string name="required">必填</string>
+    <string name="account">账户</string>
+    <string name="addAccountPlus">+ 添加账户</string>
+    <string name="receivingTokens">接收代币</string>
+    <string name="spendingTokens">花费代币</string>
+    <string name="version" formatted="false">版本：%ver（%date）</string>
+    <string name="enableDeveloperView">高级/开发者模式</string>
+    <string name="enableRecompositionCounts">统计界面重绘次数</string>
+    <string name="enableExperimentalUx">实验性界面</string>
+    <string name="enableDarkMode">深色模式</string>
+    <string name="enableSound">启用声音</string>
+    <string name="enableIdentityMenu">启用身份页面</string>
+    <string name="enableTricklePayMenu">启用 Trickle Pay 页面</string>
+    <string name="enableAssetsMenu">启用资产页面</string>
+    <string name="only">仅用</string>
+    <string name="prefer">优先</string>
+    <string name="rediscoverWalletTx">重新发现全部交易</string>
+    <string name="searchWalletTx">搜索缺失的交易</string>
+    <string name="rediscoverBlockchain">重新发现区块头</string>
+    <string name="logDebugData">记录调试数据</string>
+    <string name="clearIdentityDomains">清除身份域名</string>
+    <string name="rediscoverTooltip">删除区块链状态，并重新搜索与本钱包相关的全部交易</string>
+    <string name="wordSeed">账户恢复助记词</string>
+    <string name="deleteWalletAccount">删除账户</string>
+    <string name="more">更多</string>
+    <string name="darkMode">深色模式</string>
+    <string name="ConsolidationNeeded">需先归集账户资金</string>
+    <string name="SetChangePin">设置或更改解锁 PIN 码</string>
+    <string name="CurrentPin">当前 PIN 码</string>
+    <string name="NewPin">新 PIN 码</string>
+    <string name="PinChanged">PIN 码已更改</string>
+    <string name="PinRemoved">PIN 码已移除</string>
+    <string name="PinInvalid">PIN 码无效</string>
+    <string name="PinTooShort">新 PIN 码太短</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">警告：您尚未抄写部分账户的助记词！为防止本设备丢失或损坏导致资金丢失，请将助记词抄写在纸上或其他非电子介质上。</string>
+    <string name="WroteRecoveryPhraseDown">我已抄写</string>
+    <string name="RecoveryPhraseKeepRemindingMe">继续提醒我</string>
+    <string name="ViewRecoveryPhrase">查看账户恢复助记词</string>
+    <string name="localCurrency">本地货币</string>
+    <string name="assessUnconfirmed">检查未确认交易</string>
+    <string name="rediscoverNotice">账户重新发现已开始</string>
+    <string name="searchNotice">账户搜索已开始</string>
+    <string name="unconfAssessmentNotice">未确认交易检查已开始</string>
+    <string name="accountDeleteNotice">账户已删除</string>
+    <string name="rediscoverConfirmation">重新发现账户会将该账户余额清零，并像新建账户一样在区块链上搜索付款记录。此过程可能耗时很长。不过界面上可能会出现“快进”按钮，让您可以向数据库查询本钱包的活动记录。如果上方日期不正确，请等待几秒钟以便更新。</string>
+    <string name="searchConfirmation">此功能会在区块链上搜索缺失的付款记录。此过程可能耗时很长。不过界面上可能会出现“快进”按钮，让您可以向数据库查询本钱包的活动记录。</string>
+    <string name="rediscoverBlockchainConfirmation">重新发现区块链会删除本钱包中的全部区块头数据，并从全节点重新下载。此过程可能耗时很长。仅在确定区块头存在问题时才使用。</string>
+    <string name="deleteConfirmation" formatted="false">删除账户后，除非用账户恢复助记词恢复，否则所有余额、身份和记录都将无法访问！只有在完全确定时才执行！\n\n确定要删除账户“%accountName”（位于 %blockchain）吗？</string>
+    <string name="reassessConfirmation">此操作会在区块链上核对您近期发出的交易，并根据交易是否存在来确认或删除。交易一旦被删除，这笔钱会看似消失，您需要执行“重新发现”才能找回已花费的余额。如果您刚刚发出过交易，请勿使用此功能，因为该交易可能仍在网络中等待确认。</string>
+    <string name="recoveryPhrase">这 12 个单词组成的助记词用于恢复您的钱包。任何掌握该助记词的人都能花费您的资金。请用笔抄写在纸上（或刻在钢板上）并妥善保管！</string>
+    <string name="recoveryWarning">停止！切勿以电子方式保存！\n不要复制到剪贴板、拍照、复印或截屏。</string>
+    <string name="flickerReason">闪烁是一项安全措施</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">已复制到剪贴板。但把助记词复制粘贴到任何应用中都极其危险！电子邮件、大多数应用、备份服务等都达不到保管助记词所需的安全性，而助记词本身就等同于金钱。</string>
+    <string name="primaryAccountConfirmation">主账户用于您的身份和自动支付，也是本应用多处显示的第一个账户。它必须位于 Nexa 区块链上。</string>
+    <string name="primaryAccountSuccess">主账户：%name</string>
+    <string name="AccountActions">账户操作</string>
+    <string name="GeneralSettings">通用设置</string>
+    <string name="BlockchainSettings">区块链来源</string>
+    <string name="AccessPriceData">获取价格数据</string>
+    <string name="oldUi">旧版界面</string>
+    <string name="SplitBillDescription">您先用法币付账，朋友再通过下方二维码把各自的份额付给您。除非由朋友请客，否则分摊人数要把您自己算在内。</string>
+    <string name="BillAmount">账单金额</string>
+    <string name="TipAmount">小费金额</string>
+    <string name="TipPercentage">小费比例</string>
+    <string name="Total">待分摊总金额</string>
+    <string name="OR">或</string>
+    <string name="QRCodeFor">二维码用于：</string>
+    <string name="Ways">人数：</string>
+    <string name="Tip">小费：</string>
+    <string name="Amount">金额：</string>
+    <string name="AmountWithValue" formatted="false">金额：%amt</string>
+    <string name="QuantityWithValue" formatted="false">数量：%qty</string>
+    <string name="balanceOnTheDate" formatted="false">截至 %date</string>
+    <string name="fastSync">快速同步</string>
+    <string name="refresh">刷新</string>
+    <string name="goodQR">二维码可识别</string>
+    <string name="badQR">二维码无法识别</string>
+    <string name="badImageQR">图片二维码无法识别。更多…</string>
+    <string name="badImageQRhelp">如果您是近距离拍摄二维码，请试着离远一些再拍。白色边框也是二维码的一部分；近距离拍摄屏幕还可能产生干扰识别的摩尔纹。</string>
+    <string name="GoThere">前往</string>
+    <string name="unlock">解锁</string>
+    <string name="share">分享</string>
+    <string name="Send">发送</string>
+    <string name="OpenSend">发送</string>
+    <string name="SendCancel">取消</string>
+    <string name="ignoredInsecureRequest">已忽略不安全的请求</string>
+    <string name="fromAccountColon">发送账户：</string>
+    <string name="chooseAccountError">请选择账户</string>
+    <string name="toColon">收款方：</string>
+    <string name="To">收款方</string>
+    <string name="ByAuthor">作者</string>
+    <string name="assetsColon">资产：</string>
+    <string name="assets">资产</string>
+    <string name="NoAssets">账户 %act 中无可用资产</string>
+    <string name="NoAssetsAccount">您的账户中当前无可用资产。</string>
+    <string name="fromColon">来自：</string>
+    <string name="ReceiveIntoAccount">接收至账户</string>
+    <string name="Receive">接收</string>
+    <string name="YourAddress">您的 %blockchain 地址</string>
+    <string name="CopyAddress">复制地址</string>
+    <string name="AccountListHeader">账户</string>
+    <string name="Address">地址</string>
+    <string name="clipboard">剪贴板</string>
+    <string name="settings">设置</string>
+    <string name="help">帮助</string>
+    <string name="invalidQuantity">数量无效</string>
+    <string name="needNonexistentAuthority">需要代币授权</string>
+    <string name="invalidQuantityTooManyDecimalDigits">小数位过多</string>
+    <string name="roundedUpClickSendAgain">已向上取整，再次点击发送以确认</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">购买</string>
+    <string name="scanPaymentQRcode">扫描收款地址二维码</string>
+    <string name="ScanQRCodeButton">扫描二维码</string>
+    <string name="PasteDestinationAddressButton">粘贴</string>
+    <string name="NewAccountButton">新建账户</string>
+    <string name="NewAccountSearchingForTransactions">…正在查找首笔交易…</string>
+    <string name="NewAccountSearchingForAllTransactions">…正在查找全部交易…</string>
+    <string name="NewAccountSearchFailure">交易查找失败</string>
+    <string name="receiveAddressQRCode">收款二维码</string>
+    <string name="paymentProposal">按收到的付款提议</string>
+    <string name="pasteIsEmpty">粘贴内容为空</string>
+    <string name="pasteIgnored">已忽略粘贴内容</string>
+    <string name="pasteUnintelligible">无法识别粘贴内容</string>
+    <string name="chainIncompatibleWithAddress">地址与账户不兼容</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">账户币种为 %walletCrypto，地址币种为 %addressCrypto。请用下拉框将发送账户改为与该地址区块链匹配的账户。</string>
+    <string name="incoming" formatted="false">含 %delta %unit 待确认</string>
+    <string name="approximatelyT" formatted="false">约 %qty %fiat</string>
+    <string name="fastForward" formatted="false">快进</string>
+    <string name="fastforwardStatus" formatted="false">快进分析：%info</string>
+    <string name="fastforwardStart" formatted="false">已开始</string>
+    <string name="exchangeRate" formatted="false">（汇率：1 %fiat 可兑换 %amt %crypto）</string>
+    <string name="moreThanAvailable">（超出可用余额）</string>
+    <string name="moreThanConfirmedAvailable">（超出已确认余额）</string>
+    <string name="actuallySendingT" formatted="false">实际发送 %qty %crypto</string>
+    <string name="copiedToClipboard">已复制到\n剪贴板</string>
+    <string name="copyId">复制 ID</string>
+    <string name="openInBrowser">在浏览器中打开</string>
+    <string name="cannotCopyToClipboard">无法复制到剪贴板</string>
+    <string name="tooLargeForClipboard">数据过大，无法复制到剪贴板</string>
+    <string name="scanFailed">扫码失败</string>
+    <string name="scanSuccess">扫码成功</string>
+    <string name="sendSuccess">发送成功</string>
+    <string name="sendQuantityHint">发送数量</string>
+    <string name="sendRequestNotification">收到发送请求</string>
+    <string name="sendToAddressHint">目标地址</string>
+    <string name="sendAll">全部</string>
+    <string name="editSendNoteHint">关于本次转账的个人备注</string>
+    <string name="subSatoshiQuantities">小数位过多——该货币无法细分到该精度</string>
+    <string name="retrievingExchangeRate">正在获取汇率</string>
+    <string name="unavailableExchangeRate">汇率不可用</string>
+    <string name="SigningWithAccount" formatted="false">签名账户：%act</string>
+    <string name="commonIdentityForAccount" formatted="false">账户通用身份：%act</string>
+    <string name="identityRequestNotification">收到身份请求</string>
+    <string name="IdentityDataMissing">缺少身份信息</string>
+    <string name="newDomainRequestingIdentity">新服务请求注册</string>
+    <string name="domainRequestingAdditionalIdentityInfo">请求提供更多信息</string>
+    <string name="useUniqueIdentityToolTip">开启后，您在此站点的身份将与其他站点分开。</string>
+    <string name="provideAlias">提供您的用户名/昵称/别名？</string>
+    <string name="provideAliasToolTip">选择此项后，如该网站请求，将向其提供您的别名（在设置中配置，非真实姓名）</string>
+    <string name="provideSocialMedia">提供您的社交媒体信息？</string>
+    <string name="provideSocialMediaToolTip">选择此项后，如该网站请求，将向其提供您的社交媒体信息（在设置中配置）</string>
+    <string name="providePostalAddress">提供您的通信地址？</string>
+    <string name="providePostalAddressToolTip">选择此项后，如该网站请求，将向其提供您的地址（在设置中配置）</string>
+    <string name="provideBillingAddress">提供您的账单地址？</string>
+    <string name="provideBillingAddressToolTip">选择此项后，如该网站请求，将向其提供您的账单地址（在设置中配置）</string>
+    <string name="provideEmail">提供您的电子邮件地址？</string>
+    <string name="provideAvatar">提供您的头像图片？</string>
+    <string name="provideRealName">提供您的真实姓名？</string>
+    <string name="provideRealNameToolTip">选择此项后，将向该网站提供您的真实姓名（在设置中配置）</string>
+    <string name="provideBirthday">提供您的出生日期？</string>
+    <string name="providePhone">提供您的电话号码？</string>
+    <string name="provideAttestations">提供证明？</string>
+    <string name="provideAttestationsToolTip">证明是第三方签名，用于确认您提供的数据</string>
+    <string name="primaryAccountRequired" formatted="false">使用此功能需要 %primCurrency 账户</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">部分功能与特定加密货币绑定。使用该功能前，您必须创建或解锁该加密货币的账户。</string>
+    <string name="UnknownDomainRegisterFirst">未知服务，请先注册</string>
+    <string name="Provider" formatted="false">提供方：%provider</string>
+    <string name="QrCode">二维码</string>
+    <string name="unknownOperation" formatted="false">未知操作 %op</string>
+    <string name="alreadyRegistered">已注册</string>
+    <string name="existingRegistration" formatted="false">当前选择的账户“%act”已注册此服务。</string>
+    <string name="nonexistentRegistration" formatted="false">当前选择的账户“%act”尚未注册此服务。</string>
+    <string name="provideLoginQuestion">登录此站点？</string>
+    <string name="provideInfoQuestion">身份信息请求来自</string>
+    <string name="signDataQuestion">签名请求来自</string>
+    <string name="nothingToSign">未提供消息</string>
+    <string name="binaryToSign">签名此二进制数据？</string>
+    <string name="textToSign">签名此消息？</string>
+    <string name="sigInClipboard">签名已复制到剪贴板</string>
+    <string name="SocialMediaText">社交媒体</string>
+    <string name="SocialMediaSummary">按“服务:账号”列表格式输入，例如 twitter:janeDoe、keybase:janieD</string>
+    <string name="UsernameOrAliasText">用户名/昵称/别名</string>
+    <string name="NameText">姓名</string>
+    <string name="PostalAddressText">通信地址</string>
+    <string name="BillingAddressText">账单地址</string>
+    <string name="PostalCodeText">邮政编码</string>
+    <string name="EmailText">电子邮件地址</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">关联的身份信息</string>
+    <string name="ServiceAssociatedWith">此服务已关联：</string>
+    <string name="IdentityInfoNote">填写这些信息是可选的，且仅会提供给您选择的服务。其目的是在支持身份功能的网站上，只需扫码即可填写表单中的常见字段。</string>
+    <string name="areYouSure">确定要继续吗？</string>
+    <string name="WhenAskSure">确认以上内容：</string>
+    <string name="SendConfirmSummary" formatted="false">确认发送 %amt %currency %inFiat%assets 至地址 %dest</string>
+    <string name="firstName">名</string>
+    <string name="lastName">姓</string>
+    <string name="withholdingMandatoryInfo">站点需要您拒绝提供的信息</string>
+    <string name="badLink">链接无效</string>
+    <string name="BadWebLink">网页链接无效</string>
+    <string name="connectionAborted">站点已中止登录</string>
+    <string name="HintAdjustCostBasis">成本或资本利得</string>
+    <string name="CostBasis">成本基础</string>
+    <string name="CapitalLoss">资本损失</string>
+    <string name="CapitalGain">资本利得</string>
+    <string name="OverrideSalesPrice">输入售出价格</string>
+    <string name="AccountHistory">交易记录</string>
+    <string name="NoAccountActivity">暂无账户活动</string>
+    <string name="AccountAddresses">地址</string>
+    <string name="ActiveAddresses">活跃地址</string>
+    <string name="UsedAddresses">已用地址</string>
+    <string name="UnusedAddresses">未用地址</string>
+    <string name="txHistoryButton">查看或导出账户活动</string>
+    <string name="setAsPrimaryAccountButton">设为主账户</string>
+    <string name="AccountStatistics">账户统计</string>
+    <string name="AccountBlockchainSync" formatted="false">当前在 %chain 区块链上%sync。</string>
+    <string name="AccountBlockchainDetails" formatted="false">截至 %actBlockDate，区块 %actBlock，共 %chainBlockCount。</string>
+    <string name="AccountEarliestActivity" formatted="false">首次使用：区块 %actPrehistoryBlock，%actPrehistoryDate。</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">已连接 %num 个节点：%names</string>
+    <string name="AccountNumAddresses" formatted="false">%num 个地址</string>
+    <string name="CurrentAddress" formatted="false">当前地址 %num：%addr</string>
+    <string name="FirstLastReceive" formatted="false">首次转入在区块 %first，最近一次在区块 %last。</string>
+    <string name="FirstLastSend" formatted="false">首次转出在区块 %first，最近一次在区块 %last。</string>
+    <string name="FirstWithdraw">首次转出</string>
+    <string name="FirstDeposit">首次转入</string>
+    <string name="never">从未</string>
+    <string name="FirstUse" formatted="false">首次使用：%date</string>
+    <string name="LastUse" formatted="false">最近使用：%date</string>
+    <string name="Block" formatted="false">区块：%block</string>
+    <string name="AccountNumTx" formatted="false">%num 笔交易</string>
+    <string name="AccountNumUtxos" formatted="false">%num 条账本记录</string>
+    <string name="title_activity_assets">资产</string>
+    <string name="title_activity_scan">扫码</string>
+    <string name="title_activity_new_account">新建账户</string>
+    <string name="AccountName">账户名称</string>
+    <string name="AccountNameHint">1-8 个字母</string>
+    <string name="Blockchain">区块链</string>
+    <string name="AccountRecoveryPhrase">助记词</string>
+    <string name="LeaveEmptyNewWallet">留空则创建新账户</string>
+    <string name="PinSuggestions"><font size="15">访问该账户需要此保密数字</font></string>
+    <string name="createNewAccount">创建新账户</string>
+    <string name="createSyncAccount">通过完整同步恢复账户（耗时较长）</string>
+    <string name="createDiscoveredAccount">立即恢复账户</string>
+    <string name="invalidRecoveryPhrase">助记词无效</string>
+    <string name="invalidAccountName">名称无效</string>
+    <string name="PassPhrase">口令（可选）</string>
+    <string name="Bip44ActivityNotice">已发现账户活动</string>
+    <string name="NoBip44ActivityNotice">警告：未发现任何交易！</string>
+    <string name="Bip44BtcActivityNotice">已发现非标准或分叉前的钱包活动</string>
+    <string name="NoBip44BtcActivityNotice">未发现分叉前的交易</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">起始于 %date（区块 %height）</string>
+    <string name="NotEnoughRecoveryWords">助记词数量不足</string>
+    <string name="TooManyRecoveryWords">助记词数量过多</string>
+    <string name="IncorrectRecoveryWords" formatted="false">无效词语：%words</string>
+    <string name="ElectrumNetworkUnavailable">Electrum 网络不可用。钱包恢复会很慢，且无法发现 2020 年 1 月 1 日之前的交易</string>
+    <string name="PinHidesAccount">输入 PIN 码前隐藏账户？</string>
+    <string name="HiddenAccountExplainer">输入 PIN 码前隐藏该账户</string>
+    <string name="HiddenAccount">隐藏账户</string>
+    <string name="AutomaticNewAddress">地址隐私</string>
+    <string name="AutomaticNewAddressToolTip">当前地址一经使用，即自动显示新地址。</string>
+    <string name="CreatePIN">PIN 码（可选）</string>
+    <string name="PinSpendingUnprotected">已允许无 PIN 码花费（未设置 PIN 码）</string>
+    <string name="PinSpendingProtected">花费需要 PIN 码</string>
+    <string name="InvalidPIN">PIN 码无效</string>
+    <string name="creatingNoHistoryAccountWarning">您正在用指定的助记词创建账户，但区块链上未发现任何活动。\n确定无误吗？\n如果确定，请再次点击创建按钮，系统将创建一个空账户。但如果该账户本应有活动，请仔细核对所选的区块链和助记词。如果问题不在这里，则可能是区块链网络当前无法访问（请稍后重试），或者该账户是用非标准钱包应用创建的。此时不要创建该账户。</string>
+    <string name="accountLocked">账户已锁定</string>
+    <string name="unknownError">错误</string>
+    <string name="insufficentBalance">余额不足</string>
+    <string name="insufficentTokenBalance">代币余额不足</string>
+    <string name="excessiveFee">手续费过高</string>
+    <string name="sendDustError">金额低于最小值</string>
+    <string name="sendingDustWarning">金额低于网络最小值</string>
+    <string name="feeExceedsFlatMax">手续费超过设定的最高固定手续费</string>
+    <string name="notSupported">不支持</string>
+    <string name="expired">付款已过期</string>
+    <string name="PaymentDataMissing">付款数据缺失</string>
+    <string name="headersNotForthcoming">未收到区块头</string>
+    <string name="cantConvert">换算暂不可用</string>
+    <string name="walletDisconnectedFromBlockchain">钱包已断开连接</string>
+    <string name="badTransaction">交易无效</string>
+    <string name="badAddress">地址无效</string>
+    <string name="unknownAddress">未知地址</string>
+    <string name="badAmount">金额无效</string>
+    <string name="NoAccounts">无可访问的账户</string>
+    <string name="badCryptoCode">没有与该货币或区块链对应的已解锁账户</string>
+    <string name="badCryptoCodeDetails" formatted="false">未知或不可用的货币：%currency</string>
+    <string name="badCurrencyUnit">非货币</string>
+    <string name="incompatibleAccount">货币不匹配</string>
+    <string name="incompatibleAccountDetails" formatted="false">您选择的付款账户持有 %cryptoAct，但需要 %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">调用程序提供的发送数量格式有误。您需要自行输入数量</string>
+    <string name="blankAddress">地址为空</string>
+    <string name="unavailable">不可用</string>
+    <string name="blockNotForthcoming">区块不可用</string>
+    <string name="receiveAddressUnavailable">正在生成新的收款地址，请稍候…</string>
+    <string name="accountLimitReached">账户数已达上限</string>
+    <string name="accountUnavailableDetails">没有与该区块链匹配的账户，或该账户尚未解锁。</string>
+    <string name="accountUnavailable">无已解锁的兼容账户</string>
+    <string name="sendMoreThanBalance">您尝试发送的币超过了当前可用数量。\n\n如果您认为并未超出余额，可能是忘记了交易还要付一小笔手续费；如果余额全部显示为未确认，则可能是连续发起的交易过多。\n\n您“领先”区块链的程度是有限的。请等未确认余额确认后再试。</string>
+    <string name="sendMoreTokensThanBalance">您尝试发送的代币超过了当前可用数量。</string>
+    <string name="deductedFeeLargerThanSendAmount">扣除的手续费大于发送金额</string>
+    <string name="badWalletImplementation">钱包实现有误。请报告此问题！</string>
+    <string name="CannotCompleteTransaction">错误：无法完成</string>
+    <string name="title_split_bill">分摊账单</string>
+    <string name="title_activity_settings">设置</string>
+    <string name="title_activity_exchange">交易所</string>
+    <string name="title_activity_shopping">链接</string>
+    <string name="ecosystem">生态</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">首页</string>
+    <string name="title_dashboard">测试</string>
+    <string name="title_notifications">通知</string>
+    <string name="title_activity_invoices">账单</string>
+    <string name="title_activity_identity">身份</string>
+    <string name="title_activity_identity_op">身份</string>
+    <string name="title_activity_domain_identity_settings">域名身份设置</string>
+    <string name="title_activity_tx_history" formatted="false">交易记录：%account</string>
+    <string name="title_activity_address_history" formatted="false">地址记录：%account</string>
+    <string name="title_activity_account_details" formatted="false">账户：%account</string>
+    <string name="title_test">测试</string>
+    <string name="useUniqueIdentity">使用唯一的加密身份</string>
+    <string name="title_activity_identity_settings">身份设置</string>
+    <string name="IdentityRegistrations">已注册服务</string>
+    <string name="NoIdentitiesRegistered">未注册任何身份</string>
+    <string name="title_activity_welcome">欢迎</string>
+    <string name="next">下一步</string>
+    <string name="previous">上一步</string>
+    <string name="EnterPIN">输入 PIN 码</string>
+    <string name="EnterPINorBlankToRemove">新 PIN 码（留空即移除）</string>
+    <string name="ButtonTextHere">设置按钮文字</string>
+    <string name="ButtonLinkHere">输入网页链接</string>
+    <string name="ShoppingWarning">注意：本页面中的条目是指向第三方服务和网站的链接，仅为方便您使用而列出。这些网站和服务未经 Wally 钱包审核。\n\n使用风险由您自行承担！</string>
+    <string name="NFTs">非同质化代币（NFT）</string>
+    <string name="ExplainNFTs">NiftyArt.cash：创建和交易独特的图像以及独特物品的数字化表示</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">警告：伪造或构造不当！</string>
+    <string name="TokenSourceWebsite">代币来源：</string>
+    <string name="TokenBadSig">此代币的信息未经正确签名。该代币可能是伪造或仿冒的，也可能只是代币创建者未正确签名。</string>
+    <string name="OpenWebsite" formatted="false">访问 %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">网站不可用</string>
+    <string name="ExplainBitmart">bitmart.com：将 NEXA 兑换为其他加密货币</string>
+    <string name="ExplainMexc">mexc.com：将 NEXA 兑换为其他加密货币</string>
+    <string name="ExplainBiconomy">biconomy.com：将 NEXA 兑换为其他加密货币</string>
+    <string name="CexButton">兑换</string>
+    <string name="SharedNotification" formatted="false">已分享 %what</string>
+    <string name="AuthAutopayTitle">已授权支付</string>
+    <string name="AuthAutopayDeniedTitle">已授权支付被拒绝</string>
+    <string name="AuthAutopay" formatted="false">%amt 至 %domain</string>
+    <string name="TpToBeDone">您的 Trickle Pay 连接将显示在此处</string>
+    <string name="TpHistoryTbd">您的 Trickle Pay 记录将显示在此处</string>
+    <string name="AcceptTpRegistration">接受注册请求：</string>
+    <string name="EditTpRegistration">服务设置：</string>
+    <string name="AcceptTpRegistrationTopic">用途：</string>
+    <string name="TpMaxSpendHint">自动支付上限</string>
+    <string name="TpAssetInfoRequest">资产信息请求</string>
+    <string name="TpAssociatedAccount" formatted="false">关联账户：%act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">交易授权请求</string>
+    <string name="AssetNotif">资产信息请求</string>
+    <string name="PaymentRequest">付款请求</string>
+    <string name="IdentityNotif">身份/登录请求</string>
+    <string name="TpMaxHeading">自动支付限额</string>
+    <string name="TpMaxPer">单次上限</string>
+    <string name="TpMaxPerDay">每日上限</string>
+    <string name="TpMaxPerWeek">每周上限</string>
+    <string name="TpMaxPerMonth">每月上限</string>
+    <string name="TpEnableAutopay">启用自动支付（不勾选时，所有支付均需用户授权，以下限额将被忽略）</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">无 Trickle Pay 注册记录</string>
+    <string name="TpNoSession">无 Trickle Pay 请求</string>
+    <string name="TpRegistrations">注册记录</string>
+    <string name="TpRegDenied">已拒绝注册</string>
+    <string name="TpRegAccepted">已接受注册</string>
+    <string name="TpRegUnchanged">注册未变更</string>
+    <string name="TpRequestAutoDeny">已拒绝请求（自动）</string>
+    <string name="TpRequestAutoAccept">已接受请求（自动）</string>
+    <string name="TpTxDenied">已拒绝交易</string>
+    <string name="TpTxAccepted">已接受交易</string>
+    <string name="TpNetworkTimeout">交易超时</string>
+    <string name="TpPartialSubmitted">报价已提交</string>
+    <string name="TpAssetRequestDenied">已拒绝提供资产信息</string>
+    <string name="TpAssetRequestAccepted">正在发送资产信息</string>
+    <string name="Actions">操作</string>
+    <string name="SpecialTpTransactionFrom">特殊交易来自</string>
+    <string name="IncompleteTpTransactionFrom">实盘报价来自</string>
+    <string name="TpEntails">涉及</string>
+    <string name="TpInAccount">使用账户</string>
+    <string name="TpAssetRequestFrom">资产信息请求来自</string>
+    <string name="TpHandledByAccount">可由您的账户处理</string>
+    <string name="TpAssetMatches" formatted="false">您拥有的 %num 项资产的信息将提供给此服务。</string>
+    <string name="TpAssetInfoNotXfer">接受此请求只会向该服务提供您的所有权信息，不会授权任何转账。</string>
+    <string name="ForAFeeOf" formatted="false">含手续费 %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">并兑换代币（发送 %tokSnd，接收 %tokRcv）。</string>
+    <string name="TpShowingTokens" formatted="false">将披露 %tokReveal 种代币类型（支付给您自己，以证明您拥有这些代币）。</string>
+    <string name="TpSendingTokens" formatted="false">并发送 %tokSnd 种代币。</string>
+    <string name="TpReceivingTokens" formatted="false">并接收 %tokRcv 种代币。</string>
+    <string name="TpHasNoPurpose">此请求对该账户没有影响。</string>
+    <string name="TpSendToTitle">付款请求来自</string>
+    <string name="TpSpends">支出</string>
+    <string name="TpSendRequestDenied">付款已拒绝</string>
+    <string name="TpSendAutoReject">付款已自动拒绝</string>
+    <string name="TpSendRequestAccepted">付款已接受</string>
+    <string name="TpWhyNotAuto">不自动签名的原因</string>
+    <string name="TpAutomaticDisabled">自动支付已禁用</string>
+    <string name="TpExceededMaxPer">超出单次上限</string>
+    <string name="TpExceededMaxDaily">超出每日上限</string>
+    <string name="TpExceededMaxWeekly">超出每周上限</string>
+    <string name="TpExceededMaxMonthly">超出每月上限</string>
+    <string name="title_activity_alert_history">最近消息</string>
+    <string name="IssueReportInstructions">请将以下信息提供给开发者：</string>
+    <string name="AssetApplication">启动</string>
+    <string name="AssetMarketplace">交易</string>
+    <string name="AssetAddedToTransferList">已添加到主标签页的“发送”中</string>
+    <string name="NftCardFront">正面</string>
+    <string name="NftCardBack">背面</string>
+    <string name="NftPublicMedia">内容</string>
+    <string name="NftOwnerMedia">所有者内容</string>
+    <string name="Content">内容</string>
+    <string name="Private">私密</string>
+    <string name="NftPrivateDescription">此内容归该资产的所有者所有</string>
+    <string name="NftInfo">信息</string>
+    <string name="NftLegal">许可</string>
+    <string name="NftSeries" formatted="false">系列：%series</string>
+    <string name="NftAuthor" formatted="false">作者：%author</string>
+    <string name="NftNoInfoProvided">…未提供信息…</string>
+    <string name="IssuedToConnection">已在连接的站点中启动</string>
+    <string name ="demonstratingOwnership">证明所有权</string>
+    <string name="AndSomeAssets"> 以及一些资产</string>
+    <string name="AssetTypes" formatted="false">%assetTypes 种资产类型</string>
+    <string name="ExplainRestaurant">在线餐厅点餐服务（外送或自取）可能接受加密货币，即使实体门店不接受。</string>
+    <string name="RestaurantButton">Menufy 餐厅点餐</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">查找您附近接受加密货币的商家。</string>
+    <string name="StoreMapButton">商家地图</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io：将 NEXA 兑换为其他加密货币</string>
+    <string name="welcome1Label">欢迎</string>
+    <string name="welcome1">欢迎使用 Wally，一款加密货币钱包！\n\n在接下来的几个页面中，您将设置第一个 Nexa 区块链账户（NEX），并配置密码管理等其他服务。\n\n您也可以按返回箭头跳过本引导设置。</string>
+    <string name="welcome2_title">NEXA 账户设置</string>
+    <string name="welcome2">在下一页，您将设置第一个 Nexa 账户。\n\n该账户存放您的 Nexa 资金和身份。身份是 Wally 钱包的新功能，可让您自动登录支持的网站。\n\n您可以选择用个人识别码（PIN 码）保护账户，但我们建议新用户的第一个账户不要使用 PIN 码（并保持较低余额）。为保护用户，受 PIN 码保护的账户在输入正确的 PIN 码之前不可见（输入错误的 PIN 码时不会有任何提示）。\n\n如果您要恢复已有的 NEXA 账户，请填写助记词。若此行留空，将创建新账户。</string>
+    <string name="welcome3_title" formatted="false">Nexa 账户助记词</string>
+    <string name="welcome3">欢迎 3！（此欢迎文本有待改进）</string>
+    <string name="welcome4_title">身份</string>
+    <string name="welcome4">接下来，您将进入身份信息页面。当您把 Wally 用作身份和登录管理器时（自动登录各类网站或在购买时提供信息），会用到这些信息。Wally 极其重视隐私！
+未经您的明确许可，这些信息不会分享给任何网站，本钱包中的任何信息也绝不会发送给本应用的作者。您也可以将所有字段留空。
+完成后，按左上角的返回箭头。</string>
+    <string name="welcomeComplete">设置到此完成。如果您未完成本引导中的任何步骤，所有字段都可以在应用内找到。
+感谢您的使用，祝您用得愉快！</string>
+    <string name="ExplainGiftCards">购买礼品卡可让您在数百家不直接接受加密货币的商店消费。</string>
+    <string name="GiftCardButton">eGifter 礼品卡</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">访问该账户需要此保密数字</font>
+</string>
+    <string name="sync_title">定期同步邮件</string>
+    <string name="attachment_title">下载收到的附件</string>
+    <string name="attachment_summary_on">自动下载邮件附件</string>
+    <string name="attachment_summary_off">仅在需要时下载附件</string>
+    <string name="signature_title">您的签名</string>
+    <string name="reply_title">回复时的默认操作</string>
+    <string name="discoveredAccountDetails" formatted="false">发现余额 %bal %units\n分布在 %addr 个地址、%tx 笔交易中</string>
+    <string name="discoveredWarning">如果信息无误，您可以立即创建此账户</string>
+    <string name="backgroundSync">后台同步</string>
+    <string name="scanQr">扫码</string>
+    <string name="imageQr">图片扫码</string>
+    <string name="paste">粘贴</string>
+    <string name="recentTransactions">最近交易</string>
+    <string name="sendingFrom">发送自</string>
+    <string name="enterAddress">输入地址…</string>
+    <string name="noteOptional">备注（可选）</string>
+    <string name="clearNote">清除备注</string>
+    <string name="clearAddress">清除地址</string>
+    <string name="clearAmount">清除金额</string>
+    <string name="available">可用</string>
+    <string name="amountPlain">金额</string>
+    <string name="enterNEXAmount">输入 NEX 金额…</string>
+    <string name="note">备注</string>
+    <string name="confirmSend">确认发送</string>
+    <string name="syncing">同步中…</string>
+    <string name="enterAmount" formatted="false">输入 %assetName 金额</string>
+    <string name="fee">手续费</string>
+    <string name="connectionWarning">警告：当前没有可用的区块链/网络连接。如果您现在发送，收款方不会立即看到这笔转账。连接恢复后将自动发出。</string>
+    <string name="NetworkUnstable">网络不稳定</string>
+    <string name="TokenMissing">代币不在链上 </string>
+    <string name="Sell">出售</string>
+    <string name="CreateAnOffer">创建报价</string>
+    <string name="Price">价格</string>
+    <string name="NexaPrice">输入 Nexa 价格</string>
+    <string name="AssetAmountName" formatted="false">您拥有 %amount %assetName</string>
+    <string name="scanToBuyOne">扫码购买 %name</string>
+    <string name="scanToBuySeveral">扫码购买 %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">售价 %amount NEXA</string>
+    <string name="purchaseComplete">购买完成</string>
+    <string name="setTheNexaPrice">设置 Nexa 价格</string>
+    <string name="setTheAssetAmount">设置资产金额</string>
+    <string name="publishOnline">在线发布报价</string>
+    <string name="offerCreated">报价已创建！</string>
+    <string name="ConfigureService">配置服务</string>
+    <string name="AcceptOrRejectService">接受或拒绝服务</string>
+    <string name="Domain">域名</string>
+    <string name="Services">服务</string>
+    <string name="Purpose">用途</string>
+    <string name="AutoPay">自动支付</string>
+    <string name="AutoPayInstructions">如果下方的复选框未勾选，来自此服务的所有付款请求都会向您请求授权，下方的限额将被忽略。</string>
+    <string name="LimitedAutoApproval">允许有限度的自动批准</string>
+    <string name="AutoPayMaxPerRequest">单次上限</string>
+    <string name="AutoPayMaxPerDay">每日上限</string>
+    <string name="AutoPayMaxPerWeek">每周上限</string>
+    <string name="AutoPayMaxPerMonth">每月上限</string>
+    <string name="EnableServices">启用服务页面</string>
+    <string name="NoServicesRegistered">尚未注册任何服务。</string>
+    <string name="Start">开始</string>
+    <string name="Meditation">冥想</string>
+    <string name="Meditate">冥想</string>
+    <string name="Sound">声音</string>
+    <string name="OneMinuteIntervalSound">每 1 分钟提示音</string>
+    <string name="MeditationVersion">版本：1.0.3（build 156）</string>
+    <string name="Meditating">冥想中…</string>
+    <string name="MediationComplete">冥想完成！</string>
+    <string name="Okay">确定</string>
+    <string name="Minutes">分钟</string>
+    <string name="Camouflage">伪装</string>
+    <string name="CamouflageAsMeditationTimer">将应用伪装成冥想计时器。</string>
+    <string name="CamouflageDescriptionAndroid">启用伪装后，应用将关闭并伪装成名为 Meditate 的应用。要关闭 Meditate 应用伪装，打开应用菜单并点击版本号五次。</string>
+    <string name="CamouflageDescriptionOther">要关闭 Meditate 应用伪装，打开应用菜单并点击版本号五次。</string>
+    <string name="CamouflageAsMeditateAppAndroid">伪装成 Meditate 应用</string>
+</resources>

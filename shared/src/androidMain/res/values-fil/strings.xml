@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">oo</string>
+    <string name="no">hindi</string>
+    <string name="at">sa</string>
+    <string name="of">ng</string>
+    <string name="choose">pumili</string>
+    <string name="accept">tanggapin</string>
+    <string name="reject">tanggihan</string>
+    <string name="remove">alisin</string>
+    <string name="confirm">kumpirmahin</string>
+    <string name="cancel">kanselahin</string>
+    <string name="Back">Balik</string>
+    <string name="removeAll">alisin lahat</string>
+    <string name="done">tapos</string>
+    <string name="dismiss">I-dismiss</string>
+    <string name="deny">tanggihan</string>
+    <string name="ask">magtanong</string>
+    <string name="badSignature">maling signature</string>
+    <string name="unknownCurrency">hindi kilalang currency</string>
+    <string name="unknownCryptoCurrency">hindi kilalang cryptocurrency o blockchain</string>
+    <string name="Processing">pinoproseso...</string>
+    <string name="receiving">tumatanggap</string>
+    <string name="sending">nagpapadala</string>
+    <string name="noAdditionalDetails">walang karagdagang detalye</string>
+    <string name="unspecified">hindi tinukoy</string>
+    <string name="removed">inalis</string>
+    <string name="synced">Naka-sync</string>
+    <string name="unsynced">Nagsi-sync</string>
+    <string name="connected">konektado</string>
+    <string name="connectionEstablished">nakakonekta na</string>
+    <string name="connectionClosed">sarado ang koneksyon</string>
+    <string name="connectionException">hindi makakonekta sa site</string>
+    <string name="balance">kasalukuyang balanse</string>
+    <string name="totalReceived">Kabuuang natanggap</string>
+    <string name="inProgress">ginagawa pa</string>
+    <string name="staleTransaction">Lumang transaksyon</string>
+    <string name="staleTransactionDetails">Tinanggihan ng isang full node ang transaksyong ito.  Malamang luma na ito (nagamit na ng iba), pero posible rin namang hindi ito kailanman naging wasto, o ayos lang ito at hindi tapat ang mga node na tinanong namin. Hindi papansinin ng wallet ang transaksyong ito maliban kung makumpirma ito.</string>
+    <string name="NoPermission">Walang pahintulot</string>
+    <string name="NoPermissionDetails" formatted="false">Kailangan mong i-on ang %perm permission para magamit ang feature na ito.  Magagawa mo ito sa Android Settings -> Apps -> Wally -> Permissions</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...naglo-load...</h1></center></body>]]></string>
+    <string name="loading">naglo-load</string>
+    <string name="Untitled">Walang pamagat</string>
+    <string name="nothing">wala</string>
+    <string name="breakIt">hatiin</string>
+    <string name="or">o</string>
+    <string name="onBlockchain">sa</string>
+    <string name="NotImplemented">Paparating na</string>
+    <string name="NoNodes">Walang access sa blockchain</string>
+    <string name="cancelled">kanselado</string>
+    <string name="refreshQR">Nawala ang koneksyon sa server</string>
+    <string name="pleaseWait">sandali lang</string>
+    <string name="trying">sinusubukan</string>
+    <string name="clear">i-clear</string>
+    <string name="thousand">* libo</string>
+    <string name="million">* milyon</string>
+    <string name="required">kailangan</string>
+    <string name="account">Account</string>
+    <string name="addAccountPlus">+ Bagong account</string>
+    <string name="receivingTokens">Pagtanggap ng mga token</string>
+    <string name="spendingTokens">Paggastos ng mga token</string>
+    <string name="version" formatted="false">Bersyon: %ver (%date)</string>
+    <string name="enableDeveloperView">Advanced/developer mode</string>
+    <string name="enableRecompositionCounts">Bilangin ang redraws</string>
+    <string name="enableExperimentalUx">Experimental na interface</string>
+    <string name="enableDarkMode">Dark mode</string>
+    <string name="enableSound">I-on ang tunog</string>
+    <string name="enableIdentityMenu">I-on ang identity screen</string>
+    <string name="enableTricklePayMenu">I-on ang Trickle Pay screen</string>
+    <string name="enableAssetsMenu">I-on ang assets screen</string>
+    <string name="only">lamang</string>
+    <string name="prefer">mas gusto</string>
+    <string name="rediscoverWalletTx">Muling hanapin lahat ng transaksyon</string>
+    <string name="searchWalletTx">Hanapin ang nawawalang transaksyon</string>
+    <string name="rediscoverBlockchain">Muling hanapin ang blockchain header</string>
+    <string name="logDebugData">I-log ang debug data</string>
+    <string name="clearIdentityDomains">I-clear ang identity domains</string>
+    <string name="rediscoverTooltip">Burahin ang blockchain state at hanaping muli ang lahat ng transaksyong may kinalaman sa wallet</string>
+    <string name="wordSeed">Lihim na recovery phrase ng account</string>
+    <string name="deleteWalletAccount">Burahin ang account</string>
+    <string name="more">Higit pa</string>
+    <string name="darkMode">Dark mode</string>
+    <string name="ConsolidationNeeded">I-consolidate muna ang account</string>
+    <string name="SetChangePin">Itakda o palitan ang PIN</string>
+    <string name="CurrentPin">Kasalukuyang PIN</string>
+    <string name="NewPin">Bagong PIN</string>
+    <string name="PinChanged">Napalitan ang PIN</string>
+    <string name="PinRemoved">Inalis ang PIN</string>
+    <string name="PinInvalid">Hindi wastong PIN</string>
+    <string name="PinTooShort">masyadong maikli ang bagong PIN</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Babala: hindi mo pa naisusulat ang lihim na recovery phrase ng ilang account! Para hindi mawala ang pera kung mawala o masira ang device na ito, isulat ang lihim na recovery phrase sa papel o sa ibang hindi elektronikong paraan.</string>
+    <string name="WroteRecoveryPhraseDown">Naisulat ko na</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Paalalahanan pa rin ako</string>
+    <string name="ViewRecoveryPhrase">Tingnan ang lihim na recovery phrase</string>
+    <string name="localCurrency">Lokal na currency</string>
+    <string name="assessUnconfirmed">Suriin ang hindi kumpirmadong transaksyon</string>
+    <string name="rediscoverNotice">Nagsimula na ang muling paghahanap</string>
+    <string name="searchNotice">Nagsimula na ang paghahanap sa account</string>
+    <string name="unconfAssessmentNotice">Nagsimula na ang pagsusuri sa hindi kumpirmado</string>
+    <string name="accountDeleteNotice">Nabura ang account</string>
+    <string name="rediscoverConfirmation">Kapag muling hinanap ang isang account, gagawing zero ang wallet at hahanapin sa blockchain ang mga bayad, na parang bagong gawa lang ang account.  Matagal ang prosesong ito.  Pero maaaring lumabas ang Fast forward na button na nagbibigay sa iyo ng opsyong tanungin ang isang database tungkol sa aktibidad ng wallet mo.  Kung mali ang petsa sa itaas, maghintay ng ilang segundo para ma-update ito.</string>
+    <string name="searchConfirmation">Hinahanap ng function na ito sa blockchain ang mga nawawalang bayad.  Matagal ang prosesong ito.  Pero maaaring lumabas ang Fast forward na button na nagbibigay sa iyo ng opsyong tanungin ang isang database tungkol sa aktibidad ng wallet mo.</string>
+    <string name="rediscoverBlockchainConfirmation">Kapag muling hinanap ang isang blockchain, buburahin ang lahat ng blockchain header data sa wallet na ito at ida-download itong muli mula sa mga full node.  Matagal ang prosesong ito.  Gamitin lang ito kung sigurado kang may problema sa blockchain header.</string>
+    <string name="deleteConfirmation" formatted="false">Kapag binura ang isang account, hindi na magiging available ang lahat ng balanse, identity at history maliban kung ma-recover ang account gamit ang lihim na recovery phrase!  Gawin lang ito kung SIGURADONG-SIGURADO ka!\n\nBurahin ang account na %accountName (sa %blockchain)?</string>
+    <string name="reassessConfirmation">Titingnan ng operasyong ito sa blockchain ang mga kamakailang transaksyong ipinadala mo.  Batay sa presensya o kawalan ng mga ito, kukumpirmahin o buburahin ang mga ito.  Kung mabubura ang mga transaksyon, parang mawawala ang pera.  Kailangan mong muling hanapin para mabawi ang nagastos na balanse.  Huwag gamitin kung may kakapadala ka lang na transaksyon, dahil maaaring nasa network pa ito at naghihintay ng kumpirmasyon.</string>
+    <string name="recoveryPhrase">Ang 12 salitang phrase na ito ang ginagamit para i-recover ang wallet mo.  Kung sino man ang may hawak nito ay kayang gastusin ang pera mo.  Isulat ito gamit ang bolpen sa papel (o iukit sa bakal) at itago nang ligtas!</string>
+    <string name="recoveryWarning">TIGIL!  HUWAG ITAGO NANG DIGITAL!\nHUWAG kopyahin sa clipboard, kunan ng litrato, i-photocopy, o i-screenshot.</string>
+    <string name="flickerReason">Ang pagkislap ay para sa seguridad</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">Nakopya sa clipboard.  Pero MASAMANG IDEYA ang kopyahin at i-paste ang recovery phrase na ito sa kahit anong app!  Ang email, karamihan ng app, backup services, atbp. ay hindi talaga ligtas para hawakan ang isang phrase na literal na pera.</string>
+    <string name="primaryAccountConfirmation">Ang pangunahing account mo ang ginagamit para sa iyong identity at para sa automatic na bayad.  Ito rin ang unang account na lumalabas sa iba\'t ibang bahagi ng app na ito.  Kailangan itong nasa Nexa blockchain.</string>
+    <string name="primaryAccountSuccess">Pangunahing account: %name</string>
+    <string name="AccountActions">Mga aksyon sa account</string>
+    <string name="GeneralSettings">Pangkalahatang settings</string>
+    <string name="BlockchainSettings">Mga source ng blockchain</string>
+    <string name="AccessPriceData">I-access ang price data</string>
+    <string name="oldUi">Lumang interface</string>
+    <string name="SplitBillDescription">Ikaw ang magbabayad ng bill (sa fiat), tapos babayaran ka ng mga kaibigan mo ng bahagi nila gamit ang QR code sa ibaba.  Isama ang sarili mo sa bilang ng paghahatian, maliban kung sila ang manlilibre!</string>
+    <string name="BillAmount">Halaga ng bill</string>
+    <string name="TipAmount">Halaga ng tip</string>
+    <string name="TipPercentage">Porsyento ng tip</string>
+    <string name="Total">Kabuuang halagang hahatiin</string>
+    <string name="OR">O</string>
+    <string name="QRCodeFor">QR code para sa:</string>
+    <string name="Ways">Hati:</string>
+    <string name="Tip">Tip:</string>
+    <string name="Amount">Halaga:</string>
+    <string name="AmountWithValue" formatted="false">Halaga: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Dami: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">noong %date</string>
+    <string name="fastSync">Fast sync</string>
+    <string name="refresh">I-refresh</string>
+    <string name="goodQR">Nabasa ang QR</string>
+    <string name="badQR">Hindi mabasa ang QR</string>
+    <string name="badImageQR">di mabasa ang QR sa larawan. higit pa...</string>
+    <string name="badImageQRhelp">Subukang kumuha ng litrato mula sa mas malayo kung close up ang kinuha mo sa QR code.  Bahagi ng QR code ang puting border, at maaaring lumabas ang nakakalitong moire pattern kapag malapitan mong kinunan ang isang screen.</string>
+    <string name="GoThere">Pumunta doon</string>
+    <string name="unlock">i-unlock</string>
+    <string name="share">i-share</string>
+    <string name="Send">Ipadala</string>
+    <string name="OpenSend">Ipadala</string>
+    <string name="SendCancel">Kanselahin</string>
+    <string name="ignoredInsecureRequest">Binalewala ang di-ligtas na request</string>
+    <string name="fromAccountColon">Ipadala mula sa account:</string>
+    <string name="chooseAccountError">pumili ng account</string>
+    <string name="toColon">Sa:</string>
+    <string name="To">Sa</string>
+    <string name="ByAuthor">Ni</string>
+    <string name="assetsColon">Mga asset:</string>
+    <string name="assets">Mga asset</string>
+    <string name="NoAssets">Walang asset na available sa account %act</string>
+    <string name="NoAssetsAccount">Walang asset na available sa account mo ngayon.</string>
+    <string name="fromColon">Mula:</string>
+    <string name="ReceiveIntoAccount">Tumanggap sa account</string>
+    <string name="Receive">Tumanggap</string>
+    <string name="YourAddress">Ang %blockchain address mo</string>
+    <string name="CopyAddress">Kopyahin ang address</string>
+    <string name="AccountListHeader">Mga account</string>
+    <string name="Address">Address</string>
+    <string name="clipboard">clipboard</string>
+    <string name="settings">Settings</string>
+    <string name="help">Tulong</string>
+    <string name="invalidQuantity">hindi wastong dami</string>
+    <string name="needNonexistentAuthority">kailangan ng token authority</string>
+    <string name="invalidQuantityTooManyDecimalDigits">sobrang daming decimal</string>
+    <string name="roundedUpClickSendAgain">na-round up, pindutin ulit ang Ipadala</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">pagbili</string>
+    <string name="scanPaymentQRcode">I-scan ang QR code ng payment address</string>
+    <string name="ScanQRCodeButton">Mag-scan ng QR code</string>
+    <string name="PasteDestinationAddressButton">I-paste</string>
+    <string name="NewAccountButton">Bagong account setup</string>
+    <string name="NewAccountSearchingForTransactions">...hinahanap ang unang transaksyon...</string>
+    <string name="NewAccountSearchingForAllTransactions">...hinahanap ang lahat ng transaksyon...</string>
+    <string name="NewAccountSearchFailure">nabigo ang paghahanap ng transaksyon</string>
+    <string name="receiveAddressQRCode">QR code sa pagtanggap</string>
+    <string name="paymentProposal">ayon sa natanggap na payment proposal</string>
+    <string name="pasteIsEmpty">walang na-paste</string>
+    <string name="pasteIgnored">binalewala ang paste</string>
+    <string name="pasteUnintelligible">hindi maintindihan ang paste</string>
+    <string name="chainIncompatibleWithAddress">hindi tugma ang address sa account</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Ang currency ng account ay %walletCrypto, ang address naman ay %addressCrypto.  Gamitin ang combo box para palitan ang pinagmumulang account ng isang tumutugma sa blockchain ng address.</string>
+    <string name="incoming" formatted="false">kasama ang %delta %unit na pending</string>
+    <string name="approximatelyT" formatted="false">humigit-kumulang %qty %fiat</string>
+    <string name="fastForward" formatted="false">Fast forward</string>
+    <string name="fastforwardStatus" formatted="false">pagsusuri sa fast forward: %info</string>
+    <string name="fastforwardStart" formatted="false">nagsimula</string>
+    <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat ay katumbas ng %amt %crypto)</string>
+    <string name="moreThanAvailable">(higit sa available)</string>
+    <string name="moreThanConfirmedAvailable">(higit sa kumpirmado)</string>
+    <string name="actuallySendingT" formatted="false">aktwal na ipapadala %qty %crypto</string>
+    <string name="copiedToClipboard">kinopya sa\nclipboard</string>
+    <string name="copyId">Kopyahin ang ID</string>
+    <string name="openInBrowser">Buksan sa browser</string>
+    <string name="cannotCopyToClipboard">Hindi makopya sa clipboard</string>
+    <string name="tooLargeForClipboard">Sobrang laki para sa clipboard</string>
+    <string name="scanFailed">nabigo ang scan</string>
+    <string name="scanSuccess">matagumpay ang scan</string>
+    <string name="sendSuccess">matagumpay ang padala</string>
+    <string name="sendQuantityHint">dami ng ipapadala</string>
+    <string name="sendRequestNotification">Hiniling ang padala</string>
+    <string name="sendToAddressHint">address na padadalhan</string>
+    <string name="sendAll">lahat</string>
+    <string name="editSendNoteHint">personal na note sa transfer na ito</string>
+    <string name="subSatoshiQuantities">Sobrang daming decimal -- hindi kayang hatiin nang ganoon kaliit ang currency na ito</string>
+    <string name="retrievingExchangeRate">kinukuha pa ang exchange rate</string>
+    <string name="unavailableExchangeRate">hindi available ang exchange rate</string>
+    <string name="SigningWithAccount" formatted="false">Nagsi-sign gamit ang account: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Karaniwang identity ng account: %act</string>
+    <string name="identityRequestNotification">hiniling ang identity</string>
+    <string name="IdentityDataMissing">Kulang ang info ng identity</string>
+    <string name="newDomainRequestingIdentity">Bagong serbisyong humihiling ng rehistrasyon</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Hiniling ang karagdagang impormasyon</string>
+    <string name="useUniqueIdentityToolTip">I-on para hiwalay ang identity mo dito sa ibang site.</string>
+    <string name="provideAlias">Ibigay ang username/handle/alias mo?</string>
+    <string name="provideAliasToolTip">Kapag pinili ito, ibibigay ang alias mo (ayon sa Settings, HINDI ang tunay mong pangalan) sa web site na ito kung hihilingin</string>
+    <string name="provideSocialMedia">Ibigay ang social media info mo?</string>
+    <string name="provideSocialMediaToolTip">Kapag pinili ito, ibibigay ang social media info mo (ayon sa Settings) sa web site na ito kung hihilingin</string>
+    <string name="providePostalAddress">Ibigay ang tirahan mo?</string>
+    <string name="providePostalAddressToolTip">Kapag pinili ito, ibibigay ang tirahan mo (ayon sa Settings) sa web site na ito kung hihilingin</string>
+    <string name="provideBillingAddress">Ibigay ang billing address mo?</string>
+    <string name="provideBillingAddressToolTip">Kapag pinili ito, ibibigay ang billing address mo (ayon sa Settings) sa web site na ito kung hihilingin</string>
+    <string name="provideEmail">Ibigay ang email address mo?</string>
+    <string name="provideAvatar">Ibigay ang avatar image mo?</string>
+    <string name="provideRealName">Ibigay ang tunay mong pangalan?</string>
+    <string name="provideRealNameToolTip">Kapag pinili ito, ibibigay ang tunay mong pangalan (ayon sa Settings) sa web site na ito</string>
+    <string name="provideBirthday">Ibigay ang birthday mo?</string>
+    <string name="providePhone">Ibigay ang phone number mo?</string>
+    <string name="provideAttestations">Ibigay ang mga attestation?</string>
+    <string name="provideAttestationsToolTip">Ang attestation ay mga signature ng third party na nagkukumpirma sa data na ibinibigay mo</string>
+    <string name="primaryAccountRequired" formatted="false">Kailangan ng %primCurrency account para sa feature na ito</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">May mga feature na nakatali sa partikular na cryptocurrency.  Kailangan mong gumawa o mag-unlock ng account sa cryptocurrency na iyon bago gamitin ang feature.</string>
+    <string name="UnknownDomainRegisterFirst">Hindi kilalang serbisyo, magparehistro muna</string>
+    <string name="Provider" formatted="false">Provider: %provider</string>
+    <string name="QrCode">QR code</string>
+    <string name="unknownOperation" formatted="false">hindi kilalang operation %op</string>
+    <string name="alreadyRegistered">nakarehistro na</string>
+    <string name="existingRegistration" formatted="false">Ang napiling account na \'%act\' ay NAKAREHISTRO na sa serbisyong ito.</string>
+    <string name="nonexistentRegistration" formatted="false">Ang napiling account na \'%act\' ay HINDI PA nakarehistro sa serbisyong ito.</string>
+    <string name="provideLoginQuestion">Mag-log in sa site na ito?</string>
+    <string name="provideInfoQuestion">Hinihingi ang identity info ng</string>
+    <string name="signDataQuestion">Hinihingi ang signature ng</string>
+    <string name="nothingToSign">Walang ibinigay na mensahe</string>
+    <string name="binaryToSign">I-sign ang binary data na ito?</string>
+    <string name="textToSign">I-sign ang mensaheng ito?</string>
+    <string name="sigInClipboard">Nakopya ang signature sa clipboard</string>
+    <string name="SocialMediaText">Social media</string>
+    <string name="SocialMediaSummary">Ilagay bilang listahan ng serbisyo:handle, hal. twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Username/handle/alias</string>
+    <string name="NameText">Buong pangalan</string>
+    <string name="PostalAddressText">Tirahan</string>
+    <string name="BillingAddressText">Billing address</string>
+    <string name="PostalCodeText">Zip code</string>
+    <string name="EmailText">Email address</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Nakaugnay na identity info</string>
+    <string name="ServiceAssociatedWith">Nakaugnay na ang serbisyong ito sa:</string>
+    <string name="IdentityInfoNote">Opsyonal ang paglalagay ng impormasyong ito at ibibigay lang sa mga serbisyong pipiliin mo.  Layunin nitong mapunan ang karaniwang mga field sa form sa pamamagitan lang ng pag-scan ng QR code sa mga site na may identity.</string>
+    <string name="areYouSure">Sigurado ka?</string>
+    <string name="WhenAskSure">Kumpirmahin sa itaas:</string>
+    <string name="SendConfirmSummary" formatted="false">Kumpirmahin ang padala ng %amt %currency %inFiat%assets sa address na %dest</string>
+    <string name="firstName">pangalan</string>
+    <string name="lastName">apelyido</string>
+    <string name="withholdingMandatoryInfo">kailangan ng site ang info na ayaw mong ibigay</string>
+    <string name="badLink">maling link</string>
+    <string name="BadWebLink">Hindi wastong web link</string>
+    <string name="connectionAborted">kinansela ng site ang login</string>
+    <string name="HintAdjustCostBasis">basis o cap gain</string>
+    <string name="CostBasis">cost basis</string>
+    <string name="CapitalLoss">capital loss</string>
+    <string name="CapitalGain">capital gain</string>
+    <string name="OverrideSalesPrice">ilagay ang presyo noong nabenta</string>
+    <string name="AccountHistory">Mga transaksyon</string>
+    <string name="NoAccountActivity">Walang aktibidad sa account</string>
+    <string name="AccountAddresses">Mga address</string>
+    <string name="ActiveAddresses">Aktibong address</string>
+    <string name="UsedAddresses">Nagamit na address</string>
+    <string name="UnusedAddresses">Di pa nagagamit na address</string>
+    <string name="txHistoryButton">Tingnan o i-export ang aktibidad</string>
+    <string name="setAsPrimaryAccountButton">Gawing pangunahing account ito</string>
+    <string name="AccountStatistics">Istatistika ng account</string>
+    <string name="AccountBlockchainSync" formatted="false">Kasalukuyang %sync sa blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">Noong %actBlockDate, block %actBlock ng %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Unang gamit: block %actPrehistoryBlock noong %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Konektado sa %num node: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num address</string>
+    <string name="CurrentAddress" formatted="false">Sa address %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Unang deposito sa block %first, pinakahuli sa block %last.</string>
+    <string name="FirstLastSend" formatted="false">Unang withdraw sa block %first, pinakahuli sa block %last.</string>
+    <string name="FirstWithdraw">Unang withdraw</string>
+    <string name="FirstDeposit">Unang deposito</string>
+    <string name="never">wala pa</string>
+    <string name="FirstUse" formatted="false">Unang gamit: %date</string>
+    <string name="LastUse" formatted="false">Huling gamit: %date</string>
+    <string name="Block" formatted="false">Block: %block</string>
+    <string name="AccountNumTx" formatted="false">%num transaksyon</string>
+    <string name="AccountNumUtxos" formatted="false">%num entry sa ledger</string>
+    <string name="title_activity_assets">Mga asset</string>
+    <string name="title_activity_scan">I-scan</string>
+    <string name="title_activity_new_account">Bagong account</string>
+    <string name="AccountName">Pangalan ng account</string>
+    <string name="AccountNameHint">1-8 letra</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Recovery phrase</string>
+    <string name="LeaveEmptyNewWallet">Iwanang blangko para gumawa ng bagong account</string>
+    <string name="PinSuggestions"><font size="15">Kailangan ang lihim na numerong ito para ma-access ang account</font></string>
+    <string name="createNewAccount">Gumawa ng bagong account</string>
+    <string name="createSyncAccount">I-recover ang account gamit ang maingat (at matagal) na sync</string>
+    <string name="createDiscoveredAccount">I-recover agad ang account</string>
+    <string name="invalidRecoveryPhrase">maling recovery phrase</string>
+    <string name="invalidAccountName">hindi wastong pangalan</string>
+    <string name="PassPhrase">Passphrase (opsyonal)</string>
+    <string name="Bip44ActivityNotice">May nakitang aktibidad sa account</string>
+    <string name="NoBip44ActivityNotice">Babala, walang nakitang transaksyon!</string>
+    <string name="Bip44BtcActivityNotice">May nakitang nonstandard o pre-fork na aktibidad sa wallet</string>
+    <string name="NoBip44BtcActivityNotice">Walang nakitang pre-fork na transaksyon</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">nagsisimula sa %date (block %height)</string>
+    <string name="NotEnoughRecoveryWords">Kulang ang recovery words</string>
+    <string name="TooManyRecoveryWords">Sobra ang recovery words</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Hindi wastong salita: %words</string>
+    <string name="ElectrumNetworkUnavailable">Hindi available ang Electrum network. Magiging mabagal ang recovery ng wallet, at hindi nito makikita ang mga transaksyon bago ang Ene 1, 2020</string>
+    <string name="PinHidesAccount">Itago ang account hanggang mailagay ang PIN?</string>
+    <string name="HiddenAccountExplainer">Itago ang account hanggang mailagay ang PIN</string>
+    <string name="HiddenAccount">Nakatagong account</string>
+    <string name="AutomaticNewAddress">Privacy ng address</string>
+    <string name="AutomaticNewAddressToolTip">Automatic na nagpapakita ng bagong address tuwing nagamit na ang kasalukuyan.</string>
+    <string name="CreatePIN">PIN (opsyonal)</string>
+    <string name="PinSpendingUnprotected">Pinapayagan ang paggastos nang walang PIN (walang inilagay na PIN)</string>
+    <string name="PinSpendingProtected">Kailangan ng PIN para gumastos</string>
+    <string name="InvalidPIN">Hindi wastong PIN</string>
+    <string name="creatingNoHistoryAccountWarning">Gumagawa ka ng account gamit ang isang partikular na recovery phrase, pero walang nakitang aktibidad sa blockchain.\nTama ba ito?\nKung tama, i-click ulit ang create button at gagawa ng walang lamang account. Pero kung dapat may aktibidad ang account na ito, i-double check ang napili mong blockchain at recovery phrase. Kung hindi iyon ang problema, maaaring hindi ma-access ngayon ang blockchain network (subukan ulit mamaya), o ginawa ito gamit ang nonstandard na wallet app. Huwag munang gawin ang account na ito.</string>
+    <string name="accountLocked">naka-lock ang account</string>
+    <string name="unknownError">error</string>
+    <string name="insufficentBalance">kulang ang balanse</string>
+    <string name="insufficentTokenBalance">kulang ang balanse ng token</string>
+    <string name="excessiveFee">sobrang laki ng fee</string>
+    <string name="sendDustError">kulang sa minimum ang halaga</string>
+    <string name="sendingDustWarning">mas mababa ang halaga sa minimum ng network</string>
+    <string name="feeExceedsFlatMax">lumagpas ang fee sa itinakdang maximum na flat fee</string>
+    <string name="notSupported">hindi suportado</string>
+    <string name="expired">expired na ang bayad</string>
+    <string name="PaymentDataMissing">kulang ang data ng bayad</string>
+    <string name="headersNotForthcoming">walang ibinibigay na headers</string>
+    <string name="cantConvert">pansamantalang hindi available ang conversion</string>
+    <string name="walletDisconnectedFromBlockchain">hindi konektado ang wallet</string>
+    <string name="badTransaction">maling transaksyon</string>
+    <string name="badAddress">hindi wastong address</string>
+    <string name="unknownAddress">hindi kilalang address</string>
+    <string name="badAmount">hindi wastong halaga</string>
+    <string name="NoAccounts">Walang ma-access na account</string>
+    <string name="badCryptoCode">walang naka-unlock na account para sa currency o blockchain na ito</string>
+    <string name="badCryptoCodeDetails" formatted="false">Hindi kilala o hindi available na currency: %currency</string>
+    <string name="badCurrencyUnit">hindi currency</string>
+    <string name="incompatibleAccount">maling currency</string>
+    <string name="incompatibleAccountDetails" formatted="false">Pinili mong magbayad mula sa account na may %cryptoAct pero %cryptoPay ang kailangan</string>
+    <string name="detailsOfBadAmountFromIntent">Maling format ng numero ang ibinigay ng tumatawag na program para sa
+        dami na ipapadala. Kailangan mong ilagay mismo ang dami
+    </string>
+    <string name="blankAddress">blangkong address</string>
+    <string name="unavailable">hindi available</string>
+    <string name="blockNotForthcoming">hindi available ang block</string>
+    <string name="receiveAddressUnavailable">Kinakalkula pa ang bagong receive address. Sandali lang...
+    </string>
+    <string name="accountLimitReached">max na account</string>
+    <string name="accountUnavailableDetails">Walang account na tugma sa blockchain na ito, o hindi pa naka-unlock ang account.</string>
+    <string name="accountUnavailable">Walang naka-unlock na tugmang account</string>
+    <string name="sendMoreThanBalance">Sinusubukan mong magpadala ng mas maraming coin kaysa sa available mo ngayon.\n\nKung sa tingin mo ay hindi ka naman lumalampas sa balanse mo, baka nakalimutan mong may maliit na dagdag na fee ang bawat transaksyon, o kung hindi kumpirmado ang lahat ng balanse mo, baka masyadong maraming transaksyon ang ginawa mo nang sunod-sunod.\n\nMay limitasyon kung gaano ka kalayo makakauna sa blockchain. Hintayin munang makumpirma ang balanse mo at subukan ulit.</string>
+    <string name="sendMoreTokensThanBalance">Sinusubukan mong magpadala ng mas maraming token kaysa sa available mo ngayon.</string>
+    <string name="deductedFeeLargerThanSendAmount">Mas malaki ang ibinawas na fee kaysa sa halagang ipapadala</string>
+    <string name="badWalletImplementation">Maling implementasyon ng wallet. I-report ang bug na ito!</string>
+    <string name="CannotCompleteTransaction">Error: Hindi matapos</string>
+    <string name="title_split_bill">Maghatian sa bill</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_exchange">Exchange</string>
+    <string name="title_activity_shopping">Mga link</string>
+    <string name="ecosystem">Ecosystem</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Test</string>
+    <string name="title_notifications">Mga notification</string>
+    <string name="title_activity_invoices">Mga invoice</string>
+    <string name="title_activity_identity">Identity</string>
+    <string name="title_activity_identity_op">Identity</string>
+    <string name="title_activity_domain_identity_settings">Settings ng domain identity</string>
+    <string name="title_activity_tx_history" formatted="false">Tx history: %account</string>
+    <string name="title_activity_address_history" formatted="false">Address history: %account</string>
+    <string name="title_activity_account_details" formatted="false">Account: %account</string>
+    <string name="title_test">Test</string>
+    <string name="useUniqueIdentity">Gumamit ng natatanging cryptographic identity</string>
+    <string name="title_activity_identity_settings">Settings ng identity</string>
+    <string name="IdentityRegistrations">Mga nakarehistrong serbisyo</string>
+    <string name="NoIdentitiesRegistered">Walang nakarehistrong identity</string>
+    <string name="title_activity_welcome">Maligayang pagdating</string>
+    <string name="next">Susunod</string>
+    <string name="previous">Nakaraan</string>
+    <string name="EnterPIN">Ilagay ang PIN</string>
+    <string name="EnterPINorBlankToRemove">Bagong PIN (blangko para alisin)</string>
+    <string name="ButtonTextHere">Itakda ang text ng button</string>
+    <string name="ButtonLinkHere">Ilagay ang web link</string>
+    <string name="ShoppingWarning">BABALA: Ang mga nasa page na ito ay mga link sa 3rd party na serbisyo at site, inilagay dito para sa kaginhawahan mo. Hindi sinuri ng Wally Wallet ang mga site/serbisyong ito.\n\nIkaw ang may pananagutan sa paggamit nito!</string>
+    <string name="NFTs">Nonfungible Tokens (NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Gumawa at mag-trade ng natatanging larawan at digital na representasyon ng natatanging bagay</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Babala: Peke o hindi maayos ang pagkakagawa!</string>
+    <string name="TokenSourceWebsite">Pinagmulan ng token:</string>
+    <string name="TokenBadSig">Hindi maayos na na-sign ang impormasyon ng token na ito. Maaaring peke o spoof ang token na ito. Maaari rin namang hindi lang maayos na na-sign ng gumawa ang token.</string>
+    <string name="OpenWebsite" formatted="false">I-access ang %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Hindi available ang website</string>
+    <string name="ExplainBitmart">bitmart.com: I-trade ang NEXA sa ibang cryptocurrency</string>
+    <string name="ExplainMexc">mexc.com: I-trade ang NEXA sa ibang cryptocurrency</string>
+    <string name="ExplainBiconomy">biconomy.com: I-trade ang NEXA sa ibang cryptocurrency</string>
+    <string name="CexButton">exchange</string>
+    <string name="SharedNotification" formatted="false">ni-share ang %what</string>
+    <string name="AuthAutopayTitle">Pinahintulutang bayad</string>
+    <string name="AuthAutopayDeniedTitle">Tinanggihang pinahintulutang bayad</string>
+    <string name="AuthAutopay" formatted="false">%amt sa %domain</string>
+    <string name="TpToBeDone">Dito lalabas ang iyong mga Trickle Pay connection</string>
+    <string name="TpHistoryTbd">Dito lalabas ang iyong Trickle Pay history</string>
+    <string name="AcceptTpRegistration">Tanggapin ang rehistrasyon mula sa:</string>
+    <string name="EditTpRegistration">Settings para sa entity:</string>
+    <string name="AcceptTpRegistrationTopic">Layunin:</string>
+    <string name="TpMaxSpendHint">ilagay ang max auto-spend</string>
+    <string name="TpAssetInfoRequest">Mga request ng asset info</string>
+    <string name="TpAssociatedAccount" formatted="false">Nakaugnay sa: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Request ng pahintulot sa transaksyon</string>
+    <string name="AssetNotif">Request ng asset info</string>
+    <string name="PaymentRequest">Request ng bayad</string>
+    <string name="IdentityNotif">Request ng identity/login</string>
+    <string name="TpMaxHeading">Mga limit ng autopay</string>
+    <string name="TpMaxPer">Max kada request</string>
+    <string name="TpMaxPerDay">Max kada araw</string>
+    <string name="TpMaxPerWeek">Max kada linggo</string>
+    <string name="TpMaxPerMonth">Max kada buwan</string>
+    <string name="TpEnableAutopay">I-on ang autopay (kung naka-uncheck, hihingi ng pahintulot ang lahat ng bayad at hindi papansinin ang mga limit sa ibaba)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Walang rehistrasyon sa Trickle Pay</string>
+    <string name="TpNoSession">Walang Trickle Pay request</string>
+    <string name="TpRegistrations">Mga rehistrasyon</string>
+    <string name="TpRegDenied">Tinanggihang rehistrasyon</string>
+    <string name="TpRegAccepted">Tinanggap na rehistrasyon</string>
+    <string name="TpRegUnchanged">Walang pagbabago sa rehistrasyon</string>
+    <string name="TpRequestAutoDeny">Tinanggihang request (automatic)</string>
+    <string name="TpRequestAutoAccept">Tinanggap na request (automatic)</string>
+    <string name="TpTxDenied">Tinanggihang transaksyon</string>
+    <string name="TpTxAccepted">Tinanggap na transaksyon</string>
+    <string name="TpNetworkTimeout">Timeout ang transaksyon</string>
+    <string name="TpPartialSubmitted">Naisumite ang offer</string>
+    <string name="TpAssetRequestDenied">Hindi ibinigay ang asset info</string>
+    <string name="TpAssetRequestAccepted">Ipinapadala ang asset info</string>
+    <string name="Actions">Mga aksyon</string>
+    <string name="SpecialTpTransactionFrom">Espesyal na transaksyon mula sa</string>
+    <string name="IncompleteTpTransactionFrom">Panukalang firm offer mula sa</string>
+    <string name="TpEntails">Kasama rito</string>
+    <string name="TpInAccount">Gamit ang account</string>
+    <string name="TpAssetRequestFrom">Request ng asset info mula sa</string>
+    <string name="TpHandledByAccount">kayang gawin ng account mo</string>
+    <string name="TpAssetMatches" formatted="false">Ibibigay sa serbisyong ito ang impormasyon tungkol sa %num asset na pag-aari mo.</string>
+    <string name="TpAssetInfoNotXfer">Ang pagtanggap sa request na ito ay nagbibigay lang sa serbisyo ng impormasyon tungkol sa pagmamay-ari mo. Hindi nito pinapahintulutan ang anumang transfer.</string>
+    <string name="ForAFeeOf" formatted="false">kasama ang fee na %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">at nagpapalitan ng token (nagpapadala ng %tokSnd, tumatanggap ng %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal uri ng token ang ipapakita (ipinadala sa sarili mo, patunay na pag-aari mo).</string>
+    <string name="TpSendingTokens" formatted="false">at nagpapadala ng %tokSnd uri ng token.</string>
+    <string name="TpReceivingTokens" formatted="false">at tumatanggap ng %tokRcv uri ng token.</string>
+    <string name="TpHasNoPurpose">Walang epekto sa account na ito ang request na ito.</string>
+    <string name="TpSendToTitle">Bayad na hiniling ng</string>
+    <string name="TpSpends">Gastos</string>
+    <string name="TpSendRequestDenied">Tinanggihan ang bayad</string>
+    <string name="TpSendAutoReject">Automatic na tinanggihan ang bayad</string>
+    <string name="TpSendRequestAccepted">Tinanggap ang bayad</string>
+    <string name="TpWhyNotAuto">Hindi automatic ang pag-sign dahil</string>
+    <string name="TpAutomaticDisabled">Naka-off ang automatic na bayad</string>
+    <string name="TpExceededMaxPer">Lampas sa maximum kada request</string>
+    <string name="TpExceededMaxDaily">Lampas sa maximum kada araw</string>
+    <string name="TpExceededMaxWeekly">Lampas sa maximum kada linggo</string>
+    <string name="TpExceededMaxMonthly">Lampas sa maximum kada buwan</string>
+    <string name="title_activity_alert_history">Mga kamakailang mensahe</string>
+    <string name="IssueReportInstructions">Ibigay ang impormasyong ito sa mga developer:</string>
+    <string name="AssetApplication">Buksan</string>
+    <string name="AssetMarketplace">I-trade</string>
+    <string name="AssetAddedToTransferList">Idinagdag sa Ipadala sa main tab</string>
+    <string name="NftCardFront">Harap</string>
+    <string name="NftCardBack">Likod</string>
+    <string name="NftPublicMedia">Nilalaman</string>
+    <string name="NftOwnerMedia">Nilalaman ng may-ari</string>
+    <string name="Content">Nilalaman</string>
+    <string name="Private">Pribado</string>
+    <string name="NftPrivateDescription">Pag-aari ng may-ari ng asset ang nilalamang ito</string>
+    <string name="NftInfo">Info</string>
+    <string name="NftLegal">Lisensya</string>
+    <string name="NftSeries" formatted="false">Serye: %series</string>
+    <string name="NftAuthor" formatted="false">May-akda: %author</string>
+    <string name="NftNoInfoProvided">...Walang ibinigay na impormasyon...</string>
+    <string name="IssuedToConnection">Binuksan sa konektadong site</string>
+    <string name ="demonstratingOwnership">Pinapatunayan ang pagmamay-ari</string>
+    <string name="AndSomeAssets"> at ilang asset</string>
+    <string name="AssetTypes" formatted="false">%assetTypes uri ng asset</string>
+    <string name="ExplainRestaurant">Maaaring tumanggap ng cryptocurrency ang mga online na restaurant ordering service (para sa delivery o pickup) kahit hindi tumatanggap ang mismong tindahan.</string>
+    <string name="RestaurantButton">Pag-order sa Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Maghanap ng mga lugar malapit sa iyo na tumatanggap ng cryptocurrency.</string>
+    <string name="StoreMapButton">mapa ng tindahan</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Ipagpalit ang NEXA sa ibang cryptocurrency</string>
+    <string name="welcome1Label">Maligayang pagdating</string>
+    <string name="welcome1">Maligayang pagdating sa Wally, isang cryptocurrency wallet!\n\nSa mga susunod na screen, ise-set up mo ang iyong unang Nexa blockchain account (NEX) at i-configure ang ibang serbisyo tulad ng password management.\n\nO puwede mong pindutin ang back arrow para laktawan ang gabay na setup na ito.</string>
+    <string name="welcome2_title">Settings ng NEXA account</string>
+    <string name="welcome2">Sa susunod na pahina, ise-set up mo ang iyong unang Nexa account.\n\nNasa account na ito ang pera mo sa Nexa at ang mga identity mo. Bagong feature ng Wally Wallet ang identity, na nagbibigay-daan sa iyong automatic na mag-log in sa mga suportadong website.\n\nPuwede mong protektahan ang mga account mo gamit ang Personal Identification Number (PIN), pero para sa mga bagong user, mas mabuting huwag munang gumamit ng PIN (at panatilihing mababa ang balanse) sa unang account. Para sa proteksyon ng user, hindi nakikita ang mga account na may PIN hangga\'t hindi nailalagay ang tamang PIN (walang ipinapakita kapag mali ang PIN na inilagay).\n\nKung gusto mong i-recover ang isang umiiral nang NEXA account, ilagay ang recovery phrase. Kung mananatiling walang laman ang linyang ito, gagawa ng bagong account.</string>
+    <string name="welcome3_title" formatted="false">Recovery phrase ng Nexa account</string>
+    <string name="welcome3">Welcome 3 ! (Puwede pang pagandahin ang welcome text na ito)</string>
+    <string name="welcome4_title">Identity</string>
+    <string name="welcome4">Susunod, dadalhin ka sa screen ng impormasyon ng identity. Ginagamit ang impormasyong ito kapag ginagamit mo ang Wally bilang identity at login manager (para automatic na mag-log in sa iba\'t ibang website o magbigay ng impormasyon kapag bumibili). Napakahigpit ng Wally pagdating sa privacy!
+Hindi ibabahagi ang impormasyong ito sa kahit anong website nang walang malinaw na pahintulot mo, at WALANG impormasyon mula sa wallet na ito ang ipinapadala sa mga gumawa ng app. Puwede mo ring iwanang blangko ang lahat ng field.
+Kapag tapos ka na, pindutin ang back arrow (kaliwa sa itaas).</string>
+    <string name="welcomeComplete">Tapos na ang setup. Kung may hindi mo natapos sa mga hakbang dito, makukuha mo pa rin ang lahat ng field sa loob mismo ng app.
+Salamat at mag-enjoy sa bago mong wallet!</string>
+    <string name="ExplainGiftCards">Sa pagbili ng gift card, mabubuksan sa iyo ang daan-daang tindahan na hindi direktang tumatanggap ng cryptocurrency.</string>
+    <string name="GiftCardButton">eGifter gift card</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">Kailangan ang lihim na numerong ito para ma-access ang account</font>
+</string>
+    <string name="sync_title">I-sync ang email sa regular na interval</string>
+    <string name="attachment_title">I-download ang mga papasok na attachment</string>
+    <string name="attachment_summary_on">Automatic na i-download ang mga email attachment</string>
+    <string name="attachment_summary_off">I-download lang ang attachment kapag hiniling</string>
+    <string name="signature_title">Ang signature mo</string>
+    <string name="reply_title">Default na aksyon kapag sumasagot</string>
+    <string name="discoveredAccountDetails" formatted="false">May natuklasang balanse na %bal %units\nsa %addr address at %tx transaksyon</string>
+    <string name="discoveredWarning">Kung tama ito, puwede mo nang gawin agad ang account na ito</string>
+    <string name="backgroundSync">Background sync</string>
+    <string name="scanQr">I-scan ang QR</string>
+    <string name="imageQr">QR sa larawan</string>
+    <string name="paste">I-paste</string>
+    <string name="recentTransactions">Mga kamakailang transaksyon</string>
+    <string name="sendingFrom">Padala mula sa</string>
+    <string name="enterAddress">Ilagay ang address...</string>
+    <string name="noteOptional">Note (opsyonal)</string>
+    <string name="clearNote">I-clear ang note</string>
+    <string name="clearAddress">I-clear ang address</string>
+    <string name="clearAmount">I-clear ang halaga</string>
+    <string name="available">Available</string>
+    <string name="amountPlain">Halaga</string>
+    <string name="enterNEXAmount">Ilagay ang halaga ng NEX...</string>
+    <string name="note">Note</string>
+    <string name="confirmSend">Kumpirmahin ang padala</string>
+    <string name="syncing">Nagsi-sync...</string>
+    <string name="enterAmount" formatted="false">Ilagay ang halaga ng %assetName</string>
+    <string name="fee">Fee</string>
+    <string name="connectionWarning">Babala: Walang available na koneksyon sa blockchain/network. Kung magpapadala ka ngayon, hindi agad makikita ng tatanggap ang transfer na ito. Ipapadala ito kapag bumalik na ang koneksyon.</string>
+    <string name="NetworkUnstable">Hindi matatag ang network</string>
+    <string name="TokenMissing">Wala sa chain ang token </string>
+    <string name="Sell">Ibenta</string>
+    <string name="CreateAnOffer">Gumawa ng offer</string>
+    <string name="Price">Presyo</string>
+    <string name="NexaPrice">Ilagay ang presyo sa Nexa</string>
+    <string name="AssetAmountName" formatted="false">Mayroon kang %amount %assetName</string>
+    <string name="scanToBuyOne">I-scan para bilhin ang %name</string>
+    <string name="scanToBuySeveral">I-scan para bilhin ang %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">Para sa %amount NEXA</string>
+    <string name="purchaseComplete">Tapos na ang pagbili</string>
+    <string name="setTheNexaPrice">Itakda ang presyo sa Nexa</string>
+    <string name="setTheAssetAmount">Itakda ang halaga ng asset</string>
+    <string name="publishOnline">I-publish ang offer online</string>
+    <string name="offerCreated">Nagawa ang offer!</string>
+    <string name="ConfigureService">I-configure ang serbisyo</string>
+    <string name="AcceptOrRejectService">Tanggapin o tanggihan ang serbisyo</string>
+    <string name="Domain">Domain</string>
+    <string name="Services">Mga serbisyo</string>
+    <string name="Purpose">Layunin</string>
+    <string name="AutoPay">Automatic na bayad</string>
+    <string name="AutoPayInstructions">Kung naka-off ang checkbox sa ibaba, lahat ng request ng bayad mula sa serbisyong ito ay hihingi ng pahintulot sa iyo at hindi papansinin ang mga limit sa ibaba.</string>
+    <string name="LimitedAutoApproval">Payagan ang limitadong pag-apruba</string>
+    <string name="AutoPayMaxPerRequest">Maximum kada request</string>
+    <string name="AutoPayMaxPerDay">Maximum kada araw</string>
+    <string name="AutoPayMaxPerWeek">Maximum kada linggo</string>
+    <string name="AutoPayMaxPerMonth">Maximum kada buwan</string>
+    <string name="EnableServices">I-on ang services screen</string>
+    <string name="NoServicesRegistered">Walang nakarehistrong serbisyo.</string>
+    <string name="Start">Simulan</string>
+    <string name="Meditation">Meditasyon</string>
+    <string name="Meditate">Meditate</string>
+    <string name="Sound">Tunog</string>
+    <string name="OneMinuteIntervalSound">Tunog kada 1 minuto</string>
+    <string name="MeditationVersion">Bersyon: 1.0.3 (build 156)</string>
+    <string name="Meditating">Nagmi-meditate...</string>
+    <string name="MediationComplete">Tapos na ang meditasyon!</string>
+    <string name="Okay">Okay</string>
+    <string name="Minutes">Minuto</string>
+    <string name="Camouflage">Camouflage</string>
+    <string name="CamouflageAsMeditationTimer">Itago ang app bilang meditation timer.</string>
+    <string name="CamouflageDescriptionAndroid">Kapag na-enable ang camouflage, magsasara ang app at itatago ito bilang app na tinatawag na Meditate. Para i-disable ang Meditate camouflage, buksan ang app menu at i-click ang version number nang limang beses.</string>
+    <string name="CamouflageDescriptionOther">Para i-disable ang Meditate camouflage, buksan ang app menu at i-click ang version number nang limang beses.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Itago bilang Meditate app</string>
+</resources>

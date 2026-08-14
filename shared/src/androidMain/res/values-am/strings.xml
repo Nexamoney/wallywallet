@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">አዎ</string>
+    <string name="no">አይ</string>
+    <string name="at">በ</string>
+    <string name="of">ከ</string>
+    <string name="choose">ይምረጡ</string>
+    <string name="accept">ያጽድቁ</string>
+    <string name="reject">ውድቅ ያድርጉ</string>
+    <string name="remove">ያስወግዱ</string>
+    <string name="confirm">ያረጋግጡ</string>
+    <string name="cancel">ይቅር</string>
+    <string name="Back">ይመለሱ</string>
+    <string name="removeAll">ሁሉንም ያስወግዱ</string>
+    <string name="done">ተከናውኗል</string>
+    <string name="dismiss">ይዝጉ</string>
+    <string name="deny">መከልከል</string>
+    <string name="ask">መጠየቅ</string>
+    <string name="badSignature">የተሳሳተ ፊርማ</string>
+    <string name="unknownCurrency">ያልታወቀ ገንዘብ</string>
+    <string name="unknownCryptoCurrency">ያልታወቀ ክሪፕቶ ገንዘብ ወይም ብሎክቼይን</string>
+    <string name="Processing">በሂደት ላይ...</string>
+    <string name="receiving">በመቀበል ላይ</string>
+    <string name="sending">በመላክ ላይ</string>
+    <string name="noAdditionalDetails">ተጨማሪ ዝርዝር የለም</string>
+    <string name="unspecified">ያልተገለጸ</string>
+    <string name="removed">ተወግዷል</string>
+    <string name="synced">ተመሳስሏል</string>
+    <string name="unsynced">በማመሳሰል ላይ</string>
+    <string name="connected">ተገናኝቷል</string>
+    <string name="connectionEstablished">ግንኙነት ተፈጥሯል</string>
+    <string name="connectionClosed">ግንኙነት ተዘግቷል</string>
+    <string name="connectionException">ወደ ድረ-ገጹ መገናኘት አልተቻለም</string>
+    <string name="balance">አሁን ያለ ቀሪ ሂሳብ</string>
+    <string name="totalReceived">ጠቅላላ የተቀበሉት</string>
+    <string name="inProgress">በሂደት ላይ</string>
+    <string name="staleTransaction">ያረጀ ግብይት</string>
+    <string name="staleTransactionDetails">ይህ ግብይት በሙሉ ኖድ ውድቅ ተደርጓል። ምናልባት ያረጀ ሊሆን ይችላል (ገንዘቡ ቀድሞ በሌላ ሰው ወጪ ተደርጎ ይሆናል)፤ ሆኖም ግብይቱ ከመጀመሪያውም ልክ ያልነበረ ሊሆን ይችላል፣ ወይም ችግር የሌለበት ሆኖ የጠየቅናቸው ኖዶች ታማኝ ላይሆኑ ይችላሉ። ግብይቱ እስካልተረጋገጠ ድረስ ዋሌቱ ችላ ይለዋል።</string>
+    <string name="NoPermission">ፈቃድ የለም</string>
+    <string name="NoPermissionDetails" formatted="false">ይህን ባህሪ ለመጠቀም የ%perm ፈቃድን ማንቃት አለብዎት። ይህን በAndroid ቅንብሮች -> መተግበሪያዎች -> Wally -> ፈቃዶች ውስጥ ማድረግ ይችላሉ።</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...በመጫን ላይ...</h1></center></body>]]></string>
+    <string name="loading">በመጫን ላይ</string>
+    <string name="Untitled">ርዕስ የለሽ</string>
+    <string name="nothing">ምንም</string>
+    <string name="breakIt">መስበር</string>
+    <string name="or">ወይም</string>
+    <string name="onBlockchain">በ</string>
+    <string name="NotImplemented">በቅርቡ ይመጣል</string>
+    <string name="NoNodes">የብሎክቼይን ግንኙነት የለም</string>
+    <string name="cancelled">ተሰርዟል</string>
+    <string name="refreshQR">የአገልጋይ ግንኙነት ተቋርጧል</string>
+    <string name="pleaseWait">እባክዎ ይጠብቁ</string>
+    <string name="trying">በመሞከር ላይ</string>
+    <string name="clear">ማጽዳት</string>
+    <string name="thousand">* ሺህ</string>
+    <string name="million">* ሚሊዮን</string>
+    <string name="required">ያስፈልጋል</string>
+    <string name="account">ሂሳብ</string>
+    <string name="addAccountPlus">+ ሂሳብ ያክሉ</string>
+    <string name="receivingTokens">ቶከኖችን መቀበል</string>
+    <string name="spendingTokens">ቶከኖችን ወጪ ማድረግ</string>
+    <string name="version" formatted="false">ስሪት: %ver (%date)</string>
+    <string name="enableDeveloperView">የላቀ/የገንቢ ሁነታ</string>
+    <string name="enableRecompositionCounts">የማያ ገጽ ድጋሚ ስዕል ቆጠራ</string>
+    <string name="enableExperimentalUx">የሙከራ በይነገጽ</string>
+    <string name="enableDarkMode">ጨለማ ሁነታ</string>
+    <string name="enableSound">ድምጽን ማንቃት</string>
+    <string name="enableIdentityMenu">የማንነት ገጽን ማንቃት</string>
+    <string name="enableTricklePayMenu">የTrickle Pay ገጽን ማንቃት</string>
+    <string name="enableAssetsMenu">የንብረቶች ገጽን ማንቃት</string>
+    <string name="only">ብቻ</string>
+    <string name="prefer">ተመራጭ</string>
+    <string name="rediscoverWalletTx">ሁሉንም ግብይቶች እንደገና ማግኘት</string>
+    <string name="searchWalletTx">የጎደሉ ግብይቶችን መፈለግ</string>
+    <string name="rediscoverBlockchain">የብሎክቼይን ራስጌዎችን እንደገና ማግኘት</string>
+    <string name="logDebugData">የማረሚያ መረጃ መመዝገብ</string>
+    <string name="clearIdentityDomains">የማንነት ዶሜይኖችን ማጽዳት</string>
+    <string name="rediscoverTooltip">የብሎክቼይን ሁኔታን ሰርዞ ከዋሌቱ ጋር የተያያዙ ሁሉንም ግብይቶች እንደገና መፈለግ</string>
+    <string name="wordSeed">የሂሳብ ማስመለሻ ሚስጥራዊ ቃላት</string>
+    <string name="deleteWalletAccount">ሂሳብ መሰረዝ</string>
+    <string name="more">ተጨማሪ</string>
+    <string name="darkMode">ጨለማ ሁነታ</string>
+    <string name="ConsolidationNeeded">መጀመሪያ ሂሳቡን ያዋህዱ</string>
+    <string name="SetChangePin">የመክፈቻ ፒን ማዘጋጀት ወይም መቀየር</string>
+    <string name="CurrentPin">አሁን ያለ ፒን</string>
+    <string name="NewPin">አዲስ ፒን</string>
+    <string name="PinChanged">ፒን ተቀይሯል</string>
+    <string name="PinRemoved">ፒን ተወግዷል</string>
+    <string name="PinInvalid">ልክ ያልሆነ ፒን</string>
+    <string name="PinTooShort">አዲሱ ፒን በጣም አጭር ነው</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">ማስጠንቀቂያ: ለአንዳንድ ሂሳቦች ሚስጥራዊ የማስመለሻ ቃላትን አልጻፉም! ይህ መሳሪያ ቢጠፋ ወይም ቢበላሽ ገንዘብዎ እንዳይጠፋ፣ ሚስጥራዊ የማስመለሻ ቃላትን በወረቀት ላይ ወይም ኤሌክትሮኒክ ባልሆነ ሌላ መንገድ ይጻፉ።</string>
+    <string name="WroteRecoveryPhraseDown">ጽፌዋለሁ</string>
+    <string name="RecoveryPhraseKeepRemindingMe">ማስታወስዎን ይቀጥሉ</string>
+    <string name="ViewRecoveryPhrase">የሂሳብ ማስመለሻ ሚስጥራዊ ቃላትን ማየት</string>
+    <string name="localCurrency">የአገር ውስጥ ገንዘብ</string>
+    <string name="assessUnconfirmed">ያልተረጋገጡ ግብይቶችን መገምገም</string>
+    <string name="rediscoverNotice">የሂሳብ እንደገና ማግኘት ተጀምሯል</string>
+    <string name="searchNotice">የሂሳብ ፍለጋ ተጀምሯል</string>
+    <string name="unconfAssessmentNotice">ያልተረጋገጡ ግብይቶች ግምገማ ተጀምሯል</string>
+    <string name="accountDeleteNotice">ሂሳቡ ተሰርዟል</string>
+    <string name="rediscoverConfirmation">ሂሳብን እንደገና ማግኘት ዋሌቱን ባዶ አድርጎ፣ ሂሳቡ አዲስ እንደተፈጠረ ሆኖ ብሎክቼይኑን ለክፍያዎች ይፈልጋል። ይህ ሂደት ረጅም ጊዜ ሊወስድ ይችላል። ሆኖም የዋሌትዎን እንቅስቃሴ ከመረጃ ቋት እንዲጠይቁ የሚያስችል «ፈጣን ዝላይ» የሚል አዝራር ሊታይ ይችላል። ከላይ ያለው ቀን ትክክል ካልሆነ፣ እስኪታደስ ድረስ ጥቂት ሰከንዶች ይጠብቁ።</string>
+    <string name="searchConfirmation">ይህ ተግባር የጎደሉ ክፍያዎችን በብሎክቼይኑ ላይ ይፈልጋል። ይህ ሂደት ረጅም ጊዜ ሊወስድ ይችላል። ሆኖም የዋሌትዎን እንቅስቃሴ ከመረጃ ቋት እንዲጠይቁ የሚያስችል «ፈጣን ዝላይ» የሚል አዝራር ሊታይ ይችላል።</string>
+    <string name="rediscoverBlockchainConfirmation">ብሎክቼይንን እንደገና ማግኘት ሁሉንም የብሎክቼይን ራስጌ መረጃ ከዚህ ዋሌት ሰርዞ ከሙሉ ኖዶች እንደገና ያወርዳል። ይህ ሂደት ረጅም ጊዜ ሊወስድ ይችላል። የብሎክቼይን ራስጌ ችግር መኖሩን እርግጠኛ ከሆኑ ብቻ ይጠቀሙበት።</string>
+    <string name="deleteConfirmation" formatted="false">ሂሳብን መሰረዝ ሁሉንም ቀሪ ሂሳቦች፣ ማንነቶች እና ታሪክ ተደራሽ እንዳይሆኑ ያደርጋል፤ የሚመለሱትም በሂሳቡ ማስመለሻ ሚስጥራዊ ቃላት ብቻ ነው! ሙሉ በሙሉ እርግጠኛ ከሆኑ ብቻ ይህን ያድርጉ!\n\n«%accountName» የተባለው ሂሳብ (በ%blockchain ላይ) ይሰረዝ?</string>
+    <string name="reassessConfirmation">ይህ ተግባር በቅርቡ የላኳቸውን ግብይቶች በብሎክቼይኑ ላይ ይፈትሻል። መገኘታቸውን ወይም አለመገኘታቸውን መሠረት በማድረግ ወይ ያረጋግጣቸዋል ወይም ይሰርዛቸዋል። ግብይቶች ከተሰረዙ ገንዘቡ የጠፋ ይመስላል። ወጪ የተደረገውን ቀሪ ሂሳብ መልሰው ለማግኘት «እንደገና ማግኘት» ማድረግ ያስፈልግዎታል። በቅርቡ ግብይት ፈጽመው ከሆነ አይጠቀሙበት፤ ምክንያቱም ግብይቱ ማረጋገጫ በመጠባበቅ ላይ በኔትወርኩ ውስጥ ተደብቆ ሊቆይ ይችላል።</string>
+    <string name="recoveryPhrase">እነዚህ 12 ቃላት ዋሌትዎን ለማስመለስ ያገለግላሉ። እነዚህን ቃላት የያዘ ማንኛውም ሰው ገንዘብዎን ወጪ ማድረግ ይችላል። በብዕር በወረቀት ላይ ይጻፉ (ወይም በብረት ላይ ይቅረጹ) እና በጥንቃቄ ያስቀምጡ!</string>
+    <string name="recoveryWarning">ያቁሙ! በዲጂታል መልክ በፍጹም አያስቀምጡ!\nወደ ቅንጥብ ሰሌዳ አይቅዱ፣ ፎቶ አያንሱ፣ ፎቶ ኮፒ አያድርጉ፣ ስክሪንሾት አያንሱ።</string>
+    <string name="flickerReason">ብልጭ ድርግም ማለቱ የደህንነት እርምጃ ነው</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">ወደ ቅንጥብ ሰሌዳ ተቀድቷል። ሆኖም እነዚህን የማስመለሻ ቃላት ቀድቶ ወደ ማንኛውም መተግበሪያ መለጠፍ በጣም መጥፎ ሀሳብ ነው! ኢሜይል፣ አብዛኞቹ መተግበሪያዎች፣ የምትኬ አገልግሎቶች እና የመሳሰሉት በቀጥታ ገንዘብ የሆኑ ቃላትን ለመያዝ የሚያስፈልገውን ደህንነት አያሟሉም።</string>
+    <string name="primaryAccountConfirmation">ዋና ሂሳብዎ ለማንነትዎ እና ራስ-ሰር ክፍያዎችን ለመፈጸም የሚያገለግለው ሂሳብ ነው። እንዲሁም በዚህ መተግበሪያ ውስጥ በተለያዩ ቦታዎች መጀመሪያ የሚታየው ሂሳብ ነው። በNexa ብሎክቼይን ላይ መሆን አለበት።</string>
+    <string name="primaryAccountSuccess">ዋና ሂሳብ: %name</string>
+    <string name="AccountActions">የሂሳብ እርምጃዎች</string>
+    <string name="GeneralSettings">አጠቃላይ ቅንብሮች</string>
+    <string name="BlockchainSettings">የብሎክቼይን ምንጮች</string>
+    <string name="AccessPriceData">የዋጋ መረጃ ማግኘት</string>
+    <string name="oldUi">የቀድሞ በይነገጽ</string>
+    <string name="SplitBillDescription">እርስዎ ሂሳቡን (በመደበኛ ገንዘብ) ይከፍላሉ፣ ጓደኞችዎ ደግሞ ድርሻቸውን ከታች ባለው QR ኮድ በኩል ይከፍሉዎታል። ጓደኞችዎ የሚጋብዙዎት ካልሆነ በስተቀር በክፍፍሉ ብዛት ውስጥ እራስዎን ያካትቱ!</string>
+    <string name="BillAmount">የሂሳብ መጠን</string>
+    <string name="TipAmount">የጉርሻ መጠን</string>
+    <string name="TipPercentage">የጉርሻ መቶኛ</string>
+    <string name="Total">የሚከፋፈል ጠቅላላ መጠን</string>
+    <string name="OR">ወይም</string>
+    <string name="QRCodeFor">QR ኮድ ለ:</string>
+    <string name="Ways">ብዛት:</string>
+    <string name="Tip">ጉርሻ:</string>
+    <string name="Amount">መጠን:</string>
+    <string name="AmountWithValue" formatted="false">መጠን: %amt</string>
+    <string name="QuantityWithValue" formatted="false">ብዛት: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">በ%date ያለ</string>
+    <string name="fastSync">ፈጣን ማመሳሰል</string>
+    <string name="refresh">ማደስ</string>
+    <string name="goodQR">QR ተነባቢ ነው</string>
+    <string name="badQR">QR አይነበብም</string>
+    <string name="badImageQR">የማይነበብ የQR ምስል። ተጨማሪ...</string>
+    <string name="badImageQRhelp">የQR ኮዱን በጣም ቀርበው ካነሱት፣ ትንሽ ራቅ ብለው ለማንሳት ይሞክሩ። ነጩ ጠርዝ የQR ኮዱ አካል ነው፤ ማያ ገጽን በጣም ቀርበው ሲያነሱ ግራ የሚያጋቡ የሞይሬ ንድፎች ሊፈጠሩ ይችላሉ።</string>
+    <string name="GoThere">ወደዚያ ይሂዱ</string>
+    <string name="unlock">መክፈት</string>
+    <string name="share">ማጋራት</string>
+    <string name="Send">መላክ</string>
+    <string name="OpenSend">መላክ</string>
+    <string name="SendCancel">ይቅር</string>
+    <string name="ignoredInsecureRequest">ደህንነቱ ያልተጠበቀ ጥያቄ ችላ ተብሏል</string>
+    <string name="fromAccountColon">መላኪያ ሂሳብ:</string>
+    <string name="chooseAccountError">ሂሳብ ይምረጡ</string>
+    <string name="toColon">ወደ:</string>
+    <string name="To">ወደ</string>
+    <string name="ByAuthor">ደራሲ</string>
+    <string name="assetsColon">ንብረቶች:</string>
+    <string name="assets">ንብረቶች</string>
+    <string name="NoAssets">በ%act ሂሳብ ውስጥ ምንም ንብረት የለም።</string>
+    <string name="NoAssetsAccount">በአሁኑ ጊዜ በሂሳብዎ ውስጥ ምንም ንብረት የለም።</string>
+    <string name="fromColon">ከ:</string>
+    <string name="ReceiveIntoAccount">መቀበያ ሂሳብ</string>
+    <string name="Receive">መቀበል</string>
+    <string name="YourAddress">የእርስዎ %blockchain አድራሻ</string>
+    <string name="CopyAddress">አድራሻ መቅዳት</string>
+    <string name="AccountListHeader">ሂሳቦች</string>
+    <string name="Address">አድራሻ</string>
+    <string name="clipboard">ቅንጥብ ሰሌዳ</string>
+    <string name="settings">ቅንብሮች</string>
+    <string name="help">እገዛ</string>
+    <string name="invalidQuantity">ልክ ያልሆነ ብዛት</string>
+    <string name="needNonexistentAuthority">የቶከን ስልጣን ያስፈልጋል</string>
+    <string name="invalidQuantityTooManyDecimalDigits">በጣም ብዙ የአስርዮሽ ቦታዎች</string>
+    <string name="roundedUpClickSendAgain">ወደ ላይ ተጠጋግቷል፣ ለማጽደቅ መላክን እንደገና ይጫኑ</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">ግዢ</string>
+    <string name="scanPaymentQRcode">የክፍያ አድራሻ QR ኮድ ይቃኙ</string>
+    <string name="ScanQRCodeButton">QR ኮድ መቃኘት</string>
+    <string name="PasteDestinationAddressButton">መለጠፍ</string>
+    <string name="NewAccountButton">አዲስ ሂሳብ ማዘጋጀት</string>
+    <string name="NewAccountSearchingForTransactions">...የመጀመሪያውን ግብይት በመፈለግ ላይ...</string>
+    <string name="NewAccountSearchingForAllTransactions">...ሁሉንም ግብይቶች በመፈለግ ላይ...</string>
+    <string name="NewAccountSearchFailure">የግብይት ፍለጋ አልተሳካም</string>
+    <string name="receiveAddressQRCode">የመቀበያ QR ኮድ</string>
+    <string name="paymentProposal">እንደደረሰው የክፍያ ሀሳብ</string>
+    <string name="pasteIsEmpty">የተለጠፈው ባዶ ነው</string>
+    <string name="pasteIgnored">የተለጠፈው ችላ ተብሏል</string>
+    <string name="pasteUnintelligible">የተለጠፈው አልታወቀም</string>
+    <string name="chainIncompatibleWithAddress">አድራሻው ከሂሳቡ ጋር አይጣጣምም</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">የሂሳቡ ገንዘብ %walletCrypto ነው፣ አድራሻው ደግሞ %addressCrypto ነው። ከአድራሻው ብሎክቼይን ጋር የሚጣጣም ሂሳብ ለመምረጥ የመላኪያ ሂሳቡን ከዝርዝሩ ይቀይሩ።</string>
+    <string name="incoming" formatted="false">%delta %unit በመጠባበቅ ላይ ያለውን ያካትታል</string>
+    <string name="approximatelyT" formatted="false">በግምት %qty %fiat</string>
+    <string name="fastForward" formatted="false">ፈጣን ዝላይ</string>
+    <string name="fastforwardStatus" formatted="false">የፈጣን ዝላይ ትንተና: %info</string>
+    <string name="fastforwardStart" formatted="false">ተጀምሯል</string>
+    <string name="exchangeRate" formatted="false">(የምንዛሬ ተመን: 1 %fiat ዋጋው %amt %crypto ነው)</string>
+    <string name="moreThanAvailable">(ካለው በላይ)</string>
+    <string name="moreThanConfirmedAvailable">(ከተረጋገጠው በላይ)</string>
+    <string name="actuallySendingT" formatted="false">በትክክል የሚላከው %qty %crypto</string>
+    <string name="copiedToClipboard">ወደ ቅንጥብ ሰሌዳ\nተቀድቷል</string>
+    <string name="copyId">መለያ መቅዳት</string>
+    <string name="openInBrowser">በአሳሽ መክፈት</string>
+    <string name="cannotCopyToClipboard">ወደ ቅንጥብ ሰሌዳ መቅዳት አልተቻለም</string>
+    <string name="tooLargeForClipboard">ለቅንጥብ ሰሌዳ በጣም ብዙ ውሂብ ነው</string>
+    <string name="scanFailed">መቃኘት አልተሳካም</string>
+    <string name="scanSuccess">መቃኘት ተሳክቷል</string>
+    <string name="sendSuccess">መላክ ተሳክቷል</string>
+    <string name="sendQuantityHint">የሚላክ ብዛት</string>
+    <string name="sendRequestNotification">የመላክ ጥያቄ ቀርቧል</string>
+    <string name="sendToAddressHint">የመድረሻ አድራሻ</string>
+    <string name="sendAll">ሁሉም</string>
+    <string name="editSendNoteHint">ስለዚህ ዝውውር የግል ማስታወሻ</string>
+    <string name="subSatoshiQuantities">በጣም ብዙ የአስርዮሽ ቦታዎች -- ይህ ገንዘብ እስከዚያ ድረስ አይከፋፈልም</string>
+    <string name="retrievingExchangeRate">የምንዛሬ ተመን አሁንም በማምጣት ላይ</string>
+    <string name="unavailableExchangeRate">የምንዛሬ ተመን አይገኝም</string>
+    <string name="SigningWithAccount" formatted="false">የሚፈረምበት ሂሳብ: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">የሂሳቡ የጋራ ማንነት: %act</string>
+    <string name="identityRequestNotification">የማንነት ጥያቄ ቀርቧል</string>
+    <string name="IdentityDataMissing">የማንነት መረጃ ጎድሏል</string>
+    <string name="newDomainRequestingIdentity">አዲስ አገልግሎት ምዝገባ ጠይቋል</string>
+    <string name="domainRequestingAdditionalIdentityInfo">ተጨማሪ መረጃ ተጠይቋል</string>
+    <string name="useUniqueIdentityToolTip">እዚህ ያለዎትን ማንነት ከሌሎች ድረ-ገጾች ለይተው ለማስቀመጥ ያብሩት።</string>
+    <string name="provideAlias">የተጠቃሚ ስም/ቅጽል ስምዎን ይስጡ?</string>
+    <string name="provideAliasToolTip">ይህን ከመረጡ ቅጽል ስምዎ (በቅንብሮች ውስጥ እንደተዘጋጀው፣ እውነተኛ ስምዎ አይደለም) ከተጠየቀ ለዚህ ድረ-ገጽ ይሰጣል</string>
+    <string name="provideSocialMedia">የማህበራዊ ሚዲያ መረጃዎን ይስጡ?</string>
+    <string name="provideSocialMediaToolTip">ይህን ከመረጡ የማህበራዊ ሚዲያ መረጃዎ (በቅንብሮች ውስጥ እንደተዘጋጀው) ከተጠየቀ ለዚህ ድረ-ገጽ ይሰጣል</string>
+    <string name="providePostalAddress">የፖስታ አድራሻዎን ይስጡ?</string>
+    <string name="providePostalAddressToolTip">ይህን ከመረጡ አድራሻዎ (በቅንብሮች ውስጥ እንደተዘጋጀው) ከተጠየቀ ለዚህ ድረ-ገጽ ይሰጣል</string>
+    <string name="provideBillingAddress">የክፍያ አድራሻዎን ይስጡ?</string>
+    <string name="provideBillingAddressToolTip">ይህን ከመረጡ የክፍያ አድራሻዎ (በቅንብሮች ውስጥ እንደተዘጋጀው) ከተጠየቀ ለዚህ ድረ-ገጽ ይሰጣል</string>
+    <string name="provideEmail">የኢሜይል አድራሻዎን ይስጡ?</string>
+    <string name="provideAvatar">የአምሳያ ምስልዎን ይስጡ?</string>
+    <string name="provideRealName">እውነተኛ ስምዎን ይስጡ?</string>
+    <string name="provideRealNameToolTip">ይህን ከመረጡ እውነተኛ ስምዎ (በቅንብሮች ውስጥ እንደተዘጋጀው) ለዚህ ድረ-ገጽ ይሰጣል</string>
+    <string name="provideBirthday">የልደት ቀንዎን ይስጡ?</string>
+    <string name="providePhone">የስልክ ቁጥርዎን ይስጡ?</string>
+    <string name="provideAttestations">ማረጋገጫዎችን ይስጡ?</string>
+    <string name="provideAttestationsToolTip">ማረጋገጫዎች እርስዎ የሚሰጡትን መረጃ የሚያረጋግጡ የ3ኛ ወገን ፊርማዎች ናቸው</string>
+    <string name="primaryAccountRequired" formatted="false">ይህን ባህሪ ለመጠቀም የ%primCurrency ሂሳብ ያስፈልጋል</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">አንዳንድ ባህሪያት ከተወሰኑ ክሪፕቶ ገንዘቦች ጋር የተሳሰሩ ናቸው። ባህሪውን ከመጠቀምዎ በፊት በዚያ ክሪፕቶ ገንዘብ ላይ ሂሳብ መፍጠር ወይም መክፈት አለብዎት።</string>
+    <string name="UnknownDomainRegisterFirst">ያልታወቀ አገልግሎት፣ መጀመሪያ ይመዝገቡ</string>
+    <string name="Provider" formatted="false">አቅራቢ: %provider</string>
+    <string name="QrCode">QR ኮድ</string>
+    <string name="unknownOperation" formatted="false">%op ተግባር አልታወቀም</string>
+    <string name="alreadyRegistered">አስቀድሞ ተመዝግቧል</string>
+    <string name="existingRegistration" formatted="false">አሁን የተመረጠው «%act» ሂሳብ በዚህ አገልግሎት ተመዝግቧል።</string>
+    <string name="nonexistentRegistration" formatted="false">አሁን የተመረጠው «%act» ሂሳብ በዚህ አገልግሎት ገና አልተመዘገበም።</string>
+    <string name="provideLoginQuestion">ወደዚህ ድረ-ገጽ ይግቡ?</string>
+    <string name="provideInfoQuestion">የማንነት መረጃ የጠየቀው</string>
+    <string name="signDataQuestion">ፊርማ የጠየቀው</string>
+    <string name="nothingToSign">ምንም መልእክት አልቀረበም</string>
+    <string name="binaryToSign">ይህን ሁለትዮሽ ውሂብ ይፈርሙ?</string>
+    <string name="textToSign">ይህን መልእክት ይፈርሙ?</string>
+    <string name="sigInClipboard">ፊርማ ወደ ቅንጥብ ሰሌዳ ተቀድቷል</string>
+    <string name="SocialMediaText">ማህበራዊ ሚዲያ</string>
+    <string name="SocialMediaSummary">እንደ አገልግሎት:ስም ዝርዝር ያስገቡ፣ ለምሳሌ twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">የተጠቃሚ ስም/ቅጽል ስም</string>
+    <string name="NameText">ሙሉ ስም</string>
+    <string name="PostalAddressText">የፖስታ አድራሻ</string>
+    <string name="BillingAddressText">የክፍያ አድራሻ</string>
+    <string name="PostalCodeText">የፖስታ ኮድ</string>
+    <string name="EmailText">የኢሜይል አድራሻ</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">የተያያዘ የማንነት መረጃ</string>
+    <string name="ServiceAssociatedWith">ይህ አገልግሎት አስቀድሞ ከሚከተለው ጋር ተያይዟል:</string>
+    <string name="IdentityInfoNote">ይህን መረጃ ማስገባት በፈቃደኝነት ነው፤ እርስዎ ለሚመርጧቸው አገልግሎቶች ብቻ ይሰጣል። ዓላማው ማንነትን በሚደግፉ ድረ-ገጾች ላይ QR ኮድ በመቃኘት ብቻ የተለመዱ የቅጽ ሳጥኖች እንዲሞሉ ማድረግ ነው።</string>
+    <string name="areYouSure">እርግጠኛ ነዎት?</string>
+    <string name="WhenAskSure">ከላይ ያለውን ያረጋግጡ:</string>
+    <string name="SendConfirmSummary" formatted="false">%amt %currency %inFiat%assets ወደ %dest አድራሻ መላኩን ያረጋግጡ</string>
+    <string name="firstName">የመጀመሪያ ስም</string>
+    <string name="lastName">የአባት ስም</string>
+    <string name="withholdingMandatoryInfo">ድረ-ገጹ እርስዎ ሊሰጡ ያልፈለጉትን መረጃ ይፈልጋል</string>
+    <string name="badLink">የተሳሳተ አገናኝ</string>
+    <string name="BadWebLink">ልክ ያልሆነ የድር አገናኝ</string>
+    <string name="connectionAborted">ድረ-ገጹ መግባትን አቋረጠ</string>
+    <string name="HintAdjustCostBasis">መነሻ ዋጋ ወይም ትርፍ</string>
+    <string name="CostBasis">መነሻ ዋጋ</string>
+    <string name="CapitalLoss">የካፒታል ኪሳራ</string>
+    <string name="CapitalGain">የካፒታል ትርፍ</string>
+    <string name="OverrideSalesPrice">የተሸጠበትን ዋጋ ያስገቡ</string>
+    <string name="AccountHistory">ግብይቶች</string>
+    <string name="NoAccountActivity">የሂሳብ እንቅስቃሴ የለም</string>
+    <string name="AccountAddresses">አድራሻዎች</string>
+    <string name="ActiveAddresses">ንቁ አድራሻዎች</string>
+    <string name="UsedAddresses">የዋሉ አድራሻዎች</string>
+    <string name="UnusedAddresses">ያልዋሉ አድራሻዎች</string>
+    <string name="txHistoryButton">የሂሳብ እንቅስቃሴ መመልከት ወይም ማውጣት</string>
+    <string name="setAsPrimaryAccountButton">ይህን ዋና ሂሳብዎ ያድርጉ</string>
+    <string name="AccountStatistics">የሂሳብ ስታቲስቲክስ</string>
+    <string name="AccountBlockchainSync" formatted="false">በአሁኑ ጊዜ በ%chain ብሎክቼይን ላይ %sync።</string>
+    <string name="AccountBlockchainDetails" formatted="false">በ%actBlockDate፣ ብሎክ %actBlock ከ%chainBlockCount።</string>
+    <string name="AccountEarliestActivity" formatted="false">የመጀመሪያ አጠቃቀም: ብሎክ %actPrehistoryBlock በ%actPrehistoryDate።</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">ከ%num ኖዶች ጋር ተገናኝቷል: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num አድራሻዎች</string>
+    <string name="CurrentAddress" formatted="false">በአድራሻ %num ላይ: %addr</string>
+    <string name="FirstLastReceive" formatted="false">የመጀመሪያ ገቢ በብሎክ %first፣ የቅርብ ጊዜው በብሎክ %last።</string>
+    <string name="FirstLastSend" formatted="false">የመጀመሪያ ወጪ በብሎክ %first፣ የቅርብ ጊዜው በብሎክ %last።</string>
+    <string name="FirstWithdraw">የመጀመሪያ ወጪ</string>
+    <string name="FirstDeposit">የመጀመሪያ ገቢ</string>
+    <string name="never">የለም</string>
+    <string name="FirstUse" formatted="false">የመጀመሪያ አጠቃቀም: %date</string>
+    <string name="LastUse" formatted="false">የመጨረሻ አጠቃቀም: %date</string>
+    <string name="Block" formatted="false">ብሎክ: %block</string>
+    <string name="AccountNumTx" formatted="false">%num ግብይቶች</string>
+    <string name="AccountNumUtxos" formatted="false">%num የመዝገብ ግቤቶች</string>
+    <string name="title_activity_assets">ንብረቶች</string>
+    <string name="title_activity_scan">መቃኘት</string>
+    <string name="title_activity_new_account">አዲስ ሂሳብ</string>
+    <string name="AccountName">የሂሳብ ስም</string>
+    <string name="AccountNameHint">1-8 ፊደላት</string>
+    <string name="Blockchain">ብሎክቼይን</string>
+    <string name="AccountRecoveryPhrase">የማስመለሻ ቃላት</string>
+    <string name="LeaveEmptyNewWallet">አዲስ ሂሳብ ለመፍጠር ባዶ ይተዉት</string>
+    <string name="PinSuggestions"><font size="15">ይህ ሚስጥራዊ ቁጥር ሂሳቡን ለመድረስ ያስፈልጋል</font></string>
+    <string name="createNewAccount">አዲስ ሂሳብ መፍጠር</string>
+    <string name="createSyncAccount">ሂሳብን በጥንቃቄ (ረጅም ጊዜ በሚወስድ) ማመሳሰል ማስመለስ</string>
+    <string name="createDiscoveredAccount">ሂሳብን ወዲያውኑ ማስመለስ</string>
+    <string name="invalidRecoveryPhrase">የተሳሳተ የማስመለሻ ቃላት</string>
+    <string name="invalidAccountName">ልክ ያልሆነ ስም</string>
+    <string name="PassPhrase">የይለፍ ሐረግ (አማራጭ)</string>
+    <string name="Bip44ActivityNotice">የሂሳብ እንቅስቃሴ ተገኝቷል</string>
+    <string name="NoBip44ActivityNotice">ማስጠንቀቂያ፣ ምንም ግብይት አልተገኘም!</string>
+    <string name="Bip44BtcActivityNotice">መደበኛ ያልሆነ ወይም ከፎርክ በፊት የነበረ የዋሌት እንቅስቃሴ ተገኝቷል</string>
+    <string name="NoBip44BtcActivityNotice">ከፎርክ በፊት የነበሩ ግብይቶች አልተገኙም</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">ከ%date ጀምሮ (ብሎክ %height)</string>
+    <string name="NotEnoughRecoveryWords">ተጨማሪ የማስመለሻ ቃላት ያስፈልጋሉ</string>
+    <string name="TooManyRecoveryWords">በጣም ብዙ የማስመለሻ ቃላት</string>
+    <string name="IncorrectRecoveryWords" formatted="false">ልክ ያልሆኑ ቃላት: %words</string>
+    <string name="ElectrumNetworkUnavailable">የElectrum ኔትወርክ አይገኝም። የዋሌት ማስመለስ ዘገምተኛ ይሆናል፣ እና ከጃንዋሪ 1፣ 2020 በፊት ያሉ ግብይቶችን አያገኝም።</string>
+    <string name="PinHidesAccount">ፒን እስኪገባ ድረስ ሂሳቡ ይደበቅ?</string>
+    <string name="HiddenAccountExplainer">ፒን እስኪገባ ድረስ ሂሳቡን መደበቅ</string>
+    <string name="HiddenAccount">የተደበቀ ሂሳብ</string>
+    <string name="AutomaticNewAddress">የአድራሻ ግላዊነት</string>
+    <string name="AutomaticNewAddressToolTip">አሁን ያለው አድራሻ ጥቅም ላይ በዋለ ቁጥር አዲስ አድራሻ በራስ-ሰር ይታያል።</string>
+    <string name="CreatePIN">ፒን (አማራጭ)</string>
+    <string name="PinSpendingUnprotected">ያለ ፒን ወጪ ማድረግ ተፈቅዷል (ፒን አልገባም)</string>
+    <string name="PinSpendingProtected">ወጪ ማድረግ ፒን ይጠይቃል</string>
+    <string name="InvalidPIN">ልክ ያልሆነ ፒን</string>
+    <string name="creatingNoHistoryAccountWarning">በተወሰነ የማስመለሻ ቃላት ሂሳብ እየፈጠሩ ነው፣ ነገር ግን በብሎክቼይኑ ላይ ምንም እንቅስቃሴ አልተገኘም።\nይህ ትክክል ነው?\nትክክል ከሆነ የመፍጠሪያ አዝራሩን እንደገና ይጫኑ፤ ባዶ ሂሳብ ይፈጠራል። ነገር ግን ይህ ሂሳብ እንቅስቃሴ ሊኖረው የሚገባ ከሆነ የመረጡትን ብሎክቼይን እና የማስመለሻ ቃላት እንደገና ያረጋግጡ። ችግሩ ያ ካልሆነ ወይ የብሎክቼይን ኔትወርኩ አሁን አይደረስም (ቆይተው እንደገና ይሞክሩ)፣ ወይም መደበኛ ባልሆነ የዋሌት መተግበሪያ ተፈጥሯል። ይህን ሂሳብ አሁን አይፍጠሩ።</string>
+    <string name="accountLocked">ሂሳቡ ተቆልፏል</string>
+    <string name="unknownError">ስህተት</string>
+    <string name="insufficentBalance">በቂ ያልሆነ ቀሪ ሂሳብ</string>
+    <string name="insufficentTokenBalance">በቂ ያልሆነ የቶከን ቀሪ ሂሳብ</string>
+    <string name="excessiveFee">ከመጠን ያለፈ ክፍያ</string>
+    <string name="sendDustError">መጠኑ ከዝቅተኛው በታች</string>
+    <string name="sendingDustWarning">መጠኑ ከኔትወርክ ዝቅተኛ ገደብ በታች ነው</string>
+    <string name="feeExceedsFlatMax">ክፍያው ከተዋቀረው ከፍተኛ ቋሚ ክፍያ ገደብ አልፏል</string>
+    <string name="notSupported">አይደገፍም</string>
+    <string name="expired">የክፍያው ጊዜ አልፏል</string>
+    <string name="PaymentDataMissing">የክፍያ መረጃ ጎድሏል</string>
+    <string name="headersNotForthcoming">ራስጌዎች እየቀረቡ አይደሉም</string>
+    <string name="cantConvert">ልወጣ ለጊዜው አይገኝም</string>
+    <string name="walletDisconnectedFromBlockchain">የዋሌት ግንኙነት ተቋርጧል</string>
+    <string name="badTransaction">የተሳሳተ ግብይት</string>
+    <string name="badAddress">ልክ ያልሆነ አድራሻ</string>
+    <string name="unknownAddress">ያልታወቀ አድራሻ</string>
+    <string name="badAmount">ልክ ያልሆነ መጠን</string>
+    <string name="NoAccounts">የሚደረስበት ሂሳብ የለም</string>
+    <string name="badCryptoCode">ለዚህ ገንዘብ ወይም ብሎክቼይን የተከፈተ ሂሳብ የለም</string>
+    <string name="badCryptoCodeDetails" formatted="false">ያልታወቀ ወይም የማይገኝ ገንዘብ: %currency</string>
+    <string name="badCurrencyUnit">ገንዘብ አይደለም</string>
+    <string name="incompatibleAccount">የተሳሳተ ገንዘብ</string>
+    <string name="incompatibleAccountDetails" formatted="false">%cryptoAct ካለው ሂሳብ ለመክፈል መርጠዋል፣ ነገር ግን %cryptoPay ያስፈልጋል</string>
+    <string name="detailsOfBadAmountFromIntent">የጠራው ፕሮግራም የሚላከውን ብዛት ሲያቀርብ በተሳሳተ ቅርጸት
+        የተጻፈ ቁጥር ሰጥቷል። ብዛቱን ራስዎ ማስገባት ይኖርብዎታል
+    </string>
+    <string name="blankAddress">ባዶ አድራሻ</string>
+    <string name="unavailable">አይገኝም</string>
+    <string name="blockNotForthcoming">ብሎክ አይገኝም</string>
+    <string name="receiveAddressUnavailable">አዲስ የመቀበያ አድራሻ በመዘጋጀት ላይ ነው። እባክዎ ይጠብቁ...
+    </string>
+    <string name="accountLimitReached">የሂሳብ ገደብ</string>
+    <string name="accountUnavailableDetails">ከዚህ ብሎክቼይን ጋር የሚዛመድ ሂሳብ የለም፣ ወይም ሂሳቡ አልተከፈተም።</string>
+    <string name="accountUnavailable">የተከፈተ ተስማሚ ሂሳብ የለም</string>
+    <string name="sendMoreThanBalance">አሁን ካለዎት በላይ ገንዘብ ለመላክ እየሞከሩ ነው።\n\nከቀሪ ሂሳብዎ በላይ ወጪ እያደረጉ አይደለም ብለው የሚያስቡ ከሆነ፣ ግብይቶች ትንሽ ተጨማሪ ክፍያ እንዳላቸው ረስተው ይሆናል፤ ወይም ቀሪ ሂሳብዎ በሙሉ ያልተረጋገጠ ሆኖ የሚታይ ከሆነ በተከታታይ ብዙ ግብይቶች አድርገው ይሆናል።\n\nከብሎክቼይኑ ምን ያህል «ቀድመው መሄድ» እንደሚችሉ ገደብ አለ። ያልተረጋገጠው ቀሪ ሂሳብዎ እስኪረጋገጥ ይጠብቁና እንደገና ይሞክሩ።</string>
+    <string name="sendMoreTokensThanBalance">አሁን ካለዎት በላይ ቶከኖችን ለመላክ እየሞከሩ ነው።</string>
+    <string name="deductedFeeLargerThanSendAmount">የተቀነሰው ክፍያ ከሚላከው መጠን ይበልጣል</string>
+    <string name="badWalletImplementation">የተሳሳተ የዋሌት አተገባበር። ይህን ችግር ያሳውቁ!</string>
+    <string name="CannotCompleteTransaction">ስህተት: ማጠናቀቅ አልተቻለም</string>
+    <string name="title_split_bill">ሂሳብ መከፋፈል</string>
+    <string name="title_activity_settings">ቅንብሮች</string>
+    <string name="title_activity_exchange">ምንዛሬ</string>
+    <string name="title_activity_shopping">አገናኞች</string>
+    <string name="ecosystem">ስነ-ምህዳር</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">መነሻ</string>
+    <string name="title_dashboard">ሙከራ</string>
+    <string name="title_notifications">ማሳወቂያዎች</string>
+    <string name="title_activity_invoices">ደረሰኞች</string>
+    <string name="title_activity_identity">ማንነት</string>
+    <string name="title_activity_identity_op">ማንነት</string>
+    <string name="title_activity_domain_identity_settings">የዶሜይን ማንነት ቅንብሮች</string>
+    <string name="title_activity_tx_history" formatted="false">የግብይት ታሪክ: %account</string>
+    <string name="title_activity_address_history" formatted="false">የአድራሻ ታሪክ: %account</string>
+    <string name="title_activity_account_details" formatted="false">ሂሳብ: %account</string>
+    <string name="title_test">ሙከራ</string>
+    <string name="useUniqueIdentity">ልዩ የክሪፕቶግራፊ ማንነት ይጠቀሙ</string>
+    <string name="title_activity_identity_settings">የማንነት ቅንብሮች</string>
+    <string name="IdentityRegistrations">የተመዘገቡ አገልግሎቶች</string>
+    <string name="NoIdentitiesRegistered">የተመዘገበ ማንነት የለም</string>
+    <string name="title_activity_welcome">እንኳን ደህና መጡ</string>
+    <string name="next">ቀጣይ</string>
+    <string name="previous">ቀዳሚ</string>
+    <string name="EnterPIN">ፒን ያስገቡ</string>
+    <string name="EnterPINorBlankToRemove">አዲስ ፒን (ባዶ ሲሆን ይወገዳል)</string>
+    <string name="ButtonTextHere">የአዝራር ጽሑፍ ያስገቡ</string>
+    <string name="ButtonLinkHere">የድር አገናኝ ያስገቡ</string>
+    <string name="ShoppingWarning">ጥንቃቄ: በዚህ ገጽ ላይ ያሉት ንጥሎች ለእርስዎ ምቾት ሲባል የተቀመጡ የ3ኛ ወገን አገልግሎቶች እና ድረ-ገጾች አገናኞች ናቸው። እነዚህ ድረ-ገጾች/አገልግሎቶች በWally Wallet አልተመረመሩም።\n\nበራስዎ ኃላፊነት ይጠቀሙ!</string>
+    <string name="NFTs">የማይተካኩ ቶከኖች (NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: ልዩ ምስሎችን እና የልዩ ንጥሎችን ዲጂታል ውክልና ይፍጠሩ እና ይገበያዩ</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">ማስጠንቀቂያ: ሐሰተኛ ወይም በተሳሳተ መንገድ የተሰራ!</string>
+    <string name="TokenSourceWebsite">የቶከን ምንጭ:</string>
+    <string name="TokenBadSig">የዚህ ቶከን መረጃ በአግባቡ አልተፈረመም። ይህ ቶከን ሐሰተኛ ወይም አስመሳይ ሊሆን ይችላል። ወይም ደግሞ የቶከኑ ሰሪ ቶከኑን በአግባቡ ያልፈረመው ሊሆን ይችላል።</string>
+    <string name="OpenWebsite" formatted="false">%siteName ይክፈቱ</string>
+    <string name="WebsiteUnavailable" formatted="false">ድረ-ገጹ አይገኝም</string>
+    <string name="ExplainBitmart">bitmart.com: NEXAን በሌሎች ክሪፕቶ ገንዘቦች ይገበያዩ</string>
+    <string name="ExplainMexc">mexc.com: NEXAን በሌሎች ክሪፕቶ ገንዘቦች ይገበያዩ</string>
+    <string name="ExplainBiconomy">biconomy.com: NEXAን በሌሎች ክሪፕቶ ገንዘቦች ይገበያዩ</string>
+    <string name="CexButton">መመንዘር</string>
+    <string name="SharedNotification" formatted="false">%what ተጋርቷል</string>
+    <string name="AuthAutopayTitle">የተፈቀደ ክፍያ</string>
+    <string name="AuthAutopayDeniedTitle">የተፈቀደ ክፍያ ተከልክሏል</string>
+    <string name="AuthAutopay" formatted="false">%amt ወደ %domain</string>
+    <string name="TpToBeDone">የእርስዎ Trickle Pay ግንኙነቶች እዚህ ይታያሉ</string>
+    <string name="TpHistoryTbd">የእርስዎ Trickle Pay ታሪክ እዚህ ይታያል</string>
+    <string name="AcceptTpRegistration">ከሚከተለው ምዝገባ ማጽደቅ:</string>
+    <string name="EditTpRegistration">የአካል ቅንብሮች:</string>
+    <string name="AcceptTpRegistrationTopic">ዓላማ:</string>
+    <string name="TpMaxSpendHint">ከፍተኛ የራስ-ሰር ወጪ ያስገቡ</string>
+    <string name="TpAssetInfoRequest">የንብረት መረጃ ጥያቄዎች</string>
+    <string name="TpAssociatedAccount" formatted="false">የተያያዘ ሂሳብ: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">የግብይት ፈቃድ ጥያቄ</string>
+    <string name="AssetNotif">የንብረት መረጃ ጥያቄ</string>
+    <string name="PaymentRequest">የክፍያ ጥያቄ</string>
+    <string name="IdentityNotif">የማንነት/የመግቢያ ጥያቄ</string>
+    <string name="TpMaxHeading">የራስ-ሰር ክፍያ ገደቦች</string>
+    <string name="TpMaxPer">የጥያቄ ገደብ</string>
+    <string name="TpMaxPerDay">የቀን ገደብ</string>
+    <string name="TpMaxPerWeek">የሳምንት ገደብ</string>
+    <string name="TpMaxPerMonth">የወር ገደብ</string>
+    <string name="TpEnableAutopay">ራስ-ሰር ክፍያን ማንቃት (ካልተመረጠ ሁሉም ክፍያዎች የተጠቃሚ ፈቃድ ይጠይቃሉ፤ ከታች ያሉት ገደቦችም ችላ ይባላሉ)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">ምንም የTrickle Pay ምዝገባ የለም</string>
+    <string name="TpNoSession">ምንም የTrickle Pay ጥያቄ የለም</string>
+    <string name="TpRegistrations">ምዝገባዎች</string>
+    <string name="TpRegDenied">ምዝገባ ተከልክሏል</string>
+    <string name="TpRegAccepted">ምዝገባ ጸድቋል</string>
+    <string name="TpRegUnchanged">ምዝገባ አልተቀየረም</string>
+    <string name="TpRequestAutoDeny">ጥያቄ ተከልክሏል (ራስ-ሰር)</string>
+    <string name="TpRequestAutoAccept">ጥያቄ ጸድቋል (ራስ-ሰር)</string>
+    <string name="TpTxDenied">ግብይት ተከልክሏል</string>
+    <string name="TpTxAccepted">ግብይት ጸድቋል</string>
+    <string name="TpNetworkTimeout">የግብይት ጊዜ አልፏል</string>
+    <string name="TpPartialSubmitted">አቅርቦት ቀርቧል</string>
+    <string name="TpAssetRequestDenied">የንብረት መረጃ ተከልክሏል</string>
+    <string name="TpAssetRequestAccepted">የንብረት መረጃ በመላክ ላይ</string>
+    <string name="Actions">እርምጃዎች</string>
+    <string name="SpecialTpTransactionFrom">የልዩ ግብይት ምንጭ</string>
+    <string name="IncompleteTpTransactionFrom">የጽኑ አቅርቦት ሀሳብ ምንጭ</string>
+    <string name="TpEntails">ያካትታል</string>
+    <string name="TpInAccount">የሚጠቀሙበት ሂሳብ</string>
+    <string name="TpAssetRequestFrom">የንብረት መረጃ ጥያቄ ምንጭ</string>
+    <string name="TpHandledByAccount">በሂሳብዎ ሊስተናገድ ይችላል</string>
+    <string name="TpAssetMatches" formatted="false">ስለሚይዟቸው %num ንብረቶች መረጃ ለዚህ አገልግሎት ይሰጣል።</string>
+    <string name="TpAssetInfoNotXfer">ይህን ጥያቄ ማጽደቅ ለአገልግሎቱ ስለ ባለቤትነትዎ መረጃ ብቻ ይሰጣል። ምንም ዝውውር አይፈቅድም።</string>
+    <string name="ForAFeeOf" formatted="false">የ%fee %units ክፍያን ጨምሮ</string>
+    <string name="TpExchangingTokens" formatted="false">እና ቶከኖችን መለዋወጥ (%tokSnd መላክ፣ %tokRcv መቀበል)።</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal የቶከን ዓይነቶች ይገለጣሉ (ለራስዎ ወጪ ተደርገው፣ ባለቤትነትዎን በማረጋገጥ)።</string>
+    <string name="TpSendingTokens" formatted="false">እና %tokSnd የቶከን ዓይነቶችን መላክ።</string>
+    <string name="TpReceivingTokens" formatted="false">እና %tokRcv የቶከን ዓይነቶችን መቀበል።</string>
+    <string name="TpHasNoPurpose">ይህ ጥያቄ በዚህ ሂሳብ ላይ ምንም ተጽዕኖ የለውም።</string>
+    <string name="TpSendToTitle">ክፍያ የጠየቀው</string>
+    <string name="TpSpends">ወጪ</string>
+    <string name="TpSendRequestDenied">ክፍያ ተከልክሏል</string>
+    <string name="TpSendAutoReject">ክፍያ በራስ-ሰር ውድቅ ተደርጓል</string>
+    <string name="TpSendRequestAccepted">ክፍያ ጸድቋል</string>
+    <string name="TpWhyNotAuto">በራስ-ሰር የማይፈረምበት ምክንያት</string>
+    <string name="TpAutomaticDisabled">ራስ-ሰር ክፍያዎች ተሰናክለዋል</string>
+    <string name="TpExceededMaxPer">የጥያቄ ገደብን አልፏል</string>
+    <string name="TpExceededMaxDaily">የቀን ገደብን አልፏል</string>
+    <string name="TpExceededMaxWeekly">የሳምንት ገደብን አልፏል</string>
+    <string name="TpExceededMaxMonthly">የወር ገደብን አልፏል</string>
+    <string name="title_activity_alert_history">የቅርብ ጊዜ መልእክቶች</string>
+    <string name="IssueReportInstructions">ይህን መረጃ ለገንቢዎች ያቅርቡ:</string>
+    <string name="AssetApplication">ማስጀመር</string>
+    <string name="AssetMarketplace">መገበያየት</string>
+    <string name="AssetAddedToTransferList">በዋናው ትር ውስጥ ወደ «መላክ» ተጨምሯል</string>
+    <string name="NftCardFront">ፊት</string>
+    <string name="NftCardBack">ጀርባ</string>
+    <string name="NftPublicMedia">ይዘቶች</string>
+    <string name="NftOwnerMedia">የባለቤት ይዘት</string>
+    <string name="Content">ይዘት</string>
+    <string name="Private">የግል</string>
+    <string name="NftPrivateDescription">ይህ ይዘት የንብረቱ ባለቤት ብቻ የሚያገኘው ነው</string>
+    <string name="NftInfo">መረጃ</string>
+    <string name="NftLegal">ፈቃድ</string>
+    <string name="NftSeries" formatted="false">ስብስብ: %series</string>
+    <string name="NftAuthor" formatted="false">ደራሲ: %author</string>
+    <string name="NftNoInfoProvided">...ምንም መረጃ አልቀረበም...</string>
+    <string name="IssuedToConnection">በተገናኘው ድረ-ገጽ ተጀምሯል</string>
+    <string name ="demonstratingOwnership">ባለቤትነትን ማሳየት</string>
+    <string name="AndSomeAssets"> እና አንዳንድ ንብረቶች</string>
+    <string name="AssetTypes" formatted="false">%assetTypes የንብረት ዓይነቶች</string>
+    <string name="ExplainRestaurant">የመስመር ላይ የምግብ ቤት ማዘዣ አገልግሎቶች (ለማድረስ ወይም ለመውሰድ) አካላዊው ቦታ ባይቀበልም ክሪፕቶ ገንዘብ ሊቀበሉ ይችላሉ።</string>
+    <string name="RestaurantButton">Menufy የምግብ ቤት ማዘዣ</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">ክሪፕቶ ገንዘብ የሚቀበሉ በአቅራቢያዎ ያሉ ቦታዎችን ያግኙ።</string>
+    <string name="StoreMapButton">የሱቆች ካርታ</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: NEXAን በሌሎች ክሪፕቶ ገንዘቦች መመንዘር</string>
+    <string name="welcome1Label">እንኳን ደህና መጡ</string>
+    <string name="welcome1">ወደ Wally፣ የክሪፕቶ ገንዘብ ዋሌት እንኳን ደህና መጡ!\n\nበሚቀጥሉት ገጾች የመጀመሪያ የNexa ብሎክቼይን ሂሳብዎን (NEX) ያዘጋጃሉ፤ እንዲሁም እንደ የይለፍ ቃል አስተዳደር ያሉ ሌሎች አገልግሎቶችን ያዋቅራሉ።\n\nወይም ይህን የተመራ ማዋቀር ለመዝለል የኋላ ቀስቱን ይጫኑ።</string>
+    <string name="welcome2_title">የNEXA ሂሳብ ቅንብሮች</string>
+    <string name="welcome2">በሚቀጥለው ገጽ የመጀመሪያ የNexa ሂሳብዎን ያዘጋጃሉ።\n\nይህ ሂሳብ የNexa ገንዘብዎን እና ማንነቶችዎን ይይዛል። ማንነቶች የWally ዋሌት አዲስ ገጽታ ሲሆኑ፣ ወደሚደገፉ ድረ-ገጾች በራስ-ሰር እንዲገቡ ያስችልዎታል።\n\nሂሳቦችዎን በግላዊ መለያ ቁጥር (ፒን) መጠበቅ ይችላሉ፤ ሆኖም አዲስ ተጠቃሚዎች ለመጀመሪያ ሂሳባቸው ፒን እንዳይጠቀሙ (እና ዝቅተኛ ቀሪ ሂሳብ እንዲይዙ) እንመክራለን። ለተጠቃሚ ጥበቃ ሲባል በፒን የተጠበቁ ሂሳቦች ትክክለኛው ፒን እስኪገባ ድረስ አይታዩም (የተሳሳተ ፒን መግባቱም አይገለጽም)።\n\nነባር የNEXA ሂሳብ ማስመለስ ከፈለጉ የማስመለሻ ቃላቱን ያስገቡ። ይህ መስመር ባዶ ሆኖ ከቀረ አዲስ ሂሳብ ይፈጠራል።</string>
+    <string name="welcome3_title" formatted="false">የNexa ሂሳብ የማስመለሻ ቃላት</string>
+    <string name="welcome3">እንኳን ደህና መጡ 3 ! (ይህ የእንኳን ደህና መጡ ጽሑፍ ሊሻሻል ይችላል)</string>
+    <string name="welcome4_title">ማንነት</string>
+    <string name="welcome4">ቀጥሎ ወደ ማንነት መረጃ ገጽ ይወሰዳሉ። ይህ መረጃ Wallyን እንደ ማንነትና የመግቢያ አስተዳዳሪ ሲጠቀሙ (ወደ የተለያዩ ድረ-ገጾች በራስ-ሰር ለመግባት ወይም በግዢ ጊዜ መረጃ ለመስጠት) ያገለግላል። Wally ለግላዊነት ከፍተኛ ትኩረት ይሰጣል!
+ይህ መረጃ ያለ ግልጽ ፈቃድዎ ለማንኛውም ድረ-ገጽ አይጋራም፤ እንዲሁም ከዚህ ዋሌት ምንም መረጃ ወደዚህ መተግበሪያ ሰሪዎች አይላክም። ሁሉንም መስኮች ባዶ መተውም ይችላሉ።
+ሲጨርሱ የኋላ ቀስቱን (ከላይ በግራ) ይጫኑ።</string>
+    <string name="welcomeComplete">ይህ ማዋቀሩን ያጠናቅቃል። በዚህ የእንኳን ደህና መጡ ሂደት ውስጥ ያልጨረሱት ደረጃ ካለ ሁሉም መስኮች ከመተግበሪያው ውስጥ ይገኛሉ።
+እናመሰግናለን፤ በአዲሱ ዋሌትዎ ይደሰቱ!</string>
+    <string name="ExplainGiftCards">የስጦታ ካርዶችን መግዛት ክሪፕቶ ገንዘብ በቀጥታ ወደማይቀበሉ በመቶዎች የሚቆጠሩ ሱቆች እንዲደርሱ ያስችልዎታል።</string>
+    <string name="GiftCardButton">eGifter የስጦታ ካርድ</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">ይህ ሚስጥራዊ ቁጥር ሂሳቡን ለመድረስ ያስፈልጋል</font>
+</string>
+    <string name="sync_title">ኢሜይልን በየጊዜው ማመሳሰል</string>
+    <string name="attachment_title">የገቢ አባሪዎችን ማውረድ</string>
+    <string name="attachment_summary_on">የኢሜይል አባሪዎችን በራስ-ሰር ማውረድ</string>
+    <string name="attachment_summary_off">አባሪዎችን ሲጠየቅ ብቻ ማውረድ</string>
+    <string name="signature_title">ፊርማዎ</string>
+    <string name="reply_title">መልስ ሲሰጡ ነባሪ እርምጃ</string>
+    <string name="discoveredAccountDetails" formatted="false">የ%bal %units ቀሪ ሂሳብ ተገኝቷል\nበ%addr አድራሻዎች እና %tx ግብይቶች ውስጥ</string>
+    <string name="discoveredWarning">ትክክል መስሎ ከታየዎት ይህን ሂሳብ ወዲያውኑ መፍጠር ይችላሉ</string>
+    <string name="backgroundSync">የጀርባ ማመሳሰል</string>
+    <string name="scanQr">QR መቃኘት</string>
+    <string name="imageQr">የምስል QR</string>
+    <string name="paste">መለጠፍ</string>
+    <string name="recentTransactions">የቅርብ ጊዜ ግብይቶች</string>
+    <string name="sendingFrom">መላኪያ ሂሳብ</string>
+    <string name="enterAddress">አድራሻ ያስገቡ...</string>
+    <string name="noteOptional">ማስታወሻ (አማራጭ)</string>
+    <string name="clearNote">ማስታወሻ ማጽዳት</string>
+    <string name="clearAddress">አድራሻ ማጽዳት</string>
+    <string name="clearAmount">መጠን ማጽዳት</string>
+    <string name="available">የሚገኝ</string>
+    <string name="amountPlain">መጠን</string>
+    <string name="enterNEXAmount">የNEX መጠን ያስገቡ...</string>
+    <string name="note">ማስታወሻ</string>
+    <string name="confirmSend">መላክን ያረጋግጡ</string>
+    <string name="syncing">በማመሳሰል ላይ...</string>
+    <string name="enterAmount" formatted="false">የ%assetName መጠን ያስገቡ</string>
+    <string name="fee">ክፍያ</string>
+    <string name="connectionWarning">ማስጠንቀቂያ: ምንም የብሎክቼይን/ኔትወርክ ግንኙነት አይገኝም። አሁን ከላኩ ተቀባዩ ይህን ዝውውር ወዲያውኑ አያየውም። ግንኙነት እንደተመለሰ መላኩ ይከናወናል።</string>
+    <string name="NetworkUnstable">ኔትወርክ አልተረጋጋም</string>
+    <string name="TokenMissing">ቶከኑ በብሎክቼይን ላይ የለም </string>
+    <string name="Sell">መሸጥ</string>
+    <string name="CreateAnOffer">አቅርቦት መፍጠር</string>
+    <string name="Price">ዋጋ</string>
+    <string name="NexaPrice">የNexa ዋጋ ያስገቡ</string>
+    <string name="AssetAmountName" formatted="false">%amount %assetName አለዎት</string>
+    <string name="scanToBuyOne">%name ለመግዛት ይቃኙ</string>
+    <string name="scanToBuySeveral">%amount %name ለመግዛት ይቃኙ</string>
+    <string name="nexaOfferAmount" formatted="false">በ%amount NEXA</string>
+    <string name="purchaseComplete">ግዢ ተጠናቋል</string>
+    <string name="setTheNexaPrice">የNexa ዋጋን ይወስኑ</string>
+    <string name="setTheAssetAmount">የንብረቱን መጠን ይወስኑ</string>
+    <string name="publishOnline">አቅርቦቱን ይፋ ያድርጉ</string>
+    <string name="offerCreated">አቅርቦት ተፈጥሯል!</string>
+    <string name="ConfigureService">አገልግሎት ማዋቀር</string>
+    <string name="AcceptOrRejectService">አገልግሎትን ማጽደቅ ወይም ውድቅ ማድረግ</string>
+    <string name="Domain">ዶሜይን</string>
+    <string name="Services">አገልግሎቶች</string>
+    <string name="Purpose">ዓላማ</string>
+    <string name="AutoPay">ራስ-ሰር ክፍያ</string>
+    <string name="AutoPayInstructions">የሚከተለው ሳጥን ካልተመረጠ ከዚህ አገልግሎት የሚመጡ ሁሉም የክፍያ ጥያቄዎች ፈቃድ ይጠይቁዎታል፤ ከታች ያሉት ገደቦችም ችላ ይባላሉ።</string>
+    <string name="LimitedAutoApproval">ውሱን ራስ-ሰር ማጽደቅን መፍቀድ</string>
+    <string name="AutoPayMaxPerRequest">የጥያቄ ገደብ</string>
+    <string name="AutoPayMaxPerDay">የቀን ገደብ</string>
+    <string name="AutoPayMaxPerWeek">የሳምንት ገደብ</string>
+    <string name="AutoPayMaxPerMonth">የወር ገደብ</string>
+    <string name="EnableServices">የአገልግሎቶች ገጽን ማንቃት</string>
+    <string name="NoServicesRegistered">ምንም አገልግሎት አልተመዘገበም።</string>
+    <string name="Start">መጀመር</string>
+    <string name="Meditation">ማሰላሰል</string>
+    <string name="Meditate">ማሰላሰል</string>
+    <string name="Sound">ድምጽ</string>
+    <string name="OneMinuteIntervalSound">የ1 ደቂቃ ልዩነት ድምጽ</string>
+    <string name="MeditationVersion">ስሪት: 1.0.3 (build 156)</string>
+    <string name="Meditating">በማሰላሰል ላይ...</string>
+    <string name="MediationComplete">ማሰላሰል ተጠናቋል!</string>
+    <string name="Okay">እሺ</string>
+    <string name="Minutes">ደቂቃዎች</string>
+    <string name="Camouflage">ሽፋን</string>
+    <string name="CamouflageAsMeditationTimer">መተግበሪያውን እንደ ማሰላሰያ ሰዓት ቆጣሪ ማስመሰል።</string>
+    <string name="CamouflageDescriptionAndroid">ሽፋኑን ማንቃት መተግበሪያውን ዘግቶ «ማሰላሰል» በሚል ስም እንደ መተግበሪያ ያስመስለዋል። የ«ማሰላሰል» መተግበሪያ ሽፋንን ለማጥፋት የመተግበሪያውን ምናሌ ከፍተው የስሪት ቁጥሩን አምስት ጊዜ ይጫኑ።</string>
+    <string name="CamouflageDescriptionOther">የ«ማሰላሰል» መተግበሪያ ሽፋንን ለማጥፋት የመተግበሪያውን ምናሌ ከፍተው የስሪት ቁጥሩን አምስት ጊዜ ይጫኑ።</string>
+    <string name="CamouflageAsMeditateAppAndroid">እንደ «ማሰላሰል» መተግበሪያ ማስመሰል</string>
+</resources>

@@ -37,6 +37,32 @@
 		F897CE15FC440000F17E0000 /* strings_fr.bin in Resources */ = {isa = PBXBuildFile; fileRef = D8DC07F5A2220000F17E0000 /* strings_fr.bin */; };
 		A36D65BDC8100000F17E0000 /* strings_sw.bin in Resources */ = {isa = PBXBuildFile; fileRef = 14CA1E9D05660000F17E0000 /* strings_sw.bin */; };
 		5EBCBD0522F10000F17E0000 /* strings_ha.bin in Resources */ = {isa = PBXBuildFile; fileRef = E174BD91D7310000F17E0000 /* strings_ha.bin */; };
+		8735E174B4640000F17E0000 /* strings_pt.bin in Resources */ = {isa = PBXBuildFile; fileRef = 06E50DF84F820000F17E0000 /* strings_pt.bin */; };
+		1305ABD0A3070000F17E0000 /* strings_ja.bin in Resources */ = {isa = PBXBuildFile; fileRef = EAA626F70EE30000F17E0000 /* strings_ja.bin */; };
+		D57A130EE6A60000F17E0000 /* strings_zh.bin in Resources */ = {isa = PBXBuildFile; fileRef = 347052BEDC980000F17E0000 /* strings_zh.bin */; };
+		B89F46AC66640000F17E0000 /* strings_th.bin in Resources */ = {isa = PBXBuildFile; fileRef = 18DC168F35820000F17E0000 /* strings_th.bin */; };
+		7DA31DB48CB40000F17E0000 /* strings_bn.bin in Resources */ = {isa = PBXBuildFile; fileRef = C655471A04F20000F17E0000 /* strings_bn.bin */; };
+		6F9711DE3C910000F17E0000 /* strings_mr.bin in Resources */ = {isa = PBXBuildFile; fileRef = F908F8D7E5110000F17E0000 /* strings_mr.bin */; };
+		987255CA23750000F17E0000 /* strings_ta.bin in Resources */ = {isa = PBXBuildFile; fileRef = 189D35F1255D0000F17E0000 /* strings_ta.bin */; };
+		AAD5289492D90000F17E0000 /* strings_te.bin in Resources */ = {isa = PBXBuildFile; fileRef = 18C1240253290000F17E0000 /* strings_te.bin */; };
+		608663938FDA0000F17E0000 /* strings_gu.bin in Resources */ = {isa = PBXBuildFile; fileRef = DD8FAF3520540000F17E0000 /* strings_gu.bin */; };
+		A8EB50484D170000F17E0000 /* strings_kn.bin in Resources */ = {isa = PBXBuildFile; fileRef = EFB3A1617F930000F17E0000 /* strings_kn.bin */; };
+		5402D5AE957B0000F17E0000 /* strings_ml.bin in Resources */ = {isa = PBXBuildFile; fileRef = F8D313BE205F0000F17E0000 /* strings_ml.bin */; };
+		2FE0783323490000F17E0000 /* strings_pa.bin in Resources */ = {isa = PBXBuildFile; fileRef = 063A6326B5F90000F17E0000 /* strings_pa.bin */; };
+		23E000A9BCA70000F17E0000 /* strings_or.bin in Resources */ = {isa = PBXBuildFile; fileRef = 023A623D1CC30000F17E0000 /* strings_or.bin */; };
+		40BACD0C3CE90000F17E0000 /* strings_ur.bin in Resources */ = {isa = PBXBuildFile; fileRef = 1DCE9E6CC3D90000F17E0000 /* strings_ur.bin */; };
+		8DFA5C3212970000F17E0000 /* strings_ne.bin in Resources */ = {isa = PBXBuildFile; fileRef = FD2CE7D2AC130000F17E0000 /* strings_ne.bin */; };
+		208DDC29F9FA0000F17E0000 /* strings_uk.bin in Resources */ = {isa = PBXBuildFile; fileRef = 1D8FBDCEB3B40000F17E0000 /* strings_uk.bin */; };
+		401784F2D0530000F17E0000 /* strings_ru.bin in Resources */ = {isa = PBXBuildFile; fileRef = 101F72E1D2A70000F17E0000 /* strings_ru.bin */; };
+		EED0F4F953750000F17E0000 /* strings_fil.bin in Resources */ = {isa = PBXBuildFile; fileRef = D0F7D37E355D0000F17E0000 /* strings_fil.bin */; };
+		7180EA2A82530000F17E0000 /* strings_vi.bin in Resources */ = {isa = PBXBuildFile; fileRef = 22167B78B8A70000F17E0000 /* strings_vi.bin */; };
+		3A7A2DCBD7E60000F17E0000 /* strings_as.bin in Resources */ = {isa = PBXBuildFile; fileRef = C1E97BFCE2580000F17E0000 /* strings_as.bin */; };
+		62703BDFD59C0000F17E0000 /* strings_pl.bin in Resources */ = {isa = PBXBuildFile; fileRef = 069D31D5F3EA0000F17E0000 /* strings_pl.bin */; };
+		35E179193C0D0000F17E0000 /* strings_ar.bin in Resources */ = {isa = PBXBuildFile; fileRef = C1E0807896E50000F17E0000 /* strings_ar.bin */; };
+		AA73CE39A2DB0000F17E0000 /* strings_fa.bin in Resources */ = {isa = PBXBuildFile; fileRef = D843542C9F7F0000F17E0000 /* strings_fa.bin */; };
+		9B828C8B698A0000F17E0000 /* strings_yo.bin in Resources */ = {isa = PBXBuildFile; fileRef = 30167EAA50E40000F17E0000 /* strings_yo.bin */; };
+		738C7E776BD40000F17E0000 /* strings_jv.bin in Resources */ = {isa = PBXBuildFile; fileRef = EB62C8D13F520000F17E0000 /* strings_jv.bin */; };
+		1EE5F19C30D00000F17E0000 /* strings_am.bin in Resources */ = {isa = PBXBuildFile; fileRef = C1B396E31DA60000F17E0000 /* strings_am.bin */; };
 		AEBF3D9ABEE659BD4CB3C0B5 /* ShareSheetUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CC3ABB734F27152DEAEF20 /* ShareSheetUITests.swift */; };
 		B4EA0C7FB05C7B822B479C98 /* AppearanceLocalizationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04C24443470ED83C1E10842 /* AppearanceLocalizationUITests.swift */; };
 		B8379143F078B0D54DC5F889 /* WallyUITestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B1795C882B4E46C9C2554E /* WallyUITestHelpers.swift */; };
@@ -100,6 +126,32 @@
 		D8DC07F5A2220000F17E0000 /* strings_fr.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_fr.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_fr.bin; sourceTree = "<group>"; };
 		14CA1E9D05660000F17E0000 /* strings_sw.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_sw.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_sw.bin; sourceTree = "<group>"; };
 		E174BD91D7310000F17E0000 /* strings_ha.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ha.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ha.bin; sourceTree = "<group>"; };
+		06E50DF84F820000F17E0000 /* strings_pt.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_pt.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_pt.bin; sourceTree = "<group>"; };
+		EAA626F70EE30000F17E0000 /* strings_ja.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ja.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ja.bin; sourceTree = "<group>"; };
+		347052BEDC980000F17E0000 /* strings_zh.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_zh.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_zh.bin; sourceTree = "<group>"; };
+		18DC168F35820000F17E0000 /* strings_th.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_th.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_th.bin; sourceTree = "<group>"; };
+		C655471A04F20000F17E0000 /* strings_bn.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_bn.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_bn.bin; sourceTree = "<group>"; };
+		F908F8D7E5110000F17E0000 /* strings_mr.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_mr.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_mr.bin; sourceTree = "<group>"; };
+		189D35F1255D0000F17E0000 /* strings_ta.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ta.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ta.bin; sourceTree = "<group>"; };
+		18C1240253290000F17E0000 /* strings_te.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_te.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_te.bin; sourceTree = "<group>"; };
+		DD8FAF3520540000F17E0000 /* strings_gu.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_gu.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_gu.bin; sourceTree = "<group>"; };
+		EFB3A1617F930000F17E0000 /* strings_kn.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_kn.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_kn.bin; sourceTree = "<group>"; };
+		F8D313BE205F0000F17E0000 /* strings_ml.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ml.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ml.bin; sourceTree = "<group>"; };
+		063A6326B5F90000F17E0000 /* strings_pa.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_pa.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_pa.bin; sourceTree = "<group>"; };
+		023A623D1CC30000F17E0000 /* strings_or.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_or.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_or.bin; sourceTree = "<group>"; };
+		1DCE9E6CC3D90000F17E0000 /* strings_ur.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ur.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ur.bin; sourceTree = "<group>"; };
+		FD2CE7D2AC130000F17E0000 /* strings_ne.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ne.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ne.bin; sourceTree = "<group>"; };
+		1D8FBDCEB3B40000F17E0000 /* strings_uk.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_uk.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_uk.bin; sourceTree = "<group>"; };
+		101F72E1D2A70000F17E0000 /* strings_ru.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ru.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ru.bin; sourceTree = "<group>"; };
+		D0F7D37E355D0000F17E0000 /* strings_fil.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_fil.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_fil.bin; sourceTree = "<group>"; };
+		22167B78B8A70000F17E0000 /* strings_vi.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_vi.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_vi.bin; sourceTree = "<group>"; };
+		C1E97BFCE2580000F17E0000 /* strings_as.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_as.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_as.bin; sourceTree = "<group>"; };
+		069D31D5F3EA0000F17E0000 /* strings_pl.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_pl.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_pl.bin; sourceTree = "<group>"; };
+		C1E0807896E50000F17E0000 /* strings_ar.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ar.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ar.bin; sourceTree = "<group>"; };
+		D843542C9F7F0000F17E0000 /* strings_fa.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_fa.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_fa.bin; sourceTree = "<group>"; };
+		30167EAA50E40000F17E0000 /* strings_yo.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_yo.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_yo.bin; sourceTree = "<group>"; };
+		EB62C8D13F520000F17E0000 /* strings_jv.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_jv.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_jv.bin; sourceTree = "<group>"; };
+		C1B396E31DA60000F17E0000 /* strings_am.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_am.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_am.bin; sourceTree = "<group>"; };
 		95CC3ABB734F27152DEAEF20 /* ShareSheetUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareSheetUITests.swift; sourceTree = "<group>"; };
 		A04C24443470ED83C1E10842 /* AppearanceLocalizationUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppearanceLocalizationUITests.swift; sourceTree = "<group>"; };
 		A1139D0933A50E4D9B4B065A /* KeyboardPersistenceUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardPersistenceUITests.swift; sourceTree = "<group>"; };
@@ -168,6 +220,32 @@
 				D8DC07F5A2220000F17E0000 /* strings_fr.bin */,
 				14CA1E9D05660000F17E0000 /* strings_sw.bin */,
 				E174BD91D7310000F17E0000 /* strings_ha.bin */,
+				06E50DF84F820000F17E0000 /* strings_pt.bin */,
+				EAA626F70EE30000F17E0000 /* strings_ja.bin */,
+				347052BEDC980000F17E0000 /* strings_zh.bin */,
+				18DC168F35820000F17E0000 /* strings_th.bin */,
+				C655471A04F20000F17E0000 /* strings_bn.bin */,
+				F908F8D7E5110000F17E0000 /* strings_mr.bin */,
+				189D35F1255D0000F17E0000 /* strings_ta.bin */,
+				18C1240253290000F17E0000 /* strings_te.bin */,
+				DD8FAF3520540000F17E0000 /* strings_gu.bin */,
+				EFB3A1617F930000F17E0000 /* strings_kn.bin */,
+				F8D313BE205F0000F17E0000 /* strings_ml.bin */,
+				063A6326B5F90000F17E0000 /* strings_pa.bin */,
+				023A623D1CC30000F17E0000 /* strings_or.bin */,
+				1DCE9E6CC3D90000F17E0000 /* strings_ur.bin */,
+				FD2CE7D2AC130000F17E0000 /* strings_ne.bin */,
+				1D8FBDCEB3B40000F17E0000 /* strings_uk.bin */,
+				101F72E1D2A70000F17E0000 /* strings_ru.bin */,
+				D0F7D37E355D0000F17E0000 /* strings_fil.bin */,
+				22167B78B8A70000F17E0000 /* strings_vi.bin */,
+				C1E97BFCE2580000F17E0000 /* strings_as.bin */,
+				069D31D5F3EA0000F17E0000 /* strings_pl.bin */,
+				C1E0807896E50000F17E0000 /* strings_ar.bin */,
+				D843542C9F7F0000F17E0000 /* strings_fa.bin */,
+				30167EAA50E40000F17E0000 /* strings_yo.bin */,
+				EB62C8D13F520000F17E0000 /* strings_jv.bin */,
+				C1B396E31DA60000F17E0000 /* strings_am.bin */,
 				8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */,
 				8E1ECA712AAA001F00759B4F /* strings_no.bin */,
 				8E1ECA692AAA001C00759B4F /* strings_round.bin */,
@@ -312,6 +390,32 @@
 				F897CE15FC440000F17E0000 /* strings_fr.bin in Resources */,
 				A36D65BDC8100000F17E0000 /* strings_sw.bin in Resources */,
 				5EBCBD0522F10000F17E0000 /* strings_ha.bin in Resources */,
+				8735E174B4640000F17E0000 /* strings_pt.bin in Resources */,
+				1305ABD0A3070000F17E0000 /* strings_ja.bin in Resources */,
+				D57A130EE6A60000F17E0000 /* strings_zh.bin in Resources */,
+				B89F46AC66640000F17E0000 /* strings_th.bin in Resources */,
+				7DA31DB48CB40000F17E0000 /* strings_bn.bin in Resources */,
+				6F9711DE3C910000F17E0000 /* strings_mr.bin in Resources */,
+				987255CA23750000F17E0000 /* strings_ta.bin in Resources */,
+				AAD5289492D90000F17E0000 /* strings_te.bin in Resources */,
+				608663938FDA0000F17E0000 /* strings_gu.bin in Resources */,
+				A8EB50484D170000F17E0000 /* strings_kn.bin in Resources */,
+				5402D5AE957B0000F17E0000 /* strings_ml.bin in Resources */,
+				2FE0783323490000F17E0000 /* strings_pa.bin in Resources */,
+				23E000A9BCA70000F17E0000 /* strings_or.bin in Resources */,
+				40BACD0C3CE90000F17E0000 /* strings_ur.bin in Resources */,
+				8DFA5C3212970000F17E0000 /* strings_ne.bin in Resources */,
+				208DDC29F9FA0000F17E0000 /* strings_uk.bin in Resources */,
+				401784F2D0530000F17E0000 /* strings_ru.bin in Resources */,
+				EED0F4F953750000F17E0000 /* strings_fil.bin in Resources */,
+				7180EA2A82530000F17E0000 /* strings_vi.bin in Resources */,
+				3A7A2DCBD7E60000F17E0000 /* strings_as.bin in Resources */,
+				62703BDFD59C0000F17E0000 /* strings_pl.bin in Resources */,
+				35E179193C0D0000F17E0000 /* strings_ar.bin in Resources */,
+				AA73CE39A2DB0000F17E0000 /* strings_fa.bin in Resources */,
+				9B828C8B698A0000F17E0000 /* strings_yo.bin in Resources */,
+				738C7E776BD40000F17E0000 /* strings_jv.bin in Resources */,
+				1EE5F19C30D00000F17E0000 /* strings_am.bin in Resources */,
 				8E1ECA7E2AAA002000759B4F /* strings_no.bin in Resources */,
 				8E1ECA7B2AAA002000759B4F /* strings_it.bin in Resources */,
 				8E1ECA792AAA002000759B4F /* strings_nb.bin in Resources */,
@@ -368,6 +472,32 @@
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_fr.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_sw.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ha.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_pt.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ja.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_zh.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_th.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_bn.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_mr.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ta.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_te.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_gu.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_kn.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ml.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_pa.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_or.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ur.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ne.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_uk.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ru.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_fil.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_vi.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_as.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_pl.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ar.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_fa.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_yo.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_jv.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_am.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_nb.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_no.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_round.bin",

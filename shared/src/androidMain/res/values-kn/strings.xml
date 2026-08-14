@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">ಹೌದು</string>
+    <string name="no">ಇಲ್ಲ</string>
+    <string name="at">ನಲ್ಲಿ</string>
+    <string name="of">ರಲ್ಲಿ</string>
+    <string name="choose">ಆರಿಸಿ</string>
+    <string name="accept">ಒಪ್ಪಿಕೊಳ್ಳಿ</string>
+    <string name="reject">ತಿರಸ್ಕರಿಸಿ</string>
+    <string name="remove">ತೆಗೆದುಹಾಕಿ</string>
+    <string name="confirm">ದೃಢೀಕರಿಸಿ</string>
+    <string name="cancel">ರದ್ದುಮಾಡಿ</string>
+    <string name="Back">ಹಿಂದೆ</string>
+    <string name="removeAll">ಎಲ್ಲವನ್ನೂ ತೆಗೆದುಹಾಕಿ</string>
+    <string name="done">ಆಯಿತು</string>
+    <string name="dismiss">ವಜಾಗೊಳಿಸಿ</string>
+    <string name="deny">ನಿರಾಕರಿಸಿ</string>
+    <string name="ask">ಕೇಳಿ</string>
+    <string name="badSignature">ಅಮಾನ್ಯ ಸಹಿ</string>
+    <string name="unknownCurrency">ಅಜ್ಞಾತ ಕರೆನ್ಸಿ</string>
+    <string name="unknownCryptoCurrency">ಅಜ್ಞಾತ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿ ಅಥವಾ ಬ್ಲಾಕ್‌ಚೈನ್</string>
+    <string name="Processing">ಪ್ರಕ್ರಿಯೆ ನಡೆಯುತ್ತಿದೆ...</string>
+    <string name="receiving">ಸ್ವೀಕರಿಸುತ್ತಿದೆ</string>
+    <string name="sending">ಕಳುಹಿಸುತ್ತಿದೆ</string>
+    <string name="noAdditionalDetails">ಹೆಚ್ಚಿನ ವಿವರಗಳಿಲ್ಲ</string>
+    <string name="unspecified">ನಿರ್ದಿಷ್ಟಪಡಿಸಿಲ್ಲ</string>
+    <string name="removed">ತೆಗೆದುಹಾಕಲಾಗಿದೆ</string>
+    <string name="synced">ಸಿಂಕ್ ಆಗಿದೆ</string>
+    <string name="unsynced">ಸಿಂಕ್ ಆಗುತ್ತಿದೆ</string>
+    <string name="connected">ಸಂಪರ್ಕಗೊಂಡಿದೆ</string>
+    <string name="connectionEstablished">ಸಂಪರ್ಕ ಸ್ಥಾಪನೆಯಾಗಿದೆ</string>
+    <string name="connectionClosed">ಸಂಪರ್ಕ ಮುಚ್ಚಲಾಗಿದೆ</string>
+    <string name="connectionException">ಸೈಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲಾಗಲಿಲ್ಲ</string>
+    <string name="balance">ಪ್ರಸ್ತುತ ಬ್ಯಾಲೆನ್ಸ್</string>
+    <string name="totalReceived">ಒಟ್ಟು ಸ್ವೀಕೃತ</string>
+    <string name="inProgress">ಪ್ರಗತಿಯಲ್ಲಿದೆ</string>
+    <string name="staleTransaction">ಹಳೆಯ ವಹಿವಾಟು</string>
+    <string name="staleTransactionDetails">ಈ ವಹಿವಾಟನ್ನು ಪೂರ್ಣ ನೋಡ್ ತಿರಸ್ಕರಿಸಿದೆ. ಇದು ಬಹುಶಃ ಹಳೆಯದು (ಈಗಾಗಲೇ ಬೇರೊಬ್ಬರು ಬಳಸಿದ್ದಾರೆ), ಆದರೆ ಈ ವಹಿವಾಟು ಎಂದಿಗೂ ಮಾನ್ಯವಾಗಿರದಿರುವ ಸಾಧ್ಯತೆಯೂ ಇದೆ, ಅಥವಾ ಇದು ಸರಿಯಾಗಿದ್ದು ನಾವು ಕೇಳಿದ ನೋಡ್‌ಗಳು ಅಪ್ರಾಮಾಣಿಕವಾಗಿರಬಹುದು. ದೃಢೀಕೃತವಾಗದ ಹೊರತು ವಾಲೆಟ್ ಈ ವಹಿವಾಟನ್ನು ನಿರ್ಲಕ್ಷಿಸುತ್ತದೆ.</string>
+    <string name="NoPermission">ಅನುಮತಿ ಇಲ್ಲ</string>
+    <string name="NoPermissionDetails" formatted="false">ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಬಳಸಲು ನೀವು %perm ಅನುಮತಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬೇಕು. ಇಲ್ಲಿ ಇದನ್ನು ಮಾಡಬಹುದು: Android ಸೆಟ್ಟಿಂಗ್‌ಗಳು -> ಆ್ಯಪ್‌ಗಳು -> Wally -> ಅನುಮತಿಗಳು</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...ಲೋಡ್ ಆಗುತ್ತಿದೆ...</h1></center></body>]]></string>
+    <string name="loading">ಲೋಡ್ ಆಗುತ್ತಿದೆ</string>
+    <string name="Untitled">ಶೀರ್ಷಿಕೆರಹಿತ</string>
+    <string name="nothing">ಏನೂ ಇಲ್ಲ</string>
+    <string name="breakIt">ಮುರಿಯಿರಿ</string>
+    <string name="or">ಅಥವಾ</string>
+    <string name="onBlockchain">ನಲ್ಲಿ</string>
+    <string name="NotImplemented">ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ</string>
+    <string name="NoNodes">ಬ್ಲಾಕ್‌ಚೈನ್ ಪ್ರವೇಶ ಇಲ್ಲ</string>
+    <string name="cancelled">ರದ್ದಾಗಿದೆ</string>
+    <string name="refreshQR">ಸರ್ವರ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ</string>
+    <string name="pleaseWait">ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ</string>
+    <string name="trying">ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ</string>
+    <string name="clear">ತೆರವುಗೊಳಿಸಿ</string>
+    <string name="thousand">* ಸಾವಿರ</string>
+    <string name="million">* ಮಿಲಿಯನ್</string>
+    <string name="required">ಅಗತ್ಯವಿದೆ</string>
+    <string name="account">ಖಾತೆ</string>
+    <string name="addAccountPlus">+ ಖಾತೆ ಸೇರಿಸಿ</string>
+    <string name="receivingTokens">ಸ್ವೀಕರಿಸುವ ಟೋಕನ್‌ಗಳು</string>
+    <string name="spendingTokens">ಖರ್ಚು ಮಾಡುವ ಟೋಕನ್‌ಗಳು</string>
+    <string name="version" formatted="false">ಆವೃತ್ತಿ: %ver (%date)</string>
+    <string name="enableDeveloperView">ಸುಧಾರಿತ/ಡೆವಲಪರ್ ಮೋಡ್</string>
+    <string name="enableRecompositionCounts">ಪರದೆ ಮರುಚಿತ್ರಣ ಎಣಿಕೆ</string>
+    <string name="enableExperimentalUx">ಪ್ರಾಯೋಗಿಕ ಇಂಟರ್ಫೇಸ್</string>
+    <string name="enableDarkMode">ಡಾರ್ಕ್ ಮೋಡ್</string>
+    <string name="enableSound">ಧ್ವನಿ ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="enableIdentityMenu">ಗುರುತಿನ ಪರದೆ ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="enableTricklePayMenu">Trickle Pay ಪರದೆ ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="enableAssetsMenu">ಆಸ್ತಿಗಳ ಪರದೆ ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="only">ಮಾತ್ರ</string>
+    <string name="prefer">ಆದ್ಯತೆ</string>
+    <string name="rediscoverWalletTx">ಎಲ್ಲಾ ವಹಿವಾಟು ಮರುಶೋಧಿಸಿ</string>
+    <string name="searchWalletTx">ಕಾಣೆಯಾದ ವಹಿವಾಟುಗಳಿಗಾಗಿ ಹುಡುಕಿ</string>
+    <string name="rediscoverBlockchain">ಬ್ಲಾಕ್‌ಚೈನ್ ಹೆಡರ್ ಮರುಶೋಧಿಸಿ</string>
+    <string name="logDebugData">ಡೀಬಗ್ ಡೇಟಾ ಲಾಗ್ ಮಾಡಿ</string>
+    <string name="clearIdentityDomains">ಗುರುತಿನ ಡೊಮೇನ್‌ಗಳ ತೆರವು</string>
+    <string name="rediscoverTooltip">ಬ್ಲಾಕ್‌ಚೈನ್ ಸ್ಥಿತಿಯನ್ನು ಅಳಿಸಿ, ವಾಲೆಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಎಲ್ಲಾ ವಹಿವಾಟುಗಳನ್ನು ಹೊಸದಾಗಿ ಹುಡುಕಿ</string>
+    <string name="wordSeed">ಖಾತೆಯ ಗುಪ್ತ ರಿಕವರಿ ಪದಗುಚ್ಛ</string>
+    <string name="deleteWalletAccount">ಖಾತೆ ಅಳಿಸಿ</string>
+    <string name="more">ಇನ್ನಷ್ಟು</string>
+    <string name="darkMode">ಡಾರ್ಕ್ ಮೋಡ್</string>
+    <string name="ConsolidationNeeded">ಮೊದಲು ಖಾತೆ ಕ್ರೋಢೀಕರಿಸಿ</string>
+    <string name="SetChangePin">ಅನ್‌ಲಾಕ್ ಪಿನ್ ಹೊಂದಿಸಿ/ಬದಲಿಸಿ</string>
+    <string name="CurrentPin">ಪ್ರಸ್ತುತ ಪಿನ್</string>
+    <string name="NewPin">ಹೊಸ ಪಿನ್</string>
+    <string name="PinChanged">ಪಿನ್ ಬದಲಾಗಿದೆ</string>
+    <string name="PinRemoved">ಪಿನ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</string>
+    <string name="PinInvalid">ಅಮಾನ್ಯ ಪಿನ್</string>
+    <string name="PinTooShort">ಹೊಸ ಪಿನ್ ತುಂಬಾ ಚಿಕ್ಕದಾಗಿದೆ</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">ಎಚ್ಚರಿಕೆ: ಕೆಲವು ಖಾತೆಗಳ ಗುಪ್ತ ರಿಕವರಿ ಪದಗುಚ್ಛಗಳನ್ನು ನೀವು ಬರೆದಿಟ್ಟಿಲ್ಲ! ಈ ಸಾಧನ ಕಳೆದುಹೋದರೆ ಅಥವಾ ಹಾಳಾದರೆ ನಿಮ್ಮ ಹಣ ನಷ್ಟವಾಗದಂತೆ ಇರಲು, ಗುಪ್ತ ರಿಕವರಿ ಕೀಗಳನ್ನು ಕಾಗದದ ಮೇಲೆ ಅಥವಾ ಎಲೆಕ್ಟ್ರಾನಿಕ್ ಅಲ್ಲದ ಇತರ ರೂಪದಲ್ಲಿ ಬರೆದಿಡಿ.</string>
+    <string name="WroteRecoveryPhraseDown">ಬರೆದಿಟ್ಟಿದ್ದೇನೆ</string>
+    <string name="RecoveryPhraseKeepRemindingMe">ನೆನಪಿಸುತ್ತಿರಿ</string>
+    <string name="ViewRecoveryPhrase">ಖಾತೆಯ ಗುಪ್ತ ರಿಕವರಿ ಪದಗುಚ್ಛ ವೀಕ್ಷಿಸಿ</string>
+    <string name="localCurrency">ಸ್ಥಳೀಯ ಕರೆನ್ಸಿ</string>
+    <string name="assessUnconfirmed">ದೃಢೀಕರಿಸದ ವಹಿವಾಟು ಪರಿಶೀಲಿಸಿ</string>
+    <string name="rediscoverNotice">ಖಾತೆ ಮರುಶೋಧನೆ ಪ್ರಾರಂಭವಾಗಿದೆ</string>
+    <string name="searchNotice">ಖಾತೆ ಹುಡುಕಾಟ ಪ್ರಾರಂಭವಾಗಿದೆ</string>
+    <string name="unconfAssessmentNotice">ದೃಢೀಕರಿಸದ ವಹಿವಾಟುಗಳ ಪರಿಶೀಲನೆ ಪ್ರಾರಂಭವಾಗಿದೆ</string>
+    <string name="accountDeleteNotice">ಖಾತೆ ಅಳಿಸಲಾಗಿದೆ</string>
+    <string name="rediscoverConfirmation">ಖಾತೆಯನ್ನು ಮರುಶೋಧಿಸಿದರೆ ವಾಲೆಟ್ ಶೂನ್ಯಕ್ಕೆ ಬರುತ್ತದೆ ಮತ್ತು ಖಾತೆಯನ್ನು ಹೊಸದಾಗಿ ರಚಿಸಿದಂತೆ ಪಾವತಿಗಳಿಗಾಗಿ ಬ್ಲಾಕ್‌ಚೈನ್‌ನಲ್ಲಿ ಹುಡುಕಲಾಗುತ್ತದೆ. ಈ ಪ್ರಕ್ರಿಯೆಗೆ ಬಹಳ ಸಮಯ ಹಿಡಿಯಬಹುದು. ಆದರೆ, ನಿಮ್ಮ ವಾಲೆಟ್ ಚಟುವಟಿಕೆಯನ್ನು ಡೇಟಾಬೇಸ್‌ನಿಂದ ಕೇಳುವ ಆಯ್ಕೆ ನೀಡುವ “ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್” ಬಟನ್ ಕಾಣಿಸಬಹುದು. ಮೇಲಿನ ದಿನಾಂಕ ತಪ್ಪಾಗಿದ್ದರೆ, ಅದು ನವೀಕರಣಗೊಳ್ಳಲು ಕೆಲವು ಸೆಕೆಂಡು ಕಾಯಿರಿ.</string>
+    <string name="searchConfirmation">ಈ ಕಾರ್ಯವು ಕಾಣೆಯಾದ ಪಾವತಿಗಳಿಗಾಗಿ ಬ್ಲಾಕ್‌ಚೈನ್‌ನಲ್ಲಿ ಹುಡುಕುತ್ತದೆ. ಈ ಪ್ರಕ್ರಿಯೆಗೆ ಬಹಳ ಸಮಯ ಹಿಡಿಯಬಹುದು. ಆದರೆ, ನಿಮ್ಮ ವಾಲೆಟ್ ಚಟುವಟಿಕೆಯನ್ನು ಡೇಟಾಬೇಸ್‌ನಿಂದ ಕೇಳುವ ಆಯ್ಕೆ ನೀಡುವ “ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್” ಬಟನ್ ಕಾಣಿಸಬಹುದು.</string>
+    <string name="rediscoverBlockchainConfirmation">ಬ್ಲಾಕ್‌ಚೈನ್ ಅನ್ನು ಮರುಶೋಧಿಸಿದರೆ ಈ ವಾಲೆಟ್‌ನಿಂದ ಎಲ್ಲಾ ಬ್ಲಾಕ್‌ಚೈನ್ ಹೆಡರ್ ಡೇಟಾ ಅಳಿಸಲ್ಪಟ್ಟು, ಪೂರ್ಣ ನೋಡ್‌ಗಳಿಂದ ಮತ್ತೆ ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತದೆ. ಈ ಪ್ರಕ್ರಿಯೆಗೆ ಬಹಳ ಸಮಯ ಹಿಡಿಯಬಹುದು. ಬ್ಲಾಕ್‌ಚೈನ್ ಹೆಡರ್ ಸಮಸ್ಯೆ ಇದೆ ಎಂದು ಖಚಿತವಾಗಿದ್ದರೆ ಮಾತ್ರ ಬಳಸಿ.</string>
+    <string name="deleteConfirmation" formatted="false">ಖಾತೆಯ ಗುಪ್ತ ರಿಕವರಿ ಪದಗುಚ್ಛದ ಮೂಲಕ ಮರುಪಡೆಯದ ಹೊರತು, ಖಾತೆಯನ್ನು ಅಳಿಸಿದರೆ ಎಲ್ಲಾ ಬ್ಯಾಲೆನ್ಸ್, ಗುರುತುಗಳು ಮತ್ತು ಇತಿಹಾಸ ಲಭ್ಯವಿರುವುದಿಲ್ಲ! ನಿಮಗೆ ಸಂಪೂರ್ಣ ಖಚಿತವಿದ್ದರೆ ಮಾತ್ರ ಇದನ್ನು ಮಾಡಿ!\n\n“%accountName” ಖಾತೆಯನ್ನು (%blockchain ನಲ್ಲಿ) ಅಳಿಸಬೇಕೇ?</string>
+    <string name="reassessConfirmation">ಈ ಕಾರ್ಯವು ನೀವು ಇತ್ತೀಚೆಗೆ ಕಳುಹಿಸಿದ ವಹಿವಾಟುಗಳಿಗಾಗಿ ಬ್ಲಾಕ್‌ಚೈನ್ ಅನ್ನು ಪರಿಶೀಲಿಸುತ್ತದೆ. ಅವು ಇವೆಯೇ ಇಲ್ಲವೇ ಎಂಬುದರ ಆಧಾರದ ಮೇಲೆ ಅವನ್ನು ದೃಢೀಕರಿಸುತ್ತದೆ ಅಥವಾ ಅಳಿಸುತ್ತದೆ. ವಹಿವಾಟುಗಳು ಅಳಿಸಲ್ಪಟ್ಟರೆ ಹಣ ಕಾಣೆಯಾದಂತೆ ತೋರುತ್ತದೆ. ಖರ್ಚಾದ ಬ್ಯಾಲೆನ್ಸ್ ಮರಳಿ ಪಡೆಯಲು ನೀವು “ಮರುಶೋಧಿಸಿ” ಬಳಸಬೇಕಾಗುತ್ತದೆ. ನೀವು ಇತ್ತೀಚೆಗೆ ವಹಿವಾಟು ಮಾಡಿದ್ದರೆ ಇದನ್ನು ಬಳಸಬೇಡಿ, ಏಕೆಂದರೆ ಆ ವಹಿವಾಟು ದೃಢೀಕರಣಕ್ಕಾಗಿ ಕಾಯುತ್ತಾ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಸುಪ್ತವಾಗಿರಬಹುದು.</string>
+    <string name="recoveryPhrase">ನಿಮ್ಮ ವಾಲೆಟ್ ಮರುಪಡೆಯಲು ಈ 12 ಪದಗಳ ಪದಗುಚ್ಛವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ಈ ಪದಗುಚ್ಛ ಯಾರ ಬಳಿ ಇರುತ್ತದೋ ಅವರು ನಿಮ್ಮ ಹಣವನ್ನು ಖರ್ಚು ಮಾಡಬಹುದು. ಇದನ್ನು ಪೆನ್ನಿನಿಂದ ಕಾಗದದ ಮೇಲೆ ಬರೆದು (ಅಥವಾ ಉಕ್ಕಿನ ಮೇಲೆ ಕೆತ್ತಿ) ಸುರಕ್ಷಿತವಾಗಿ ಇರಿಸಿ!</string>
+    <string name="recoveryWarning">ನಿಲ್ಲಿ! ಇದನ್ನು ಡಿಜಿಟಲ್ ರೂಪದಲ್ಲಿ ಸಂಗ್ರಹಿಸಬೇಡಿ!\nಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಬೇಡಿ, ಫೋಟೋ, ಜೆರಾಕ್ಸ್ ಅಥವಾ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆಯಬೇಡಿ.</string>
+    <string name="flickerReason">ಈ ಮಿನುಗುವಿಕೆ ಒಂದು ಭದ್ರತಾ ಕ್ರಮ</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ. ಆದರೆ ಈ ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ನಕಲಿಸಿ ಯಾವುದೇ ಆ್ಯಪ್‌ಗೆ ಅಂಟಿಸುವುದು ಅತ್ಯಂತ ಕೆಟ್ಟ ಆಲೋಚನೆ! ಇಮೇಲ್, ಹೆಚ್ಚಿನ ಆ್ಯಪ್‌ಗಳು, ಬ್ಯಾಕಪ್ ಸೇವೆಗಳು ಇತ್ಯಾದಿ, ಅಕ್ಷರಶಃ ಹಣವೇ ಆಗಿರುವ ಪದಗುಚ್ಛವನ್ನು ಇಟ್ಟುಕೊಳ್ಳಲು ಬೇಕಾದಷ್ಟು ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ.</string>
+    <string name="primaryAccountConfirmation">ನಿಮ್ಮ ಪ್ರಾಥಮಿಕ ಖಾತೆ ಎಂದರೆ ನಿಮ್ಮ ಗುರುತಿಗಾಗಿ ಮತ್ತು ಸ್ವಯಂಪಾವತಿಗಳಿಗಾಗಿ ಬಳಸುವ ಖಾತೆ. ಈ ಆ್ಯಪ್‌ನ ಹಲವು ಕಡೆ ಮೊದಲು ತೋರಿಸುವ ಖಾತೆಯೂ ಇದೇ. ಇದು Nexa ಬ್ಲಾಕ್‌ಚೈನ್‌ನಲ್ಲಿ ಇರಬೇಕು.</string>
+    <string name="primaryAccountSuccess">ಪ್ರಾಥಮಿಕ ಖಾತೆ: %name</string>
+    <string name="AccountActions">ಖಾತೆ ಕ್ರಿಯೆಗಳು</string>
+    <string name="GeneralSettings">ಸಾಮಾನ್ಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="BlockchainSettings">ಬ್ಲಾಕ್‌ಚೈನ್ ಮೂಲಗಳು</string>
+    <string name="AccessPriceData">ಬೆಲೆ ಡೇಟಾ ಪ್ರವೇಶ</string>
+    <string name="oldUi">ಹಳೆಯ ಬಳಕೆದಾರ ಇಂಟರ್ಫೇಸ್</string>
+    <string name="SplitBillDescription">ನೀವು ಬಿಲ್ ಅನ್ನು (ಫಿಯೆಟ್ ಕರೆನ್ಸಿಯಲ್ಲಿ) ಪಾವತಿಸಿ, ನಂತರ ನಿಮ್ಮ ಸ್ನೇಹಿತರು ಕೆಳಗಿನ QR ಕೋಡ್ ಮೂಲಕ ತಮ್ಮ ಪಾಲನ್ನು ನಿಮಗೆ ಪಾವತಿಸುತ್ತಾರೆ. ಸ್ನೇಹಿತರೇ ಖರೀದಿಸದಿದ್ದರೆ, ಎಷ್ಟು ಭಾಗ ಮಾಡಬೇಕೆಂಬ ಎಣಿಕೆಯಲ್ಲಿ ನಿಮ್ಮನ್ನೂ ಸೇರಿಸಿಕೊಳ್ಳಿ!</string>
+    <string name="BillAmount">ಬಿಲ್ ಮೊತ್ತ</string>
+    <string name="TipAmount">ಟಿಪ್ ಮೊತ್ತ</string>
+    <string name="TipPercentage">ಟಿಪ್ ಶೇಕಡಾವಾರು</string>
+    <string name="Total">ಭಾಗ ಮಾಡಬೇಕಾದ ಒಟ್ಟು ಮೊತ್ತ</string>
+    <string name="OR">ಅಥವಾ</string>
+    <string name="QRCodeFor">ಇದಕ್ಕಾಗಿ QR ಕೋಡ್:</string>
+    <string name="Ways">ಭಾಗಗಳು:</string>
+    <string name="Tip">ಟಿಪ್:</string>
+    <string name="Amount">ಮೊತ್ತ:</string>
+    <string name="AmountWithValue" formatted="false">ಮೊತ್ತ: %amt</string>
+    <string name="QuantityWithValue" formatted="false">ಪ್ರಮಾಣ: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">%date ರಂದು</string>
+    <string name="fastSync">ವೇಗದ ಸಿಂಕ್</string>
+    <string name="refresh">ರಿಫ್ರೆಶ್</string>
+    <string name="goodQR">QR ಓದಬಹುದು</string>
+    <string name="badQR">QR ಓದಲಾಗಲಿಲ್ಲ</string>
+    <string name="badImageQR">ಚಿತ್ರದ QR ಸರಿಯಿಲ್ಲ. ಇನ್ನಷ್ಟು...</string>
+    <string name="badImageQRhelp">QR ಕೋಡ್‌ನ ಹತ್ತಿರದಿಂದ ಫೋಟೋ ತೆಗೆದಿದ್ದರೆ, ಸ್ವಲ್ಪ ದೂರದಿಂದ ತೆಗೆಯಲು ಪ್ರಯತ್ನಿಸಿ. ಬಿಳಿ ಅಂಚು ಕೂಡ QR ಕೋಡ್‌ನ ಭಾಗ, ಮತ್ತು ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹತ್ತಿರದಿಂದ ಫೋಟೋ ತೆಗೆದರೆ ಗೊಂದಲದ ಮೊಯರೆ ಮಾದರಿಗಳು ಮೂಡಬಹುದು.</string>
+    <string name="GoThere">ಅಲ್ಲಿಗೆ ಹೋಗಿ</string>
+    <string name="unlock">ಅನ್‌ಲಾಕ್ ಮಾಡಿ</string>
+    <string name="share">ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="Send">ಕಳುಹಿಸಿ</string>
+    <string name="OpenSend">ಕಳುಹಿಸಿ</string>
+    <string name="SendCancel">ರದ್ದುಮಾಡಿ</string>
+    <string name="ignoredInsecureRequest">ಅಸುರಕ್ಷಿತ ವಿನಂತಿ ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ</string>
+    <string name="fromAccountColon">ಈ ಖಾತೆಯಿಂದ ಕಳುಹಿಸಿ:</string>
+    <string name="chooseAccountError">ಒಂದು ಖಾತೆ ಆರಿಸಿ</string>
+    <string name="toColon">ಇವರಿಗೆ:</string>
+    <string name="To">ಇವರಿಗೆ</string>
+    <string name="ByAuthor">ಕರ್ತೃ:</string>
+    <string name="assetsColon">ಆಸ್ತಿಗಳು:</string>
+    <string name="assets">ಆಸ್ತಿಗಳು</string>
+    <string name="NoAssets">%act ಖಾತೆಯಲ್ಲಿ ಯಾವುದೇ ಆಸ್ತಿಗಳಿಲ್ಲ</string>
+    <string name="NoAssetsAccount">ಸದ್ಯ ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಯಾವುದೇ ಆಸ್ತಿಗಳಿಲ್ಲ.</string>
+    <string name="fromColon">ಇವರಿಂದ:</string>
+    <string name="ReceiveIntoAccount">ಖಾತೆಗೆ ಸ್ವೀಕರಿಸಿ</string>
+    <string name="Receive">ಸ್ವೀಕರಿಸಿ</string>
+    <string name="YourAddress">ನಿಮ್ಮ %blockchain ವಿಳಾಸ</string>
+    <string name="CopyAddress">ವಿಳಾಸ ನಕಲಿಸಿ</string>
+    <string name="AccountListHeader">ಖಾತೆಗಳು</string>
+    <string name="Address">ವಿಳಾಸ</string>
+    <string name="clipboard">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</string>
+    <string name="settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="help">ಸಹಾಯ</string>
+    <string name="invalidQuantity">ಅಮಾನ್ಯ ಪ್ರಮಾಣ</string>
+    <string name="needNonexistentAuthority">ಟೋಕನ್ ಅಧಿಕಾರ ಬೇಕು</string>
+    <string name="invalidQuantityTooManyDecimalDigits">ದಶಮಾಂಶ ಸ್ಥಾನಗಳು ತುಂಬಾ ಹೆಚ್ಚು</string>
+    <string name="roundedUpClickSendAgain">ಪೂರ್ಣಾಂಕಗೊಳಿಸಲಾಗಿದೆ, ಒಪ್ಪಲು ಮತ್ತೆ ಕಳುಹಿಸಿ ಒತ್ತಿ</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">ಖರೀದಿ</string>
+    <string name="scanPaymentQRcode">ಪಾವತಿ ವಿಳಾಸದ QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</string>
+    <string name="ScanQRCodeButton">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</string>
+    <string name="PasteDestinationAddressButton">ಅಂಟಿಸಿ</string>
+    <string name="NewAccountButton">ಹೊಸ ಖಾತೆ ಸೆಟಪ್</string>
+    <string name="NewAccountSearchingForTransactions">...ಮೊದಲ ವಹಿವಾಟಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ...</string>
+    <string name="NewAccountSearchingForAllTransactions">...ಎಲ್ಲಾ ವಹಿವಾಟುಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ...</string>
+    <string name="NewAccountSearchFailure">ವಹಿವಾಟು ಹುಡುಕಾಟ ವಿಫಲವಾಗಿದೆ</string>
+    <string name="receiveAddressQRCode">ಸ್ವೀಕರಿಸುವ QR ಕೋಡ್</string>
+    <string name="paymentProposal">ಸ್ವೀಕರಿಸಿದ ಪಾವತಿ ಪ್ರಸ್ತಾವನೆಯಂತೆ</string>
+    <string name="pasteIsEmpty">ಅಂಟಿಸಲು ಏನೂ ಇಲ್ಲ</string>
+    <string name="pasteIgnored">ಅಂಟಿಸಿದ್ದು ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ</string>
+    <string name="pasteUnintelligible">ಅಂಟಿಸಿದ್ದು ಅರ್ಥವಾಗಲಿಲ್ಲ</string>
+    <string name="chainIncompatibleWithAddress">ವಿಳಾಸ ಖಾತೆಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">ಖಾತೆಯ ಕರೆನ್ಸಿ %walletCrypto, ವಿಳಾಸ %addressCrypto.  ವಿಳಾಸದ ಬ್ಲಾಕ್‌ಚೈನ್‌ಗೆ ಹೊಂದುವ ಖಾತೆಗೆ ಬದಲಾಯಿಸಲು ಕಾಂಬೊ ಬಾಕ್ಸ್ ಬಳಸಿ.</string>
+    <string name="incoming" formatted="false">%delta %unit ಬಾಕಿ ಸೇರಿದೆ</string>
+    <string name="approximatelyT" formatted="false">ಸುಮಾರು %qty %fiat</string>
+    <string name="fastForward" formatted="false">ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್</string>
+    <string name="fastforwardStatus" formatted="false">ಫಾಸ್ಟ್ ಫಾರ್ವರ್ಡ್ ವಿಶ್ಲೇಷಣೆ: %info</string>
+    <string name="fastforwardStart" formatted="false">ಪ್ರಾರಂಭವಾಗಿದೆ</string>
+    <string name="exchangeRate" formatted="false">(ವಿನಿಮಯ ದರ: 1 %fiat ಗೆ %amt %crypto)</string>
+    <string name="moreThanAvailable">(ಲಭ್ಯಕ್ಕಿಂತ ಹೆಚ್ಚು)</string>
+    <string name="moreThanConfirmedAvailable">(ದೃಢೀಕೃತಕ್ಕಿಂತ ಹೆಚ್ಚು)</string>
+    <string name="actuallySendingT" formatted="false">ವಾಸ್ತವವಾಗಿ %qty %crypto ಕಳುಹಿಸುತ್ತಿದೆ</string>
+    <string name="copiedToClipboard">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ\nನಕಲಿಸಲಾಗಿದೆ</string>
+    <string name="copyId">ID ನಕಲಿಸಿ</string>
+    <string name="openInBrowser">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</string>
+    <string name="cannotCopyToClipboard">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲು ಆಗಲಿಲ್ಲ</string>
+    <string name="tooLargeForClipboard">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ತುಂಬಾ ಹೆಚ್ಚು ಡೇಟಾ</string>
+    <string name="scanFailed">ಸ್ಕ್ಯಾನ್ ವಿಫಲವಾಗಿದೆ</string>
+    <string name="scanSuccess">ಸ್ಕ್ಯಾನ್ ಯಶಸ್ವಿಯಾಗಿದೆ</string>
+    <string name="sendSuccess">ಕಳುಹಿಸುವಿಕೆ ಯಶಸ್ವಿಯಾಗಿದೆ</string>
+    <string name="sendQuantityHint">ಕಳುಹಿಸುವ ಪ್ರಮಾಣ</string>
+    <string name="sendRequestNotification">ಕಳುಹಿಸಲು ವಿನಂತಿ</string>
+    <string name="sendToAddressHint">ಗಮ್ಯ ವಿಳಾಸ</string>
+    <string name="sendAll">ಎಲ್ಲಾ</string>
+    <string name="editSendNoteHint">ಈ ವರ್ಗಾವಣೆ ಕುರಿತ ವೈಯಕ್ತಿಕ ಟಿಪ್ಪಣಿಗಳು</string>
+    <string name="subSatoshiQuantities">ದಶಮಾಂಶ ಸ್ಥಾನಗಳು ತುಂಬಾ ಹೆಚ್ಚು -- ಈ ಕರೆನ್ಸಿ ಅಷ್ಟು ಸೂಕ್ಷ್ಮವಾಗಿ ವಿಭಜನೆಯಾಗುವುದಿಲ್ಲ</string>
+    <string name="retrievingExchangeRate">ವಿನಿಮಯ ದರ ಇನ್ನೂ ಪಡೆಯಲಾಗುತ್ತಿದೆ</string>
+    <string name="unavailableExchangeRate">ವಿನಿಮಯ ದರ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="SigningWithAccount" formatted="false">ಸಹಿ ಮಾಡುವ ಖಾತೆ: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">ಖಾತೆಗೆ ಸಾಮಾನ್ಯ ಗುರುತು: %act</string>
+    <string name="identityRequestNotification">ಗುರುತಿಗೆ ವಿನಂತಿ</string>
+    <string name="IdentityDataMissing">ಗುರುತಿನ ಮಾಹಿತಿ ಕಾಣೆಯಾಗಿದೆ</string>
+    <string name="newDomainRequestingIdentity">ಹೊಸ ಸೇವೆ ನೋಂದಣಿ ಕೇಳುತ್ತಿದೆ</string>
+    <string name="domainRequestingAdditionalIdentityInfo">ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿಗೆ ವಿನಂತಿ</string>
+    <string name="useUniqueIdentityToolTip">ಇಲ್ಲಿನ ನಿಮ್ಮ ಗುರುತನ್ನು ಇತರ ಸೈಟ್‌ಗಳಿಂದ ಪ್ರತ್ಯೇಕವಾಗಿ ಇಡಲು ಆನ್ ಮಾಡಿ.</string>
+    <string name="provideAlias">ನಿಮ್ಮ ಬಳಕೆದಾರಹೆಸರು/ಹ್ಯಾಂಡಲ್/ಅಲಿಯಾಸ್ ನೀಡಬೇಕೇ?</string>
+    <string name="provideAliasToolTip">ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿದರೆ, ವಿನಂತಿಸಿದಲ್ಲಿ ನಿಮ್ಮ ಅಲಿಯಾಸ್ (ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಂರಚಿಸಿದಂತೆ, ನಿಮ್ಮ ನಿಜವಾದ ಹೆಸರಲ್ಲ) ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ನೀಡಲಾಗುತ್ತದೆ</string>
+    <string name="provideSocialMedia">ನಿಮ್ಮ ಸಾಮಾಜಿಕ ಮಾಧ್ಯಮ ಮಾಹಿತಿ ನೀಡಬೇಕೇ?</string>
+    <string name="provideSocialMediaToolTip">ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿದರೆ, ವಿನಂತಿಸಿದಲ್ಲಿ ನಿಮ್ಮ ಸಾಮಾಜಿಕ ಮಾಧ್ಯಮ ಮಾಹಿತಿ (ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಂರಚಿಸಿದಂತೆ) ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ನೀಡಲಾಗುತ್ತದೆ</string>
+    <string name="providePostalAddress">ನಿಮ್ಮ ಅಂಚೆ ವಿಳಾಸ ನೀಡಬೇಕೇ?</string>
+    <string name="providePostalAddressToolTip">ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿದರೆ, ವಿನಂತಿಸಿದಲ್ಲಿ ನಿಮ್ಮ ವಿಳಾಸ (ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಂರಚಿಸಿದಂತೆ) ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ನೀಡಲಾಗುತ್ತದೆ</string>
+    <string name="provideBillingAddress">ನಿಮ್ಮ ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸ ನೀಡಬೇಕೇ?</string>
+    <string name="provideBillingAddressToolTip">ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿದರೆ, ವಿನಂತಿಸಿದಲ್ಲಿ ನಿಮ್ಮ ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸ (ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಂರಚಿಸಿದಂತೆ) ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ನೀಡಲಾಗುತ್ತದೆ</string>
+    <string name="provideEmail">ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ ನೀಡಬೇಕೇ?</string>
+    <string name="provideAvatar">ನಿಮ್ಮ ಅವತಾರ ಚಿತ್ರ ನೀಡಬೇಕೇ?</string>
+    <string name="provideRealName">ನಿಮ್ಮ ನಿಜವಾದ ಹೆಸರು ನೀಡಬೇಕೇ?</string>
+    <string name="provideRealNameToolTip">ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿದರೆ ನಿಮ್ಮ ನಿಜವಾದ ಹೆಸರು (ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಂರಚಿಸಿದಂತೆ) ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ನೀಡಲಾಗುತ್ತದೆ</string>
+    <string name="provideBirthday">ನಿಮ್ಮ ಹುಟ್ಟಿದ ದಿನಾಂಕ ನೀಡಬೇಕೇ?</string>
+    <string name="providePhone">ನಿಮ್ಮ ಫೋನ್ ಸಂಖ್ಯೆ ನೀಡಬೇಕೇ?</string>
+    <string name="provideAttestations">ದೃಢೀಕರಣಗಳನ್ನು ನೀಡಬೇಕೇ?</string>
+    <string name="provideAttestationsToolTip">ನೀವು ನೀಡುವ ಡೇಟಾವನ್ನು ಖಚಿತಪಡಿಸುವ 3ನೇ ವ್ಯಕ್ತಿಯ ಸಹಿಗಳೇ ದೃಢೀಕರಣಗಳು</string>
+    <string name="primaryAccountRequired" formatted="false">ಈ ವೈಶಿಷ್ಟ್ಯ ಬಳಸಲು %primCurrency ಖಾತೆ ಬೇಕು</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">ಕೆಲವು ವೈಶಿಷ್ಟ್ಯಗಳು ನಿರ್ದಿಷ್ಟ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಗಳಿಗೆ ಸಂಬಂಧಿಸಿವೆ.  ವೈಶಿಷ್ಟ್ಯ ಬಳಸುವ ಮೊದಲು ಆ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಯಲ್ಲಿ ಖಾತೆಯನ್ನು ರಚಿಸಬೇಕು ಅಥವಾ ಅನ್‌ಲಾಕ್ ಮಾಡಬೇಕು.</string>
+    <string name="UnknownDomainRegisterFirst">ಅಪರಿಚಿತ ಸೇವೆ, ಮೊದಲು ನೋಂದಾಯಿಸಿ</string>
+    <string name="Provider" formatted="false">ಒದಗಿಸುವವರು: %provider</string>
+    <string name="QrCode">QR ಕೋಡ್</string>
+    <string name="unknownOperation" formatted="false">%op ಕಾರ್ಯಾಚರಣೆ ಅಪರಿಚಿತ</string>
+    <string name="alreadyRegistered">ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಲಾಗಿದೆ</string>
+    <string name="existingRegistration" formatted="false">ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಿದ ಖಾತೆ ‘%act’ ಈ ಸೇವೆಯೊಂದಿಗೆ ನೋಂದಾಯಿಸಿದೆ.</string>
+    <string name="nonexistentRegistration" formatted="false">ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಿದ ಖಾತೆ ‘%act’ ಈ ಸೇವೆಯೊಂದಿಗೆ ಇನ್ನೂ ನೋಂದಾಯಿಸಿಲ್ಲ.</string>
+    <string name="provideLoginQuestion">ಈ ಸೈಟ್‌ಗೆ ಲಾಗಿನ್ ಆಗಬೇಕೇ?</string>
+    <string name="provideInfoQuestion">ಗುರುತಿನ ಮಾಹಿತಿ ವಿನಂತಿಸಿದವರು</string>
+    <string name="signDataQuestion">ಸಹಿ ವಿನಂತಿಸಿದವರು</string>
+    <string name="nothingToSign">ಯಾವುದೇ ಸಂದೇಶ ನೀಡಿಲ್ಲ</string>
+    <string name="binaryToSign">ಈ ಬೈನರಿ ಡೇಟಾಗೆ ಸಹಿ ಮಾಡಬೇಕೇ?</string>
+    <string name="textToSign">ಈ ಸಂದೇಶಕ್ಕೆ ಸಹಿ ಮಾಡಬೇಕೇ?</string>
+    <string name="sigInClipboard">ಸಹಿಯನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</string>
+    <string name="SocialMediaText">ಸಾಮಾಜಿಕ ಮಾಧ್ಯಮ</string>
+    <string name="SocialMediaSummary">ಸೇವೆ:ಹ್ಯಾಂಡಲ್ ಪಟ್ಟಿಯಾಗಿ ನಮೂದಿಸಿ, ಉದಾ. twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">ಬಳಕೆದಾರಹೆಸರು/ಹ್ಯಾಂಡಲ್/ಅಲಿಯಾಸ್</string>
+    <string name="NameText">ಪೂರ್ಣ ಹೆಸರು</string>
+    <string name="PostalAddressText">ಅಂಚೆ ವಿಳಾಸ</string>
+    <string name="BillingAddressText">ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸ</string>
+    <string name="PostalCodeText">ಪಿನ್ ಕೋಡ್</string>
+    <string name="EmailText">ಇಮೇಲ್ ವಿಳಾಸ</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">ಸಂಬಂಧಿತ ಗುರುತಿನ ಮಾಹಿತಿ</string>
+    <string name="ServiceAssociatedWith">ಈ ಸೇವೆ ಈಗಾಗಲೇ ಇವರೊಂದಿಗೆ ಸಂಬಂಧ ಹೊಂದಿದೆ:</string>
+    <string name="IdentityInfoNote">ಈ ಮಾಹಿತಿ ನಮೂದಿಸುವುದು ಐಚ್ಛಿಕ ಮತ್ತು ನೀವು ಆರಿಸಿದ ಸೇವೆಗಳಿಗೆ ಮಾತ್ರ ಇದನ್ನು ನೀಡಲಾಗುತ್ತದೆ.  ಗುರುತು ಬೆಂಬಲಿಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿದರೆ ಸಾಕು, ಫಾರ್ಮ್‌ಗಳಲ್ಲಿನ ಸಾಮಾನ್ಯ ಕ್ಷೇತ್ರಗಳು ತುಂಬಿಕೊಳ್ಳುವಂತೆ ಮಾಡುವುದು ಇದರ ಉದ್ದೇಶ.</string>
+    <string name="areYouSure">ಖಚಿತವೇ?</string>
+    <string name="WhenAskSure">ಮೇಲಿನದನ್ನು ದೃಢೀಕರಿಸಿ:</string>
+    <string name="SendConfirmSummary" formatted="false">%dest ವಿಳಾಸಕ್ಕೆ %amt %currency %inFiat%assets ಕಳುಹಿಸುವುದನ್ನು ದೃಢೀಕರಿಸಿ</string>
+    <string name="firstName">ಮೊದಲ ಹೆಸರು</string>
+    <string name="lastName">ಕೊನೆಯ ಹೆಸರು</string>
+    <string name="withholdingMandatoryInfo">ನೀವು ನೀಡಲು ನಿರಾಕರಿಸಿದ ಮಾಹಿತಿ ಸೈಟ್‌ಗೆ ಅಗತ್ಯವಿದೆ</string>
+    <string name="badLink">ಅಮಾನ್ಯ ಲಿಂಕ್</string>
+    <string name="BadWebLink">ಅಮಾನ್ಯ ವೆಬ್ ಲಿಂಕ್</string>
+    <string name="connectionAborted">ಸೈಟ್ ಲಾಗಿನ್ ರದ್ದುಮಾಡಿದೆ</string>
+    <string name="HintAdjustCostBasis">ಮೂಲ ವೆಚ್ಚ ಅಥವಾ ಲಾಭ</string>
+    <string name="CostBasis">ಮೂಲ ವೆಚ್ಚ</string>
+    <string name="CapitalLoss">ಬಂಡವಾಳ ನಷ್ಟ</string>
+    <string name="CapitalGain">ಬಂಡವಾಳ ಲಾಭ</string>
+    <string name="OverrideSalesPrice">ಮಾರಿದ ಬೆಲೆ ನಮೂದಿಸಿ</string>
+    <string name="AccountHistory">ವಹಿವಾಟುಗಳು</string>
+    <string name="NoAccountActivity">ಖಾತೆ ಚಟುವಟಿಕೆ ಇಲ್ಲ</string>
+    <string name="AccountAddresses">ವಿಳಾಸಗಳು</string>
+    <string name="ActiveAddresses">ಸಕ್ರಿಯ ವಿಳಾಸಗಳು</string>
+    <string name="UsedAddresses">ಬಳಸಿದ ವಿಳಾಸಗಳು</string>
+    <string name="UnusedAddresses">ಬಳಸದ ವಿಳಾಸಗಳು</string>
+    <string name="txHistoryButton">ಖಾತೆ ಚಟುವಟಿಕೆ ನೋಡಿ/ರಫ್ತು ಮಾಡಿ</string>
+    <string name="setAsPrimaryAccountButton">ಇದನ್ನು ನಿಮ್ಮ ಪ್ರಾಥಮಿಕ ಖಾತೆ ಮಾಡಿ</string>
+    <string name="AccountStatistics">ಖಾತೆ ಅಂಕಿಅಂಶಗಳು</string>
+    <string name="AccountBlockchainSync" formatted="false">ಪ್ರಸ್ತುತ %chain ಬ್ಲಾಕ್‌ಚೈನ್‌ನಲ್ಲಿ %sync.</string>
+    <string name="AccountBlockchainDetails" formatted="false">%actBlockDate: ಬ್ಲಾಕ್ %actBlock / %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">ಮೊದಲ ಬಳಕೆ: %actPrehistoryDate ರಂದು ಬ್ಲಾಕ್ %actPrehistoryBlock.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">%num ನೋಡ್‌ಗಳಿಗೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num ವಿಳಾಸಗಳು</string>
+    <string name="CurrentAddress" formatted="false">ವಿಳಾಸ %num ನಲ್ಲಿ: %addr</string>
+    <string name="FirstLastReceive" formatted="false">ಮೊದಲ ಠೇವಣಿ ಬ್ಲಾಕ್ %first ನಲ್ಲಿ, ಇತ್ತೀಚಿನದು ಬ್ಲಾಕ್ %last ನಲ್ಲಿ.</string>
+    <string name="FirstLastSend" formatted="false">ಮೊದಲ ಹಿಂಪಡೆಯುವಿಕೆ ಬ್ಲಾಕ್ %first ನಲ್ಲಿ, ಇತ್ತೀಚಿನದು ಬ್ಲಾಕ್ %last ನಲ್ಲಿ.</string>
+    <string name="FirstWithdraw">ಮೊದಲ ಹಿಂಪಡೆಯುವಿಕೆ</string>
+    <string name="FirstDeposit">ಮೊದಲ ಠೇವಣಿ</string>
+    <string name="never">ಎಂದಿಗೂ ಇಲ್ಲ</string>
+    <string name="FirstUse" formatted="false">ಮೊದಲ ಬಳಕೆ: %date</string>
+    <string name="LastUse" formatted="false">ಕೊನೆಯ ಬಳಕೆ: %date</string>
+    <string name="Block" formatted="false">ಬ್ಲಾಕ್: %block</string>
+    <string name="AccountNumTx" formatted="false">%num ವಹಿವಾಟುಗಳು</string>
+    <string name="AccountNumUtxos" formatted="false">%num ಲೆಡ್ಜರ್ ನಮೂದುಗಳು</string>
+    <string name="title_activity_assets">ಆಸ್ತಿಗಳು</string>
+    <string name="title_activity_scan">ಸ್ಕ್ಯಾನ್</string>
+    <string name="title_activity_new_account">ಹೊಸ ಖಾತೆ</string>
+    <string name="AccountName">ಖಾತೆಯ ಹೆಸರು</string>
+    <string name="AccountNameHint">1-8 ಅಕ್ಷರಗಳು</string>
+    <string name="Blockchain">ಬ್ಲಾಕ್‌ಚೈನ್</string>
+    <string name="AccountRecoveryPhrase">ರಿಕವರಿ ಪದಗುಚ್ಛ</string>
+    <string name="LeaveEmptyNewWallet">ಹೊಸ ಖಾತೆ ರಚಿಸಲು ಖಾಲಿ ಬಿಡಿ</string>
+    <string name="PinSuggestions"><font size="15">ಖಾತೆ ಪ್ರವೇಶಿಸಲು ಈ ಗುಪ್ತ ಸಂಖ್ಯೆ ಬೇಕು</font></string>
+    <string name="createNewAccount">ಹೊಸ ಖಾತೆ ರಚಿಸಿ</string>
+    <string name="createSyncAccount">ಎಚ್ಚರಿಕೆಯ (ಮತ್ತು ಸುದೀರ್ಘ) ಸಿಂಕ್‌ನೊಂದಿಗೆ ಖಾತೆ ಮರುಪಡೆಯಿರಿ</string>
+    <string name="createDiscoveredAccount">ಖಾತೆಯನ್ನು ತಕ್ಷಣ ಮರುಪಡೆಯಿರಿ</string>
+    <string name="invalidRecoveryPhrase">ಅಮಾನ್ಯ ರಿಕವರಿ ಪದಗುಚ್ಛ</string>
+    <string name="invalidAccountName">ಅಮಾನ್ಯ ಹೆಸರು</string>
+    <string name="PassPhrase">ಪಾಸ್‌ಫ್ರೇಸ್ (ಐಚ್ಛಿಕ)</string>
+    <string name="Bip44ActivityNotice">ಖಾತೆ ಚಟುವಟಿಕೆ ಕಂಡುಬಂದಿದೆ</string>
+    <string name="NoBip44ActivityNotice">ಎಚ್ಚರಿಕೆ, ಯಾವುದೇ ವಹಿವಾಟುಗಳು ಕಂಡುಬಂದಿಲ್ಲ!</string>
+    <string name="Bip44BtcActivityNotice">ಪ್ರಮಾಣಿತವಲ್ಲದ ಅಥವಾ ಫೋರ್ಕ್-ಪೂರ್ವ ವಾಲೆಟ್ ಚಟುವಟಿಕೆ ಕಂಡುಬಂದಿದೆ</string>
+    <string name="NoBip44BtcActivityNotice">ಫೋರ್ಕ್-ಪೂರ್ವ ವಹಿವಾಟುಗಳು ಕಂಡುಬಂದಿಲ್ಲ</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">%date ರಿಂದ ಆರಂಭ (ಬ್ಲಾಕ್ %height)</string>
+    <string name="NotEnoughRecoveryWords">ಇನ್ನಷ್ಟು ರಿಕವರಿ ಪದಗಳು ಬೇಕು</string>
+    <string name="TooManyRecoveryWords">ರಿಕವರಿ ಪದಗಳು ತುಂಬಾ ಹೆಚ್ಚಾಗಿವೆ</string>
+    <string name="IncorrectRecoveryWords" formatted="false">ಅಮಾನ್ಯ ಪದಗಳು: %words</string>
+    <string name="ElectrumNetworkUnavailable">Electrum ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿಲ್ಲ. ವಾಲೆಟ್ ಮರುಪಡೆಯುವಿಕೆ ನಿಧಾನವಾಗಿರುತ್ತದೆ ಮತ್ತು ಜನವರಿ 1, 2020 ಕ್ಕಿಂತ ಹಿಂದಿನ ವಹಿವಾಟುಗಳನ್ನು ಕಂಡುಹಿಡಿಯುವುದಿಲ್ಲ</string>
+    <string name="PinHidesAccount">ಪಿನ್ ನಮೂದಿಸುವವರೆಗೆ ಖಾತೆ ಮರೆಮಾಡಬೇಕೆ?</string>
+    <string name="HiddenAccountExplainer">ಪಿನ್ ನಮೂದಿಸುವವರೆಗೆ ಖಾತೆಯನ್ನು ಮರೆಮಾಡಿ</string>
+    <string name="HiddenAccount">ಮರೆಮಾಡಿದ ಖಾತೆ</string>
+    <string name="AutomaticNewAddress">ವಿಳಾಸ ಗೌಪ್ಯತೆ</string>
+    <string name="AutomaticNewAddressToolTip">ಪ್ರಸ್ತುತ ವಿಳಾಸ ಬಳಕೆಯಾದಾಗಲೆಲ್ಲಾ ಹೊಸ ವಿಳಾಸವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೋರಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="CreatePIN">ಪಿನ್ (ಐಚ್ಛಿಕ)</string>
+    <string name="PinSpendingUnprotected">ಪಿನ್ ಇಲ್ಲದೆ ಖರ್ಚು ಮಾಡುವುದು ಸಕ್ರಿಯವಾಗಿದೆ (ಪಿನ್ ನಮೂದಿಸಿಲ್ಲ)</string>
+    <string name="PinSpendingProtected">ಖರ್ಚು ಮಾಡಲು ಪಿನ್ ಅಗತ್ಯ</string>
+    <string name="InvalidPIN">ಅಮಾನ್ಯ ಪಿನ್</string>
+    <string name="creatingNoHistoryAccountWarning">ನೀವು ನಿರ್ದಿಷ್ಟ ರಿಕವರಿ ಪದಗುಚ್ಛದೊಂದಿಗೆ ಖಾತೆ ರಚಿಸುತ್ತಿದ್ದೀರಿ, ಆದರೆ ಬ್ಲಾಕ್‌ಚೈನ್‌ನಲ್ಲಿ ಯಾವುದೇ ಚಟುವಟಿಕೆ ಕಂಡುಬಂದಿಲ್ಲ.\nಇದು ಸರಿಯೇ?\nಸರಿ ಇದ್ದರೆ, ರಚಿಸಿ ಬಟನ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿ, ಖಾಲಿ ಖಾತೆ ರಚನೆಯಾಗುತ್ತದೆ. ಆದರೆ ಈ ಖಾತೆಯಲ್ಲಿ ಚಟುವಟಿಕೆ ಇರಬೇಕಿದ್ದರೆ, ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಬ್ಲಾಕ್‌ಚೈನ್ ಮತ್ತು ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ಪುನಃ ಪರಿಶೀಲಿಸಿ. ಅದು ಸಮಸ್ಯೆ ಅಲ್ಲದಿದ್ದರೆ, ಬ್ಲಾಕ್‌ಚೈನ್ ನೆಟ್‌ವರ್ಕ್ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲದಿರಬಹುದು (ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ), ಅಥವಾ ಅದನ್ನು ಪ್ರಮಾಣಿತವಲ್ಲದ ವಾಲೆಟ್ ಆ್ಯಪ್‌ನಿಂದ ರಚಿಸಲಾಗಿರಬಹುದು. ಈಗ ಈ ಖಾತೆಯನ್ನು ರಚಿಸಬೇಡಿ.</string>
+    <string name="accountLocked">ಖಾತೆ ಲಾಕ್ ಆಗಿದೆ</string>
+    <string name="unknownError">ದೋಷ</string>
+    <string name="insufficentBalance">ಸಾಕಷ್ಟು ಬ್ಯಾಲೆನ್ಸ್ ಇಲ್ಲ</string>
+    <string name="insufficentTokenBalance">ಸಾಕಷ್ಟು ಟೋಕನ್ ಬ್ಯಾಲೆನ್ಸ್ ಇಲ್ಲ</string>
+    <string name="excessiveFee">ಅತಿಯಾದ ಶುಲ್ಕ</string>
+    <string name="sendDustError">ಮೊತ್ತ ಕನಿಷ್ಠಕ್ಕಿಂತ ಕಡಿಮೆ</string>
+    <string name="sendingDustWarning">ಮೊತ್ತ ನೆಟ್‌ವರ್ಕ್ ಕನಿಷ್ಠಕ್ಕಿಂತ ಕಡಿಮೆ ಇದೆ</string>
+    <string name="feeExceedsFlatMax">ಶುಲ್ಕವು ಸಂರಚಿಸಿದ ಗರಿಷ್ಠ ಫ್ಲಾಟ್ ಶುಲ್ಕವನ್ನು ಮೀರಿದೆ</string>
+    <string name="notSupported">ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</string>
+    <string name="expired">ಪಾವತಿ ಅವಧಿ ಮುಗಿದಿದೆ</string>
+    <string name="PaymentDataMissing">ಪಾವತಿ ಡೇಟಾ ಕಾಣೆಯಾಗಿದೆ</string>
+    <string name="headersNotForthcoming">ಹೆಡರ್‌ಗಳು ಬರುತ್ತಿಲ್ಲ</string>
+    <string name="cantConvert">ಪರಿವರ್ತನೆ ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="walletDisconnectedFromBlockchain">ವಾಲೆಟ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ</string>
+    <string name="badTransaction">ಅಮಾನ್ಯ ವಹಿವಾಟು</string>
+    <string name="badAddress">ಅಮಾನ್ಯ ವಿಳಾಸ</string>
+    <string name="unknownAddress">ಅಪರಿಚಿತ ವಿಳಾಸ</string>
+    <string name="badAmount">ಅಮಾನ್ಯ ಮೊತ್ತ</string>
+    <string name="NoAccounts">ಪ್ರವೇಶಿಸಬಹುದಾದ ಖಾತೆಗಳಿಲ್ಲ</string>
+    <string name="badCryptoCode">ಈ ಕರೆನ್ಸಿ ಅಥವಾ ಬ್ಲಾಕ್‌ಚೈನ್‌ಗೆ ಅನ್‌ಲಾಕ್ ಆದ ಖಾತೆ ಇಲ್ಲ</string>
+    <string name="badCryptoCodeDetails" formatted="false">ಅಪರಿಚಿತ ಅಥವಾ ಲಭ್ಯವಿಲ್ಲದ ಕರೆನ್ಸಿ: %currency</string>
+    <string name="badCurrencyUnit">ಕರೆನ್ಸಿ ಅಲ್ಲ</string>
+    <string name="incompatibleAccount">ತಪ್ಪಾದ ಕರೆನ್ಸಿ</string>
+    <string name="incompatibleAccountDetails" formatted="false">%cryptoAct ಹೊಂದಿರುವ ಖಾತೆಯಿಂದ ಪಾವತಿಸಲು ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ, ಆದರೆ %cryptoPay ಅಗತ್ಯವಿದೆ</string>
+    <string name="detailsOfBadAmountFromIntent">ಕರೆ ಮಾಡಿದ ಪ್ರೋಗ್ರಾಂ ಕಳುಹಿಸಬೇಕಾದ
+        ಪ್ರಮಾಣವನ್ನು ನೀಡುವಾಗ ತಪ್ಪಾದ ಸ್ವರೂಪದ ಸಂಖ್ಯೆಯನ್ನು ನೀಡಿದೆ. ನೀವೇ ಪ್ರಮಾಣವನ್ನು ನಮೂದಿಸಬೇಕಾಗುತ್ತದೆ
+    </string>
+    <string name="blankAddress">ಖಾಲಿ ವಿಳಾಸ</string>
+    <string name="unavailable">ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="blockNotForthcoming">ಬ್ಲಾಕ್ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="receiveAddressUnavailable">ಹೊಸ ಸ್ವೀಕರಿಸುವ ವಿಳಾಸವನ್ನು ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತಿದೆ. ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ...
+    </string>
+    <string name="accountLimitReached">ಗರಿಷ್ಠ ಖಾತೆಗಳು</string>
+    <string name="accountUnavailableDetails">ಈ ಬ್ಲಾಕ್‌ಚೈನ್‌ಗೆ ಹೊಂದುವ ಖಾತೆ ಇಲ್ಲ, ಅಥವಾ ಖಾತೆಯನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿಲ್ಲ.</string>
+    <string name="accountUnavailable">ಅನ್‌ಲಾಕ್ ಆದ ಹೊಂದಾಣಿಕೆಯ ಖಾತೆ ಇಲ್ಲ</string>
+    <string name="sendMoreThanBalance">ನಿಮ್ಮ ಬಳಿ ಸದ್ಯ ಲಭ್ಯವಿರುವುದಕ್ಕಿಂತ ಹೆಚ್ಚು ನಾಣ್ಯಗಳನ್ನು ಕಳುಹಿಸಲು ನೀವು ಪ್ರಯತ್ನಿಸುತ್ತಿದ್ದೀರಿ.\n\nನಿಮ್ಮ ಬ್ಯಾಲೆನ್ಸ್‌ಗಿಂತ ಹೆಚ್ಚು ಖರ್ಚು ಮಾಡುತ್ತಿಲ್ಲ ಎಂದು ನಿಮಗೆ ಅನಿಸಿದರೆ, ವಹಿವಾಟುಗಳಿಗೆ ಸಣ್ಣ ಹೆಚ್ಚುವರಿ ಶುಲ್ಕ ಇರುತ್ತದೆ ಎಂಬುದನ್ನು ನೀವು ಮರೆತಿರಬಹುದು, ಅಥವಾ ನಿಮ್ಮ ಇಡೀ ಬ್ಯಾಲೆನ್ಸ್ ದೃಢೀಕರಿಸದ ಸ್ಥಿತಿಯಲ್ಲಿ ಕಾಣಿಸಿದರೆ ನೀವು ಸತತವಾಗಿ ತುಂಬಾ ಹೆಚ್ಚು ವಹಿವಾಟುಗಳನ್ನು ಮಾಡಿರಬಹುದು.\n\nಬ್ಲಾಕ್‌ಚೈನ್‌ಗಿಂತ ಎಷ್ಟು “ಮುಂದೆ ಹೋಗಬಹುದು” ಎಂಬುದಕ್ಕೆ ಮಿತಿ ಇದೆ. ನಿಮ್ಮ ದೃಢೀಕರಿಸದ ಬ್ಯಾಲೆನ್ಸ್ ದೃಢೀಕೃತವಾಗಲಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="sendMoreTokensThanBalance">ನಿಮ್ಮ ಬಳಿ ಸದ್ಯ ಲಭ್ಯವಿರುವುದಕ್ಕಿಂತ ಹೆಚ್ಚು ಟೋಕನ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ನೀವು ಪ್ರಯತ್ನಿಸುತ್ತಿದ್ದೀರಿ.</string>
+    <string name="deductedFeeLargerThanSendAmount">ಕಡಿತಗೊಳಿಸಿದ ಶುಲ್ಕವು ಕಳುಹಿಸುತ್ತಿರುವ ಮೊತ್ತಕ್ಕಿಂತ ಹೆಚ್ಚಾಗಿದೆ</string>
+    <string name="badWalletImplementation">ತಪ್ಪಾದ ವಾಲೆಟ್ ಅನುಷ್ಠಾನ. ಈ ದೋಷವನ್ನು ವರದಿ ಮಾಡಿ!</string>
+    <string name="CannotCompleteTransaction">ದೋಷ: ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ</string>
+    <string name="title_split_bill">ಬಿಲ್ ವಿಭಜಿಸಿ</string>
+    <string name="title_activity_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="title_activity_exchange">ವಿನಿಮಯ</string>
+    <string name="title_activity_shopping">ಲಿಂಕ್‌ಗಳು</string>
+    <string name="ecosystem">ಎಕೋಸಿಸ್ಟಂ</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">ಮುಖಪುಟ</string>
+    <string name="title_dashboard">ಪರೀಕ್ಷೆ</string>
+    <string name="title_notifications">ಅಧಿಸೂಚನೆಗಳು</string>
+    <string name="title_activity_invoices">ಇನ್‌ವಾಯ್ಸ್</string>
+    <string name="title_activity_identity">ಗುರುತು</string>
+    <string name="title_activity_identity_op">ಗುರುತು</string>
+    <string name="title_activity_domain_identity_settings">ಡೊಮೇನ್ ಗುರುತಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="title_activity_tx_history" formatted="false">ವಹಿವಾಟು ಇತಿಹಾಸ: %account</string>
+    <string name="title_activity_address_history" formatted="false">ವಿಳಾಸ ಇತಿಹಾಸ: %account</string>
+    <string name="title_activity_account_details" formatted="false">ಖಾತೆ: %account</string>
+    <string name="title_test">ಪರೀಕ್ಷೆ</string>
+    <string name="useUniqueIdentity">ಅನನ್ಯ ಕ್ರಿಪ್ಟೋಗ್ರಾಫಿಕ್ ಗುರುತು ಬಳಸಿ</string>
+    <string name="title_activity_identity_settings">ಗುರುತಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="IdentityRegistrations">ನೋಂದಾಯಿತ ಸೇವೆಗಳು</string>
+    <string name="NoIdentitiesRegistered">ಯಾವುದೇ ಗುರುತು ನೋಂದಾಯಿಸಿಲ್ಲ</string>
+    <string name="title_activity_welcome">ಸ್ವಾಗತ</string>
+    <string name="next">ಮುಂದೆ</string>
+    <string name="previous">ಹಿಂದೆ</string>
+    <string name="EnterPIN">ಪಿನ್ ನಮೂದಿಸಿ</string>
+    <string name="EnterPINorBlankToRemove">ಹೊಸ ಪಿನ್ (ಖಾಲಿ ಬಿಟ್ಟರೆ ಪಿನ್ ಇಲ್ಲ)</string>
+    <string name="ButtonTextHere">ಬಟನ್ ಪಠ್ಯ ಹೊಂದಿಸಿ</string>
+    <string name="ButtonLinkHere">ವೆಬ್ ಲಿಂಕ್ ನಮೂದಿಸಿ</string>
+    <string name="ShoppingWarning">ಎಚ್ಚರಿಕೆ: ಈ ಪುಟದಲ್ಲಿನ ಐಟಂಗಳು ಮೂರನೇ ವ್ಯಕ್ತಿಯ ಸೇವೆಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳ ಲಿಂಕ್‌ಗಳಾಗಿದ್ದು, ನಿಮ್ಮ ಅನುಕೂಲಕ್ಕಾಗಿ ಇಲ್ಲಿ ಇರಿಸಲಾಗಿದೆ. ಈ ಸೈಟ್‌ಗಳು/ಸೇವೆಗಳನ್ನು Wally ವಾಲೆಟ್ ಪರಿಶೀಲಿಸಿಲ್ಲ.\n\nನಿಮ್ಮ ಸ್ವಂತ ಜವಾಬ್ದಾರಿಯಲ್ಲಿ ಬಳಸಿ!</string>
+    <string name="NFTs">ನಾನ್‌ಫಂಜಿಬಲ್ ಟೋಕನ್‌ಗಳು (NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: ಅನನ್ಯ ಚಿತ್ರಗಳು ಮತ್ತು ಅನನ್ಯ ವಸ್ತುಗಳ ಡಿಜಿಟಲ್ ಪ್ರತಿರೂಪಗಳನ್ನು ರಚಿಸಿ ಮತ್ತು ವ್ಯಾಪಾರ ಮಾಡಿ</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">ಎಚ್ಚರಿಕೆ: ನಕಲಿ ಅಥವಾ ಸರಿಯಾಗಿ ರಚಿಸಿಲ್ಲ!</string>
+    <string name="TokenSourceWebsite">ಟೋಕನ್ ಮೂಲ:</string>
+    <string name="TokenBadSig">ಈ ಟೋಕನ್‌ನ ಮಾಹಿತಿಗೆ ಸರಿಯಾಗಿ ಸಹಿ ಮಾಡಿಲ್ಲ. ಈ ಟೋಕನ್ ನಕಲಿ ಅಥವಾ ಮೋಸದ್ದಾಗಿರಬಹುದು. ಅಥವಾ ಟೋಕನ್ ರಚಿಸಿದವರು ಸರಿಯಾಗಿ ಸಹಿ ಮಾಡದಿರುವುದೂ ಇದಕ್ಕೆ ಕಾರಣವಾಗಿರಬಹುದು.</string>
+    <string name="OpenWebsite" formatted="false">%siteName ಪ್ರವೇಶಿಸಿ</string>
+    <string name="WebsiteUnavailable" formatted="false">ವೆಬ್‌ಸೈಟ್ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="ExplainBitmart">bitmart.com: NEXA ಅನ್ನು ಇತರ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಗಳಿಗೆ ವ್ಯಾಪಾರ ಮಾಡಿ</string>
+    <string name="ExplainMexc">mexc.com: NEXA ಅನ್ನು ಇತರ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಗಳಿಗೆ ವ್ಯಾಪಾರ ಮಾಡಿ</string>
+    <string name="ExplainBiconomy">biconomy.com: NEXA ಅನ್ನು ಇತರ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಗಳಿಗೆ ವ್ಯಾಪಾರ ಮಾಡಿ</string>
+    <string name="CexButton">ವಿನಿಮಯ</string>
+    <string name="SharedNotification" formatted="false">%what ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</string>
+    <string name="AuthAutopayTitle">ಅನುಮೋದಿತ ಪಾವತಿ</string>
+    <string name="AuthAutopayDeniedTitle">ಅನುಮೋದಿತ ಪಾವತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ</string>
+    <string name="AuthAutopay" formatted="false">%domain ಗೆ %amt</string>
+    <string name="TpToBeDone">ನಿಮ್ಮ Trickle Pay ಸಂಪರ್ಕಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ</string>
+    <string name="TpHistoryTbd">ನಿಮ್ಮ Trickle Pay ಇತಿಹಾಸ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ</string>
+    <string name="AcceptTpRegistration">ಇವರಿಂದ ನೋಂದಣಿ ಒಪ್ಪಿಕೊಳ್ಳಿ:</string>
+    <string name="EditTpRegistration">ಘಟಕದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು:</string>
+    <string name="AcceptTpRegistrationTopic">ಉದ್ದೇಶ:</string>
+    <string name="TpMaxSpendHint">ಗರಿಷ್ಠ ಸ್ವಯಂ-ಖರ್ಚು ನಮೂದಿಸಿ</string>
+    <string name="TpAssetInfoRequest">ಆಸ್ತಿ ಮಾಹಿತಿ ವಿನಂತಿಗಳು</string>
+    <string name="TpAssociatedAccount" formatted="false">ಸಂಬಂಧಿತ: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">ವಹಿವಾಟು ಅನುಮೋದನೆ ವಿನಂತಿ</string>
+    <string name="AssetNotif">ಆಸ್ತಿ ಮಾಹಿತಿ ವಿನಂತಿ</string>
+    <string name="PaymentRequest">ಪಾವತಿ ವಿನಂತಿ</string>
+    <string name="IdentityNotif">ಗುರುತು/ಲಾಗಿನ್ ವಿನಂತಿ</string>
+    <string name="TpMaxHeading">ಸ್ವಯಂಪಾವತಿ ಮಿತಿಗಳು</string>
+    <string name="TpMaxPer">ಪ್ರತಿ ವಿನಂತಿಗೆ ಗರಿಷ್ಠ</string>
+    <string name="TpMaxPerDay">ಪ್ರತಿ ದಿನಕ್ಕೆ ಗರಿಷ್ಠ</string>
+    <string name="TpMaxPerWeek">ಪ್ರತಿ ವಾರಕ್ಕೆ ಗರಿಷ್ಠ</string>
+    <string name="TpMaxPerMonth">ಪ್ರತಿ ತಿಂಗಳಿಗೆ ಗರಿಷ್ಠ</string>
+    <string name="TpEnableAutopay">ಸ್ವಯಂಪಾವತಿ ಸಕ್ರಿಯಗೊಳಿಸಿ (ಗುರುತಿಸದಿದ್ದರೆ, ಎಲ್ಲಾ ಪಾವತಿಗಳಿಗೆ ಬಳಕೆದಾರರ ಅನುಮೋದನೆ ಕೇಳಲಾಗುತ್ತದೆ ಮತ್ತು ಕೆಳಗಿನ ಮಿತಿಗಳನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತದೆ)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Trickle Pay ನೋಂದಣಿಗಳಿಲ್ಲ</string>
+    <string name="TpNoSession">Trickle Pay ವಿನಂತಿ ಇಲ್ಲ</string>
+    <string name="TpRegistrations">ನೋಂದಣಿಗಳು</string>
+    <string name="TpRegDenied">ನೋಂದಣಿ ನಿರಾಕರಿಸಲಾಗಿದೆ</string>
+    <string name="TpRegAccepted">ನೋಂದಣಿ ಒಪ್ಪಿಕೊಳ್ಳಲಾಗಿದೆ</string>
+    <string name="TpRegUnchanged">ನೋಂದಣಿ ಬದಲಾಗಿಲ್ಲ</string>
+    <string name="TpRequestAutoDeny">ವಿನಂತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ (ಸ್ವಯಂಚಾಲಿತ)</string>
+    <string name="TpRequestAutoAccept">ವಿನಂತಿ ಒಪ್ಪಿಕೊಳ್ಳಲಾಗಿದೆ (ಸ್ವಯಂಚಾಲಿತ)</string>
+    <string name="TpTxDenied">ವಹಿವಾಟು ನಿರಾಕರಿಸಲಾಗಿದೆ</string>
+    <string name="TpTxAccepted">ವಹಿವಾಟು ಒಪ್ಪಿಕೊಳ್ಳಲಾಗಿದೆ</string>
+    <string name="TpNetworkTimeout">ವಹಿವಾಟು ಸಮಯ ಮೀರಿದೆ</string>
+    <string name="TpPartialSubmitted">ಪ್ರಸ್ತಾಪ ಸಲ್ಲಿಸಲಾಗಿದೆ</string>
+    <string name="TpAssetRequestDenied">ಆಸ್ತಿ ಮಾಹಿತಿ ತಡೆಹಿಡಿಯಲಾಗಿದೆ</string>
+    <string name="TpAssetRequestAccepted">ಆಸ್ತಿ ಮಾಹಿತಿ ಕಳುಹಿಸುತ್ತಿದೆ</string>
+    <string name="Actions">ಕ್ರಿಯೆಗಳು</string>
+    <string name="SpecialTpTransactionFrom">ವಿಶೇಷ ವಹಿವಾಟು ಇವರಿಂದ</string>
+    <string name="IncompleteTpTransactionFrom">ದೃಢ ಪ್ರಸ್ತಾಪ ಇವರಿಂದ</string>
+    <string name="TpEntails">ಒಳಗೊಂಡಿದೆ</string>
+    <string name="TpInAccount">ಬಳಸುತ್ತಿರುವ ಖಾತೆ</string>
+    <string name="TpAssetRequestFrom">ಆಸ್ತಿ ಮಾಹಿತಿ ವಿನಂತಿ ಇವರಿಂದ</string>
+    <string name="TpHandledByAccount">ನಿಮ್ಮ ಖಾತೆಯಿಂದ ನಿರ್ವಹಿಸಬಹುದು</string>
+    <string name="TpAssetMatches" formatted="false">ನೀವು ಹೊಂದಿರುವ %num ಆಸ್ತಿಗಳ ಮಾಹಿತಿಯನ್ನು ಈ ಸೇವೆಗೆ ಒದಗಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="TpAssetInfoNotXfer">ಈ ವಿನಂತಿಯನ್ನು ಒಪ್ಪಿಕೊಂಡರೆ ನಿಮ್ಮ ಮಾಲೀಕತ್ವದ ಮಾಹಿತಿಯನ್ನಷ್ಟೇ ಸೇವೆಗೆ ನೀಡಲಾಗುತ್ತದೆ.  ಇದು ಯಾವುದೇ ವರ್ಗಾವಣೆಗೆ ಅನುಮೋದನೆ ನೀಡುವುದಿಲ್ಲ.</string>
+    <string name="ForAFeeOf" formatted="false">%fee %units ಶುಲ್ಕ ಸೇರಿದಂತೆ</string>
+    <string name="TpExchangingTokens" formatted="false">ಮತ್ತು ಟೋಕನ್‌ಗಳ ವಿನಿಮಯ (%tokSnd ಕಳುಹಿಸುವುದು, %tokRcv ಸ್ವೀಕರಿಸುವುದು).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal ಟೋಕನ್ ಪ್ರಕಾರಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸಲಾಗುತ್ತದೆ (ನಿಮಗೇ ಖರ್ಚು ಮಾಡಿ, ಅವು ನಿಮ್ಮವೆಂದು ಸಾಬೀತುಪಡಿಸಲಾಗುತ್ತದೆ).</string>
+    <string name="TpSendingTokens" formatted="false">ಮತ್ತು %tokSnd ಪ್ರಕಾರದ ಟೋಕನ್‌ಗಳನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="TpReceivingTokens" formatted="false">ಮತ್ತು %tokRcv ಪ್ರಕಾರದ ಟೋಕನ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="TpHasNoPurpose">ಈ ವಿನಂತಿಯು ಈ ಖಾತೆಯ ಮೇಲೆ ಯಾವುದೇ ಪರಿಣಾಮ ಬೀರುವುದಿಲ್ಲ.</string>
+    <string name="TpSendToTitle">ಪಾವತಿ ವಿನಂತಿಸಿದವರು</string>
+    <string name="TpSpends">ಖರ್ಚು</string>
+    <string name="TpSendRequestDenied">ಪಾವತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ</string>
+    <string name="TpSendAutoReject">ಪಾವತಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ</string>
+    <string name="TpSendRequestAccepted">ಪಾವತಿ ಒಪ್ಪಿಕೊಳ್ಳಲಾಗಿದೆ</string>
+    <string name="TpWhyNotAuto">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಹಿ ಮಾಡದಿರಲು ಕಾರಣ</string>
+    <string name="TpAutomaticDisabled">ಸ್ವಯಂಪಾವತಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</string>
+    <string name="TpExceededMaxPer">ಪ್ರತಿ ವಿನಂತಿಯ ಗರಿಷ್ಠ ಮಿತಿ ಮೀರಿದೆ</string>
+    <string name="TpExceededMaxDaily">ಪ್ರತಿ ದಿನದ ಗರಿಷ್ಠ ಮಿತಿ ಮೀರಿದೆ</string>
+    <string name="TpExceededMaxWeekly">ಪ್ರತಿ ವಾರದ ಗರಿಷ್ಠ ಮಿತಿ ಮೀರಿದೆ</string>
+    <string name="TpExceededMaxMonthly">ಪ್ರತಿ ತಿಂಗಳ ಗರಿಷ್ಠ ಮಿತಿ ಮೀರಿದೆ</string>
+    <string name="title_activity_alert_history">ಇತ್ತೀಚಿನ ಸಂದೇಶಗಳು</string>
+    <string name="IssueReportInstructions">ಈ ಮಾಹಿತಿಯನ್ನು ಡೆವಲಪರ್‌ಗಳಿಗೆ ನೀಡಿ:</string>
+    <string name="AssetApplication">ಚಲಾಯಿಸಿ</string>
+    <string name="AssetMarketplace">ವ್ಯಾಪಾರ</string>
+    <string name="AssetAddedToTransferList">ಮುಖ್ಯ ಟ್ಯಾಬ್‌ನ ‘ಕಳುಹಿಸಿ’ಗೆ ಸೇರಿಸಲಾಗಿದೆ</string>
+    <string name="NftCardFront">ಮುಂಭಾಗ</string>
+    <string name="NftCardBack">ಹಿಂಭಾಗ</string>
+    <string name="NftPublicMedia">ವಿಷಯಗಳು</string>
+    <string name="NftOwnerMedia">ಮಾಲೀಕರ ವಿಷಯ</string>
+    <string name="Content">ವಿಷಯ</string>
+    <string name="Private">ಖಾಸಗಿ</string>
+    <string name="NftPrivateDescription">ಈ ವಿಷಯ ಆಸ್ತಿಯ ಮಾಲೀಕರಿಗೆ ಸೇರಿದೆ</string>
+    <string name="NftInfo">ಮಾಹಿತಿ</string>
+    <string name="NftLegal">ಪರವಾನಗಿ</string>
+    <string name="NftSeries" formatted="false">ಸರಣಿ: %series</string>
+    <string name="NftAuthor" formatted="false">ಕರ್ತೃ: %author</string>
+    <string name="NftNoInfoProvided">...ಯಾವುದೇ ಮಾಹಿತಿ ನೀಡಿಲ್ಲ...</string>
+    <string name="IssuedToConnection">ಸಂಪರ್ಕಿತ ಸೈಟ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</string>
+    <string name ="demonstratingOwnership">ಮಾಲೀಕತ್ವ ತೋರಿಸಲಾಗುತ್ತಿದೆ</string>
+    <string name="AndSomeAssets"> ಮತ್ತು ಕೆಲವು ಆಸ್ತಿಗಳು</string>
+    <string name="AssetTypes" formatted="false">%assetTypes ಆಸ್ತಿ ಪ್ರಕಾರಗಳು</string>
+    <string name="ExplainRestaurant">ಭೌತಿಕ ಅಂಗಡಿ ಒಪ್ಪಿಕೊಳ್ಳದಿದ್ದರೂ ಆನ್‌ಲೈನ್ ರೆಸ್ಟೋರೆಂಟ್ ಆರ್ಡರ್ ಸೇವೆಗಳು (ಡೆಲಿವರಿ ಅಥವಾ ಪಿಕಪ್‌ಗೆ) ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಯನ್ನು ಒಪ್ಪಿಕೊಳ್ಳಬಹುದು.</string>
+    <string name="RestaurantButton">Menufy ರೆಸ್ಟೋರೆಂಟ್ ಆರ್ಡರ್</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿ ಒಪ್ಪಿಕೊಳ್ಳುವ ನಿಮ್ಮ ಹತ್ತಿರದ ಸ್ಥಳಗಳನ್ನು ಹುಡುಕಿ.</string>
+    <string name="StoreMapButton">ಅಂಗಡಿ ನಕ್ಷೆ</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: NEXA ಅನ್ನು ಇತರ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಗಳಿಗೆ ವಿನಿಮಯ ಮಾಡಿ</string>
+    <string name="welcome1Label">ಸ್ವಾಗತ</string>
+    <string name="welcome1">ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿ ವಾಲೆಟ್ ಆದ Wally ಗೆ ಸ್ವಾಗತ!\n\nಮುಂದಿನ ಪರದೆಗಳಲ್ಲಿ ನೀವು ನಿಮ್ಮ ಮೊದಲ Nexa ಬ್ಲಾಕ್‌ಚೈನ್ ಖಾತೆಯನ್ನು (NEX) ಹೊಂದಿಸುತ್ತೀರಿ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಹಣೆಯಂತಹ ಇತರ ಸೇವೆಗಳನ್ನು ಸಂರಚಿಸುತ್ತೀರಿ.\n\nಅಥವಾ ಈ ಮಾರ್ಗದರ್ಶಿತ ಸೆಟಪ್ ಬಿಟ್ಟುಬಿಡಲು ಹಿಂದಿನ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿ.</string>
+    <string name="welcome2_title">NEXA ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="welcome2">ಮುಂದಿನ ಪುಟದಲ್ಲಿ ನೀವು ನಿಮ್ಮ ಮೊದಲ Nexa ಖಾತೆಯನ್ನು ಹೊಂದಿಸುತ್ತೀರಿ.\n\nಈ ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ Nexa ಹಣ ಮತ್ತು ನಿಮ್ಮ ಗುರುತುಗಳು ಇರುತ್ತವೆ. ಗುರುತು ಎಂಬುದು Wally ವಾಲೆಟ್‌ನ ಹೊಸ ವೈಶಿಷ್ಟ್ಯ; ಬೆಂಬಲಿತ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಲಾಗ್ ಇನ್ ಆಗಲು ಇದು ನೆರವಾಗುತ್ತದೆ.\n\nನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ವೈಯಕ್ತಿಕ ಗುರುತಿನ ಸಂಖ್ಯೆಯಿಂದ (ಪಿನ್) ರಕ್ಷಿಸಲು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು; ಆದರೆ ಹೊಸ ಬಳಕೆದಾರರು ತಮ್ಮ ಮೊದಲ ಖಾತೆಗೆ ಪಿನ್ ಬಳಸದಿರಲು (ಮತ್ತು ಕಡಿಮೆ ಬ್ಯಾಲೆನ್ಸ್ ಇಟ್ಟುಕೊಳ್ಳಲು) ನಾವು ಶಿಫಾರಸು ಮಾಡುತ್ತೇವೆ. ಬಳಕೆದಾರರ ರಕ್ಷಣೆಗಾಗಿ, ಪಿನ್‌ನಿಂದ ರಕ್ಷಿತವಾದ ಖಾತೆಗಳು ಸರಿಯಾದ ಪಿನ್ ನಮೂದಿಸುವವರೆಗೆ ಕಾಣಿಸುವುದಿಲ್ಲ (ತಪ್ಪಾದ ಪಿನ್ ನಮೂದಿಸಿದರೆ ಅದನ್ನು ಸೂಚಿಸಲಾಗುವುದಿಲ್ಲ).\n\nಅಸ್ತಿತ್ವದಲ್ಲಿರುವ NEXA ಖಾತೆಯನ್ನು ಮರುಪಡೆಯಲು ಬಯಸಿದರೆ, ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ನೀಡಿ. ಈ ಸಾಲು ಖಾಲಿ ಇದ್ದರೆ, ಹೊಸ ಖಾತೆ ರಚಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="welcome3_title" formatted="false">Nexa ಖಾತೆಯ ರಿಕವರಿ ಪದಗುಚ್ಛ</string>
+    <string name="welcome3">ಸ್ವಾಗತ 3 ! (ಈ ಸ್ವಾಗತ ಪಠ್ಯವನ್ನು ಸುಧಾರಿಸಬಹುದು)</string>
+    <string name="welcome4_title">ಗುರುತು</string>
+    <string name="welcome4">ಮುಂದೆ, ನಿಮ್ಮನ್ನು ಗುರುತಿನ ಮಾಹಿತಿ ಪರದೆಗೆ ಕರೆದೊಯ್ಯಲಾಗುತ್ತದೆ.  ನೀವು Wally ಅನ್ನು ಗುರುತು ಮತ್ತು ಲಾಗಿನ್ ನಿರ್ವಾಹಕವಾಗಿ ಬಳಸಿದಾಗ (ವಿವಿಧ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಲಾಗ್ ಇನ್ ಆಗಲು ಅಥವಾ ಖರೀದಿಯ ವೇಳೆ ಮಾಹಿತಿ ನೀಡಲು) ಈ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. Wally ಗೌಪ್ಯತೆಗೆ ಅತ್ಯಂತ ಹೆಚ್ಚು ಮಹತ್ವ ನೀಡುತ್ತದೆ!
+ನಿಮ್ಮ ಸ್ಪಷ್ಟ ಅನುಮತಿ ಇಲ್ಲದೆ ಈ ಮಾಹಿತಿಯನ್ನು ಯಾವುದೇ ವೆಬ್‌ಸೈಟ್‌ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುವುದಿಲ್ಲ, ಮತ್ತು ಈ ವಾಲೆಟ್‌ನ ಯಾವುದೇ ಮಾಹಿತಿ ಈ ಆ್ಯಪ್‌ನ ಕರ್ತೃಗಳಿಗೆ ಎಂದಿಗೂ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ.  ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಖಾಲಿ ಬಿಡಲೂ ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.
+ಮುಗಿದ ನಂತರ, ಹಿಂದಿನ ಬಾಣದ ಗುರುತನ್ನು (ಎಡ ಮೇಲ್ಭಾಗ) ಒತ್ತಿ.</string>
+    <string name="welcomeComplete">ಇದರೊಂದಿಗೆ ಸೆಟಪ್ ಪೂರ್ಣಗೊಂಡಿದೆ.  ಈ ಸ್ವಾಗತದ ಯಾವುದೇ ಹಂತವನ್ನು ನೀವು ಪೂರ್ಣಗೊಳಿಸದಿದ್ದರೆ, ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳು ಆ್ಯಪ್‌ನಲ್ಲಿಯೇ ಲಭ್ಯವಿವೆ.
+ಧನ್ಯವಾದಗಳು, ನಿಮ್ಮ ಹೊಸ ವಾಲೆಟ್ ಆನಂದಿಸಿ!</string>
+    <string name="ExplainGiftCards">ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿಯನ್ನು ನೇರವಾಗಿ ಒಪ್ಪಿಕೊಳ್ಳದ ನೂರಾರು ಅಂಗಡಿಗಳಲ್ಲಿ ಖರೀದಿಸಲು ಗಿಫ್ಟ್ ಕಾರ್ಡ್‌ಗಳು ನೆರವಾಗುತ್ತವೆ.</string>
+    <string name="GiftCardButton">eGifter ಗಿಫ್ಟ್ ಕಾರ್ಡ್</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">ಖಾತೆ ಪ್ರವೇಶಿಸಲು ಈ ಗುಪ್ತ ಸಂಖ್ಯೆ ಬೇಕು</font>
+</string>
+    <string name="sync_title">ನಿಯಮಿತ ಅಂತರದಲ್ಲಿ ಇಮೇಲ್ ಸಿಂಕ್ ಮಾಡಿ</string>
+    <string name="attachment_title">ಬರುವ ಲಗತ್ತುಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</string>
+    <string name="attachment_summary_on">ಇಮೇಲ್ ಲಗತ್ತುಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</string>
+    <string name="attachment_summary_off">ವಿನಂತಿಸಿದಾಗ ಮಾತ್ರ ಲಗತ್ತುಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</string>
+    <string name="signature_title">ನಿಮ್ಮ ಸಹಿ</string>
+    <string name="reply_title">ಉತ್ತರಿಸುವಾಗ ಡೀಫಾಲ್ಟ್ ಕ್ರಿಯೆ</string>
+    <string name="discoveredAccountDetails" formatted="false">%addr ವಿಳಾಸಗಳು ಮತ್ತು %tx ವಹಿವಾಟುಗಳಲ್ಲಿ\n%bal %units ಬ್ಯಾಲೆನ್ಸ್ ಕಂಡುಬಂದಿದೆ</string>
+    <string name="discoveredWarning">ಇದು ಸರಿಯಾಗಿದೆ ಎನಿಸಿದರೆ, ನೀವು ಈ ಖಾತೆಯನ್ನು ತಕ್ಷಣ ರಚಿಸಬಹುದು</string>
+    <string name="backgroundSync">ಹಿನ್ನೆಲೆ ಸಿಂಕ್</string>
+    <string name="scanQr">QR ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</string>
+    <string name="imageQr">ಚಿತ್ರದ QR</string>
+    <string name="paste">ಅಂಟಿಸಿ</string>
+    <string name="recentTransactions">ಇತ್ತೀಚಿನ ವಹಿವಾಟುಗಳು</string>
+    <string name="sendingFrom">ಕಳುಹಿಸುವ ಖಾತೆ</string>
+    <string name="enterAddress">ವಿಳಾಸ ನಮೂದಿಸಿ...</string>
+    <string name="noteOptional">ಟಿಪ್ಪಣಿ (ಐಚ್ಛಿಕ)</string>
+    <string name="clearNote">ಟಿಪ್ಪಣಿ ತೆರವುಗೊಳಿಸಿ</string>
+    <string name="clearAddress">ವಿಳಾಸ ತೆರವುಗೊಳಿಸಿ</string>
+    <string name="clearAmount">ಮೊತ್ತ ತೆರವುಗೊಳಿಸಿ</string>
+    <string name="available">ಲಭ್ಯ</string>
+    <string name="amountPlain">ಮೊತ್ತ</string>
+    <string name="enterNEXAmount">NEX ಮೊತ್ತ ನಮೂದಿಸಿ...</string>
+    <string name="note">ಟಿಪ್ಪಣಿ</string>
+    <string name="confirmSend">ಕಳುಹಿಸಲು ದೃಢೀಕರಿಸಿ</string>
+    <string name="syncing">ಸಿಂಕ್ ಆಗುತ್ತಿದೆ...</string>
+    <string name="enterAmount" formatted="false">%assetName ಮೊತ್ತ ನಮೂದಿಸಿ</string>
+    <string name="fee">ಶುಲ್ಕ</string>
+    <string name="connectionWarning">ಎಚ್ಚರಿಕೆ: ಬ್ಲಾಕ್‌ಚೈನ್/ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ಲಭ್ಯವಿಲ್ಲ. ಈಗ ಕಳುಹಿಸಿದರೆ, ಸ್ವೀಕರಿಸುವವರಿಗೆ ಈ ವರ್ಗಾವಣೆ ತಕ್ಷಣ ಕಾಣಿಸುವುದಿಲ್ಲ. ಸಂಪರ್ಕ ಮರಳಿದ ಕೂಡಲೇ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="NetworkUnstable">ನೆಟ್‌ವರ್ಕ್ ಅಸ್ಥಿರವಾಗಿದೆ</string>
+    <string name="TokenMissing">ಟೋಕನ್ ಬ್ಲಾಕ್‌ಚೈನ್‌ನಲ್ಲಿ ಇಲ್ಲ </string>
+    <string name="Sell">ಮಾರಾಟ</string>
+    <string name="CreateAnOffer">ಪ್ರಸ್ತಾಪ ರಚಿಸಿ</string>
+    <string name="Price">ಬೆಲೆ</string>
+    <string name="NexaPrice">Nexa ಬೆಲೆ ನಮೂದಿಸಿ</string>
+    <string name="AssetAmountName" formatted="false">ನಿಮ್ಮಲ್ಲಿ %amount %assetName ಇದೆ</string>
+    <string name="scanToBuyOne">%name ಖರೀದಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</string>
+    <string name="scanToBuySeveral">%amount %name ಖರೀದಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</string>
+    <string name="nexaOfferAmount" formatted="false">%amount NEXA ಗೆ</string>
+    <string name="purchaseComplete">ಖರೀದಿ ಪೂರ್ಣಗೊಂಡಿದೆ</string>
+    <string name="setTheNexaPrice">Nexa ಬೆಲೆ ಹೊಂದಿಸಿ</string>
+    <string name="setTheAssetAmount">ಆಸ್ತಿಯ ಮೊತ್ತ ಹೊಂದಿಸಿ</string>
+    <string name="publishOnline">ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರಕಟಿಸಿ</string>
+    <string name="offerCreated">ಪ್ರಸ್ತಾಪ ರಚಿಸಲಾಗಿದೆ!</string>
+    <string name="ConfigureService">ಸೇವೆ ಸಂರಚಿಸಿ</string>
+    <string name="AcceptOrRejectService">ಸೇವೆ ಒಪ್ಪಿ ಅಥವಾ ತಿರಸ್ಕರಿಸಿ</string>
+    <string name="Domain">ಡೊಮೇನ್</string>
+    <string name="Services">ಸೇವೆಗಳು</string>
+    <string name="Purpose">ಉದ್ದೇಶ</string>
+    <string name="AutoPay">ಸ್ವಯಂಪಾವತಿ</string>
+    <string name="AutoPayInstructions">ಕೆಳಗಿನ ಚೆಕ್‌ಬಾಕ್ಸ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದ್ದರೆ, ಈ ಸೇವೆಯ ಎಲ್ಲಾ ಪಾವತಿ ವಿನಂತಿಗಳು ನಿಮ್ಮ ಅನುಮೋದನೆ ಕೇಳುತ್ತವೆ ಮತ್ತು ಕೆಳಗಿನ ಮಿತಿಗಳನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="LimitedAutoApproval">ಸೀಮಿತ ಸ್ವಯಂ ಅನುಮೋದನೆಗೆ ಅವಕಾಶ</string>
+    <string name="AutoPayMaxPerRequest">ಪ್ರತಿ ವಿನಂತಿಗೆ ಗರಿಷ್ಠ</string>
+    <string name="AutoPayMaxPerDay">ಪ್ರತಿ ದಿನಕ್ಕೆ ಗರಿಷ್ಠ</string>
+    <string name="AutoPayMaxPerWeek">ಪ್ರತಿ ವಾರಕ್ಕೆ ಗರಿಷ್ಠ</string>
+    <string name="AutoPayMaxPerMonth">ಪ್ರತಿ ತಿಂಗಳಿಗೆ ಗರಿಷ್ಠ</string>
+    <string name="EnableServices">ಸೇವೆಗಳ ಪರದೆ ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="NoServicesRegistered">ಯಾವುದೇ ಸೇವೆ ನೋಂದಾಯಿಸಿಲ್ಲ.</string>
+    <string name="Start">ಪ್ರಾರಂಭಿಸಿ</string>
+    <string name="Meditation">ಧ್ಯಾನ</string>
+    <string name="Meditate">ಧ್ಯಾನ</string>
+    <string name="Sound">ಧ್ವನಿ</string>
+    <string name="OneMinuteIntervalSound">1 ನಿಮಿಷದ ಅಂತರದ ಧ್ವನಿ</string>
+    <string name="MeditationVersion">ಆವೃತ್ತಿ: 1.0.3 (ಬಿಲ್ಡ್ 156)</string>
+    <string name="Meditating">ಧ್ಯಾನ ನಡೆಯುತ್ತಿದೆ...</string>
+    <string name="MediationComplete">ಧ್ಯಾನ ಪೂರ್ಣಗೊಂಡಿದೆ!</string>
+    <string name="Okay">ಸರಿ</string>
+    <string name="Minutes">ನಿಮಿಷಗಳು</string>
+    <string name="Camouflage">ಮಾರುವೇಷ</string>
+    <string name="CamouflageAsMeditationTimer">ಆ್ಯಪ್‌ಗೆ ಧ್ಯಾನ ಟೈಮರ್‌ನ ಮಾರುವೇಷ ಹಾಕಿ.</string>
+    <string name="CamouflageDescriptionAndroid">ಮಾರುವೇಷ ಸಕ್ರಿಯಗೊಳಿಸಿದರೆ ಆ್ಯಪ್ ಮುಚ್ಚಿ, ಅದಕ್ಕೆ Meditate ಎಂಬ ಹೆಸರಿನ ಆ್ಯಪ್‌ನ ಮಾರುವೇಷ ಹಾಕಲಾಗುತ್ತದೆ. Meditate ಆ್ಯಪ್ ಮಾರುವೇಷ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಆ್ಯಪ್ ಮೆನು ತೆರೆದು ಆವೃತ್ತಿ ಸಂಖ್ಯೆಯನ್ನು ಐದು ಬಾರಿ ಕ್ಲಿಕ್ ಮಾಡಿ.</string>
+    <string name="CamouflageDescriptionOther">Meditate ಆ್ಯಪ್ ಮಾರುವೇಷ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಆ್ಯಪ್ ಮೆನು ತೆರೆದು ಆವೃತ್ತಿ ಸಂಖ್ಯೆಯನ್ನು ಐದು ಬಾರಿ ಕ್ಲಿಕ್ ಮಾಡಿ.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Meditate ಆ್ಯಪ್ ಆಗಿ ಮಾರುವೇಷ</string>
+</resources>

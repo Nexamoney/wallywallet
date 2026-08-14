@@ -1,0 +1,634 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">ใช่</string>
+    <string name="no">ไม่ใช่</string>
+    <string name="at">ที่</string>
+    <string name="of">จาก</string>
+    <string name="choose">เลือก</string>
+    <string name="accept">ยอมรับ</string>
+    <string name="reject">ปฏิเสธ</string>
+    <string name="remove">นำออก</string>
+    <string name="confirm">ยืนยัน</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="Back">กลับ</string>
+    <string name="removeAll">นำออกทั้งหมด</string>
+    <string name="done">เสร็จสิ้น</string>
+    <string name="dismiss">ปิด</string>
+    <string name="deny">ไม่อนุญาต</string>
+    <string name="ask">ถามก่อน</string>
+    <string name="badSignature">ลายเซ็นไม่ถูกต้อง</string>
+    <string name="unknownCurrency">สกุลเงินที่ไม่รู้จัก</string>
+    <string name="unknownCryptoCurrency">คริปโตหรือบล็อกเชนที่ไม่รู้จัก</string>
+    <string name="Processing">กำลังประมวลผล...</string>
+    <string name="receiving">กำลังรับ</string>
+    <string name="sending">กำลังส่ง</string>
+    <string name="noAdditionalDetails">ไม่มีรายละเอียดเพิ่มเติม</string>
+    <string name="unspecified">ไม่ระบุ</string>
+    <string name="removed">นำออกแล้ว</string>
+    <string name="synced">ซิงค์แล้ว</string>
+    <string name="unsynced">กำลังซิงค์</string>
+    <string name="connected">เชื่อมต่อแล้ว</string>
+    <string name="connectionEstablished">เชื่อมต่อสำเร็จ</string>
+    <string name="connectionClosed">ปิดการเชื่อมต่อแล้ว</string>
+    <string name="connectionException">เชื่อมต่อกับเว็บไซต์ไม่ได้</string>
+    <string name="balance">ยอดคงเหลือ</string>
+    <string name="totalReceived">ยอดรับทั้งหมด</string>
+    <string name="inProgress">กำลังดำเนินการ</string>
+    <string name="staleTransaction">ธุรกรรมล้าสมัย</string>
+    <string name="staleTransactionDetails">ธุรกรรมนี้ถูกฟูลโหนดปฏิเสธ อาจเป็นเพราะล้าสมัยแล้ว (มีคนอื่นใช้ไปก่อน) แต่ก็เป็นไปได้ว่าธุรกรรมนี้ไม่เคยถูกต้อง หรือธุรกรรมปกติดีแต่โหนดที่เราถามไม่ซื่อสัตย์ กระเป๋าเงินจะไม่สนใจธุรกรรมนี้จนกว่าจะยืนยันแล้ว</string>
+    <string name="NoPermission">ไม่มีสิทธิ์</string>
+    <string name="NoPermissionDetails" formatted="false">คุณต้องเปิดสิทธิ์ %perm เพื่อใช้ฟีเจอร์นี้ โดยไปที่ การตั้งค่า Android -> แอป -> Wally -> สิทธิ์</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...กำลังโหลด...</h1></center></body>]]></string>
+    <string name="loading">กำลังโหลด</string>
+    <string name="Untitled">ไม่มีชื่อ</string>
+    <string name="nothing">ไม่มี</string>
+    <string name="breakIt">แบ่ง</string>
+    <string name="or">หรือ</string>
+    <string name="onBlockchain">บน</string>
+    <string name="NotImplemented">เร็วๆ นี้</string>
+    <string name="NoNodes">เข้าถึงบล็อกเชนไม่ได้</string>
+    <string name="cancelled">ยกเลิกแล้ว</string>
+    <string name="refreshQR">การเชื่อมต่อเซิร์ฟเวอร์หลุด</string>
+    <string name="pleaseWait">กรุณารอ</string>
+    <string name="trying">กำลังลอง</string>
+    <string name="clear">ล้าง</string>
+    <string name="thousand">* พัน</string>
+    <string name="million">* ล้าน</string>
+    <string name="required">จำเป็น</string>
+    <string name="account">บัญชี</string>
+    <string name="addAccountPlus">+ เพิ่มบัญชี</string>
+    <string name="receivingTokens">รับโทเคน</string>
+    <string name="spendingTokens">ใช้จ่ายโทเคน</string>
+    <string name="version" formatted="false">เวอร์ชัน: %ver (%date)</string>
+    <string name="enableDeveloperView">โหมดขั้นสูง/นักพัฒนา</string>
+    <string name="enableRecompositionCounts">นับการวาดหน้าจอซ้ำ</string>
+    <string name="enableExperimentalUx">อินเทอร์เฟซทดลอง</string>
+    <string name="enableDarkMode">โหมดมืด</string>
+    <string name="enableSound">เปิดเสียง</string>
+    <string name="enableIdentityMenu">เปิดหน้าตัวตน</string>
+    <string name="enableTricklePayMenu">เปิดหน้า Trickle Pay</string>
+    <string name="enableAssetsMenu">เปิดหน้าสินทรัพย์</string>
+    <string name="only">เท่านั้น</string>
+    <string name="prefer">ใช้ก่อน</string>
+    <string name="rediscoverWalletTx">ค้นหาธุรกรรมทั้งหมดอีกครั้ง</string>
+    <string name="searchWalletTx">ค้นหาธุรกรรมที่ขาดหาย</string>
+    <string name="rediscoverBlockchain">ค้นหาส่วนหัวบล็อกเชนอีกครั้ง</string>
+    <string name="logDebugData">บันทึกข้อมูลดีบัก</string>
+    <string name="clearIdentityDomains">ล้างโดเมนตัวตน</string>
+    <string name="rediscoverTooltip">ลบสถานะบล็อกเชนแล้วค้นหาธุรกรรมทั้งหมดที่เกี่ยวข้องกับกระเป๋าเงินอีกครั้ง</string>
+    <string name="wordSeed">วลีลับกู้คืนบัญชี</string>
+    <string name="deleteWalletAccount">ลบบัญชี</string>
+    <string name="more">เพิ่มเติม</string>
+    <string name="darkMode">โหมดมืด</string>
+    <string name="ConsolidationNeeded">รวมยอดบัญชีก่อน</string>
+    <string name="SetChangePin">ตั้งหรือเปลี่ยน PIN ปลดล็อก</string>
+    <string name="CurrentPin">PIN ปัจจุบัน</string>
+    <string name="NewPin">PIN ใหม่</string>
+    <string name="PinChanged">เปลี่ยน PIN แล้ว</string>
+    <string name="PinRemoved">นำ PIN ออกแล้ว</string>
+    <string name="PinInvalid">PIN ไม่ถูกต้อง</string>
+    <string name="PinTooShort">PIN ใหม่สั้นเกินไป</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">คำเตือน: คุณยังไม่ได้จดวลีลับกู้คืนของบางบัญชี! เพื่อไม่ให้เงินสูญหายหากอุปกรณ์นี้หายหรือเสีย ให้จดวลีลับกู้คืนลงบนกระดาษหรือสื่อที่ไม่ใช่อิเล็กทรอนิกส์</string>
+    <string name="WroteRecoveryPhraseDown">จดไว้แล้ว</string>
+    <string name="RecoveryPhraseKeepRemindingMe">เตือนฉันต่อไป</string>
+    <string name="ViewRecoveryPhrase">ดูวลีลับกู้คืนบัญชี</string>
+    <string name="localCurrency">สกุลเงินท้องถิ่น</string>
+    <string name="assessUnconfirmed">ตรวจสอบธุรกรรมที่ยังไม่ยืนยัน</string>
+    <string name="rediscoverNotice">เริ่มค้นหาบัญชีอีกครั้งแล้ว</string>
+    <string name="searchNotice">เริ่มค้นหาบัญชีแล้ว</string>
+    <string name="unconfAssessmentNotice">เริ่มตรวจสอบธุรกรรมที่ยังไม่ยืนยันแล้ว</string>
+    <string name="accountDeleteNotice">ลบบัญชีแล้ว</string>
+    <string name="rediscoverConfirmation">การค้นหาบัญชีอีกครั้งจะล้างยอดในกระเป๋าเงินให้เป็นศูนย์ แล้วค้นหาการชำระเงินบนบล็อกเชนเหมือนเพิ่งสร้างบัญชีขึ้นใหม่ ขั้นตอนนี้อาจใช้เวลานาน แต่อาจมีปุ่ม “กรอไปข้างหน้า” ปรากฏขึ้น ซึ่งให้คุณเลือกสอบถามกิจกรรมของกระเป๋าเงินจากฐานข้อมูลได้ หากวันที่ด้านบนไม่ถูกต้อง กรุณารอสักครู่เพื่อให้อัปเดต</string>
+    <string name="searchConfirmation">ฟังก์ชันนี้จะค้นหาการชำระเงินที่ขาดหายบนบล็อกเชน ขั้นตอนนี้อาจใช้เวลานาน แต่อาจมีปุ่ม “กรอไปข้างหน้า” ปรากฏขึ้น ซึ่งให้คุณเลือกสอบถามกิจกรรมของกระเป๋าเงินจากฐานข้อมูลได้</string>
+    <string name="rediscoverBlockchainConfirmation">การค้นหาบล็อกเชนอีกครั้งจะลบข้อมูลส่วนหัวบล็อกเชนทั้งหมดออกจากกระเป๋าเงินนี้ แล้วดาวน์โหลดใหม่จากฟูลโหนด ขั้นตอนนี้อาจใช้เวลานาน ใช้เมื่อคุณแน่ใจว่ามีปัญหากับส่วนหัวบล็อกเชนเท่านั้น</string>
+    <string name="deleteConfirmation" formatted="false">การลบบัญชีจะทำให้ยอดคงเหลือ ตัวตน และประวัติทั้งหมดใช้ไม่ได้ เว้นแต่จะกู้คืนบัญชีด้วยวลีลับกู้คืนบัญชี! ทำเมื่อคุณแน่ใจอย่างเด็ดขาดเท่านั้น!\n\nลบบัญชี “%accountName” (บน %blockchain) ไหม</string>
+    <string name="reassessConfirmation">การดำเนินการนี้จะตรวจสอบบล็อกเชนหาธุรกรรมที่คุณเพิ่งส่งไป แล้วจะยืนยันหรือลบธุรกรรมเหล่านั้นตามที่พบหรือไม่พบ หากธุรกรรมถูกลบ เงินจะดูเหมือนหายไป คุณจะต้องใช้ “ค้นหาอีกครั้ง” เพื่อให้ยอดที่ใช้ไปกลับคืนมา อย่าใช้หากคุณเพิ่งส่งธุรกรรม เพราะธุรกรรมนั้นอาจยังค้างอยู่ในเครือข่ายเพื่อรอยืนยัน</string>
+    <string name="recoveryPhrase">วลี 12 คำนี้ใช้กู้คืนกระเป๋าเงินของคุณ ใครก็ตามที่มีวลีนี้สามารถใช้เงินของคุณได้ ให้เขียนด้วยปากกาลงบนกระดาษ (หรือสลักลงบนเหล็ก) แล้วเก็บไว้ในที่ปลอดภัย!</string>
+    <string name="recoveryWarning">หยุด! ห้ามเก็บในรูปแบบดิจิทัลเด็ดขาด!\nห้ามคัดลอกไปยังคลิปบอร์ด ถ่ายรูป ถ่ายสำเนา หรือจับภาพหน้าจอ</string>
+    <string name="flickerReason">การกะพริบเป็นมาตรการรักษาความปลอดภัย</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">คัดลอกไปยังคลิปบอร์ดแล้ว แต่การคัดลอกและวางวลีกู้คืนนี้ลงในแอปใดก็ตามเป็นความคิดที่แย่มาก! อีเมล แอปส่วนใหญ่ บริการสำรองข้อมูล ฯลฯ ไม่ได้ปลอดภัยพอที่จะเก็บวลีซึ่งมีค่าเท่ากับเงินจริง</string>
+    <string name="primaryAccountConfirmation">บัญชีหลักคือบัญชีที่ใช้สำหรับตัวตนของคุณและใช้ชำระเงินอัตโนมัติ ทั้งยังเป็นบัญชีแรกที่แสดงในหลายที่ของแอปนี้ บัญชีหลักต้องอยู่บนบล็อกเชน Nexa</string>
+    <string name="primaryAccountSuccess">บัญชีหลัก: %name</string>
+    <string name="AccountActions">การจัดการบัญชี</string>
+    <string name="GeneralSettings">การตั้งค่าทั่วไป</string>
+    <string name="BlockchainSettings">แหล่งข้อมูลบล็อกเชน</string>
+    <string name="AccessPriceData">เข้าถึงข้อมูลราคา</string>
+    <string name="oldUi">อินเทอร์เฟซแบบเดิม</string>
+    <string name="SplitBillDescription">คุณจ่ายบิล (เป็นเงินเฟียต) แล้วเพื่อนๆ จ่ายส่วนของเขาให้คุณผ่านรหัส QR ด้านล่าง อย่าลืมนับตัวคุณเองรวมในจำนวนคนที่หาร เว้นแต่เพื่อนจะเลี้ยง!</string>
+    <string name="BillAmount">ยอดบิล</string>
+    <string name="TipAmount">ยอดทิป</string>
+    <string name="TipPercentage">เปอร์เซ็นต์ทิป</string>
+    <string name="Total">ยอดรวมที่จะหาร</string>
+    <string name="OR">หรือ</string>
+    <string name="QRCodeFor">รหัส QR สำหรับ:</string>
+    <string name="Ways">จำนวนคน:</string>
+    <string name="Tip">ทิป:</string>
+    <string name="Amount">จำนวน:</string>
+    <string name="AmountWithValue" formatted="false">จำนวน: %amt</string>
+    <string name="QuantityWithValue" formatted="false">จำนวน: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">ณ %date</string>
+    <string name="fastSync">ซิงค์เร็ว</string>
+    <string name="refresh">รีเฟรช</string>
+    <string name="goodQR">อ่าน QR ได้</string>
+    <string name="badQR">อ่าน QR ไม่ได้</string>
+    <string name="badImageQR">ภาพ QR ไม่ชัด เพิ่มเติม...</string>
+    <string name="badImageQRhelp">หากคุณถ่ายภาพรหัส QR ในระยะใกล้ ลองถ่ายจากระยะไกลขึ้น ขอบสีขาวเป็นส่วนหนึ่งของรหัส QR และการถ่ายภาพหน้าจอในระยะใกล้อาจทำให้เกิดลายมัวเรที่รบกวนการอ่าน</string>
+    <string name="GoThere">ไปที่นั่น</string>
+    <string name="unlock">ปลดล็อก</string>
+    <string name="share">แชร์</string>
+    <string name="Send">ส่ง</string>
+    <string name="OpenSend">ส่ง</string>
+    <string name="SendCancel">ยกเลิก</string>
+    <string name="ignoredInsecureRequest">ละเว้นคำขอที่ไม่ปลอดภัย</string>
+    <string name="fromAccountColon">ส่งจากบัญชี:</string>
+    <string name="chooseAccountError">เลือกบัญชี</string>
+    <string name="toColon">ถึง:</string>
+    <string name="To">ถึง</string>
+    <string name="ByAuthor">โดย</string>
+    <string name="assetsColon">สินทรัพย์:</string>
+    <string name="assets">สินทรัพย์</string>
+    <string name="NoAssets">ไม่มีสินทรัพย์ในบัญชี %act</string>
+    <string name="NoAssetsAccount">ขณะนี้ไม่มีสินทรัพย์ในบัญชีของคุณ</string>
+    <string name="fromColon">จาก:</string>
+    <string name="ReceiveIntoAccount">รับเข้าบัญชี</string>
+    <string name="Receive">รับ</string>
+    <string name="YourAddress">ที่อยู่ %blockchain ของคุณ</string>
+    <string name="CopyAddress">คัดลอกที่อยู่</string>
+    <string name="AccountListHeader">บัญชี</string>
+    <string name="Address">ที่อยู่</string>
+    <string name="clipboard">คลิปบอร์ด</string>
+    <string name="settings">การตั้งค่า</string>
+    <string name="help">ช่วยเหลือ</string>
+    <string name="invalidQuantity">จำนวนไม่ถูกต้อง</string>
+    <string name="needNonexistentAuthority">ต้องมีสิทธิ์โทเคน</string>
+    <string name="invalidQuantityTooManyDecimalDigits">ทศนิยมมากเกินไป</string>
+    <string name="roundedUpClickSendAgain">ปัดขึ้นแล้ว กดส่งอีกครั้งเพื่อยอมรับ</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">ซื้อ</string>
+    <string name="scanPaymentQRcode">สแกนรหัส QR ของที่อยู่ชำระเงิน</string>
+    <string name="ScanQRCodeButton">สแกนรหัส QR</string>
+    <string name="PasteDestinationAddressButton">วาง</string>
+    <string name="NewAccountButton">ตั้งค่าบัญชีใหม่</string>
+    <string name="NewAccountSearchingForTransactions">...กำลังค้นหาธุรกรรมแรก...</string>
+    <string name="NewAccountSearchingForAllTransactions">...กำลังค้นหาธุรกรรมทั้งหมด...</string>
+    <string name="NewAccountSearchFailure">ค้นหาธุรกรรมล้มเหลว</string>
+    <string name="receiveAddressQRCode">รหัส QR สำหรับรับ</string>
+    <string name="paymentProposal">ตามข้อเสนอการชำระเงินที่ได้รับ</string>
+    <string name="pasteIsEmpty">ไม่มีข้อมูลให้วาง</string>
+    <string name="pasteIgnored">ละเว้นข้อมูลที่วาง</string>
+    <string name="pasteUnintelligible">ไม่เข้าใจข้อมูลที่วาง</string>
+    <string name="chainIncompatibleWithAddress">ที่อยู่ไม่เข้ากับบัญชี</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">สกุลเงินของบัญชีคือ %walletCrypto แต่ที่อยู่เป็น %addressCrypto ใช้กล่องตัวเลือกเพื่อเปลี่ยนบัญชีที่ส่งให้ตรงกับบล็อกเชนของที่อยู่</string>
+    <string name="incoming" formatted="false">รวม %delta %unit ที่รอยืนยัน</string>
+    <string name="approximatelyT" formatted="false">ประมาณ %qty %fiat</string>
+    <string name="fastForward" formatted="false">กรอไปข้างหน้า</string>
+    <string name="fastforwardStatus" formatted="false">การวิเคราะห์กรอไปข้างหน้า: %info</string>
+    <string name="fastforwardStart" formatted="false">เริ่มแล้ว</string>
+    <string name="exchangeRate" formatted="false">(อัตราแลกเปลี่ยน: 1 %fiat มีค่าเท่ากับ %amt %crypto)</string>
+    <string name="moreThanAvailable">(มากกว่ายอดที่ใช้ได้)</string>
+    <string name="moreThanConfirmedAvailable">(มากกว่ายอดที่ยืนยันแล้ว)</string>
+    <string name="actuallySendingT" formatted="false">ส่งจริง %qty %crypto</string>
+    <string name="copiedToClipboard">คัดลอกไปยัง\nคลิปบอร์ดแล้ว</string>
+    <string name="copyId">คัดลอก ID</string>
+    <string name="openInBrowser">เปิดในเบราว์เซอร์</string>
+    <string name="cannotCopyToClipboard">คัดลอกไปยังคลิปบอร์ดไม่ได้</string>
+    <string name="tooLargeForClipboard">ข้อมูลมากเกินไปสำหรับคลิปบอร์ด</string>
+    <string name="scanFailed">สแกนไม่สำเร็จ</string>
+    <string name="scanSuccess">สแกนสำเร็จ</string>
+    <string name="sendSuccess">ส่งสำเร็จ</string>
+    <string name="sendQuantityHint">จำนวนที่ส่ง</string>
+    <string name="sendRequestNotification">มีคำขอส่ง</string>
+    <string name="sendToAddressHint">ที่อยู่ปลายทาง</string>
+    <string name="sendAll">ทั้งหมด</string>
+    <string name="editSendNoteHint">หมายเหตุส่วนตัวเกี่ยวกับการโอนนี้</string>
+    <string name="subSatoshiQuantities">ทศนิยมมากเกินไป -- สกุลเงินนี้แบ่งย่อยได้ไม่ละเอียดขนาดนั้น</string>
+    <string name="retrievingExchangeRate">กำลังดึงอัตราแลกเปลี่ยน</string>
+    <string name="unavailableExchangeRate">ไม่มีอัตราแลกเปลี่ยน</string>
+    <string name="SigningWithAccount" formatted="false">เซ็นด้วยบัญชี: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">ตัวตนร่วมสำหรับบัญชี: %act</string>
+    <string name="identityRequestNotification">มีคำขอตัวตน</string>
+    <string name="IdentityDataMissing">ข้อมูลตัวตนไม่ครบ</string>
+    <string name="newDomainRequestingIdentity">บริการใหม่ขอลงทะเบียน</string>
+    <string name="domainRequestingAdditionalIdentityInfo">มีคำขอข้อมูลเพิ่มเติม</string>
+    <string name="useUniqueIdentityToolTip">เปิดเพื่อแยกตัวตนของคุณที่นี่ออกจากเว็บไซต์อื่น</string>
+    <string name="provideAlias">ให้ชื่อผู้ใช้/นามแฝงของคุณไหม</string>
+    <string name="provideAliasToolTip">เลือกตัวเลือกนี้เพื่อให้นามแฝงของคุณ (ตามที่ตั้งค่าไว้ ไม่ใช่ชื่อจริง) แก่เว็บไซต์นี้เมื่อมีการร้องขอ</string>
+    <string name="provideSocialMedia">ให้ข้อมูลโซเชียลมีเดียของคุณไหม</string>
+    <string name="provideSocialMediaToolTip">เลือกตัวเลือกนี้เพื่อให้ข้อมูลโซเชียลมีเดียของคุณ (ตามที่ตั้งค่าไว้) แก่เว็บไซต์นี้เมื่อมีการร้องขอ</string>
+    <string name="providePostalAddress">ให้ที่อยู่ทางไปรษณีย์ของคุณไหม</string>
+    <string name="providePostalAddressToolTip">เลือกตัวเลือกนี้เพื่อให้ที่อยู่ของคุณ (ตามที่ตั้งค่าไว้) แก่เว็บไซต์นี้เมื่อมีการร้องขอ</string>
+    <string name="provideBillingAddress">ให้ที่อยู่ใบเรียกเก็บเงินของคุณไหม</string>
+    <string name="provideBillingAddressToolTip">เลือกตัวเลือกนี้เพื่อให้ที่อยู่ใบเรียกเก็บเงินของคุณ (ตามที่ตั้งค่าไว้) แก่เว็บไซต์นี้เมื่อมีการร้องขอ</string>
+    <string name="provideEmail">ให้อีเมลของคุณไหม</string>
+    <string name="provideAvatar">ให้รูปโปรไฟล์ของคุณไหม</string>
+    <string name="provideRealName">ให้ชื่อจริงของคุณไหม</string>
+    <string name="provideRealNameToolTip">เลือกตัวเลือกนี้เพื่อให้ชื่อจริงของคุณ (ตามที่ตั้งค่าไว้) แก่เว็บไซต์นี้</string>
+    <string name="provideBirthday">ให้วันเกิดของคุณไหม</string>
+    <string name="providePhone">ให้เบอร์โทรศัพท์ของคุณไหม</string>
+    <string name="provideAttestations">ให้คำรับรองไหม</string>
+    <string name="provideAttestationsToolTip">คำรับรองคือลายเซ็นจากบุคคลที่สามที่ยืนยันข้อมูลที่คุณให้ไว้</string>
+    <string name="primaryAccountRequired" formatted="false">ต้องมีบัญชี %primCurrency เพื่อใช้ฟีเจอร์นี้</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">บางฟีเจอร์ผูกกับคริปโตบางสกุล คุณต้องสร้างหรือปลดล็อกบัญชีของคริปโตนั้นก่อนใช้ฟีเจอร์นี้</string>
+    <string name="UnknownDomainRegisterFirst">ไม่รู้จักบริการนี้ ลงทะเบียนก่อน</string>
+    <string name="Provider" formatted="false">ผู้ให้บริการ: %provider</string>
+    <string name="QrCode">รหัส QR</string>
+    <string name="unknownOperation" formatted="false">ไม่รู้จักการดำเนินการ %op</string>
+    <string name="alreadyRegistered">ลงทะเบียนแล้ว</string>
+    <string name="existingRegistration" formatted="false">บัญชีที่เลือกอยู่ “%act” ได้ลงทะเบียนกับบริการนี้แล้ว</string>
+    <string name="nonexistentRegistration" formatted="false">บัญชีที่เลือกอยู่ “%act” ยังไม่ได้ลงทะเบียนกับบริการนี้</string>
+    <string name="provideLoginQuestion">เข้าสู่ระบบเว็บไซต์นี้ไหม</string>
+    <string name="provideInfoQuestion">คำขอข้อมูลตัวตนจาก</string>
+    <string name="signDataQuestion">คำขอลายเซ็นจาก</string>
+    <string name="nothingToSign">ไม่มีข้อความ</string>
+    <string name="binaryToSign">เซ็นข้อมูลไบนารีนี้ไหม</string>
+    <string name="textToSign">เซ็นข้อความนี้ไหม</string>
+    <string name="sigInClipboard">คัดลอกลายเซ็นไปยังคลิปบอร์ดแล้ว</string>
+    <string name="SocialMediaText">โซเชียลมีเดีย</string>
+    <string name="SocialMediaSummary">กรอกเป็นรายการ บริการ:ชื่อผู้ใช้ เช่น twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">ชื่อผู้ใช้/นามแฝง</string>
+    <string name="NameText">ชื่อ-นามสกุล</string>
+    <string name="PostalAddressText">ที่อยู่ทางไปรษณีย์</string>
+    <string name="BillingAddressText">ที่อยู่ใบเรียกเก็บเงิน</string>
+    <string name="PostalCodeText">รหัสไปรษณีย์</string>
+    <string name="EmailText">อีเมล</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">ข้อมูลตัวตนที่เชื่อมโยง</string>
+    <string name="ServiceAssociatedWith">บริการนี้เชื่อมโยงอยู่กับ:</string>
+    <string name="IdentityInfoNote">การกรอกข้อมูลนี้ไม่บังคับ และจะให้เฉพาะบริการที่คุณเลือกเท่านั้น จุดประสงค์คือเพื่อให้ช่องข้อมูลทั่วไปในแบบฟอร์มถูกกรอกได้ด้วยการสแกนรหัส QR ในเว็บไซต์ที่รองรับตัวตน</string>
+    <string name="areYouSure">แน่ใจไหม</string>
+    <string name="WhenAskSure">ยืนยันด้านบน:</string>
+    <string name="SendConfirmSummary" formatted="false">ยืนยันการส่ง %amt %currency %inFiat%assets ไปยังที่อยู่ %dest</string>
+    <string name="firstName">ชื่อจริง</string>
+    <string name="lastName">นามสกุล</string>
+    <string name="withholdingMandatoryInfo">เว็บไซต์ต้องการข้อมูลที่คุณไม่ยอมให้</string>
+    <string name="badLink">ลิงก์ไม่ถูกต้อง</string>
+    <string name="BadWebLink">ลิงก์เว็บไม่ถูกต้อง</string>
+    <string name="connectionAborted">เว็บไซต์ยกเลิกการเข้าสู่ระบบ</string>
+    <string name="HintAdjustCostBasis">ราคาทุนหรือกำไร</string>
+    <string name="CostBasis">ราคาทุน</string>
+    <string name="CapitalLoss">ขาดทุนส่วนทุน</string>
+    <string name="CapitalGain">กำไรส่วนทุน</string>
+    <string name="OverrideSalesPrice">กรอกราคาตอนขาย</string>
+    <string name="AccountHistory">ธุรกรรม</string>
+    <string name="NoAccountActivity">ไม่มีความเคลื่อนไหวในบัญชี</string>
+    <string name="AccountAddresses">ที่อยู่</string>
+    <string name="ActiveAddresses">ที่อยู่ที่ใช้งานอยู่</string>
+    <string name="UsedAddresses">ที่อยู่ที่ใช้แล้ว</string>
+    <string name="UnusedAddresses">ที่อยู่ที่ยังไม่ใช้</string>
+    <string name="txHistoryButton">ดูหรือส่งออกความเคลื่อนไหวบัญชี</string>
+    <string name="setAsPrimaryAccountButton">ตั้งเป็นบัญชีหลัก</string>
+    <string name="AccountStatistics">สถิติบัญชี</string>
+    <string name="AccountBlockchainSync" formatted="false">ขณะนี้ %sync บนบล็อกเชน %chain</string>
+    <string name="AccountBlockchainDetails" formatted="false">เมื่อ %actBlockDate บล็อก %actBlock จาก %chainBlockCount</string>
+    <string name="AccountEarliestActivity" formatted="false">ใช้ครั้งแรก: บล็อก %actPrehistoryBlock เมื่อ %actPrehistoryDate</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">เชื่อมต่อกับโหนด %num ตัว: %names</string>
+    <string name="AccountNumAddresses" formatted="false">ที่อยู่ %num รายการ</string>
+    <string name="CurrentAddress" formatted="false">ที่อยู่ลำดับ %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">ฝากครั้งแรกในบล็อก %first ล่าสุดในบล็อก %last</string>
+    <string name="FirstLastSend" formatted="false">ถอนครั้งแรกในบล็อก %first ล่าสุดในบล็อก %last</string>
+    <string name="FirstWithdraw">ถอนครั้งแรก</string>
+    <string name="FirstDeposit">ฝากครั้งแรก</string>
+    <string name="never">ไม่เคย</string>
+    <string name="FirstUse" formatted="false">ใช้ครั้งแรก: %date</string>
+    <string name="LastUse" formatted="false">ใช้ครั้งล่าสุด: %date</string>
+    <string name="Block" formatted="false">บล็อก: %block</string>
+    <string name="AccountNumTx" formatted="false">ธุรกรรม %num รายการ</string>
+    <string name="AccountNumUtxos" formatted="false">รายการบัญชี %num รายการ</string>
+    <string name="title_activity_assets">สินทรัพย์</string>
+    <string name="title_activity_scan">สแกน</string>
+    <string name="title_activity_new_account">บัญชีใหม่</string>
+    <string name="AccountName">ชื่อบัญชี</string>
+    <string name="AccountNameHint">1-8 ตัวอักษร</string>
+    <string name="Blockchain">บล็อกเชน</string>
+    <string name="AccountRecoveryPhrase">วลีกู้คืน</string>
+    <string name="LeaveEmptyNewWallet">เว้นว่างไว้เพื่อสร้างบัญชีใหม่</string>
+    <string name="PinSuggestions"><font size="15">ต้องใช้ตัวเลขลับนี้เพื่อเข้าถึงบัญชี</font></string>
+    <string name="createNewAccount">สร้างบัญชีใหม่</string>
+    <string name="createSyncAccount">กู้คืนบัญชีด้วยการซิงค์ละเอียด (ใช้เวลานาน)</string>
+    <string name="createDiscoveredAccount">กู้คืนบัญชีทันที</string>
+    <string name="invalidRecoveryPhrase">วลีกู้คืนไม่ถูกต้อง</string>
+    <string name="invalidAccountName">ชื่อไม่ถูกต้อง</string>
+    <string name="PassPhrase">วลีรหัสผ่าน (ไม่บังคับ)</string>
+    <string name="Bip44ActivityNotice">พบความเคลื่อนไหวของบัญชี</string>
+    <string name="NoBip44ActivityNotice">คำเตือน ไม่พบธุรกรรม!</string>
+    <string name="Bip44BtcActivityNotice">พบความเคลื่อนไหวของกระเป๋าเงินที่ไม่มาตรฐานหรือก่อนฟอร์ก</string>
+    <string name="NoBip44BtcActivityNotice">ไม่พบธุรกรรมก่อนฟอร์ก</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">เริ่มที่ %date (บล็อก %height)</string>
+    <string name="NotEnoughRecoveryWords">ต้องใช้คำกู้คืนเพิ่ม</string>
+    <string name="TooManyRecoveryWords">คำกู้คืนมากเกินไป</string>
+    <string name="IncorrectRecoveryWords" formatted="false">คำที่ไม่ถูกต้อง: %words</string>
+    <string name="ElectrumNetworkUnavailable">เครือข่าย Electrum ไม่พร้อมใช้งาน การกู้คืนกระเป๋าเงินจะช้า และจะไม่พบธุรกรรมก่อนวันที่ 1 ม.ค. 2020</string>
+    <string name="PinHidesAccount">ซ่อนบัญชีจนกว่าจะป้อน PIN ไหม</string>
+    <string name="HiddenAccountExplainer">ซ่อนบัญชีจนกว่าจะป้อน PIN</string>
+    <string name="HiddenAccount">บัญชีที่ซ่อนไว้</string>
+    <string name="AutomaticNewAddress">ความเป็นส่วนตัวของที่อยู่</string>
+    <string name="AutomaticNewAddressToolTip">ระบบจะแสดงที่อยู่ใหม่โดยอัตโนมัติทุกครั้งที่ที่อยู่ปัจจุบันถูกใช้งาน</string>
+    <string name="CreatePIN">PIN (ไม่บังคับ)</string>
+    <string name="PinSpendingUnprotected">เปิดใช้การใช้จ่ายโดยไม่ต้องใช้ PIN อยู่ (ยังไม่ได้ป้อน PIN)</string>
+    <string name="PinSpendingProtected">การใช้จ่ายต้องใช้ PIN</string>
+    <string name="InvalidPIN">PIN ไม่ถูกต้อง</string>
+    <string name="creatingNoHistoryAccountWarning">คุณกำลังสร้างบัญชีด้วยวลีกู้คืนที่ระบุ แต่ไม่พบความเคลื่อนไหวบนบล็อกเชน\nถูกต้องหรือไม่\nหากถูกต้อง ให้กดปุ่มสร้างอีกครั้ง แล้วระบบจะสร้างบัญชีเปล่าให้ แต่หากบัญชีนี้ควรมีความเคลื่อนไหว กรุณาตรวจสอบบล็อกเชนและวลีกู้คืนที่คุณเลือกอีกครั้ง หากไม่ใช่ปัญหานั้น อาจเป็นเพราะขณะนี้เครือข่ายบล็อกเชนเข้าถึงไม่ได้ (ลองใหม่ภายหลัง) หรือบัญชีถูกสร้างด้วยแอปกระเป๋าเงินที่ไม่มาตรฐาน อย่าสร้างบัญชีนี้ตอนนี้</string>
+    <string name="accountLocked">บัญชีถูกล็อก</string>
+    <string name="unknownError">ข้อผิดพลาด</string>
+    <string name="insufficentBalance">ยอดคงเหลือไม่พอ</string>
+    <string name="insufficentTokenBalance">ยอดคงเหลือโทเคนไม่พอ</string>
+    <string name="excessiveFee">ค่าธรรมเนียมสูงเกินไป</string>
+    <string name="sendDustError">จำนวนต่ำกว่าขั้นต่ำ</string>
+    <string name="sendingDustWarning">จำนวนต่ำกว่าขั้นต่ำของเครือข่าย</string>
+    <string name="feeExceedsFlatMax">ค่าธรรมเนียมเกินค่าธรรมเนียมคงที่สูงสุดที่ตั้งไว้</string>
+    <string name="notSupported">ไม่รองรับ</string>
+    <string name="expired">การชำระเงินหมดอายุ</string>
+    <string name="PaymentDataMissing">การชำระเงินขาดข้อมูล</string>
+    <string name="headersNotForthcoming">ไม่ได้รับส่วนหัวบล็อก</string>
+    <string name="cantConvert">แปลงค่าไม่ได้ชั่วคราว</string>
+    <string name="walletDisconnectedFromBlockchain">กระเป๋าเงินตัดการเชื่อมต่อ</string>
+    <string name="badTransaction">ธุรกรรมไม่ถูกต้อง</string>
+    <string name="badAddress">ที่อยู่ไม่ถูกต้อง</string>
+    <string name="unknownAddress">ที่อยู่ไม่รู้จัก</string>
+    <string name="badAmount">จำนวนไม่ถูกต้อง</string>
+    <string name="NoAccounts">ไม่มีบัญชีที่เข้าถึงได้</string>
+    <string name="badCryptoCode">ไม่มีบัญชีที่ปลดล็อกแล้วสำหรับสกุลเงินหรือบล็อกเชนนี้</string>
+    <string name="badCryptoCodeDetails" formatted="false">สกุลเงินไม่รู้จักหรือไม่พร้อมใช้งาน: %currency</string>
+    <string name="badCurrencyUnit">ไม่ใช่สกุลเงิน</string>
+    <string name="incompatibleAccount">สกุลเงินไม่ถูกต้อง</string>
+    <string name="incompatibleAccountDetails" formatted="false">คุณเลือกชำระเงินจากบัญชีที่มี %cryptoAct แต่ต้องใช้ %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">โปรแกรมที่เรียกใช้ระบุจำนวนที่จะส่งมาในรูปแบบตัวเลขที่ไม่ถูกต้อง คุณจะต้องป้อนจำนวนด้วยตัวเอง</string>
+    <string name="blankAddress">ที่อยู่ว่างเปล่า</string>
+    <string name="unavailable">ไม่พร้อมใช้งาน</string>
+    <string name="blockNotForthcoming">บล็อกไม่พร้อมใช้งาน</string>
+    <string name="receiveAddressUnavailable">กำลังคำนวณที่อยู่รับใหม่ กรุณารอสักครู่...</string>
+    <string name="accountLimitReached">บัญชีเต็มแล้ว</string>
+    <string name="accountUnavailableDetails">ไม่มีบัญชีที่ตรงกับบล็อกเชนนี้ หรือบัญชียังไม่ถูกปลดล็อก</string>
+    <string name="accountUnavailable">ไม่มีบัญชีที่ปลดล็อกแล้วและใช้ได้</string>
+    <string name="sendMoreThanBalance">คุณกำลังพยายามส่งเหรียญมากกว่าที่มีอยู่ในขณะนี้\n\nหากคุณคิดว่าไม่ได้ใช้จ่ายเกินยอดคงเหลือ คุณอาจลืมว่าธุรกรรมมีค่าธรรมเนียมเพิ่มเล็กน้อย หรือหากยอดคงเหลือทั้งหมดของคุณยังไม่ยืนยัน คุณอาจทำธุรกรรมติดต่อกันมากเกินไป\n\nมีขีดจำกัดว่าคุณจะ “ล้ำหน้า” บล็อกเชนได้มากแค่ไหน กรุณารอให้ยอดคงเหลือที่ยังไม่ยืนยันได้รับการยืนยัน แล้วลองใหม่</string>
+    <string name="sendMoreTokensThanBalance">คุณกำลังพยายามส่งโทเคนมากกว่าที่มีอยู่ในขณะนี้</string>
+    <string name="deductedFeeLargerThanSendAmount">ค่าธรรมเนียมที่หักมากกว่าจำนวนที่ส่ง</string>
+    <string name="badWalletImplementation">การทำงานของกระเป๋าเงินไม่ถูกต้อง กรุณารายงานข้อบกพร่องนี้!</string>
+    <string name="CannotCompleteTransaction">ข้อผิดพลาด: ดำเนินการไม่สำเร็จ</string>
+    <string name="title_split_bill">หารบิล</string>
+    <string name="title_activity_settings">การตั้งค่า</string>
+    <string name="title_activity_exchange">แลกเปลี่ยน</string>
+    <string name="title_activity_shopping">ลิงก์</string>
+    <string name="ecosystem">ระบบนิเวศ</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">หน้าแรก</string>
+    <string name="title_dashboard">ทดสอบ</string>
+    <string name="title_notifications">แจ้งเตือน</string>
+    <string name="title_activity_invoices">ใบแจ้งหนี้</string>
+    <string name="title_activity_identity">ตัวตน</string>
+    <string name="title_activity_identity_op">ตัวตน</string>
+    <string name="title_activity_domain_identity_settings">การตั้งค่าตัวตนของโดเมน</string>
+    <string name="title_activity_tx_history" formatted="false">ประวัติธุรกรรม: %account</string>
+    <string name="title_activity_address_history" formatted="false">ประวัติที่อยู่: %account</string>
+    <string name="title_activity_account_details" formatted="false">บัญชี: %account</string>
+    <string name="title_test">ทดสอบ</string>
+    <string name="useUniqueIdentity">ใช้ตัวตนเข้ารหัสเฉพาะ</string>
+    <string name="title_activity_identity_settings">การตั้งค่าตัวตน</string>
+    <string name="IdentityRegistrations">บริการที่ลงทะเบียนแล้ว</string>
+    <string name="NoIdentitiesRegistered">ยังไม่มีการลงทะเบียนตัวตน</string>
+    <string name="title_activity_welcome">ยินดีต้อนรับ</string>
+    <string name="next">ถัดไป</string>
+    <string name="previous">ก่อนหน้า</string>
+    <string name="EnterPIN">ป้อน PIN</string>
+    <string name="EnterPINorBlankToRemove">PIN ใหม่ (เว้นว่างเพื่อนำออก)</string>
+    <string name="ButtonTextHere">ตั้งข้อความปุ่ม</string>
+    <string name="ButtonLinkHere">กรอกลิงก์เว็บ</string>
+    <string name="ShoppingWarning">ข้อควรระวัง: รายการในหน้านี้เป็นลิงก์ไปยังบริการและเว็บไซต์ของบุคคลที่สาม ซึ่งรวบรวมไว้เพื่อความสะดวกของคุณ Wally ไม่ได้ตรวจสอบเว็บไซต์หรือบริการเหล่านี้\n\nใช้งานโดยยอมรับความเสี่ยงเอง!</string>
+    <string name="NFTs">โทเคนที่ไม่สามารถทดแทนกันได้ (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: สร้างและซื้อขายภาพและตัวแทนดิจิทัลของสิ่งของที่มีเพียงชิ้นเดียว</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">คำเตือน: ของปลอมหรือสร้างไม่ถูกต้อง!</string>
+    <string name="TokenSourceWebsite">แหล่งที่มาของโทเคน:</string>
+    <string name="TokenBadSig">ข้อมูลของโทเคนนี้ไม่ได้เซ็นอย่างถูกต้อง โทเคนนี้อาจเป็นของปลอมหรือของหลอกลวง หรืออาจหมายความเพียงว่าผู้สร้างโทเคนยังไม่ได้เซ็นโทเคนอย่างถูกต้อง</string>
+    <string name="OpenWebsite" formatted="false">เข้าถึง %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">เว็บไซต์ไม่พร้อมใช้งาน</string>
+    <string name="ExplainBitmart">bitmart.com: เทรด NEXA แลกกับคริปโตสกุลอื่น</string>
+    <string name="ExplainMexc">mexc.com: เทรด NEXA แลกกับคริปโตสกุลอื่น</string>
+    <string name="ExplainBiconomy">biconomy.com: เทรด NEXA แลกกับคริปโตสกุลอื่น</string>
+    <string name="CexButton">แลกเปลี่ยน</string>
+    <string name="SharedNotification" formatted="false">แชร์ %what แล้ว</string>
+    <string name="AuthAutopayTitle">การชำระเงินที่ได้รับอนุมัติ</string>
+    <string name="AuthAutopayDeniedTitle">ปฏิเสธการชำระเงินที่ได้รับอนุมัติ</string>
+    <string name="AuthAutopay" formatted="false">%amt ไปยัง %domain</string>
+    <string name="TpToBeDone">การเชื่อมต่อ Trickle Pay ของคุณจะแสดงที่นี่</string>
+    <string name="TpHistoryTbd">ประวัติ Trickle Pay ของคุณจะแสดงที่นี่</string>
+    <string name="AcceptTpRegistration">ยอมรับการลงทะเบียนจาก:</string>
+    <string name="EditTpRegistration">การตั้งค่าสำหรับบริการ:</string>
+    <string name="AcceptTpRegistrationTopic">วัตถุประสงค์:</string>
+    <string name="TpMaxSpendHint">กรอกวงเงินใช้จ่ายอัตโนมัติ</string>
+    <string name="TpAssetInfoRequest">คำขอข้อมูลสินทรัพย์</string>
+    <string name="TpAssociatedAccount" formatted="false">เชื่อมโยงกับ: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">คำขออนุมัติธุรกรรม</string>
+    <string name="AssetNotif">คำขอข้อมูลสินทรัพย์</string>
+    <string name="PaymentRequest">คำขอชำระเงิน</string>
+    <string name="IdentityNotif">คำขอตัวตน/เข้าสู่ระบบ</string>
+    <string name="TpMaxHeading">วงเงินอัตโนมัติ</string>
+    <string name="TpMaxPer">วงเงินต่อคำขอ</string>
+    <string name="TpMaxPerDay">วงเงินต่อวัน</string>
+    <string name="TpMaxPerWeek">วงเงินต่อสัปดาห์</string>
+    <string name="TpMaxPerMonth">วงเงินต่อเดือน</string>
+    <string name="TpEnableAutopay">เปิดใช้ชำระเงินอัตโนมัติ (หากไม่เลือก การชำระเงินทุกครั้งจะขออนุมัติจากคุณ และจะไม่ใช้วงเงินด้านล่าง)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">ไม่มีการลงทะเบียน Trickle Pay</string>
+    <string name="TpNoSession">ไม่มีคำขอ Trickle Pay</string>
+    <string name="TpRegistrations">การลงทะเบียน</string>
+    <string name="TpRegDenied">ปฏิเสธการลงทะเบียน</string>
+    <string name="TpRegAccepted">ยอมรับการลงทะเบียน</string>
+    <string name="TpRegUnchanged">การลงทะเบียนไม่เปลี่ยนแปลง</string>
+    <string name="TpRequestAutoDeny">ปฏิเสธคำขอ (อัตโนมัติ)</string>
+    <string name="TpRequestAutoAccept">ยอมรับคำขอ (อัตโนมัติ)</string>
+    <string name="TpTxDenied">ปฏิเสธธุรกรรม</string>
+    <string name="TpTxAccepted">ยอมรับธุรกรรม</string>
+    <string name="TpNetworkTimeout">ธุรกรรมหมดเวลา</string>
+    <string name="TpPartialSubmitted">ส่งข้อเสนอแล้ว</string>
+    <string name="TpAssetRequestDenied">ไม่ให้ข้อมูลสินทรัพย์</string>
+    <string name="TpAssetRequestAccepted">กำลังส่งข้อมูลสินทรัพย์</string>
+    <string name="Actions">การดำเนินการ</string>
+    <string name="SpecialTpTransactionFrom">ธุรกรรมพิเศษจาก</string>
+    <string name="IncompleteTpTransactionFrom">ข้อเสนอผูกพันจาก</string>
+    <string name="TpEntails">ประกอบด้วย</string>
+    <string name="TpInAccount">ใช้บัญชี</string>
+    <string name="TpAssetRequestFrom">คำขอข้อมูลสินทรัพย์จาก</string>
+    <string name="TpHandledByAccount">บัญชีของคุณรองรับได้</string>
+    <string name="TpAssetMatches" formatted="false">ข้อมูลของสินทรัพย์ %num รายการที่คุณเป็นเจ้าของจะถูกส่งให้บริการนี้</string>
+    <string name="TpAssetInfoNotXfer">การยอมรับคำขอนี้เป็นเพียงการให้ข้อมูลความเป็นเจ้าของแก่บริการ ไม่ได้อนุมัติการโอนใดๆ</string>
+    <string name="ForAFeeOf" formatted="false">รวมค่าธรรมเนียม %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">และแลกเปลี่ยนโทเคน (ส่ง %tokSnd รับ %tokRcv)</string>
+    <string name="TpShowingTokens" formatted="false">เปิดเผยโทเคน %tokReveal ประเภท (ส่งกลับหาตัวเองเพื่อพิสูจน์ว่าคุณเป็นเจ้าของ)</string>
+    <string name="TpSendingTokens" formatted="false">และส่งโทเคน %tokSnd ประเภท</string>
+    <string name="TpReceivingTokens" formatted="false">และรับโทเคน %tokRcv ประเภท</string>
+    <string name="TpHasNoPurpose">คำขอนี้ไม่มีผลกับบัญชีนี้</string>
+    <string name="TpSendToTitle">คำขอชำระเงินจาก</string>
+    <string name="TpSpends">ใช้จ่าย</string>
+    <string name="TpSendRequestDenied">ปฏิเสธการชำระเงิน</string>
+    <string name="TpSendAutoReject">ปฏิเสธการชำระเงินอัตโนมัติ</string>
+    <string name="TpSendRequestAccepted">ยอมรับการชำระเงิน</string>
+    <string name="TpWhyNotAuto">จะไม่เซ็นอัตโนมัติเพราะ</string>
+    <string name="TpAutomaticDisabled">ปิดการชำระเงินอัตโนมัติอยู่</string>
+    <string name="TpExceededMaxPer">เกินวงเงินต่อคำขอ</string>
+    <string name="TpExceededMaxDaily">เกินวงเงินต่อวัน</string>
+    <string name="TpExceededMaxWeekly">เกินวงเงินต่อสัปดาห์</string>
+    <string name="TpExceededMaxMonthly">เกินวงเงินต่อเดือน</string>
+    <string name="title_activity_alert_history">ข้อความล่าสุด</string>
+    <string name="IssueReportInstructions">ส่งข้อมูลนี้ให้นักพัฒนา:</string>
+    <string name="AssetApplication">เรียกใช้</string>
+    <string name="AssetMarketplace">ซื้อขาย</string>
+    <string name="AssetAddedToTransferList">เพิ่มไปยัง “ส่ง” ในแท็บหลักแล้ว</string>
+    <string name="NftCardFront">ด้านหน้า</string>
+    <string name="NftCardBack">ด้านหลัง</string>
+    <string name="NftPublicMedia">เนื้อหา</string>
+    <string name="NftOwnerMedia">เนื้อหาของเจ้าของ</string>
+    <string name="Content">เนื้อหา</string>
+    <string name="Private">ส่วนตัว</string>
+    <string name="NftPrivateDescription">เนื้อหานี้เป็นของเจ้าของสินทรัพย์</string>
+    <string name="NftInfo">ข้อมูล</string>
+    <string name="NftLegal">สัญญาอนุญาต</string>
+    <string name="NftSeries" formatted="false">ชุด: %series</string>
+    <string name="NftAuthor" formatted="false">ผู้สร้าง: %author</string>
+    <string name="NftNoInfoProvided">...ไม่มีข้อมูล...</string>
+    <string name="IssuedToConnection">เปิดในเว็บไซต์ที่เชื่อมต่อแล้ว</string>
+    <string name ="demonstratingOwnership">กำลังพิสูจน์ความเป็นเจ้าของ</string>
+    <string name="AndSomeAssets"> และสินทรัพย์บางส่วน</string>
+    <string name="AssetTypes" formatted="false">สินทรัพย์ %assetTypes ประเภท</string>
+    <string name="ExplainRestaurant">บริการสั่งอาหารออนไลน์ (จัดส่งหรือรับเอง) อาจรับคริปโต แม้ร้านสาขาจริงจะไม่รับ</string>
+    <string name="RestaurantButton">สั่งอาหารผ่าน Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">ค้นหาร้านใกล้คุณที่รับคริปโต</string>
+    <string name="StoreMapButton">แผนที่ร้านค้า</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: แลกเปลี่ยน NEXA เป็นคริปโตสกุลอื่น</string>
+    <string name="welcome1Label">ยินดีต้อนรับ</string>
+    <string name="welcome1">ยินดีต้อนรับสู่ Wally กระเป๋าเงินคริปโต!\n\nในหน้าถัดไป คุณจะตั้งค่าบัญชีบล็อกเชน Nexa บัญชีแรก (NEX) และตั้งค่าบริการอื่น เช่น การจัดการรหัสผ่าน\n\nหรือกดลูกศรย้อนกลับเพื่อข้ามการตั้งค่าแบบแนะนำนี้</string>
+    <string name="welcome2_title">การตั้งค่าบัญชี NEXA</string>
+    <string name="welcome2">ในหน้าถัดไป คุณจะตั้งค่าบัญชี Nexa บัญชีแรก\n\nบัญชีนี้เก็บเงิน Nexa และตัวตนของคุณ ตัวตนเป็นฟีเจอร์ใหม่ของ Wally ที่ช่วยให้คุณเข้าสู่ระบบเว็บไซต์ที่รองรับได้อัตโนมัติ\n\nคุณจะป้องกันบัญชีด้วยรหัสประจำตัว (PIN) ก็ได้ แต่เราแนะนำให้ผู้ใช้ใหม่ไม่ใช้ PIN กับบัญชีแรก (และเก็บยอดคงเหลือไว้น้อย) เพื่อความปลอดภัยของผู้ใช้ บัญชีที่ป้องกันด้วย PIN จะไม่แสดงจนกว่าจะใส่ PIN ถูกต้อง (และจะไม่มีการแจ้งเมื่อใส่ PIN ผิด)\n\nหากคุณต้องการกู้คืนบัญชี NEXA ที่มีอยู่ ให้กรอกวลีกู้คืน หากเว้นบรรทัดนี้ว่างไว้ ระบบจะสร้างบัญชีใหม่</string>
+    <string name="welcome3_title" formatted="false">วลีกู้คืนบัญชี Nexa</string>
+    <string name="welcome3">ยินดีต้อนรับ 3 ! (ข้อความต้อนรับนี้ยังปรับปรุงได้)</string>
+    <string name="welcome4_title">ตัวตน</string>
+    <string name="welcome4">ถัดไป คุณจะไปยังหน้าข้อมูลตัวตน ข้อมูลนี้ใช้เมื่อคุณใช้ Wally เป็นตัวจัดการตัวตนและการเข้าสู่ระบบ (เพื่อเข้าสู่ระบบเว็บไซต์ต่างๆ อัตโนมัติ หรือกรอกข้อมูลตอนซื้อสินค้า) Wally ให้ความสำคัญกับความเป็นส่วนตัวอย่างยิ่ง!
+ข้อมูลนี้จะไม่ถูกแบ่งปันกับเว็บไซต์ใดโดยไม่ได้รับอนุญาตอย่างชัดเจนจากคุณ และไม่มีข้อมูลใดจากกระเป๋าเงินนี้ถูกส่งไปยังผู้พัฒนาแอปนี้เลย คุณจะเว้นทุกช่องไว้ก็ได้
+เมื่อเสร็จแล้ว ให้กดลูกศรย้อนกลับ (มุมซ้ายบน)</string>
+    <string name="welcomeComplete">การตั้งค่าเสร็จสมบูรณ์ หากคุณข้ามขั้นตอนใดในการต้อนรับนี้ไป ทุกช่องยังตั้งค่าได้จากในแอปเอง
+ขอบคุณ และขอให้สนุกกับกระเป๋าเงินใหม่ของคุณ!</string>
+    <string name="ExplainGiftCards">การซื้อบัตรของขวัญช่วยให้คุณใช้จ่ายที่ร้านค้าหลายร้อยแห่งที่ไม่รับคริปโตโดยตรงได้</string>
+    <string name="GiftCardButton">บัตรของขวัญ eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">ต้องใช้ตัวเลขลับนี้เพื่อเข้าถึงบัญชี</font>
+</string>
+    <string name="sync_title">ซิงค์อีเมลตามช่วงเวลา</string>
+    <string name="attachment_title">ดาวน์โหลดไฟล์แนบที่เข้ามา</string>
+    <string name="attachment_summary_on">ดาวน์โหลดไฟล์แนบอีเมลอัตโนมัติ</string>
+    <string name="attachment_summary_off">ดาวน์โหลดไฟล์แนบเมื่อร้องขอเท่านั้น</string>
+    <string name="signature_title">ลายเซ็นของคุณ</string>
+    <string name="reply_title">การดำเนินการเริ่มต้นเมื่อตอบกลับ</string>
+    <string name="discoveredAccountDetails" formatted="false">พบยอดคงเหลือ %bal %units\nในที่อยู่ %addr รายการ และธุรกรรม %tx รายการ</string>
+    <string name="discoveredWarning">หากข้อมูลนี้ถูกต้อง คุณสร้างบัญชีนี้ได้ทันที</string>
+    <string name="backgroundSync">ซิงค์เบื้องหลัง</string>
+    <string name="scanQr">สแกน QR</string>
+    <string name="imageQr">QR จากรูป</string>
+    <string name="paste">วาง</string>
+    <string name="recentTransactions">ธุรกรรมล่าสุด</string>
+    <string name="sendingFrom">ส่งจาก</string>
+    <string name="enterAddress">กรอกที่อยู่...</string>
+    <string name="noteOptional">หมายเหตุ (ไม่บังคับ)</string>
+    <string name="clearNote">ล้างหมายเหตุ</string>
+    <string name="clearAddress">ล้างที่อยู่</string>
+    <string name="clearAmount">ล้างจำนวน</string>
+    <string name="available">ยอดที่ใช้ได้</string>
+    <string name="amountPlain">จำนวน</string>
+    <string name="enterNEXAmount">กรอกจำนวน NEX...</string>
+    <string name="note">หมายเหตุ</string>
+    <string name="confirmSend">ยืนยันการส่ง</string>
+    <string name="syncing">กำลังซิงค์...</string>
+    <string name="enterAmount" formatted="false">กรอกจำนวน %assetName</string>
+    <string name="fee">ค่าธรรมเนียม</string>
+    <string name="connectionWarning">คำเตือน: ไม่มีการเชื่อมต่อบล็อกเชน/เครือข่าย หากคุณส่งตอนนี้ ผู้รับจะยังไม่เห็นการโอนนี้ทันที ระบบจะส่งให้เมื่อกลับมาเชื่อมต่อได้</string>
+    <string name="NetworkUnstable">เครือข่ายไม่เสถียร</string>
+    <string name="TokenMissing">ไม่พบโทเคนบนเชน </string>
+    <string name="Sell">ขาย</string>
+    <string name="CreateAnOffer">สร้างข้อเสนอ</string>
+    <string name="Price">ราคา</string>
+    <string name="NexaPrice">กรอกราคา Nexa</string>
+    <string name="AssetAmountName" formatted="false">คุณมี %amount %assetName</string>
+    <string name="scanToBuyOne">สแกนเพื่อซื้อ %name</string>
+    <string name="scanToBuySeveral">สแกนเพื่อซื้อ %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">ในราคา %amount NEXA</string>
+    <string name="purchaseComplete">ซื้อสำเร็จ</string>
+    <string name="setTheNexaPrice">ตั้งราคา Nexa</string>
+    <string name="setTheAssetAmount">ตั้งจำนวนสินทรัพย์</string>
+    <string name="publishOnline">เผยแพร่ข้อเสนอออนไลน์</string>
+    <string name="offerCreated">สร้างข้อเสนอแล้ว!</string>
+    <string name="ConfigureService">ตั้งค่าบริการ</string>
+    <string name="AcceptOrRejectService">ยอมรับหรือปฏิเสธบริการ</string>
+    <string name="Domain">โดเมน</string>
+    <string name="Services">บริการ</string>
+    <string name="Purpose">วัตถุประสงค์</string>
+    <string name="AutoPay">ชำระเงินอัตโนมัติ</string>
+    <string name="AutoPayInstructions">หากไม่ได้เลือกช่องด้านล่างนี้ คำขอชำระเงินทั้งหมดจากบริการนี้จะขอการอนุมัติจากคุณ และวงเงินด้านล่างจะไม่ถูกใช้</string>
+    <string name="LimitedAutoApproval">อนุญาตการอนุมัติอัตโนมัติแบบจำกัด</string>
+    <string name="AutoPayMaxPerRequest">วงเงินต่อคำขอ</string>
+    <string name="AutoPayMaxPerDay">วงเงินต่อวัน</string>
+    <string name="AutoPayMaxPerWeek">วงเงินต่อสัปดาห์</string>
+    <string name="AutoPayMaxPerMonth">วงเงินต่อเดือน</string>
+    <string name="EnableServices">เปิดหน้าบริการ</string>
+    <string name="NoServicesRegistered">ยังไม่มีบริการที่ลงทะเบียน</string>
+    <string name="Start">เริ่ม</string>
+    <string name="Meditation">การนั่งสมาธิ</string>
+    <string name="Meditate">นั่งสมาธิ</string>
+    <string name="Sound">เสียง</string>
+    <string name="OneMinuteIntervalSound">เสียงเตือนทุก 1 นาที</string>
+    <string name="MeditationVersion">เวอร์ชัน: 1.0.3 (build 156)</string>
+    <string name="Meditating">กำลังนั่งสมาธิ...</string>
+    <string name="MediationComplete">นั่งสมาธิเสร็จแล้ว!</string>
+    <string name="Okay">ตกลง</string>
+    <string name="Minutes">นาที</string>
+    <string name="Camouflage">โหมดอำพราง</string>
+    <string name="CamouflageAsMeditationTimer">อำพรางแอปให้เป็นแอปจับเวลานั่งสมาธิ</string>
+    <string name="CamouflageDescriptionAndroid">เมื่อเปิดโหมดอำพราง แอปจะปิดตัวลงและอำพรางเป็นแอปชื่อ Meditate หากต้องการปิดการอำพรางเป็นแอป Meditate ให้เปิดเมนูของแอปแล้วแตะที่หมายเลขเวอร์ชัน 5 ครั้ง</string>
+    <string name="CamouflageDescriptionOther">หากต้องการปิดการอำพรางเป็นแอป Meditate ให้เปิดเมนูของแอปแล้วแตะที่หมายเลขเวอร์ชัน 5 ครั้ง</string>
+    <string name="CamouflageAsMeditateAppAndroid">อำพรางเป็นแอป Meditate</string>
+</resources>
