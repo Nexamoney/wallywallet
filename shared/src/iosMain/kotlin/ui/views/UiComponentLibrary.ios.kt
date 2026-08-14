@@ -80,22 +80,25 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
       name.endsWith(".heif", true)
     )
     {
-        var im by remember { mutableStateOf<UIImage?>(null) }
-        im = mediaData?.usePinned { pinned ->
-            val b = NSData.create(bytes = pinned.addressOf(0), length = pinned.get().size.toULong())
-            try
-            {
-                UIImage(b)
+        // remember or the bytes are re-decoded into a new UIImage on every recomposition
+        val im = remember(mediaData, mu) {
+            mediaData?.usePinned { pinned ->
+                val b = NSData.create(bytes = pinned.addressOf(0), length = pinned.get().size.toULong())
+                try
+                {
+                    UIImage(b)
+                }
+                catch (e: NullPointerException)
+                {
+                    // Happens if the data cannot be parsed into an image
+                    null
+                }
+            } ?: run {
+                val tmp = resolveLocalFilename(mu)
+                if (tmp!=null) UIImage(tmp.toString()) else UIImage()
             }
-            catch (e: NullPointerException)
-            {
-                // Happens if the data cannot be parsed into an image
-                return false
-            }
-        } ?: run {
-            val tmp = resolveLocalFilename(mu)
-            if (tmp!=null) UIImage(tmp.toString()) else UIImage()
         }
+        if (im == null) return false
 
         val tim = im
         if (tim != null)
@@ -120,10 +123,7 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
                   },
                   update = {
                       it.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit
-                      it.image = tim
-                  },
-                  onRelease = {
-                      im = null
+                      if (it.image !== tim) it.image = tim
                   }
                 )
             }
