@@ -120,8 +120,18 @@ Dynamic screens are encouraged.  They help the user maintain context and maximiz
 
 Screen changes should be animated in < 1/2 second rather than popping.
 
+## Visual Emphasis Inversion
 
+**Emphasize the changing details, not the structuring or descriptive text**
 
+When we learn to write we are told that headers should be big, subheaders smaller and smallest of all is the text. But that philosophy should be reversed for apps. The headers and structuring text should be smaller and dimmer and the real text should be bigger, bolder or somehow be designed to catch your eye.
 
+The reason why is because unlike most normal writing, its the DETAILS that are the most important.
 
+In a biology textbook you can kind of get by just reading the headings and subheadings because they summarize the key concepts.
+
+But an app is in the opposite situation. The headings give you almost no information.  Its the details like how much are you paying and what exactly are you receiving that are important.
+
+After a few uses the user just knows that what you are paying shows first and what you are receiving shows next.  They stop really looking at those structuring headers & they should not draw the eye.
+How much the user is PAYING is what's important and so that amount should be designed to draw the eye.
 
