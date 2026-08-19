@@ -7,16 +7,28 @@ import info.bitcoinunlimited.www.wally.ui.SpecialTxPermScreen
 import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.nexarpc.NexaRpc
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+private val LogIt = GetLog("BU.wally.tpRegtest")
+
 @OptIn(ExperimentalTestApi::class)
 class TricklePayRegtestTest : WallyUiTestBase()
 {
     val cs = ChainSelector.NEXAREGTEST
+
+    /** Connect to the regtest node, or null (-> skip) when unreachable. */
+    private fun rpcOrNull(): NexaRpc? =
+        try { getNexaRpc() }
+        catch (e: Throwable)
+        {
+            LogIt.warning("regtest node unavailable -- skipping trickle pay regtest: ${e.message}")
+            null
+        }
 
     /** Full-fidelity repro of issue #661: a tdpp proposal whose foreign input (546 sat, empty script)
      * cannot be signed by this wallet.  The wallet funds and signs its own input, txSanityCheck throws,
@@ -24,7 +36,7 @@ class TricklePayRegtestTest : WallyUiTestBase()
     @Test
     fun unsignedForeignInputProposalShowsFriendlyError()
     {
-        val rpc = getNexaRpc()
+        val rpc = rpcOrNull() ?: return
         cleanupAccounts("tpRegtest", null)
         val account = wallyApp!!.newAccount("tpRegtest", 0U, "", cs)!!
         try
