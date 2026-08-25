@@ -1,6 +1,10 @@
 # https://gitlab.com/bitcoinunlimited/buildAndTestVMs
 image: andrewstone/nexaadk:latest
 
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+
 # These "stages" are actually separately initiated VMs, so better used for different configurations, etc
 stages:
   - mirroring
@@ -46,6 +50,18 @@ before_script:
 variables:
   VERSION_CODE_RAW: ${CI_PIPELINE_IID}+${VERSION_BUMPER}
   VERSION_CODE_RENDER: $(($VERSION_CODE_RAW))
+  # without this the security templates only run in branch pipelines, and our workflow has none for MRs
+  AST_ENABLE_MR_PIPELINES: "true"
+
+# the analyzer images carry no JDK or Gradle, so the global before_script cannot run in them
+semgrep-sast:
+  before_script: []
+
+gitlab-advanced-sast:
+  before_script: []
+
+secret_detection:
+  before_script: []
 
 lintVitalRelease:
   <<: *skip-on-schedule
