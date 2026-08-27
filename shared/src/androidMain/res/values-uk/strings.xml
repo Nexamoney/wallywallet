@@ -56,6 +56,7 @@
     <string name="deny">заборонити</string>
     <string name="ask">запитувати</string>
     <string name="badSignature">хибний підпис</string>
+    <string name="unsupportedSigAlg">запитано непідтримуваний алгоритм підпису</string>
     <string name="unknownCurrency">невідома валюта</string>
     <string name="unknownCryptoCurrency">невідома криптовалюта або блокчейн</string>
     <string name="Processing">обробка...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Повідомлення не надано</string>
     <string name="binaryToSign">Підписати ці двійкові дані?</string>
     <string name="textToSign">Підписати це повідомлення?</string>
+    <string name="taggedSigToSign">Підпис авторизації</string>
+    <string name="taggedSigCaution">Це створює підпис, який прийме будь-який контракт, що довіряє цьому ключу. Схвалюйте лише запити від додатків, яким ви довіряєте.</string>
     <string name="sigInClipboard">Підпис скопійовано в буфер обміну</string>
     <string name="SocialMediaText">Соцмережі</string>
     <string name="SocialMediaSummary">Вводьте списком сервіс:нік, напр. twitter:janeDoe, keybase:janieD</string>

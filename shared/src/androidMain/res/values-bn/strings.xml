@@ -56,6 +56,7 @@
     <string name="deny">নামঞ্জুর</string>
     <string name="ask">জিজ্ঞাসা</string>
     <string name="badSignature">অবৈধ স্বাক্ষর</string>
+    <string name="unsupportedSigAlg">অসমর্থিত স্বাক্ষর অ্যালগরিদম অনুরোধ করা হয়েছে</string>
     <string name="unknownCurrency">অজানা মুদ্রা</string>
     <string name="unknownCryptoCurrency">অজানা ক্রিপ্টোকারেন্সি বা ব্লকচেইন</string>
     <string name="Processing">প্রক্রিয়া চলছে...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">কোনো বার্তা দেওয়া হয়নি</string>
     <string name="binaryToSign">এই বাইনারি ডেটায় স্বাক্ষর করবেন?</string>
     <string name="textToSign">এই বার্তায় স্বাক্ষর করবেন?</string>
+    <string name="taggedSigToSign">অনুমোদন স্বাক্ষর</string>
+    <string name="taggedSigCaution">এটি একটি স্বাক্ষর তৈরি করে যা এই কী-তে বিশ্বাস করা যেকোনো চুক্তি গ্রহণ করবে। শুধুমাত্র আপনার বিশ্বস্ত অ্যাপের অনুরোধ অনুমোদন করুন।</string>
     <string name="sigInClipboard">স্বাক্ষর ক্লিপবোর্ডে কপি হয়েছে</string>
     <string name="SocialMediaText">সোশ্যাল মিডিয়া</string>
     <string name="SocialMediaSummary">পরিষেবা:হ্যান্ডেল তালিকা হিসেবে লিখুন, যেমন twitter:janeDoe, keybase:janieD</string>

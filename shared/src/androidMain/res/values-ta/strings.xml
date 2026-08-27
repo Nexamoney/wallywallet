@@ -56,6 +56,7 @@
     <string name="deny">மறு</string>
     <string name="ask">கேள்</string>
     <string name="badSignature">தவறான கையொப்பம்</string>
+    <string name="unsupportedSigAlg">ஆதரிக்கப்படாத கையொப்ப அல்காரிதம் கோரப்பட்டது</string>
     <string name="unknownCurrency">தெரியாத நாணயம்</string>
     <string name="unknownCryptoCurrency">தெரியாத கிரிப்டோகரன்சி அல்லது பிளாக்செயின்</string>
     <string name="Processing">செயலாக்குகிறது...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">எந்தச் செய்தியும் வழங்கப்படவில்லை</string>
     <string name="binaryToSign">இந்த பைனரி தரவில் கையொப்பமிடவா?</string>
     <string name="textToSign">இந்தச் செய்தியில் கையொப்பமிடவா?</string>
+    <string name="taggedSigToSign">அங்கீகாரக் கையொப்பம்</string>
+    <string name="taggedSigCaution">இது ஒரு கையொப்பத்தை உருவாக்குகிறது; இந்த சாவியை நம்பும் எந்த ஒப்பந்தமும் அதை ஏற்றுக்கொள்ளும். நீங்கள் நம்பும் ஆப்ஸின் கோரிக்கைகளை மட்டும் அங்கீகரிக்கவும்.</string>
     <string name="sigInClipboard">கையொப்பம் கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</string>
     <string name="SocialMediaText">சமூக ஊடகம்</string>
     <string name="SocialMediaSummary">சேவை:ஹேண்டில் பட்டியலாக உள்ளிடவும், எ.கா. twitter:janeDoe, keybase:janieD</string>

@@ -56,6 +56,7 @@
     <string name="deny">tolak</string>
     <string name="ask">tanya</string>
     <string name="badSignature">tanda tangan tidak valid</string>
+    <string name="unsupportedSigAlg">algoritme tanda tangan yang diminta tidak didukung</string>
     <string name="unknownCurrency">mata uang tidak dikenal</string>
     <string name="unknownCryptoCurrency">mata uang kripto atau blockchain tidak dikenal</string>
     <string name="Processing">memproses...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Tidak ada pesan yang diberikan</string>
     <string name="binaryToSign">Tanda tangani data biner ini?</string>
     <string name="textToSign">Tanda tangani pesan ini?</string>
+    <string name="taggedSigToSign">Tanda tangan otorisasi</string>
+    <string name="taggedSigCaution">Ini membuat tanda tangan yang akan diterima oleh kontrak apa pun yang memercayai kunci ini. Setujui hanya permintaan dari aplikasi yang Anda percayai.</string>
     <string name="sigInClipboard">Tanda tangan disalin ke papan klip</string>
     <string name="SocialMediaText">Media Sosial</string>
     <string name="SocialMediaSummary">Masukkan sebagai daftar layanan:handle, mis. twitter:janeDoe, keybase:janieD</string>

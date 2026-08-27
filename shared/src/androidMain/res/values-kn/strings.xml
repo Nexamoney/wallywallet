@@ -56,6 +56,7 @@
     <string name="deny">ನಿರಾಕರಿಸಿ</string>
     <string name="ask">ಕೇಳಿ</string>
     <string name="badSignature">ಅಮಾನ್ಯ ಸಹಿ</string>
+    <string name="unsupportedSigAlg">ಬೆಂಬಲಿತವಲ್ಲದ ಸಹಿ ಅಲ್ಗಾರಿದಮ್ ಅನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ</string>
     <string name="unknownCurrency">ಅಜ್ಞಾತ ಕರೆನ್ಸಿ</string>
     <string name="unknownCryptoCurrency">ಅಜ್ಞಾತ ಕ್ರಿಪ್ಟೋಕರೆನ್ಸಿ ಅಥವಾ ಬ್ಲಾಕ್‌ಚೈನ್</string>
     <string name="Processing">ಪ್ರಕ್ರಿಯೆ ನಡೆಯುತ್ತಿದೆ...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">ಯಾವುದೇ ಸಂದೇಶ ನೀಡಿಲ್ಲ</string>
     <string name="binaryToSign">ಈ ಬೈನರಿ ಡೇಟಾಗೆ ಸಹಿ ಮಾಡಬೇಕೇ?</string>
     <string name="textToSign">ಈ ಸಂದೇಶಕ್ಕೆ ಸಹಿ ಮಾಡಬೇಕೇ?</string>
+    <string name="taggedSigToSign">ಅಧಿಕೃತ ಸಹಿ</string>
+    <string name="taggedSigCaution">ಇದು ಈ ಕೀಲಿಯನ್ನು ನಂಬುವ ಯಾವುದೇ ಒಪ್ಪಂದವು ಸ್ವೀಕರಿಸುವ ಸಹಿಯನ್ನು ರಚಿಸುತ್ತದೆ. ನೀವು ನಂಬುವ ಆ್ಯಪ್‌ಗಳ ವಿನಂತಿಗಳನ್ನು ಮಾತ್ರ ಅನುಮೋದಿಸಿ.</string>
     <string name="sigInClipboard">ಸಹಿಯನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</string>
     <string name="SocialMediaText">ಸಾಮಾಜಿಕ ಮಾಧ್ಯಮ</string>
     <string name="SocialMediaSummary">ಸೇವೆ:ಹ್ಯಾಂಡಲ್ ಪಟ್ಟಿಯಾಗಿ ನಮೂದಿಸಿ, ಉದಾ. twitter:janeDoe, keybase:janieD</string>

@@ -56,6 +56,7 @@
     <string name="deny">запретить</string>
     <string name="ask">спрашивать</string>
     <string name="badSignature">неверная подпись</string>
+    <string name="unsupportedSigAlg">запрошен неподдерживаемый алгоритм подписи</string>
     <string name="unknownCurrency">неизвестная валюта</string>
     <string name="unknownCryptoCurrency">неизвестная криптовалюта или блокчейн</string>
     <string name="Processing">обработка...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Сообщение не передано</string>
     <string name="binaryToSign">Подписать эти двоичные данные?</string>
     <string name="textToSign">Подписать это сообщение?</string>
+    <string name="taggedSigToSign">Подпись авторизации</string>
+    <string name="taggedSigCaution">Это создаёт подпись, которую примет любой контракт, доверяющий этому ключу. Одобряйте только запросы от приложений, которым вы доверяете.</string>
     <string name="sigInClipboard">Подпись скопирована в буфер обмена</string>
     <string name="SocialMediaText">Соцсети</string>
     <string name="SocialMediaSummary">Список вида сервис:ник, например twitter:janeDoe, keybase:janieD</string>

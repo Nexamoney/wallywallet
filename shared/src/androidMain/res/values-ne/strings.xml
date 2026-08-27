@@ -56,6 +56,7 @@
     <string name="deny">अस्वीकार</string>
     <string name="ask">सोध्ने</string>
     <string name="badSignature">गलत हस्ताक्षर</string>
+    <string name="unsupportedSigAlg">असमर्थित हस्ताक्षर एल्गोरिदम अनुरोध गरियो</string>
     <string name="unknownCurrency">अज्ञात मुद्रा</string>
     <string name="unknownCryptoCurrency">अज्ञात क्रिप्टोकरेन्सी वा ब्लकचेन</string>
     <string name="Processing">प्रक्रियामा...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">कुनै सन्देश दिइएको छैन</string>
     <string name="binaryToSign">यो बाइनरी डेटामा हस्ताक्षर गर्ने?</string>
     <string name="textToSign">यो सन्देशमा हस्ताक्षर गर्ने?</string>
+    <string name="taggedSigToSign">प्राधिकरण हस्ताक्षर</string>
+    <string name="taggedSigCaution">यसले हस्ताक्षर सिर्जना गर्छ जुन यो कुञ्जीमा विश्वास गर्ने जुनसुकै सम्झौताले स्वीकार गर्नेछ। तपाईंले विश्वास गर्ने एपहरूका अनुरोधहरू मात्र स्वीकृत गर्नुहोस्।</string>
     <string name="sigInClipboard">हस्ताक्षर क्लिपबोर्डमा कपी भयो</string>
     <string name="SocialMediaText">सोसल मिडिया</string>
     <string name="SocialMediaSummary">सेवा:ह्यान्डल सूचीका रूपमा लेख्नुहोस्, जस्तै twitter:janeDoe, keybase:janieD</string>

@@ -56,6 +56,7 @@
     <string name="deny">odmów</string>
     <string name="ask">pytaj</string>
     <string name="badSignature">nieprawidłowy podpis</string>
+    <string name="unsupportedSigAlg">zażądano nieobsługiwanego algorytmu podpisu</string>
     <string name="unknownCurrency">nieznana waluta</string>
     <string name="unknownCryptoCurrency">nieznana kryptowaluta lub blockchain</string>
     <string name="Processing">przetwarzanie...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Nie podano wiadomości</string>
     <string name="binaryToSign">Podpisać te dane binarne?</string>
     <string name="textToSign">Podpisać tę wiadomość?</string>
+    <string name="taggedSigToSign">Podpis autoryzacyjny</string>
+    <string name="taggedSigCaution">Tworzy to podpis, który zaakceptuje każdy kontrakt ufający temu kluczowi. Zatwierdzaj tylko żądania z aplikacji, którym ufasz.</string>
     <string name="sigInClipboard">Skopiowano podpis do schowka</string>
     <string name="SocialMediaText">Media społecznościowe</string>
     <string name="SocialMediaSummary">Wpisz listę w formacie usługa:pseudonim, np. twitter:janeDoe, keybase:janieD</string>

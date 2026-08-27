@@ -56,6 +56,7 @@
     <string name="deny">reddet</string>
     <string name="ask">sor</string>
     <string name="badSignature">geçersiz imza</string>
+    <string name="unsupportedSigAlg">desteklenmeyen bir imza algoritması istendi</string>
     <string name="unknownCurrency">bilinmeyen para birimi</string>
     <string name="unknownCryptoCurrency">bilinmeyen kripto para birimi veya blok zinciri</string>
     <string name="Processing">işleniyor...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">İmzalanacak mesaj yok</string>
     <string name="binaryToSign">Bu ikili veri imzalansın mı?</string>
     <string name="textToSign">Bu mesaj imzalansın mı?</string>
+    <string name="taggedSigToSign">Yetkilendirme imzası</string>
+    <string name="taggedSigCaution">Bu, bu anahtara güvenen herhangi bir sözleşmenin kabul edeceği bir imza oluşturur. Yalnızca güvendiğiniz uygulamalardan gelen istekleri onaylayın.</string>
     <string name="sigInClipboard">İmza panoya kopyalandı</string>
     <string name="SocialMediaText">Sosyal Medya</string>
     <string name="SocialMediaSummary">Hizmet:handle şeklinde bir liste girin, Örn. twitter:janeDoe, keybase:janieD</string>

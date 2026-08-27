@@ -56,6 +56,7 @@
     <string name="deny">kataza</string>
     <string name="ask">uliza</string>
     <string name="badSignature">saini si sahihi</string>
+    <string name="unsupportedSigAlg">algorithimu ya sahihi isiyoauniwa imeombwa</string>
     <string name="unknownCurrency">sarafu isiyojulikana</string>
     <string name="unknownCryptoCurrency">sarafu ya kripto au blockchain isiyojulikana</string>
     <string name="Processing">inachakata...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Hakuna ujumbe uliotolewa</string>
     <string name="binaryToSign">Saini data hii ya binari?</string>
     <string name="textToSign">Saini ujumbe huu?</string>
+    <string name="taggedSigToSign">Sahihi ya idhini</string>
+    <string name="taggedSigCaution">Hii huunda sahihi ambayo mkataba wowote unaoamini ufunguo huu utaikubali. Idhinisha tu maombi kutoka kwa programu unazoziamini.</string>
     <string name="sigInClipboard">Saini imenakiliwa</string>
     <string name="SocialMediaText">Mitandao ya kijamii</string>
     <string name="SocialMediaSummary">Weka kama orodha ya huduma:jina, Mfano twitter:janeDoe, keybase:janieD</string>

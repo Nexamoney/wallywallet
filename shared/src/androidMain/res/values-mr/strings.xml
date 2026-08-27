@@ -56,6 +56,7 @@
     <string name="deny">नकार द्या</string>
     <string name="ask">विचारा</string>
     <string name="badSignature">चुकीची सही</string>
+    <string name="unsupportedSigAlg">असमर्थित स्वाक्षरी अल्गोरिदमची विनंती केली गेली</string>
     <string name="unknownCurrency">अज्ञात चलन</string>
     <string name="unknownCryptoCurrency">अज्ञात क्रिप्टोकरन्सी किंवा ब्लॉकचेन</string>
     <string name="Processing">प्रक्रिया सुरू...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">कोणताही संदेश दिलेला नाही</string>
     <string name="binaryToSign">या बायनरी डेटावर सही करायची?</string>
     <string name="textToSign">या संदेशावर सही करायची?</string>
+    <string name="taggedSigToSign">अधिकृतता स्वाक्षरी</string>
+    <string name="taggedSigCaution">हे एक स्वाक्षरी तयार करते जी या कीवर विश्वास ठेवणारा कोणताही करार स्वीकारेल. फक्त तुमचा विश्वास असलेल्या अ‍ॅप्सच्या विनंत्या मंजूर करा.</string>
     <string name="sigInClipboard">सही क्लिपबोर्डवर कॉपी केली</string>
     <string name="SocialMediaText">सोशल मीडिया</string>
     <string name="SocialMediaSummary">सेवा:हँडल अशा यादीच्या स्वरूपात टाका, उदा. twitter:janeDoe, keybase:janieD</string>

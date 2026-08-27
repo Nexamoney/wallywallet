@@ -56,6 +56,7 @@
     <string name="deny">tolak</string>
     <string name="ask">takon</string>
     <string name="badSignature">tandha tangan salah</string>
+    <string name="unsupportedSigAlg">algoritma tanda tangan sing ora didhukung dijaluk</string>
     <string name="unknownCurrency">arta ora dikenal</string>
     <string name="unknownCryptoCurrency">kripto utawa blockchain ora dikenal</string>
     <string name="Processing">diproses...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Ora ana pesen</string>
     <string name="binaryToSign">Tandhatangani data binar iki?</string>
     <string name="textToSign">Tandhatangani pesen iki?</string>
+    <string name="taggedSigToSign">Tanda tangan otorisasi</string>
+    <string name="taggedSigCaution">Iki nggawe tanda tangan sing bakal ditampa dening kontrak apa wae sing percaya karo kunci iki. Setujoni mung panjaluk saka aplikasi sing sampeyan percaya.</string>
     <string name="sigInClipboard">Tandha tangan disalin menyang papan klip</string>
     <string name="SocialMediaText">Media Sosial</string>
     <string name="SocialMediaSummary">Tulis minangka dhaptar layanan:handle, contone twitter:janeDoe, keybase:janieD</string>

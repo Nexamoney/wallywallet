@@ -56,6 +56,7 @@
     <string name="deny">నిరాకరించండి</string>
     <string name="ask">అడగండి</string>
     <string name="badSignature">చెల్లని సంతకం</string>
+    <string name="unsupportedSigAlg">మద్దతు లేని సంతకం అల్గోరిథం అభ్యర్థించబడింది</string>
     <string name="unknownCurrency">తెలియని కరెన్సీ</string>
     <string name="unknownCryptoCurrency">తెలియని క్రిప్టోకరెన్సీ లేదా బ్లాక్‌చెయిన్</string>
     <string name="Processing">ప్రాసెస్ అవుతోంది...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">ఎలాంటి సందేశం ఇవ్వలేదు</string>
     <string name="binaryToSign">ఈ బైనరీ డేటాపై సంతకం చేయాలా?</string>
     <string name="textToSign">ఈ సందేశంపై సంతకం చేయాలా?</string>
+    <string name="taggedSigToSign">అధికార సంతకం</string>
+    <string name="taggedSigCaution">ఇది ఈ కీని విశ్వసించే ఏ కాంట్రాక్ట్ అయినా ఆమోదించే సంతకాన్ని సృష్టిస్తుంది. మీరు విశ్వసించే యాప్‌ల అభ్యర్థనలను మాత్రమే ఆమోదించండి.</string>
     <string name="sigInClipboard">సంతకం క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</string>
     <string name="SocialMediaText">సోషల్ మీడియా</string>
     <string name="SocialMediaSummary">సేవ:హ్యాండిల్ జాబితాగా నమోదు చేయండి, ఉదా. twitter:janeDoe, keybase:janieD</string>

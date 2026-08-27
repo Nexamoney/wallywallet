@@ -56,6 +56,7 @@
     <string name="deny">nega</string>
     <string name="ask">chiedi</string>
     <string name="badSignature">firma errata</string>
+    <string name="unsupportedSigAlg">richiesto un algoritmo di firma non supportato</string>
     <string name="unknownCurrency">valuta sconosciuta</string>
     <string name="unknownCryptoCurrency">criptovaluta o blockchain sconosciuta</string>
     <string name="Processing">in elaborazione...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Messaggio mancante</string>
     <string name="binaryToSign">Firma questi dati binari?</string>
     <string name="textToSign">Firma questo messaggio?</string>
+    <string name="taggedSigToSign">Firma di autorizzazione</string>
+    <string name="taggedSigCaution">Questo crea una firma che verrà accettata da qualsiasi contratto che si fida di questa chiave. Approva solo le richieste di app di cui ti fidi.</string>
     <string name="sigInClipboard">Firma copiata negli appunti</string>
     <string name="SocialMediaText">Social Media</string>
     <string name="SocialMediaSummary">Inserisci una lista di servizi:nome utente, Es. twitter:janeDoe, keybase:janieD</string>

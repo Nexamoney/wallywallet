@@ -56,6 +56,7 @@
     <string name="deny">neka</string>
     <string name="ask">fråga</string>
     <string name="badSignature">ogiltig signatur</string>
+    <string name="unsupportedSigAlg">en signaturalgoritm som inte stöds begärdes</string>
     <string name="unknownCurrency">okänd valuta</string>
     <string name="unknownCryptoCurrency">okänd kryptovaluta eller blockkedja</string>
     <string name="Processing">bearbetar...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Inget meddelande angivet</string>
     <string name="binaryToSign">Signera denna binära data?</string>
     <string name="textToSign">Signera detta meddelande?</string>
+    <string name="taggedSigToSign">Auktoriseringssignatur</string>
+    <string name="taggedSigCaution">Detta skapar en signatur som alla kontrakt som litar på den här nyckeln accepterar. Godkänn endast förfrågningar från appar du litar på.</string>
     <string name="sigInClipboard">Signatur kopierad till urklipp</string>
     <string name="SocialMediaText">Sociala medier</string>
     <string name="SocialMediaSummary">Ange som en lista med tjänst:alias, t.ex. twitter:janeDoe, keybase:janieD</string>

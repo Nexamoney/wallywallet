@@ -56,6 +56,7 @@
     <string name="deny">ਇਨਕਾਰ ਕਰੋ</string>
     <string name="ask">ਪੁੱਛੋ</string>
     <string name="badSignature">ਗਲਤ ਦਸਤਖ਼ਤ</string>
+    <string name="unsupportedSigAlg">ਗੈਰ-ਸਮਰਥਿਤ ਦਸਤਖਤ ਐਲਗੋਰਿਦਮ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ</string>
     <string name="unknownCurrency">ਅਣਜਾਣ ਕਰੰਸੀ</string>
     <string name="unknownCryptoCurrency">ਅਣਜਾਣ ਕ੍ਰਿਪਟੋਕਰੰਸੀ ਜਾਂ ਬਲਾਕਚੇਨ</string>
     <string name="Processing">ਪ੍ਰੋਸੈਸ ਹੋ ਰਿਹਾ...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">ਕੋਈ ਸੁਨੇਹਾ ਨਹੀਂ ਦਿੱਤਾ</string>
     <string name="binaryToSign">ਇਸ ਬਾਈਨਰੀ ਡਾਟੇ ਉੱਤੇ ਦਸਤਖ਼ਤ ਕਰਨੇ ਹਨ?</string>
     <string name="textToSign">ਇਸ ਸੁਨੇਹੇ ਉੱਤੇ ਦਸਤਖ਼ਤ ਕਰਨੇ ਹਨ?</string>
+    <string name="taggedSigToSign">ਅਧਿਕਾਰ ਦਸਤਖਤ</string>
+    <string name="taggedSigCaution">ਇਹ ਇੱਕ ਦਸਤਖਤ ਬਣਾਉਂਦਾ ਹੈ ਜਿਸਨੂੰ ਇਸ ਕੁੰਜੀ ਉੱਤੇ ਭਰੋਸਾ ਕਰਨ ਵਾਲਾ ਕੋਈ ਵੀ ਕੰਟਰੈਕਟ ਸਵੀਕਾਰ ਕਰੇਗਾ। ਸਿਰਫ਼ ਉਹਨਾਂ ਐਪਾਂ ਦੀਆਂ ਬੇਨਤੀਆਂ ਮਨਜ਼ੂਰ ਕਰੋ ਜਿਨ੍ਹਾਂ ਉੱਤੇ ਤੁਹਾਨੂੰ ਭਰੋਸਾ ਹੈ।</string>
     <string name="sigInClipboard">ਦਸਤਖ਼ਤ ਕਲਿੱਪਬੋਰਡ ਉੱਤੇ ਕਾਪੀ ਕੀਤੇ</string>
     <string name="SocialMediaText">ਸੋਸ਼ਲ ਮੀਡੀਆ</string>
     <string name="SocialMediaSummary">ਸੇਵਾ:ਹੈਂਡਲ ਦੀ ਸੂਚੀ ਵਜੋਂ ਭਰੋ, ਜਿਵੇਂ twitter:janeDoe, keybase:janieD</string>

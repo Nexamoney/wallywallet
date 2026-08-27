@@ -56,6 +56,7 @@
     <string name="deny">انکار کریں</string>
     <string name="ask">پوچھیں</string>
     <string name="badSignature">غلط دستخط</string>
+    <string name="unsupportedSigAlg">غیر تعاون یافتہ دستخطی الگورتھم کی درخواست کی گئی</string>
     <string name="unknownCurrency">نامعلوم کرنسی</string>
     <string name="unknownCryptoCurrency">نامعلوم کرپٹو کرنسی یا بلاک چین</string>
     <string name="Processing">کارروائی جاری...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">کوئی پیغام نہیں دیا گیا</string>
     <string name="binaryToSign">اس بائنری ڈیٹا پر دستخط کریں؟</string>
     <string name="textToSign">اس پیغام پر دستخط کریں؟</string>
+    <string name="taggedSigToSign">اجازت کا دستخط</string>
+    <string name="taggedSigCaution">یہ ایک دستخط بناتا ہے جسے اس کلید پر بھروسا کرنے والا کوئی بھی معاہدہ قبول کرے گا۔ صرف انہی ایپس کی درخواستیں منظور کریں جن پر آپ کو بھروسا ہے۔</string>
     <string name="sigInClipboard">دستخط کلپ بورڈ پر کاپی ہو گئے</string>
     <string name="SocialMediaText">سوشل میڈیا</string>
     <string name="SocialMediaSummary">سروس:ہینڈل کی فہرست کے طور پر درج کریں، مثلاً twitter:janeDoe، keybase:janieD</string>
