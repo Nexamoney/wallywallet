@@ -56,6 +56,7 @@
     <string name="deny">refuser</string>
     <string name="ask">demander</string>
     <string name="badSignature">signature incorrecte</string>
+    <string name="unsupportedSigAlg">demande d\'un algorithme de signature non pris en charge</string>
     <string name="unknownCurrency">devise inconnue</string>
     <string name="unknownCryptoCurrency">cryptomonnaie ou blockchain inconnue</string>
     <string name="Processing">traitement...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Aucun message fourni</string>
     <string name="binaryToSign">Signer ces données binaires ?</string>
     <string name="textToSign">Signer ce message ?</string>
+    <string name="taggedSigToSign">Signature d\'autorisation</string>
+    <string name="taggedSigCaution">Ceci crée une signature que tout contrat faisant confiance à cette clé acceptera. N\'approuvez que les demandes provenant d\'applications de confiance.</string>
     <string name="sigInClipboard">Signature copiée dans le presse-papiers</string>
     <string name="SocialMediaText">Réseaux sociaux</string>
     <string name="SocialMediaSummary">Saisissez une liste service:pseudo, ex. twitter:janeDoe, keybase:janieD</string>

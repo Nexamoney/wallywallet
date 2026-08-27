@@ -56,6 +56,7 @@
     <string name="deny">từ chối</string>
     <string name="ask">hỏi</string>
     <string name="badSignature">chữ ký không hợp lệ</string>
+    <string name="unsupportedSigAlg">đã yêu cầu thuật toán chữ ký không được hỗ trợ</string>
     <string name="unknownCurrency">tiền tệ không xác định</string>
     <string name="unknownCryptoCurrency">tiền mã hóa hoặc blockchain không xác định</string>
     <string name="Processing">đang xử lý...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Không có thông điệp nào</string>
     <string name="binaryToSign">Ký dữ liệu nhị phân này?</string>
     <string name="textToSign">Ký thông điệp này?</string>
+    <string name="taggedSigToSign">Chữ ký ủy quyền</string>
+    <string name="taggedSigCaution">Thao tác này tạo một chữ ký mà bất kỳ hợp đồng nào tin cậy khóa này đều sẽ chấp nhận. Chỉ phê duyệt các yêu cầu từ những ứng dụng bạn tin cậy.</string>
     <string name="sigInClipboard">Đã sao chép chữ ký vào bảng nhớ tạm</string>
     <string name="SocialMediaText">Mạng xã hội</string>
     <string name="SocialMediaSummary">Nhập dạng danh sách dịch vụ:handle, ví dụ twitter:janeDoe, keybase:janieD</string>

@@ -56,6 +56,7 @@
     <string name="deny">ไม่อนุญาต</string>
     <string name="ask">ถามก่อน</string>
     <string name="badSignature">ลายเซ็นไม่ถูกต้อง</string>
+    <string name="unsupportedSigAlg">มีการขออัลกอริทึมลายเซ็นที่ไม่รองรับ</string>
     <string name="unknownCurrency">สกุลเงินที่ไม่รู้จัก</string>
     <string name="unknownCryptoCurrency">คริปโตหรือบล็อกเชนที่ไม่รู้จัก</string>
     <string name="Processing">กำลังประมวลผล...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">ไม่มีข้อความ</string>
     <string name="binaryToSign">เซ็นข้อมูลไบนารีนี้ไหม</string>
     <string name="textToSign">เซ็นข้อความนี้ไหม</string>
+    <string name="taggedSigToSign">ลายเซ็นการอนุญาต</string>
+    <string name="taggedSigCaution">การดำเนินการนี้จะสร้างลายเซ็นซึ่งสัญญาใด ๆ ที่เชื่อถือคีย์นี้จะยอมรับ อนุมัติเฉพาะคำขอจากแอปที่คุณเชื่อถือเท่านั้น</string>
     <string name="sigInClipboard">คัดลอกลายเซ็นไปยังคลิปบอร์ดแล้ว</string>
     <string name="SocialMediaText">โซเชียลมีเดีย</string>
     <string name="SocialMediaSummary">กรอกเป็นรายการ บริการ:ชื่อผู้ใช้ เช่น twitter:janeDoe, keybase:janieD</string>

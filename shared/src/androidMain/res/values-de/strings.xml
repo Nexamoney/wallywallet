@@ -56,6 +56,7 @@
     <string name="deny">verweigern</string>
     <string name="ask">fragen</string>
     <string name="badSignature">ungültige Signatur</string>
+    <string name="unsupportedSigAlg">nicht unterstützter Signaturalgorithmus angefordert</string>
     <string name="unknownCurrency">unbekannte Währung</string>
     <string name="unknownCryptoCurrency">unbekannte Kryptowährung oder Blockchain</string>
     <string name="Processing">in Bearbeitung...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Keine Nachricht angegeben</string>
     <string name="binaryToSign">Diese Binärdaten signieren?</string>
     <string name="textToSign">Diese Nachricht signieren?</string>
+    <string name="taggedSigToSign">Autorisierungssignatur</string>
+    <string name="taggedSigCaution">Dies erzeugt eine Signatur, die jeder Vertrag akzeptiert, der diesem Schlüssel vertraut. Genehmigen Sie nur Anfragen von Apps, denen Sie vertrauen.</string>
     <string name="sigInClipboard">Signatur in die Zwischenablage kopiert</string>
     <string name="SocialMediaText">Social Media</string>
     <string name="SocialMediaSummary">Als Liste von Dienst:Nutzername eintragen, z. B. twitter:janeDoe, keybase:janieD</string>

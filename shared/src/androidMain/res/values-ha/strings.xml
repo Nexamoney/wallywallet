@@ -56,6 +56,7 @@
     <string name="deny">hana</string>
     <string name="ask">tambaya</string>
     <string name="badSignature">sa hannu mara inganci</string>
+    <string name="unsupportedSigAlg">an buƙaci algorithm na sa hannu da ba a tallafawa ba</string>
     <string name="unknownCurrency">kuɗin da ba a sani ba</string>
     <string name="unknownCryptoCurrency">kuɗin crypto ko blockchain da ba a sani ba</string>
     <string name="Processing">ana aiki...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Ba a bayar da saƙo ba</string>
     <string name="binaryToSign">Ku sa hannu kan wannan bayanin binary?</string>
     <string name="textToSign">Ku sa hannu kan wannan saƙo?</string>
+    <string name="taggedSigToSign">Sa hannun izini</string>
+    <string name="taggedSigCaution">Wannan yana ƙirƙirar sa hannu wanda duk wata kwangila da ta amince da wannan maɓalli za ta karɓa. Ku amince kawai da buƙatun manhajojin da kuke amincewa da su.</string>
     <string name="sigInClipboard">An kwafa sa hannu zuwa allon kwafi</string>
     <string name="SocialMediaText">Sada zumunta</string>
     <string name="SocialMediaSummary">Ku shigar a matsayin jerin sabis:laƙabi, misali twitter:janeDoe, keybase:janieD</string>

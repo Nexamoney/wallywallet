@@ -56,6 +56,7 @@
     <string name="deny">denegar</string>
     <string name="ask">preguntar</string>
     <string name="badSignature">signatura errònia</string>
+    <string name="unsupportedSigAlg">s\'ha sol·licitat un algorisme de signatura no compatible</string>
     <string name="unknownCurrency">moneda desconeguda</string>
     <string name="unknownCryptoCurrency">criptomoneda o cadena de blocs desconeguda</string>
     <string name="Processing">processant...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">No s\'ha proporcionat cap missatge</string>
     <string name="binaryToSign">Signar aquestes dades binàries?</string>
     <string name="textToSign">Signar aquest missatge?</string>
+    <string name="taggedSigToSign">Signatura d\'autorització</string>
+    <string name="taggedSigCaution">Això crea una signatura que acceptarà qualsevol contracte que confiï en aquesta clau. Aproveu només les sol·licituds d\'aplicacions de confiança.</string>
     <string name="sigInClipboard">S\'ha copiat la signatura al porta-retalls</string>
     <string name="SocialMediaText">Xarxes socials</string>
     <string name="SocialMediaSummary">Introduïu-ho com a llista de servei:identificador. Ex.: twitter:jGonzis, keybase:JGonzi</string>

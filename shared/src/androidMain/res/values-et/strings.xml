@@ -56,6 +56,7 @@
     <string name="deny">keeldu</string>
     <string name="ask">küsi</string>
     <string name="badSignature">vale allkiri</string>
+    <string name="unsupportedSigAlg">taotleti toetamata allkirjaalgoritmi</string>
     <string name="unknownCurrency">tundmatu valuuta</string>
     <string name="unknownCryptoCurrency">tundmatu krüpto või plokiahel</string>
     <string name="Processing">töötlemine...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Sõnum pole esitatud</string>
     <string name="binaryToSign">Kas allkirjastada need binaarandmed?</string>
     <string name="textToSign">Kas allkirjastada see sõnum?</string>
+    <string name="taggedSigToSign">Volitusallkiri</string>
+    <string name="taggedSigCaution">See loob allkirja, mille võtab vastu iga leping, mis seda võtit usaldab. Kinnitage ainult usaldusväärsete rakenduste päringud.</string>
     <string name="sigInClipboard">Allkiri kopeeritud lõikelauale</string>
     <string name="SocialMediaText">Sotsiaalmeedia</string>
     <string name="SocialMediaSummary">Sisestage loendina kujul teenus:kasutajanimi, nt twitter:janeDoe, keybase:janieD</string>

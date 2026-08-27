@@ -56,6 +56,7 @@
     <string name="deny">tanggihan</string>
     <string name="ask">magtanong</string>
     <string name="badSignature">maling signature</string>
+    <string name="unsupportedSigAlg">hiniling ang isang hindi suportadong algorithm ng lagda</string>
     <string name="unknownCurrency">hindi kilalang currency</string>
     <string name="unknownCryptoCurrency">hindi kilalang cryptocurrency o blockchain</string>
     <string name="Processing">pinoproseso...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Walang ibinigay na mensahe</string>
     <string name="binaryToSign">I-sign ang binary data na ito?</string>
     <string name="textToSign">I-sign ang mensaheng ito?</string>
+    <string name="taggedSigToSign">Lagda ng awtorisasyon</string>
+    <string name="taggedSigCaution">Gumagawa ito ng lagda na tatanggapin ng anumang kontratang nagtitiwala sa susing ito. Aprubahan lamang ang mga kahilingan mula sa mga app na pinagkakatiwalaan mo.</string>
     <string name="sigInClipboard">Nakopya ang signature sa clipboard</string>
     <string name="SocialMediaText">Social media</string>
     <string name="SocialMediaSummary">Ilagay bilang listahan ng serbisyo:handle, hal. twitter:janeDoe, keybase:janieD</string>

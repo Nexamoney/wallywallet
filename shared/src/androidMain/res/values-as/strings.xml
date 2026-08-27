@@ -56,6 +56,7 @@
     <string name="deny">নাকচ</string>
     <string name="ask">সোধক</string>
     <string name="badSignature">অবৈধ স্বাক্ষৰ</string>
+    <string name="unsupportedSigAlg">অসমৰ্থিত স্বাক্ষৰ এলগৰিদম অনুৰোধ কৰা হৈছে</string>
     <string name="unknownCurrency">অজ্ঞাত মুদ্ৰা</string>
     <string name="unknownCryptoCurrency">অজ্ঞাত ক্ৰিপ্টোমুদ্ৰা বা ব্লকচেইন</string>
     <string name="Processing">প্ৰক্ৰিয়া চলি আছে...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">কোনো বাৰ্তা দিয়া হোৱা নাই</string>
     <string name="binaryToSign">এই বাইনেৰী ডাটাত স্বাক্ষৰ কৰিব নেকি?</string>
     <string name="textToSign">এই বাৰ্তাত স্বাক্ষৰ কৰিব নেকি?</string>
+    <string name="taggedSigToSign">প্ৰাধিকৰণ স্বাক্ষৰ</string>
+    <string name="taggedSigCaution">ই এটা স্বাক্ষৰ সৃষ্টি কৰে যিটো এই চাবিক বিশ্বাস কৰা যিকোনো চুক্তিয়ে গ্ৰহণ কৰিব। আপুনি বিশ্বাস কৰা এপৰ অনুৰোধহে অনুমোদন কৰক।</string>
     <string name="sigInClipboard">স্বাক্ষৰ ক্লিপবৰ্ডলৈ কপি কৰা হ\'ল</string>
     <string name="SocialMediaText">ছ\'চিয়েল মিডিয়া</string>
     <string name="SocialMediaSummary">সেৱা:হেণ্ডেল তালিকা হিচাপে দিয়ক, যেনে twitter:janeDoe, keybase:janieD</string>

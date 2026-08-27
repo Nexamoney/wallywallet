@@ -56,6 +56,7 @@
     <string name="deny">Dí lọ́wọ́</string>
     <string name="ask">Béèrè</string>
     <string name="badSignature">ìfọwọ́sí kò tọ́</string>
+    <string name="unsupportedSigAlg">a béèrè àlùgórídímù ìbuwọ́lù tí kò ní àtìlẹ́yìn</string>
     <string name="unknownCurrency">owó àìmọ̀</string>
     <string name="unknownCryptoCurrency">owó krípítò tàbí blockchain àìmọ̀</string>
     <string name="Processing">ń ṣiṣẹ́...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">A kò pèsè ìhìn kankan</string>
     <string name="binaryToSign">Fọwọ́ sí dátà bàínárì yìí?</string>
     <string name="textToSign">Fọwọ́ sí ìhìn yìí?</string>
+    <string name="taggedSigToSign">Ìbuwọ́lù àṣẹ</string>
+    <string name="taggedSigCaution">Èyí yóò ṣẹ̀dá ìbuwọ́lù tí àdéhùn èyíkéyìí tí ó gbẹ́kẹ̀lé kọ́kọ́rọ́ yìí yóò gbà. Fọwọ́ sí àwọn ìbéèrè láti ọwọ́ àwọn app tí o gbẹ́kẹ̀lé nìkan.</string>
     <string name="sigInClipboard">A ti ṣe ẹ̀dà ìfọwọ́sí sí àpótí ẹ̀dà</string>
     <string name="SocialMediaText">Mídíà àwùjọ</string>
     <string name="SocialMediaSummary">Ẹ kọ ọ́ gẹ́gẹ́ bí àkójọ iṣẹ́:àpèlé, Àpẹẹrẹ twitter:janeDoe, keybase:janieD</string>

@@ -56,6 +56,7 @@
     <string name="deny">رفض</string>
     <string name="ask">اسأل</string>
     <string name="badSignature">توقيع غير صالح</string>
+    <string name="unsupportedSigAlg">طُلبت خوارزمية توقيع غير مدعومة</string>
     <string name="unknownCurrency">عملة غير معروفة</string>
     <string name="unknownCryptoCurrency">بلوكشين أو عملة رقمية غير معروفة</string>
     <string name="Processing">جارٍ المعالجة...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">لا توجد رسالة</string>
     <string name="binaryToSign">هل تريد توقيع هذه البيانات الثنائية؟</string>
     <string name="textToSign">هل تريد توقيع هذه الرسالة؟</string>
+    <string name="taggedSigToSign">توقيع تفويض</string>
+    <string name="taggedSigCaution">يؤدي هذا إلى إنشاء توقيع سيقبله أي عقد يثق بهذا المفتاح. لا توافق إلا على الطلبات الواردة من تطبيقات تثق بها.</string>
     <string name="sigInClipboard">تم نسخ التوقيع إلى الحافظة</string>
     <string name="SocialMediaText">التواصل الاجتماعي</string>
     <string name="SocialMediaSummary">أدخلها كقائمة خدمة:معرف، مثل twitter:janeDoe و keybase:janieD</string>

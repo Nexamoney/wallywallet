@@ -56,6 +56,7 @@
     <string name="deny">اجازه ندادن</string>
     <string name="ask">پرسش</string>
     <string name="badSignature">امضای نامعتبر</string>
+    <string name="unsupportedSigAlg">الگوریتم امضای پشتیبانی‌نشده درخواست شده است</string>
     <string name="unknownCurrency">ارز ناشناخته</string>
     <string name="unknownCryptoCurrency">رمزارز یا بلاک‌چین ناشناخته</string>
     <string name="Processing">در حال پردازش...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">هیچ پیامی ارائه نشده است</string>
     <string name="binaryToSign">این داده باینری امضا شود؟</string>
     <string name="textToSign">این پیام امضا شود؟</string>
+    <string name="taggedSigToSign">امضای مجوز</string>
+    <string name="taggedSigCaution">این یک امضا ایجاد می‌کند که هر قراردادی که به این کلید اعتماد دارد آن را می‌پذیرد. فقط درخواست‌های برنامه‌هایی را تأیید کنید که به آن‌ها اعتماد دارید.</string>
     <string name="sigInClipboard">امضا در کلیپ‌بورد کپی شد</string>
     <string name="SocialMediaText">شبکه‌های اجتماعی</string>
     <string name="SocialMediaSummary">به صورت فهرست سرویس:شناسه وارد کنید، مثلاً twitter:janeDoe, keybase:janieD</string>

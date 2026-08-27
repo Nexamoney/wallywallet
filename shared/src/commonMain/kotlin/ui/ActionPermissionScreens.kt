@@ -53,6 +53,42 @@ fun identityRegistrationNecessary(op: String?): Boolean
     return !((op == "reg")|| (op=="sign"))
 }
 
+/**
+ * Construct the nexid error Response for a request that will:
+ *  1) not be fulfilled ("user_rejected", "unsupported_sigalg"), or
+ *  2) null when no response should be sent (no host, the clipboard-only "_" host, or the requester suppressed replies with reply=false)
+ *
+ * Servers receive error responses on the route they already handle:
+ *  - reg/info get it POSTed in the json body (second of the returned pair)
+ *  - login/sign (and any other op) get it as an error query parameter on the reply GET (second of the pair is null)
+ */
+fun identityErrorReply(u: Uri, op: String?, cookie: String?, reason: String): Pair<String, String?>?
+{
+    val h = u.host ?: return null
+    if (h == "_") return null  // clipboard-only request: there is no server to tell
+    val queries = u.queryMap()
+    // Same allowlist the success replies use (spec nexid.md: a reply is attempted only when "reply" is absent or the string "true")
+    val reply = queries["reply"]
+    if (reply != null && reply != "true") return null
+
+    var protocol = queries["proto"] ?: u.scheme
+    if (protocol == "nexid") protocol = "http"  // (same as the success replies)
+    val portStr = if ((u.port > 0) && (u.port != 80) && (u.port != 443)) ":" + u.port.toString() else ""
+    val base = protocol + "://" + h + portStr + u.encodedPath
+    val opStr = op ?: ""
+
+    return if ((op == "reg") || (op == "info"))
+    {
+        val body = """{"op":"${opStr.jsonString()}","error":"${reason.jsonString()}"""" +
+          (if (cookie == null) "" else ""","cookie":"${cookie.jsonString()}"""") + "}"
+        Pair(base + (if (cookie == null) "" else "?cookie=" + cookie.urlEncode()), body)
+    } else
+    {
+        Pair(base + "?op=" + opStr.urlEncode() + "&error=" + reason.urlEncode() +
+          (if (cookie == null) "" else "&cookie=" + cookie.urlEncode()), null)
+    }
+}
+
 class IdentitySession(val uri: Uri?, val whenDone: ((String, String, Boolean?)->Boolean)?= null)
 {
     var newDomain = false
@@ -135,6 +171,37 @@ class IdentitySession(val uri: Uri?, val whenDone: ((String, String, Boolean?)->
             field = v
         }
 
+    protected var errorReplySent = false
+
+    /**
+     * Error response to the requesting server, e.g. "user_rejected" or "unsupported_sigalg".
+     * Servers can't rely on receiving this (send failures are silently dropped, and reply=false suppresses it entirely),
+     * but it lets a service react to the user's decision if it chooses
+     */
+    fun sendErrorReply(reason: String)
+    {
+        if (errorReplySent) return  // permission screen recomposes; tell the server at most once
+        val u = uri ?: return
+        if (!autoHandle && (whenDone != null)) return  // an embedding flow manages its own responses
+        val (errReq, postBody) = identityErrorReply(u, op, cookie, reason) ?: return
+        errorReplySent = true
+
+        later {
+            LogIt.info("identity error reply ($reason): $errReq")
+            try
+            {
+                if (postBody != null)
+                {
+                    Url(errReq).readPostBytes(postBody, timeoutInMs = HTTP_REQ_TIMEOUT_MS)
+                } else
+                {
+                    Url(errReq).readBytes(HTTP_REQ_TIMEOUT_MS)
+                }
+            } catch (_: Exception)  // if it doesn't arrive, the server times out
+            {
+            }
+        }
+    }
 
     protected var cproto: String? = null
     /** Get the wallet connect protocol (http or https) */
@@ -721,6 +788,17 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 }
 
 
+// nexid sigalg=ecdsv digest (spec: docs/nexid.md "Data signature computation")
+// BIP340-style tagged hash SHA256(SHA256(tag) || SHA256(tag) || msg), tag "nexid/ecdsv/v1":
+// the fixed 64-byte prefix domain-separates this from a transaction sighash, so the signature can't be reused to spend
+internal const val ECDSV_SIG_TAG = "nexid/ecdsv/v1"
+
+internal fun ecdsvTaggedDigest(msg: ByteArray): ByteArray
+{
+    val tagHash = libnexa.sha256(ECDSV_SIG_TAG.encodeToByteArray())
+    return libnexa.sha256(tagHash + tagHash + msg)
+}
+
 @OptIn(ExperimentalUnsignedTypes::class)
 fun AcceptIdentityPermHandler(op:String, sess: IdentitySession, msg: ByteArray?, destToSignWith: PayDestination?, nav: ScreenNav)
 {
@@ -756,7 +834,22 @@ fun AcceptIdentityPermHandler(op:String, sess: IdentitySession, msg: ByteArray?,
         }
         else
         {
-            val msgSig = libnexa.signMessage(msg, secret.getSecret())
+            // sigalg=ecdsv: bare OP_CHECKDATASIGVERIFY-compatible data signature (signHashSchnorr requires a hash of the data).
+            // absent/ecmsg: the wrapped signMessage form
+            // any other value is unsupported - do NOT fall back to ecmsg, since that would return a signature of the wrong algorithm.
+            // (IdentityPermScreen pre-checks this before prompting; this is the enforcement point for any other caller.)
+            val sigalg = queries["sigalg"]
+            if ((sigalg != null) && (sigalg != "ecmsg") && (sigalg != "ecdsv"))
+            {
+                sess.sendErrorReply("unsupported_sigalg")
+                displayError(S.unsupportedSigAlg, sigalg)
+                nav.back()
+                return
+            }
+            val msgSig = when (sigalg) {
+                "ecdsv" -> libnexa.signHashSchnorr(ecdsvTaggedDigest(msg), secret.getSecret())
+                else -> libnexa.signMessage(msg, secret.getSecret())
+            }
             if (msgSig == null || msgSig.size == 0)
             {
                 displayError(S.badSignature)
@@ -766,7 +859,7 @@ fun AcceptIdentityPermHandler(op:String, sess: IdentitySession, msg: ByteArray?,
             {
                 val sigStr = Codec.encode64(msgSig)
                 val msgStr = msg.decodeUtf8()
-                val clipboard = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
+                val clipboard = """{ "message":"${msgStr.jsonString()}", "address":"${address.toString().jsonString()}", "signature": "${sigStr.jsonString()}" }"""
                 later {
                     LogIt.info(clipboard)
                     setTextClipboard(clipboard)
@@ -968,6 +1061,19 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
         }
     }
 
+    // a sign request whose sigalg this wallet does not implement cannot be served no matter what the user chooses, so don't ask
+    if (op == "sign")
+    {
+        val sigalg = queries["sigalg"]
+        if ((sigalg != null) && (sigalg != "ecmsg") && (sigalg != "ecdsv"))
+        {
+            sess.sendErrorReply("unsupported_sigalg")
+            displayError(S.unsupportedSigAlg, sigalg)
+            nav.back()
+            return
+        }
+    }
+
     Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(16.dp))
         UnlockTile(sess.unlock)
@@ -1004,10 +1110,14 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
                 CenteredSectionText(i18n(S.SigningWithAccount) % mapOf("act" to act.nameAndChain))
                 CenteredFittedText(it.address.toString())
             }
+            // sigalg=ecdsv request produces a raw (unwrapped) data signature, so approval screen used for user protection:
+            // show a caution instead of the plain sign label
+            val rawSig = queries["sigalg"] == "ecdsv"
             if (signText != null)
             {
                 Spacer(Modifier.height(10.dp))
-                CenteredSectionText(S.textToSign)
+                CenteredSectionText(if (rawSig) S.taggedSigToSign else S.textToSign)
+                if (rawSig) CenteredText(i18n(S.taggedSigCaution))
                 WallyBrightEmphasisBox(Modifier.weight(1f).fillMaxWidth()) {
                     Text(signText, modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically), colorPrimaryDark)
                 }
@@ -1015,11 +1125,16 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
             }
             else if (signHex != null)
             {
-                CenteredSectionText(S.binaryToSign)
+                CenteredSectionText(if (rawSig) S.taggedSigToSign else S.binaryToSign)
+                if (rawSig) CenteredText(i18n(S.taggedSigCaution))
                 WallyBrightEmphasisBox(Modifier.weight(1f).fillMaxWidth()) {
                     Text(signHex, modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically), colorPrimaryDark)
                 }
-                msgToSign = signHex.fromHex()
+                // signhex is requester-supplied; odd length or non-hex characters make fromHex throw - guard it to avoid composition crashes
+                msgToSign = runCatching { signHex.fromHex() }.getOrElse {
+                    error = i18n(S.badLink)
+                    null
+                }
             }
             else
             {
@@ -1054,6 +1169,7 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
             }
             else AcceptIdentityPermHandler(op, sess, msgToSign, destToSignWith, nav)
         }, {
+            sess.sendErrorReply("user_rejected")
             nav.back()
             displayNotice(S.cancelled)
         },
@@ -1269,7 +1385,18 @@ fun onProvideIdentity(sess: IdentitySession): Boolean?
                     }
                     else
                     {
-                        val msgSig = libnexa.signMessage(msg, secret.getSecret())
+                        // same sigalg selection as the primary op=sign handler above (see AcceptIdentityPermHandler)
+                        val sigalg = attribs["sigalg"]
+                        if ((sigalg != null) && (sigalg != "ecmsg") && (sigalg != "ecdsv"))
+                        {
+                            sess.sendErrorReply("unsupported_sigalg")
+                            displayError(S.unsupportedSigAlg, sigalg)
+                            return false
+                        }
+                        val msgSig = when (sigalg) {
+                            "ecdsv" -> libnexa.signHashSchnorr(ecdsvTaggedDigest(msg), secret.getSecret())
+                            else -> libnexa.signMessage(msg, secret.getSecret())
+                        }
                         if (msgSig == null || msgSig.size == 0)
                         {
                             displayError(S.badSignature)
@@ -1280,7 +1407,7 @@ fun onProvideIdentity(sess: IdentitySession): Boolean?
                             val sigStr = Codec.encode64(msgSig)
 
                             val msgStr = msg.decodeUtf8()
-                            val s = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
+                            val s = """{ "message":"${msgStr.jsonString()}", "address":"${address.toString().jsonString()}", "signature": "${sigStr.jsonString()}" }"""
                             LogIt.info(s)
                             setTextClipboard(s)
                             displayNotice(S.sigInClipboard)

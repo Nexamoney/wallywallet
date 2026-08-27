@@ -56,6 +56,7 @@
     <string name="deny">zavrni</string>
     <string name="ask">vprašaj</string>
     <string name="badSignature">neveljaven podpis</string>
+    <string name="unsupportedSigAlg">zahtevan je bil nepodprt algoritem podpisa</string>
     <string name="unknownCurrency">neznana valuta</string>
     <string name="unknownCryptoCurrency">neznana kriptovaluta ali veriga blokov</string>
     <string name="Processing">obdelovanje...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Ni sporočila</string>
     <string name="binaryToSign">Želite podpisati te binarne podatke?</string>
     <string name="textToSign">Želite podpisati to sporočilo?</string>
+    <string name="taggedSigToSign">Avtorizacijski podpis</string>
+    <string name="taggedSigCaution">S tem se ustvari podpis, ki ga bo sprejela vsaka pogodba, ki zaupa temu ključu. Odobrite samo zahteve aplikacij, ki jim zaupate.</string>
     <string name="sigInClipboard">Podpis kopiran v odložišče</string>
     <string name="SocialMediaText">Družabni mediji</string>
     <string name="SocialMediaSummary">Vnesite kot seznam storitve:vzdevek, npr. twitter:janeDoe, keybase:janieD</string>

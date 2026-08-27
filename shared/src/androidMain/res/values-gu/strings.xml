@@ -56,6 +56,7 @@
     <string name="deny">ઇનકાર</string>
     <string name="ask">પૂછો</string>
     <string name="badSignature">ખોટી સહી</string>
+    <string name="unsupportedSigAlg">અસમર્થિત સહી અલ્ગોરિધમની વિનંતી કરવામાં આવી</string>
     <string name="unknownCurrency">અજાણ્યું ચલણ</string>
     <string name="unknownCryptoCurrency">અજાણી ક્રિપ્ટોકરન્સી અથવા બ્લોકચેન</string>
     <string name="Processing">પ્રોસેસ થાય છે...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">કોઈ સંદેશ આપ્યો નથી</string>
     <string name="binaryToSign">આ બાઇનરી ડેટા પર સહી કરવી?</string>
     <string name="textToSign">આ સંદેશ પર સહી કરવી?</string>
+    <string name="taggedSigToSign">અધિકૃતિ સહી</string>
+    <string name="taggedSigCaution">આ એક સહી બનાવે છે જેને આ કીમાં વિશ્વાસ રાખતો કોઈપણ કરાર સ્વીકારશે. ફક્ત તમે વિશ્વાસ કરો છો તે ઍપની વિનંતીઓ જ મંજૂર કરો.</string>
     <string name="sigInClipboard">સહી ક્લિપબોર્ડ પર કૉપિ થઈ</string>
     <string name="SocialMediaText">સોશિયલ મીડિયા</string>
     <string name="SocialMediaSummary">સેવા:હેન્ડલ ની યાદી તરીકે દાખલ કરો, દા.ત. twitter:janeDoe, keybase:janieD</string>

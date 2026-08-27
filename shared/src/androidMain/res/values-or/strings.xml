@@ -56,6 +56,7 @@
     <string name="deny">ମନା କରନ୍ତୁ</string>
     <string name="ask">ପଚାରନ୍ତୁ</string>
     <string name="badSignature">ଖରାପ ହସ୍ତାକ୍ଷର</string>
+    <string name="unsupportedSigAlg">ଅସମର୍ଥିତ ସ୍ୱାକ୍ଷର ଆଲଗୋରିଦମ ଅନୁରୋଧ କରାଯାଇଛି</string>
     <string name="unknownCurrency">ଅଜଣା ମୁଦ୍ରା</string>
     <string name="unknownCryptoCurrency">ଅଜଣା କ୍ରିପ୍ଟୋମୁଦ୍ରା କିମ୍ବା ବ୍ଲକଚେନ୍</string>
     <string name="Processing">ପ୍ରକ୍ରିୟା ଚାଲିଛି...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">କୌଣସି ମେସେଜ୍ ଦିଆଯାଇନାହିଁ</string>
     <string name="binaryToSign">ଏହି ବାଇନାରୀ ଡାଟା ସାଇନ୍ କରିବେ କି?</string>
     <string name="textToSign">ଏହି ମେସେଜ୍ ସାଇନ୍ କରିବେ କି?</string>
+    <string name="taggedSigToSign">ପ୍ରାଧିକରଣ ସ୍ୱାକ୍ଷର</string>
+    <string name="taggedSigCaution">ଏହା ଏକ ସ୍ୱାକ୍ଷର ସୃଷ୍ଟି କରେ ଯାହାକୁ ଏହି କି ଉପରେ ବିଶ୍ୱାସ କରୁଥିବା ଯେକୌଣସି ଚୁକ୍ତି ଗ୍ରହଣ କରିବ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଆପ୍‌ର ଅନୁରୋଧଗୁଡ଼ିକୁ ଅନୁମୋଦନ କରନ୍ତୁ।</string>
     <string name="sigInClipboard">ହସ୍ତାକ୍ଷର କ୍ଲିପବୋର୍ଡକୁ କପି ହେଲା</string>
     <string name="SocialMediaText">ସୋସିଆଲ୍ ମିଡିଆ</string>
     <string name="SocialMediaSummary">ସେବା:ହ୍ୟାଣ୍ଡଲ୍ ତାଲିକା ଭାବେ ଲେଖନ୍ତୁ, ଯେପରି twitter:janeDoe, keybase:janieD</string>

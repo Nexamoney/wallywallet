@@ -346,6 +346,7 @@ fun IdentityScreen(sess: IdentitySession, nav: ScreenNav)
                             if (success != null) nav.back()
                         }
                     }, {
+                        sess.sendErrorReply("user_rejected")  // tell the server the user declined, as op=sign already does
                         displayNotice(S.TpRegDenied)
                         nav.back()
                     },

@@ -130,6 +130,8 @@ Good luck!
     <string name="ask">ask</string>
     <!-- Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be) -->
     <string name="badSignature">bad signature</string>
+    <!-- A service asked this wallet to sign with a signature algorithm (sigalg) this wallet version does not implement -->
+    <string name="unsupportedSigAlg">unsupported signature algorithm requested</string>
 
     <string name="unknownCurrency">unknown currency</string>
     <string name="unknownCryptoCurrency">unknown cryptocurrency or blockchain</string>
@@ -436,6 +438,8 @@ Good luck!
     <string name="nothingToSign">No message provided</string>
     <string name="binaryToSign">Sign this binary data?</string>
     <string name="textToSign">Sign this message?</string>
+    <string name="taggedSigToSign">Authorization signature</string>
+    <string name="taggedSigCaution">This creates a signature that any contract trusting this key will accept. Only approve requests from apps you trust.</string>
     <string name="sigInClipboard">Signature copied to clipboard</string>
 
     <string name="SocialMediaText">Social Media</string>

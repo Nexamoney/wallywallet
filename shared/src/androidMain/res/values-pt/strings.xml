@@ -56,6 +56,7 @@
     <string name="deny">recusar</string>
     <string name="ask">perguntar</string>
     <string name="badSignature">assinatura inválida</string>
+    <string name="unsupportedSigAlg">foi pedido um algoritmo de assinatura não suportado</string>
     <string name="unknownCurrency">moeda desconhecida</string>
     <string name="unknownCryptoCurrency">criptomoeda ou blockchain desconhecida</string>
     <string name="Processing">a processar...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Nenhuma mensagem fornecida</string>
     <string name="binaryToSign">Assinar estes dados binários?</string>
     <string name="textToSign">Assinar esta mensagem?</string>
+    <string name="taggedSigToSign">Assinatura de autorização</string>
+    <string name="taggedSigCaution">Isto cria uma assinatura que qualquer contrato que confie nesta chave aceitará. Aprove apenas pedidos de aplicações em que confia.</string>
     <string name="sigInClipboard">Assinatura copiada</string>
     <string name="SocialMediaText">Redes sociais</string>
     <string name="SocialMediaSummary">Introduza como lista de serviço:identificador, p. ex. twitter:janeDoe, keybase:janieD</string>

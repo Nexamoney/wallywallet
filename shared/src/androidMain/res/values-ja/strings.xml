@@ -56,6 +56,7 @@
     <string name="deny">許可しない</string>
     <string name="ask">毎回確認</string>
     <string name="badSignature">不正な署名</string>
+    <string name="unsupportedSigAlg">サポートされていない署名アルゴリズムが要求されました</string>
     <string name="unknownCurrency">不明な通貨</string>
     <string name="unknownCryptoCurrency">不明な暗号資産またはブロックチェーン</string>
     <string name="Processing">処理中...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">メッセージがありません</string>
     <string name="binaryToSign">このバイナリデータに署名しますか？</string>
     <string name="textToSign">このメッセージに署名しますか？</string>
+    <string name="taggedSigToSign">認可署名</string>
+    <string name="taggedSigCaution">これは、この鍵を信頼するあらゆるコントラクトが受け入れる署名を作成します。信頼できるアプリからのリクエストのみを承認してください。</string>
     <string name="sigInClipboard">署名をクリップボードにコピーしました</string>
     <string name="SocialMediaText">ソーシャルメディア</string>
     <string name="SocialMediaSummary">サービス:ハンドル の形式で入力してください。例: twitter:janeDoe, keybase:janieD</string>

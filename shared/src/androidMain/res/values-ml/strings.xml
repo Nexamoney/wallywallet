@@ -56,6 +56,7 @@
     <string name="deny">നിഷേധിക്കുക</string>
     <string name="ask">ചോദിക്കുക</string>
     <string name="badSignature">അസാധുവായ ഒപ്പ്</string>
+    <string name="unsupportedSigAlg">പിന്തുണയ്ക്കാത്ത ഒപ്പ് അൽഗോരിതം അഭ്യർത്ഥിച്ചു</string>
     <string name="unknownCurrency">അജ്ഞാത കറൻസി</string>
     <string name="unknownCryptoCurrency">അജ്ഞാത ക്രിപ്റ്റോകറൻസി അല്ലെങ്കിൽ ബ്ലോക്ക്ചെയിൻ</string>
     <string name="Processing">പ്രോസസ്സിംഗ്...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">സന്ദേശമൊന്നും നൽകിയിട്ടില്ല</string>
     <string name="binaryToSign">ഈ ബൈനറി ഡാറ്റയിൽ ഒപ്പിടണോ?</string>
     <string name="textToSign">ഈ സന്ദേശത്തിൽ ഒപ്പിടണോ?</string>
+    <string name="taggedSigToSign">അംഗീകാര ഒപ്പ്</string>
+    <string name="taggedSigCaution">ഈ കീയെ വിശ്വസിക്കുന്ന ഏതൊരു കരാറും സ്വീകരിക്കുന്ന ഒരു ഒപ്പ് ഇത് സൃഷ്ടിക്കുന്നു. നിങ്ങൾ വിശ്വസിക്കുന്ന ആപ്പുകളിൽ നിന്നുള്ള അഭ്യർത്ഥനകൾ മാത്രം അംഗീകരിക്കുക.</string>
     <string name="sigInClipboard">ഒപ്പ് ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
     <string name="SocialMediaText">സോഷ്യൽ മീഡിയ</string>
     <string name="SocialMediaSummary">സേവനം:ഹാൻഡിൽ എന്ന പട്ടികയായി നൽകുക, ഉദാ. twitter:janeDoe, keybase:janieD</string>

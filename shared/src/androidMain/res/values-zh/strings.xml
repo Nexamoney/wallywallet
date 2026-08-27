@@ -56,6 +56,7 @@
     <string name="deny">禁止</string>
     <string name="ask">询问</string>
     <string name="badSignature">签名无效</string>
+    <string name="unsupportedSigAlg">请求了不支持的签名算法</string>
     <string name="unknownCurrency">未知货币</string>
     <string name="unknownCryptoCurrency">未知的加密货币或区块链</string>
     <string name="Processing">处理中…</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">未提供消息</string>
     <string name="binaryToSign">签名此二进制数据？</string>
     <string name="textToSign">签名此消息？</string>
+    <string name="taggedSigToSign">授权签名</string>
+    <string name="taggedSigCaution">这将创建一个签名，任何信任此密钥的合约都会接受它。请只批准来自您信任的应用的请求。</string>
     <string name="sigInClipboard">签名已复制到剪贴板</string>
     <string name="SocialMediaText">社交媒体</string>
     <string name="SocialMediaSummary">按“服务:账号”列表格式输入，例如 twitter:janeDoe、keybase:janieD</string>

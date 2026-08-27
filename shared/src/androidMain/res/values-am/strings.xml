@@ -56,6 +56,7 @@
     <string name="deny">መከልከል</string>
     <string name="ask">መጠየቅ</string>
     <string name="badSignature">የተሳሳተ ፊርማ</string>
+    <string name="unsupportedSigAlg">ያልተደገፈ የፊርማ ስልተ ቀመር ተጠይቋል</string>
     <string name="unknownCurrency">ያልታወቀ ገንዘብ</string>
     <string name="unknownCryptoCurrency">ያልታወቀ ክሪፕቶ ገንዘብ ወይም ብሎክቼይን</string>
     <string name="Processing">በሂደት ላይ...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">ምንም መልእክት አልቀረበም</string>
     <string name="binaryToSign">ይህን ሁለትዮሽ ውሂብ ይፈርሙ?</string>
     <string name="textToSign">ይህን መልእክት ይፈርሙ?</string>
+    <string name="taggedSigToSign">የፈቃድ ፊርማ</string>
+    <string name="taggedSigCaution">ይህ ይህን ቁልፍ የሚያምን ማንኛውም ውል የሚቀበለውን ፊርማ ይፈጥራል። እርስዎ ከሚያምኗቸው መተግበሪያዎች የሚመጡ ጥያቄዎችን ብቻ ያጽድቁ።</string>
     <string name="sigInClipboard">ፊርማ ወደ ቅንጥብ ሰሌዳ ተቀድቷል</string>
     <string name="SocialMediaText">ማህበራዊ ሚዲያ</string>
     <string name="SocialMediaSummary">እንደ አገልግሎት:ስም ዝርዝር ያስገቡ፣ ለምሳሌ twitter:janeDoe, keybase:janieD</string>

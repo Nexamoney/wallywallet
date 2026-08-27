@@ -56,6 +56,7 @@
     <string name="deny">avslå</string>
     <string name="ask">spør</string>
     <string name="badSignature">ugyldig signatur</string>
+    <string name="unsupportedSigAlg">det ble bedt om en signaturalgoritme som ikke støttes</string>
     <string name="unknownCurrency">ukjent valuta</string>
     <string name="unknownCryptoCurrency">ukjent kryptovaluta eller blockchain</string>
     <string name="Processing">behandler...</string>
@@ -281,6 +282,8 @@
     <string name="nothingToSign">Ingen melding oppgitt</string>
     <string name="binaryToSign">Signere disse binærdataene?</string>
     <string name="textToSign">Signere denne meldingen?</string>
+    <string name="taggedSigToSign">Autorisasjonssignatur</string>
+    <string name="taggedSigCaution">Dette lager en signatur som enhver kontrakt som stoler på denne nøkkelen, vil godta. Godkjenn bare forespørsler fra apper du stoler på.</string>
     <string name="sigInClipboard">Signatur kopiert til utklippstavle</string>
     <string name="SocialMediaText">Sosiale medier</string>
     <string name="SocialMediaSummary">Skriv inn som liste med tjeneste:handle, f.eks. twitter:janeDoe, keybase:janieD</string>
