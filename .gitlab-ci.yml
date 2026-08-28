@@ -12,6 +12,7 @@ stages:
   - build # This job should be last before deploy because it runs for one hour. This job can be decoupled (see taskTree).
   - deploy_internally
   - deploy_beta
+  - housekeeping
 
 workflow:
   rules:
@@ -457,6 +458,46 @@ mirror-to-github:
     - git remote add github-mirror "git@github.com:Nexamoney/wallywallet.git"
     - git fetch github-mirror
     - git push --force -u github-mirror main
+
+# Strips stale review comments ("//<<<"-prefixed lines) from the code after
+# each merge into the default branch, then pushes the cleanup back as a
+# follow-up commit (with CI skipped so it doesn't loop).
+#
+# One-time setup, required before the job will run (on the canonical project,
+# gitlab.com/wallywallet/wallet):
+#   1. Settings > Access tokens: create a project access token named
+#      "strip-comments" with role Developer, scope write_repository, and an
+#      expiry date (rotate before it lapses).
+#   2. Settings > Repository > Protected branches: on the default branch, add
+#      the token's bot user (project_<id>_bot_...) to "Allowed to push and
+#      merge".
+#   3. Settings > CI/CD > Variables: add STRIP_COMMENTS_PUSH_TOKEN with the
+#      token value - Protected, and visibility "Masked and hidden".
+# Until STRIP_COMMENTS_PUSH_TOKEN exists, the rule below keeps the job out of
+# the pipeline entirely.
+stripStaleReviewComments:
+  stage: housekeeping
+  # alpine/git sets `git` as the container entrypoint, which would swallow the
+  # job script ("git: 'sh' is not a git command") - reset it to a plain shell.
+  image:
+    name: alpine/git:latest
+    entrypoint: [""]
+  # Run immediately, not after the hour-long build stage, and even if
+  # builds/tests on the merge commit fail.
+  needs: []
+  resource_group: default-branch-cleanup
+  before_script:
+    # Replaces the global before_script: alpine has no gradle/JDK, and no
+    # version file is needed to strip comments.
+    - echo "no setup"
+  variables:
+    GIT_DEPTH: "0"
+  rules:
+    # Requiring pipeline source "push" also keeps this off the nightly
+    # MIRROR=True scheduled pipeline, so .skip-on-schedule is not needed here.
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push" && $STRIP_COMMENTS_PUSH_TOKEN'
+  script:
+    - sh contrib/ci/stripStaleReviewComments.sh
 
 #testflight_public:
 #  environment:

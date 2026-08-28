@@ -396,3 +396,19 @@ Check your device's connectivity to the file (curl, wget aren't installed for me
 ./adb shell 'curl -I https://w.nexa.org/.well-known/assetlinks.json'
 ./adb shell 'wget -O - https://w.nexa.org/.well-known/assetlinks.json'
 ```
+
+## Review-only comments (`//<<<`)
+
+Comments explaining *why old code is being changed or removed* in an MR should
+use the `//<<<` prefix (on their own line) instead of `//`. They are for
+reviewers reading the diff: after the MR is merged, a CI job strips all `//<<<`
+lines and pushes a cleanup commit to the default branch,
+so the codebase only keeps comments describing the current state of the code.
+Comments about the *new* code should use plain `//` and are left intact.
+
+Notes:
+- The marker must start the line (leading whitespace is fine); `//<<<` appended
+  after code on the same line is not stripped.
+- Only code files are processed — see the extension list in
+  `contrib/ci/stripStaleReviewComments.sh`.
+- One-time CI setup (access token) is documented in `.gitlab-ci.yml`.

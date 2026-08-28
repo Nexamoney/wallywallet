@@ -235,6 +235,12 @@ if [ "$RANGE_OK" = 1 ]; then
     git log --first-parent --format='%H' "$SINCE..$HEAD_SHA" > "$WORK_DIR/commits"
     while read -r sha; do
         [ -n "$sha" ] || continue
+        # The stripStaleReviewComments CI job pushes housekeeping commits
+        # directly to main; they change nothing user-visible and stay out of
+        # the changelog.
+        if [ "$(git log -1 --format='%s' "$sha")" = "chore: strip stale review comments [skip ci]" ]; then
+            continue
+        fi
         git log -1 --format='%b' "$sha" > "$WORK_DIR/msg"
         # A merge of a merge request carries "See merge request <path>!<iid>",
         # and its own subject is only the source branch name, so the readable
