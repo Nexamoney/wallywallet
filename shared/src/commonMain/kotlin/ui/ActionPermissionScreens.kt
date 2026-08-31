@@ -789,9 +789,9 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 
 
 // nexid sigalg=ecdsv digest (spec: docs/nexid.md "Data signature computation")
-// BIP340-style tagged hash SHA256(SHA256(tag) || SHA256(tag) || msg), tag "nexid/ecdsv/v1":
+// BIP340-style tagged hash SHA256(SHA256(tag) || SHA256(tag) || msg), tag "nid1":
 // the fixed 64-byte prefix domain-separates this from a transaction sighash, so the signature can't be reused to spend
-internal const val ECDSV_SIG_TAG = "nexid/ecdsv/v1"
+internal const val ECDSV_SIG_TAG = "nid1"
 
 internal fun ecdsvTaggedDigest(msg: ByteArray): ByteArray
 {

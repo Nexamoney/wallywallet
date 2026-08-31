@@ -7,8 +7,8 @@ import kotlin.test.*
 
 /**
  * Covers the sigalg selection added to the nexid op=sign handlers (ActionPermissionScreens.kt):
- *   - "ecdsv" signs the domain-separated digest SHA256(SHA265(tag) || SHA256(tag) || msg) with tag
- *     "nexid/ecdsv/v1" (spec docs/nexid.md "Data signature computation"), so an ecdsv signature
+ *   - "ecdsv" signs the domain-separated digest SHA256(SHA256(tag) || SHA256(tag) || msg) with tag
+ *     "nid1" (spec docs/nexid.md "Data signature computation"), so an ecdsv signature
  *     cannot be replayed onto a transaction sighash.
  *   - default/"ecmsg" path keeps producing the wrapped signMessage form.
  *
@@ -24,14 +24,14 @@ class EcdsvSignatureTest
         initializeLibNexa()
 
         // the tag and its SHA256 are wallet constants; set them against the spec's declared value
-        assertEquals("nexid/ecdsv/v1", ECDSV_SIG_TAG)
+        assertEquals("nid1", ECDSV_SIG_TAG)
         val tagHash = libnexa.sha256(ECDSV_SIG_TAG.encodeToByteArray())
-        assertEquals("7ae4bd6601a452b1db7506e7e3513ba0f8b00516918d88fe73bedd85c80a4c7c", tagHash.toHex())
+        assertEquals("5969f37ee634de5dfd3cbd2cacb875665610815695d017cf22e7a68ca485b28e", tagHash.toHex())
 
         // digest for the message "list pass 0001".
         val msg = "list pass 0001".encodeToByteArray()
         val digest = ecdsvTaggedDigest(msg)
-        assertEquals("9c89fdc84bf2e24565cca274e36d6461c6f94e40a4f41782eb65337e0afda682", digest.toHex())
+        assertEquals("a344369ca25fde5c1e6e3ba3481819cd7de8ff5e35d325e16d8dc85449981c1d", digest.toHex())
 
         // Domain separation must actually be applied: the signed digest is NOT the bare SHA256(msg)
         // that a transaction-sighash forgery would need.
