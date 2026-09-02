@@ -469,6 +469,9 @@ kotlin {
                     // This is only for pulling in the android photo picker
                     implementation(libs.play.services.base)
 
+                    // Google Play in-app review
+                    implementation(libs.play.review.ktx)
+
                     // Play audio from resources file: https://medium.com/@brucemax/play-sounds-in-kotlin-multiplatform-using-multiplatform-resources-1b23716116d5
                     implementation(libs.androidx.media3.exoplayer)
 

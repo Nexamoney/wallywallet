@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.play.core.review.ReviewException
+import com.google.android.play.core.review.ReviewManagerFactory
 import info.bitcoinunlimited.www.wally.old.convertOldAccounts
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
@@ -36,11 +38,16 @@ import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okio.*
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millinow
 import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
+import kotlin.coroutines.resume
 
 var notificationId = -1
 private val LogIt = GetLog("BU.wally.utils_android")
@@ -320,11 +327,76 @@ actual fun openUrl(url: String)
     }
 }
 
-// Not adding Android yet because it requires Google Play services
-// See reference implementation/library here: https://github.com/jQrgen/kmp-app-review
-actual fun getReviewManager(): InAppReviewDelegate? = null
+class GooglePlayInAppReviewManager(private val context: Context) : InAppReviewDelegate
+{
+    private val manager = ReviewManagerFactory.create(context)
 
-actual fun requestInAppReview() {}
+    // Google Play decides whether the review dialog is actually shown and gives no signal either way
+    override fun requestInAppReview(): Flow<ReviewCode> = flow {
+        val act = currentActivity
+        if (act == null)
+        {
+            emit(ReviewCode.INTERNAL_ERROR)
+            return@flow
+        }
+        val result = suspendCancellableCoroutine<ReviewCode> { cont ->
+            manager.requestReviewFlow().addOnCompleteListener { task ->
+                if (task.isSuccessful)
+                {
+                    manager.launchReviewFlow(act, task.result).addOnCompleteListener {
+                        if (cont.isActive) cont.resume(ReviewCode.NO_ERROR)
+                    }
+                }
+                else
+                {
+                    val err = task.exception
+                    LogIt.info("In-app review request failed: $err")
+                    val code = if (err is ReviewException) ReviewCode.fromCode(err.errorCode) else ReviewCode.INTERNAL_ERROR
+                    if (cont.isActive) cont.resume(code)
+                }
+            }
+        }
+        emit(result)
+    }
+
+    override fun requestInMarketReview() = flow {
+        try
+        {
+            openUrl("market://details?id=${context.packageName}")
+        }
+        catch (e: Exception)
+        {
+            LogIt.info("Play Store app not available for review, falling back to web: $e")
+            openUrl("https://play.google.com/store/apps/details?id=${context.packageName}")
+        }
+        emit(ReviewCode.NO_ERROR)
+    }
+}
+
+actual fun getReviewManager(): InAppReviewDelegate?
+{
+    val ctxt = (appContext() as? Context) ?: return null
+    return GooglePlayInAppReviewManager(ctxt)
+}
+
+// Requests in-app review and waits one month to ask again if no review is given.
+actual fun requestInAppReview()
+{
+    val now = millinow()/1000
+    val lastReviewRequest = wallyApp?.preferenceDB?.getString(LAST_REVIEW_TIMESTAMP, "0")?.toLong() ?: now
+    val oneMonthInSeconds = 30 * 24 * 60 * 60
+
+    if ((now - lastReviewRequest) >= oneMonthInSeconds)
+    {
+        val mgr = getReviewManager() ?: return
+        launch {
+            mgr.requestInAppReview().collect {
+                if (it != ReviewCode.NO_ERROR) LogIt.info("In-app review result: $it")
+            }
+        }
+        wallyApp?.run { preferenceDB.edit().putString(LAST_REVIEW_TIMESTAMP, now.toString()).commit() }
+    }
+}
 
 private const val DEFAULT_ALIAS = ".ComposeActivityDefault"
 private const val MEDITATION_ALIAS = ".ComposeActivityMeditationCamouflage"
