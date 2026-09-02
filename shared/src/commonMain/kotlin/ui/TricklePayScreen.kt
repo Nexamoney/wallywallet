@@ -208,7 +208,7 @@ fun TricklePayRegistrationsScreen()
         ) {
             ThumbButtonFAB(
               onScanQr = { isScanningQr = true },
-              onResult = { wallyApp?.handlePaste(it) })
+              onResult = { tlater("handlePastedUri") { wallyApp?.handlePaste(it) } })
             Spacer(Modifier.height(24.dp))
         }
     }
@@ -222,8 +222,10 @@ fun TricklePayRegistrationsScreen()
           },
           onScan = {
               if (it.isNotEmpty() && isScanningQr)
+              {
                   isScanningQr = false
-              wallyApp?.handlePaste(it)
+                  tlater("handleScannedQr") { wallyApp?.handlePaste(it) }
+              }
           }
         )
     }
