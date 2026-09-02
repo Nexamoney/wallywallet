@@ -795,9 +795,11 @@ fun SendScreenContent(
           },
           onScan = {
               if (it.isNotEmpty() && isScanningQr)
+              {
                   isScanningQr = false
-              viewModel.checkUriAndSetUi(it)
-              audioPlayerViewModel.playScanQrSound()
+                  viewModel.checkUriAndSetUi(it)
+                  audioPlayerViewModel.playScanQrSound()
+              }
           }
         )
     }

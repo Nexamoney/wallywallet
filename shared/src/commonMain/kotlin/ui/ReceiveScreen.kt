@@ -109,9 +109,11 @@ fun ReceiveScreen(
               },
               onScan = {
                   if (it.isNotEmpty() && isScanningQr)
+                  {
                       isScanningQr = false
-                  wallyApp?.handlePaste(it)
-                  audioPlayerViewModel.playScanQrSound()
+                      tlater("handleScannedQr") { wallyApp?.handlePaste(it) }
+                      audioPlayerViewModel.playScanQrSound()
+                  }
               }
             )
         }

@@ -186,7 +186,7 @@ fun HomeScreen(
               pasteIcon = Icons.Outlined.ContentPasteGo,
               onScanQr = { isScanningQr = true },
               onResult = {
-                  wallyApp?.handlePaste(it)
+                  tlater("handlePastedUri") { wallyApp?.handlePaste(it) }
               }
             )
             Spacer(Modifier.height(24.dp))
@@ -202,7 +202,7 @@ fun HomeScreen(
                   if (it.isNotEmpty() && isScanningQr)
                   {
                       isScanningQr = false
-                      wallyApp?.handlePaste(it)
+                      tlater("handleScannedQr") { wallyApp?.handlePaste(it) }
                       audioPlayerViewModel.playScanQrSound()
                   }
               }
