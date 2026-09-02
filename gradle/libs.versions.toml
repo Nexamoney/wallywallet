@@ -42,6 +42,7 @@ android-gradle-plugin = "9.3.1" # Tied to IDE version so do not just bump forwar
 kover = "0.9.8"
 okio = "3.18.0" # libnexakotlin 0.7.0 requires this; Gradle upgraded the old 3.17.0 pin silently
 playServicesBase = "18.10.0"
+playReview = "2.0.2" # https://developer.android.com/guide/playcore/in-app-review
 qrose = "1.1.2"
 serializationVersion = "1.11.0" # https://github.com/Kotlin/kotlinx.serialization
 task-tree = "4.0.1"
@@ -116,6 +117,7 @@ nexa-libnexakotlin = { module = "org.nexa:libnexakotlin", version.ref = "bu_libn
 nexa-nexacli = { module = "org.nexa:nexacli", version.ref = "bu_nexacli" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeAndroid" }
