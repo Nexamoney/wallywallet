@@ -336,7 +336,7 @@ val ChainSelector.currencyDecimals: Int
     return when (this)
     {
         ChainSelector.BCHTESTNET, ChainSelector.BCHREGTEST, ChainSelector.BCH -> uBchDecimals
-        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> NexaDecimals
+        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST -> NexaDecimals
     }
 }
 
@@ -705,7 +705,7 @@ fun formatAmount(qty: BigDecimal, chain: ChainSelector = ChainSelector.NEXA): St
     //LogIt.info("format ${qty.toPlainString()} -> ${nexaFormat.format(qty)}")
     return when (chain)
     {
-        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> NexaFormat.format(qty)
+        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST -> NexaFormat.format(qty)
         ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> uBchFormat.format(qty)
     }
 }
