@@ -244,4 +244,54 @@ class SendScreenTest:WallyUiTestBase()
             wallyApp!!.deleteAccount(account)
         }
     }
+
+    /** Reproduces a crash reported in the Google Play console for v3.20.06: composing the Send
+     * screen while no account is visible threw PrimaryWalletInvalidException out of
+     * preferredVisibleAccount() and killed the app. The screen must back out instead of crashing. */
+    @Test
+    fun sendScreenNoVisibleAccountDoesNotCrash()
+    {
+        LogIt.info("TEST sendScreenNoVisibleAccountDoesNotCrash")
+        val app = wallyApp!!
+        val savedAccounts = app.accounts.toMap()
+        val savedFocus = app.focusedAccount.value
+        val savedPrimary = app.nullablePrimaryAccount
+
+        // The crashing state: the nav destination composed with an account (in production a
+        // PIN-hidden one), but the pill has not selected an account and none is visible app-wide
+        val orphan = mockAccount()
+        app.accounts.clear()
+        app.focusedAccount.value = null
+        app.nullablePrimaryAccount = null
+        try
+        {
+            runComposeUiTest(testTimeout = 3.minutes) {
+                val viewModelStoreOwner = object : ViewModelStoreOwner
+                {
+                    override val viewModelStore = ViewModelStore()
+                }
+                val actFlow = MutableStateFlow<Account?>(null)
+                val mockPill = AccountPillViewModelFake(actFlow, BalanceViewModelImpl(actFlow), SyncViewModelFake())
+                val unlock = UnlockViewModel(actFlow)
+                val viewModel = SendScreenViewModelFake(orphan)
+                setContent {
+                    CompositionLocalProvider(
+                      LocalViewModelStoreOwner provides viewModelStoreOwner
+                    ) {
+                        SendScreen(mockPill, SendScreenNavParams(), viewModel, unlock)
+                    }
+                }
+                settle()
+                // The screen declines to render the send form and backs out with a NoAccounts error
+                onNodeWithTag("sendToAddress").assertDoesNotExist()
+            }
+        }
+        finally
+        {
+            app.accounts.clear()
+            app.accounts.putAll(savedAccounts)
+            app.focusedAccount.value = savedFocus
+            app.nullablePrimaryAccount = savedPrimary
+        }
+    }
 }

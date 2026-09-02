@@ -925,7 +925,12 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel, unlockViewM
 @Composable
 fun SendScreen(pillViewModel: AccountPillViewModel, navParams: SendScreenNavParams, viewModel: SendScreenViewModel, unlockViewModel: UnlockViewModel)
 {
-    val account = pillViewModel.account.collectAsState().value ?: wallyApp!!.preferredVisibleAccount()
+    val account = pillViewModel.account.collectAsState().value ?: wallyApp!!.preferredVisibleAccountOrNull()
+    if (account == null)
+    {
+        displayErrorAndGoBack(S.NoAccounts)
+        return
+    }
     /*
        Update UI when sending with a new account or the account has changed.
      */
