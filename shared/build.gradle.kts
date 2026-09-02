@@ -306,6 +306,9 @@ kotlin {
                 // nexa
                 implementation(libs.nexa.mpthreads)
                 implementation(libs.nexa.libnexakotlin)
+                // libnexakotlin 0.7.0 split the @cli/Display annotations into their own
+                // library, and depends on it at runtime only, so declare it to compile.
+                implementation(libs.nexa.nexacli)
                 //implementation("org.nexa:walletoperations:0.0.1")
 
                 // Generate and display Compose Multiplaform QR code

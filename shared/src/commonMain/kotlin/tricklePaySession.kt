@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import kotlin.random.Random
 import org.nexa.libnexakotlin.*
 import org.nexa.libnexakotlin.simpleapi.NexaScript
+import org.nexa.nexacli.*
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill

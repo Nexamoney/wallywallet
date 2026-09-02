@@ -65,7 +65,7 @@ fun fromFinestUnit(amount: Long, chainSelector:ChainSelector): BigDecimal
 {
     val factor = when (chainSelector)
     {
-        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> SATperNEX
+        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST -> SATperNEX
         ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> SATperUBCH
     }
     val f : BigDecimal = BigDecimal.fromInt(factor.toInt())

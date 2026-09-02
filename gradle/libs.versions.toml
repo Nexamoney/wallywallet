@@ -12,8 +12,9 @@ atomicfu = "0.33.0"  # https://github.com/Kotlin/kotlinx-atomicfu/releases
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
 
-bu_libnexakotlin = "0.6.0" # https://gitlab.com/nexa/libnexakotlin
+bu_libnexakotlin = "0.7.0" # https://gitlab.com/nexa/libnexakotlin
 bu_mpthreads = "0.5.13" # https://gitlab.com/nexa/mpthreads
+bu_nexacli = "0.2.0" # https://gitlab.com/nexa/libnexakotlin; the @cli annotations libnexakotlin 0.7.0 split out
 bu_nexaRpc = "1.6.7" # https://gitlab.com/nexa/nexarpckotlin
 
 cameraCamera2 = "1.6.1" # https://developer.android.com/jetpack/androidx/releases/camera
@@ -39,7 +40,7 @@ composeJunitAndroid = "1.11.3"
 mat3 = "1.9.0"
 android-gradle-plugin = "9.3.1" # Tied to IDE version so do not just bump forward. https://developer.android.com/build/releases/gradle-plugin
 kover = "0.9.8"
-okio = "3.17.0"
+okio = "3.18.0" # libnexakotlin 0.7.0 requires this; Gradle upgraded the old 3.17.0 pin silently
 playServicesBase = "18.10.0"
 qrose = "1.1.2"
 serializationVersion = "1.11.0" # https://github.com/Kotlin/kotlinx.serialization
@@ -112,6 +113,7 @@ native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "n
 nexa-mpthreads = { module = "org.nexa:mpthreads", version.ref = "bu_mpthreads" }
 nexa-rpc = { module = "org.nexa:nexarpc", version.ref = "bu_nexaRpc" }
 nexa-libnexakotlin = { module = "org.nexa:libnexakotlin", version.ref = "bu_libnexakotlin" }
+nexa-nexacli = { module = "org.nexa:nexacli", version.ref = "bu_nexacli" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }

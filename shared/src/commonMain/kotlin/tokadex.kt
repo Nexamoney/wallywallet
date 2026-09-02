@@ -2,6 +2,7 @@
 package org.wallywallet.tokadex
 
 import org.nexa.libnexakotlin.*
+import org.nexa.nexacli.*
 
 private val LogIt = GetLog("cli")
 

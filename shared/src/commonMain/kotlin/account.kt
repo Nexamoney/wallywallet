@@ -917,7 +917,7 @@ class AccountImpl(
     {
         val ret:Long = when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET ->
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST ->
                 (amount*CurrencyDecimal(SATperNEX)).toLong()
 
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> (amount* CurrencyDecimal(SATperUBCH)).toLong()
@@ -930,7 +930,7 @@ class AccountImpl(
     {
         val factor = when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> SATperNEX
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST -> SATperNEX
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> SATperUBCH
         }
         val ret = NexaDecimal(amount) / factor.toBigDecimal()
@@ -942,7 +942,7 @@ class AccountImpl(
     {
         val factor = when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> 1
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST -> 1
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> 1000000
         }
         return qty / factor.toBigDecimal()
@@ -953,7 +953,7 @@ class AccountImpl(
     {
         val factor = when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> 1
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST -> 1
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> 1000000
         }
         return qty * factor.toBigDecimal()
@@ -967,7 +967,7 @@ class AccountImpl(
         //LogIt.info("format ${qty.toPlainString()} -> ${nexaFormat.format(qty)}")
         return when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> nexaFormat.format(qty)
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET, ChainSelector.NEXASTORMTEST -> nexaFormat.format(qty)
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> uBchFormat.format(qty)
         }
     }

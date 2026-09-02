@@ -77,6 +77,7 @@ fun getAccountIconResPath(chainSelector: ChainSelector?): String
         ChainSelector.NEXA -> "icons/nexa_icon.png"
         ChainSelector.NEXATESTNET -> "icons/nexatest_icon.png"
         ChainSelector.NEXAREGTEST -> "icons/nexareg_icon.png"
+        ChainSelector.NEXASTORMTEST -> "icons/nexareg_icon.png"
         ChainSelector.BCH -> "icons/bitcoin_cash_token.xml"
         ChainSelector.BCHTESTNET -> "icons/bitcoin_cash_token.xml"
         ChainSelector.BCHREGTEST -> "icons/bitcoin_cash_token.xml"
