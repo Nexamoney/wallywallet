@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(więcej niż dostępne)</string>
     <string name="moreThanConfirmedAvailable">(więcej niż potwierdzone)</string>
     <string name="actuallySendingT" formatted="false">faktycznie wysyłane: %qty %crypto</string>
-    <string name="copiedToClipboard">skopiowano do\nschowka</string>
+    <string name="copiedToClipboard">skopiowano do schowka</string>
     <string name="copyId">Kopiuj ID</string>
     <string name="openInBrowser">Otwórz w przeglądarce</string>
     <string name="cannotCopyToClipboard">Nie można skopiować do schowka</string>

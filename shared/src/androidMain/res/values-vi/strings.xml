@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(vượt quá số khả dụng)</string>
     <string name="moreThanConfirmedAvailable">(vượt quá số đã xác nhận)</string>
     <string name="actuallySendingT" formatted="false">thực gửi %qty %crypto</string>
-    <string name="copiedToClipboard">đã sao chép vào\nbảng nhớ tạm</string>
+    <string name="copiedToClipboard">đã sao chép vào bảng nhớ tạm</string>
     <string name="copyId">Sao chép ID</string>
     <string name="openInBrowser">Mở trong trình duyệt</string>
     <string name="cannotCopyToClipboard">Không sao chép được vào bảng nhớ tạm</string>

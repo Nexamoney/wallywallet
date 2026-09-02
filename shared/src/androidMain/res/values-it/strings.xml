@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(fondi insufficienti)</string>
     <string name="moreThanConfirmedAvailable">(fondi confermati insufficienti)</string>
     <string name="actuallySendingT" formatted="false">invio effettivo: %qty %crypto</string>
-    <string name="copiedToClipboard">copiato negli\nappunti</string>
+    <string name="copiedToClipboard">copiato negli appunti</string>
     <string name="copyId">Copia ID</string>
     <string name="openInBrowser">Apri nel browser</string>
     <string name="cannotCopyToClipboard">Impossibile copiare negli appunti</string>

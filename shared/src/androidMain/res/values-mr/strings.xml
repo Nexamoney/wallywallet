@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(उपलब्धपेक्षा जास्त)</string>
     <string name="moreThanConfirmedAvailable">(पुष्टीपेक्षा जास्त)</string>
     <string name="actuallySendingT" formatted="false">प्रत्यक्षात %qty %crypto पाठवत आहे</string>
-    <string name="copiedToClipboard">क्लिपबोर्डवर\nकॉपी केले</string>
+    <string name="copiedToClipboard">क्लिपबोर्डवर कॉपी केले</string>
     <string name="copyId">ID कॉपी करा</string>
     <string name="openInBrowser">ब्राउझरमध्ये उघडा</string>
     <string name="cannotCopyToClipboard">क्लिपबोर्डवर कॉपी करता येत नाही</string>

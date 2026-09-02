@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">（超出可用余额）</string>
     <string name="moreThanConfirmedAvailable">（超出已确认余额）</string>
     <string name="actuallySendingT" formatted="false">实际发送 %qty %crypto</string>
-    <string name="copiedToClipboard">已复制到\n剪贴板</string>
+    <string name="copiedToClipboard">已复制到剪贴板</string>
     <string name="copyId">复制 ID</string>
     <string name="openInBrowser">在浏览器中打开</string>
     <string name="cannotCopyToClipboard">无法复制到剪贴板</string>

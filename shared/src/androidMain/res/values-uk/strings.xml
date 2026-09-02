@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(більше, ніж доступно)</string>
     <string name="moreThanConfirmedAvailable">(більше, ніж підтверджено)</string>
     <string name="actuallySendingT" formatted="false">фактично надсилається %qty %crypto</string>
-    <string name="copiedToClipboard">скопійовано в\nбуфер обміну</string>
+    <string name="copiedToClipboard">скопійовано в буфер обміну</string>
     <string name="copyId">Копіювати ID</string>
     <string name="openInBrowser">Відкрити у браузері</string>
     <string name="cannotCopyToClipboard">Не вдалося скопіювати в буфер обміну</string>

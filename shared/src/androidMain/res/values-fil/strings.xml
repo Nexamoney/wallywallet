@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(higit sa available)</string>
     <string name="moreThanConfirmedAvailable">(higit sa kumpirmado)</string>
     <string name="actuallySendingT" formatted="false">aktwal na ipapadala %qty %crypto</string>
-    <string name="copiedToClipboard">kinopya sa\nclipboard</string>
+    <string name="copiedToClipboard">kinopya sa clipboard</string>
     <string name="copyId">Kopyahin ang ID</string>
     <string name="openInBrowser">Buksan sa browser</string>
     <string name="cannotCopyToClipboard">Hindi makopya sa clipboard</string>

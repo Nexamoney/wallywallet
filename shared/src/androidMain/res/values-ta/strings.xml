@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(உள்ளதைவிட அதிகம்)</string>
     <string name="moreThanConfirmedAvailable">(உறுதியானதைவிட அதிகம்)</string>
     <string name="actuallySendingT" formatted="false">உண்மையில் %qty %crypto அனுப்பப்படுகிறது</string>
-    <string name="copiedToClipboard">கிளிப்போர்டுக்கு\nநகலெடுக்கப்பட்டது</string>
+    <string name="copiedToClipboard">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</string>
     <string name="copyId">ID நகலெடு</string>
     <string name="openInBrowser">உலாவியில் திற</string>
     <string name="cannotCopyToClipboard">கிளிப்போர்டுக்கு நகலெடுக்க முடியவில்லை</string>

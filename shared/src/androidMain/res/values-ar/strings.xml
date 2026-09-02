@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(أكثر من المتاح)</string>
     <string name="moreThanConfirmedAvailable">(أكثر من المؤكد)</string>
     <string name="actuallySendingT" formatted="false">سيتم إرسال %qty %crypto فعليا</string>
-    <string name="copiedToClipboard">تم النسخ\nإلى الحافظة</string>
+    <string name="copiedToClipboard">تم النسخ إلى الحافظة</string>
     <string name="copyId">نسخ المعرف</string>
     <string name="openInBrowser">فتح في المتصفح</string>
     <string name="cannotCopyToClipboard">تعذر النسخ إلى الحافظة</string>

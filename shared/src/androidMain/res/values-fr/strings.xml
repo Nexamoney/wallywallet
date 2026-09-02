@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(plus que disponible)</string>
     <string name="moreThanConfirmedAvailable">(plus que confirmé)</string>
     <string name="actuallySendingT" formatted="false">envoi réel de %qty %crypto</string>
-    <string name="copiedToClipboard">copié dans le\npresse-papiers</string>
+    <string name="copiedToClipboard">copié dans le presse-papiers</string>
     <string name="copyId">Copier l\'ID</string>
     <string name="openInBrowser">Ouvrir dans le navigateur</string>
     <string name="cannotCopyToClipboard">Copie impossible dans le presse-papiers</string>
