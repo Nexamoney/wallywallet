@@ -36,7 +36,6 @@ import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
@@ -329,7 +328,7 @@ open class ScreenNav()
     /** push the current screen onto the stack, and set the passed screen to be the current one */
     fun go(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
     {
-        moreMenuChannel.trySend(MoreMenu.Hide())
+        hideMoreMenu()
         clearAlerts()
         currentScreenDepart?.invoke(Direction.DEEPER)
         lock.lock {
@@ -350,6 +349,7 @@ open class ScreenNav()
     /** move without pushing the current screen (but depart will be called if it exists) */
     fun switch(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
     {
+        hideMoreMenu()
         lock.lock {
             currentScreenDepart?.invoke(Direction.LEAVING)
             currentScreen.value = screen
@@ -378,7 +378,7 @@ open class ScreenNav()
     /** pop the current screen from the stack and go there */
     fun back(): ScreenId?
     {
-        moreMenuChannel.trySend(MoreMenu.Hide())
+        hideMoreMenu()
         clearScreenAlerts()
         currentScreenDepart?.invoke(Direction.LEAVING)
         currentScreenDepart = null
@@ -616,7 +616,7 @@ data class NavChoice(val location: ScreenId, val textId: Int, val icon: ImageVec
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaffoldState, expanded: MutableState<Boolean>, lastClicked: MutableState<String>)
+fun BottomNavMenu(lastClicked: MutableState<String>)
 {
     val items = menuItems.collectAsState().value.sortedBy { navItem -> navItem.location}
 
@@ -646,24 +646,14 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                 Button(
                   onClick = {
                       clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
-                      scope.launch {
-                          if (ch.location != ScreenId.MoreMenu)
-                            lastClicked.value = ch.location.toString()
-                          if (ch.location == ScreenId.MoreMenu) {
-                              if (!expanded.value) {
-                                  bottomSheetController.bottomSheetState.expand()
-                              } else {
-                                  bottomSheetController.bottomSheetState.hide()
-                              }
-                              expanded.value = !expanded.value
-                          } else {
-                              if (expanded.value) {
-                                  bottomSheetController.bottomSheetState.hide()
-                                  expanded.value = false
-                              }
-                              nav.switch(ch.location)
-                          }
-
+                      if (ch.location == ScreenId.MoreMenu)
+                      {
+                          if (moreMenuShowing.value) hideMoreMenu() else showMoreMenu()
+                      }
+                      else
+                      {
+                          lastClicked.value = ch.location.toString()
+                          nav.switch(ch.location)
                       }
                   },
                   // Change button appearance based on current screen
@@ -834,11 +824,10 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 
 val isShowingRecoveryWarning = MutableStateFlow(false)
 
-sealed class MoreMenu {
-    class Show: MoreMenu()
-    class Hide: MoreMenu()
-}
-private val moreMenuChannel = Channel<MoreMenu>(Channel.UNLIMITED)
+val moreMenuShowing = MutableStateFlow(false)
+
+fun showMoreMenu() { moreMenuShowing.value = true }
+fun hideMoreMenu() { moreMenuShowing.value = false }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1086,27 +1075,20 @@ fun NavigationRoot(
         }
     }
 
-    val scope = rememberCoroutineScope()
     val scaffoldSheetState = rememberBottomSheetScaffoldState(bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false))
-    val expanded = remember { mutableStateOf(false) }
     val lastClicked = remember { mutableStateOf(ScreenId.Home.toString()) }
     val moreMenuItemsState = moreMenuItems.collectAsState()
     val moreMenuItems = moreMenuItemsState.value
 
+    val moreMenuVisible = moreMenuShowing.collectAsState().value
+
     LaunchedEffect(Unit) {
-        moreMenuChannel.consumeEach { state ->
-            when (state)
-            {
-                is MoreMenu.Show -> {
-                    expanded.value = true
-                    scaffoldSheetState.bottomSheetState.show()
-                }
-                is MoreMenu.Hide -> {
-                    expanded.value = false
-                    scaffoldSheetState.bottomSheetState.hide()
-                }
-            }
-        }
+        snapshotFlow { scaffoldSheetState.bottomSheetState.targetValue == SheetValue.Expanded }.collect { moreMenuShowing.value = it }
+    }
+    LaunchedEffect(moreMenuVisible) {
+        // not show(): it targets PartiallyExpanded, which sheetPeekHeight 0 puts off screen
+        if (moreMenuVisible) scaffoldSheetState.bottomSheetState.expand()
+        else scaffoldSheetState.bottomSheetState.hide()
     }
 
     // TODO insets are not working on Compose for android
@@ -1122,13 +1104,7 @@ fun NavigationRoot(
             .padding(systemPadding.asPaddingValues())
             .pointerInput(Unit) {
               detectTapGestures(onTap = {
-                  scope.launch {
-                      if (expanded.value)
-                      {
-                          scaffoldSheetState.bottomSheetState.hide()
-                          expanded.value = false
-                      }
-                  }
+                  hideMoreMenu()
                   lastClicked.value = curScreen.toString()
               })
           }.testTag("RootScaffold"),
@@ -1138,7 +1114,7 @@ fun NavigationRoot(
           },
           bottomBar = {
               if (showBottomBar)
-                  BottomNavMenu(scope, scaffoldSheetState, expanded, lastClicked)
+                  BottomNavMenu(lastClicked)
           },
         ) { innerPadding ->
         BottomSheetScaffold(
@@ -1154,7 +1130,8 @@ fun NavigationRoot(
               Column(
                 Modifier
                   .padding(bottom = innerPadding.calculateBottomPadding())
-                  .fillMaxWidth(),
+                  .fillMaxWidth()
+                  .testTag("MoreMenuSheet"),
                 horizontalAlignment = Alignment.CenterHorizontally
               ) {
                   // Bottom Sheet content: a list with icons
@@ -1162,35 +1139,8 @@ fun NavigationRoot(
                       Button(
                         onClick = {
                             clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
-                            scope.launch {
-                                if (ch.location != ScreenId.MoreMenu)
-                                    lastClicked.value = ch.location.toString()
-                                if (ch.location == ScreenId.MoreMenu)
-                                {
-                                    if (!expanded.value)
-                                    {
-                                        scaffoldSheetState.bottomSheetState.expand()
-                                    }
-                                    else
-                                    {
-                                        scope.launch {
-                                            scaffoldSheetState.bottomSheetState.hide()
-                                        }
-                                    }
-                                    expanded.value = !expanded.value
-                                }
-                                else
-                                {
-                                    if (expanded.value)
-                                    {
-                                        scope.launch {
-                                            scaffoldSheetState.bottomSheetState.hide()
-                                        }
-                                        expanded.value = false
-                                    }
-                                    nav.switch(ch.location)
-                                }
-                            }
+                            lastClicked.value = ch.location.toString()
+                            nav.switch(ch.location)
                         },
                         // Change button appearance based on current screen
                         shape = RoundedCornerShape(30),
@@ -1290,12 +1240,7 @@ fun NavigationRoot(
                                     val asvm = viewModel { AccountStatisticsViewModel(accountPillViewModel.account) }
                                     AccountDetailScreen(asvm, accountPillViewModel)
                                 }
-                                ScreenId.Assets -> withAccount { AssetScreen(it) {
-                                    scope.launch {
-                                    expanded.value = false
-                                    scaffoldSheetState.bottomSheetState.hide()
-                                    }
-                                } }
+                                ScreenId.Assets -> withAccount { AssetScreen(it) { hideMoreMenu() } }
                                 ScreenId.Links -> LinksScreen()
                                 ScreenId.TricklePayRegistrations -> {
                                     val subScreen = nav.currentSubState.collectAsState().value != null
