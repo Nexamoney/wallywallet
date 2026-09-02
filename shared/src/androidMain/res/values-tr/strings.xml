@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(bakiyeden fazla)</string>
     <string name="moreThanConfirmedAvailable">(onaylanandan fazla)</string>
     <string name="actuallySendingT" formatted="false">gerçekte %qty %crypto gönderiliyor</string>
-    <string name="copiedToClipboard">panoya\nkopyalandı</string>
+    <string name="copiedToClipboard">panoya kopyalandı</string>
     <string name="copyId">ID\'yi kopyala</string>
     <string name="openInBrowser">Tarayıcıda aç</string>
     <string name="cannotCopyToClipboard">Panoya kopyalanamıyor</string>

@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(มากกว่ายอดที่ใช้ได้)</string>
     <string name="moreThanConfirmedAvailable">(มากกว่ายอดที่ยืนยันแล้ว)</string>
     <string name="actuallySendingT" formatted="false">ส่งจริง %qty %crypto</string>
-    <string name="copiedToClipboard">คัดลอกไปยัง\nคลิปบอร์ดแล้ว</string>
+    <string name="copiedToClipboard">คัดลอกไปยังคลิปบอร์ดแล้ว</string>
     <string name="copyId">คัดลอก ID</string>
     <string name="openInBrowser">เปิดในเบราว์เซอร์</string>
     <string name="cannotCopyToClipboard">คัดลอกไปยังคลิปบอร์ดไม่ได้</string>

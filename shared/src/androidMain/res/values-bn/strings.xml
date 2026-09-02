@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(ব্যালেন্সের চেয়ে বেশি)</string>
     <string name="moreThanConfirmedAvailable">(নিশ্চিত ব্যালেন্সের চেয়ে বেশি)</string>
     <string name="actuallySendingT" formatted="false">আসলে পাঠানো হচ্ছে %qty %crypto</string>
-    <string name="copiedToClipboard">ক্লিপবোর্ডে\nকপি হয়েছে</string>
+    <string name="copiedToClipboard">ক্লিপবোর্ডে কপি হয়েছে</string>
     <string name="copyId">ID কপি করুন</string>
     <string name="openInBrowser">ব্রাউজারে খুলুন</string>
     <string name="cannotCopyToClipboard">ক্লিপবোর্ডে কপি করা যাচ্ছে না</string>

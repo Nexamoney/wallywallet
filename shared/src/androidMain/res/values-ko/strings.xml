@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(사용 가능 잔액 초과)</string>
     <string name="moreThanConfirmedAvailable">(컨펌된 잔액 초과)</string>
     <string name="actuallySendingT" formatted="false">실제로 %qty %crypto를 보냅니다</string>
-    <string name="copiedToClipboard">클립보드에\n복사됨</string>
+    <string name="copiedToClipboard">클립보드에 복사됨</string>
     <string name="copyId">ID 복사</string>
     <string name="openInBrowser">브라우저에서 열기</string>
     <string name="cannotCopyToClipboard">클립보드에 복사할 수 없습니다</string>

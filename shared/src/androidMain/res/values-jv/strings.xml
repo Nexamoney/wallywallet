@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(luwih saka sing ana)</string>
     <string name="moreThanConfirmedAvailable">(luwih saka sing dikonfirmasi)</string>
     <string name="actuallySendingT" formatted="false">sing tenan dikirim %qty %crypto</string>
-    <string name="copiedToClipboard">disalin ing\npapan klip</string>
+    <string name="copiedToClipboard">disalin ing papan klip</string>
     <string name="copyId">Salin ID</string>
     <string name="openInBrowser">Bukak ing browser</string>
     <string name="cannotCopyToClipboard">Ora bisa nyalin menyang papan klip</string>

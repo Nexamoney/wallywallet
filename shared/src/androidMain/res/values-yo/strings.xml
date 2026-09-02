@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(ó ju èyí tí ó wà lọ)</string>
     <string name="moreThanConfirmedAvailable">(ó ju èyí tí ó fìdí múlẹ̀ lọ)</string>
     <string name="actuallySendingT" formatted="false">%qty %crypto ni à ń fi ránṣẹ́ gan-an</string>
-    <string name="copiedToClipboard">a ti ṣe ẹ̀dà sí\nàpótí ẹ̀dà</string>
+    <string name="copiedToClipboard">a ti ṣe ẹ̀dà sí àpótí ẹ̀dà</string>
     <string name="copyId">Ṣe ẹ̀dà ID</string>
     <string name="openInBrowser">Ṣí nínú aṣàwákiri</string>
     <string name="cannotCopyToClipboard">Kò lè ṣe ẹ̀dà sí àpótí ẹ̀dà</string>

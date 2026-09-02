@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(mehr als verfügbar)</string>
     <string name="moreThanConfirmedAvailable">(mehr als bestätigt)</string>
     <string name="actuallySendingT" formatted="false">tatsächlich gesendet: %qty %crypto</string>
-    <string name="copiedToClipboard">in Zwischenablage\nkopiert</string>
+    <string name="copiedToClipboard">in Zwischenablage kopiert</string>
     <string name="copyId">ID kopieren</string>
     <string name="openInBrowser">Im Browser öffnen</string>
     <string name="cannotCopyToClipboard">Kopieren nicht möglich</string>

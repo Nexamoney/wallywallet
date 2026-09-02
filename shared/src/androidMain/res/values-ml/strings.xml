@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(ലഭ്യമായതിലും കൂടുതൽ)</string>
     <string name="moreThanConfirmedAvailable">(സ്ഥിരീകരിച്ചതിലും കൂടുതൽ)</string>
     <string name="actuallySendingT" formatted="false">യഥാർത്ഥത്തിൽ അയയ്ക്കുന്നത് %qty %crypto</string>
-    <string name="copiedToClipboard">ക്ലിപ്പ്ബോർഡിലേക്ക്\nപകർത്തി</string>
+    <string name="copiedToClipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
     <string name="copyId">ഐഡി പകർത്തുക</string>
     <string name="openInBrowser">ബ്രൗസറിൽ തുറക്കുക</string>
     <string name="cannotCopyToClipboard">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്താനായില്ല</string>

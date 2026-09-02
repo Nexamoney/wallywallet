@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(ya fi abin da akwai)</string>
     <string name="moreThanConfirmedAvailable">(ya fi wanda aka tabbatar)</string>
     <string name="actuallySendingT" formatted="false">a zahiri ana aika %qty %crypto</string>
-    <string name="copiedToClipboard">an kwafa zuwa\nallon kwafi</string>
+    <string name="copiedToClipboard">an kwafa zuwa allon kwafi</string>
     <string name="copyId">Kwafa ID</string>
     <string name="openInBrowser">Buɗe a browser</string>
     <string name="cannotCopyToClipboard">Ba za a iya kwafawa zuwa allon kwafi ba</string>

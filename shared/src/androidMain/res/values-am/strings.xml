@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(ካለው በላይ)</string>
     <string name="moreThanConfirmedAvailable">(ከተረጋገጠው በላይ)</string>
     <string name="actuallySendingT" formatted="false">በትክክል የሚላከው %qty %crypto</string>
-    <string name="copiedToClipboard">ወደ ቅንጥብ ሰሌዳ\nተቀድቷል</string>
+    <string name="copiedToClipboard">ወደ ቅንጥብ ሰሌዳ ተቀድቷል</string>
     <string name="copyId">መለያ መቅዳት</string>
     <string name="openInBrowser">በአሳሽ መክፈት</string>
     <string name="cannotCopyToClipboard">ወደ ቅንጥብ ሰሌዳ መቅዳት አልተቻለም</string>

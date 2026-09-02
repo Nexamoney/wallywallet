@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(بیش از موجودی)</string>
     <string name="moreThanConfirmedAvailable">(بیش از موجودی تأییدشده)</string>
     <string name="actuallySendingT" formatted="false">ارسال واقعی %qty %crypto</string>
-    <string name="copiedToClipboard">در کلیپ‌بورد\nکپی شد</string>
+    <string name="copiedToClipboard">در کلیپ‌بورد کپی شد</string>
     <string name="copyId">کپی شناسه</string>
     <string name="openInBrowser">باز کردن در مرورگر</string>
     <string name="cannotCopyToClipboard">کپی در کلیپ‌بورد ممکن نیست</string>

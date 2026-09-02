@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">（利用可能額を超えています）</string>
     <string name="moreThanConfirmedAvailable">（承認済み額を超えています）</string>
     <string name="actuallySendingT" formatted="false">実際の送金額: %qty %crypto</string>
-    <string name="copiedToClipboard">クリップボードに\nコピーしました</string>
+    <string name="copiedToClipboard">クリップボードにコピーしました</string>
     <string name="copyId">IDをコピー</string>
     <string name="openInBrowser">ブラウザで開く</string>
     <string name="cannotCopyToClipboard">クリップボードにコピーできません</string>

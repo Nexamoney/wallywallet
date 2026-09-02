@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(rohkem kui saadaval)</string>
     <string name="moreThanConfirmedAvailable">(rohkem kui kinnitatud)</string>
     <string name="actuallySendingT" formatted="false">tegelikult saadetakse %qty %crypto</string>
-    <string name="copiedToClipboard">kopeeritud\nlõikelauale</string>
+    <string name="copiedToClipboard">kopeeritud lõikelauale</string>
     <string name="copyId">Kopeeri ID</string>
     <string name="openInBrowser">Ava brauseris</string>
     <string name="cannotCopyToClipboard">Lõikelauale ei saa kopeerida</string>

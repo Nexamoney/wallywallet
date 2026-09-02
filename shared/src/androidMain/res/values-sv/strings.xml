@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(mer än tillgängligt)</string>
     <string name="moreThanConfirmedAvailable">(mer än bekräftat)</string>
     <string name="actuallySendingT" formatted="false">skickar faktiskt %qty %crypto</string>
-    <string name="copiedToClipboard">kopierat till\nurklipp</string>
+    <string name="copiedToClipboard">kopierat till urklipp</string>
     <string name="copyId">Kopiera ID</string>
     <string name="openInBrowser">Öppna i webbläsare</string>
     <string name="cannotCopyToClipboard">Kan inte kopiera till urklipp</string>

@@ -374,7 +374,7 @@ Good luck!
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
     <string name="moreThanConfirmedAvailable">(more than confirmed)</string>
     <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
-    <string name="copiedToClipboard">copied to\nclipboard</string>
+    <string name="copiedToClipboard">copied to clipboard</string>
     <string name="copyId">Copy ID</string>
     <string name="openInBrowser">Open in browser</string>
     <string name="cannotCopyToClipboard">Cannot copy to clipboard</string>

@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(més del disponible)</string>
     <string name="moreThanConfirmedAvailable">(més del confirmat)</string>
     <string name="actuallySendingT" formatted="false">enviant realment %qty %crypto</string>
-    <string name="copiedToClipboard">copiat al\nporta-retalls</string>
+    <string name="copiedToClipboard">copiat al porta-retalls</string>
     <string name="copyId">Copia l\'ID</string>
     <string name="openInBrowser">Obre al navegador</string>
     <string name="cannotCopyToClipboard">No es pot copiar al porta-retalls</string>

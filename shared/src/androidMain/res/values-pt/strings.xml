@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(acima do disponível)</string>
     <string name="moreThanConfirmedAvailable">(acima do confirmado)</string>
     <string name="actuallySendingT" formatted="false">envio efetivo: %qty %crypto</string>
-    <string name="copiedToClipboard">copiado para a\nárea de transferência</string>
+    <string name="copiedToClipboard">copiado para a área de transferência</string>
     <string name="copyId">Copiar ID</string>
     <string name="openInBrowser">Abrir no navegador</string>
     <string name="cannotCopyToClipboard">Não foi possível copiar</string>

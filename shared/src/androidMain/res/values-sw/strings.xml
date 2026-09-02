@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(zaidi ya inayopatikana)</string>
     <string name="moreThanConfirmedAvailable">(zaidi ya iliyothibitishwa)</string>
     <string name="actuallySendingT" formatted="false">unatuma hasa %qty %crypto</string>
-    <string name="copiedToClipboard">imenakiliwa kwenye\nubao wa kunakili</string>
+    <string name="copiedToClipboard">imenakiliwa kwenye ubao wa kunakili</string>
     <string name="copyId">Nakili ID</string>
     <string name="openInBrowser">Fungua katika kivinjari</string>
     <string name="cannotCopyToClipboard">Imeshindwa kunakili</string>

@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(ଉପଲବ୍ଧଠାରୁ ଅଧିକ)</string>
     <string name="moreThanConfirmedAvailable">(ନିଶ୍ଚିତଠାରୁ ଅଧିକ)</string>
     <string name="actuallySendingT" formatted="false">ପ୍ରକୃତରେ %qty %crypto ପଠାଯାଉଛି</string>
-    <string name="copiedToClipboard">କ୍ଲିପବୋର୍ଡକୁ\nକପି ହେଲା</string>
+    <string name="copiedToClipboard">କ୍ଲିପବୋର୍ଡକୁ କପି ହେଲା</string>
     <string name="copyId">ID କପି କରନ୍ତୁ</string>
     <string name="openInBrowser">ବ୍ରାଉଜରରେ ଖୋଲନ୍ତୁ</string>
     <string name="cannotCopyToClipboard">କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ</string>

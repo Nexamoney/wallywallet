@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(lebih dari yang tersedia)</string>
     <string name="moreThanConfirmedAvailable">(lebih dari yang dikonfirmasi)</string>
     <string name="actuallySendingT" formatted="false">benar-benar mengirim %qty %crypto</string>
-    <string name="copiedToClipboard">disalin ke\npapan klip</string>
+    <string name="copiedToClipboard">disalin ke papan klip</string>
     <string name="copyId">Salin ID</string>
     <string name="openInBrowser">Buka di browser</string>
     <string name="cannotCopyToClipboard">Tidak dapat menyalin ke papan klip</string>

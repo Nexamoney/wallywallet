@@ -228,7 +228,7 @@
     <string name="moreThanAvailable">(več kot je na voljo)</string>
     <string name="moreThanConfirmedAvailable">(več kot je potrjeno)</string>
     <string name="actuallySendingT" formatted="false">dejansko pošiljanje %qty %crypto</string>
-    <string name="copiedToClipboard">kopirano v\nodložišče</string>
+    <string name="copiedToClipboard">kopirano v odložišče</string>
     <string name="copyId">Kopiraj ID</string>
     <string name="openInBrowser">Odpri v brskalniku</string>
     <string name="cannotCopyToClipboard">Kopiranje v odložišče ni mogoče</string>
