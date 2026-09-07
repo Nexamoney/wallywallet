@@ -1,6 +1,6 @@
 [versions]
 # Wally Wallet version. On version bump: run ./gradlew generateVersionFile and commit the updated iosApp/iosApp/Info.plist file
-wallyApp = "3.30.04"
+wallyApp = "3.31.00"
 
 androidSdk = "37" # compileSdk; libnexakotlin >= 0.6.0 AARs declare minCompileSdk=37
 androidTargetSdk = "36" # targetSdk and managed-device image; bump separately from compileSdk
