@@ -19,6 +19,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.nexa.threads.millinow
+import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 private val LogIt = GetLog("BU.wally.orgapi")
 
 val WALLY_WALLET_ORG_HOST = "www.wallywallet.org"
@@ -28,6 +29,10 @@ val POLL_RETRY_INTERVAL = 10000
 
 val DAILY_POLL_INTERVAL = 60*5  // every 5 minutes
 val TWO_BD = CurrencyDecimal(2)
+
+private val appliedSync = org.nexa.threads.Mutex()
+private var appliedCurrency: String? = null
+private var appliedAvailable = false
 
 private val jsonParser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
 
@@ -106,22 +111,30 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
 @OptIn(ExperimentalTime::class)
 fun UpdateNexaXchgRates(fiat: String)
 {
-    if (fiat != "USD") return
+    if (!allowAccessPriceData)
+    {
+        LogIt.info(sourceLoc() + ": Not loading the coin price, price data access is turned off in settings")
+        return
+    }
+
+    // the feed is NEX/USDT, so the poll is always USD.  anything else goes through the fiat table
+    if (fiat != FiatRates.BASE_CURRENCY) fiatRates.update { ReapplyNexaXchgRate(fiat) }
+
     val now = millinow()
     // Grab the last
-    val prior = nexaPricePollSync.lock { lastNexaPricePoll[fiat] }
+    val prior = nexaPricePollSync.lock { lastNexaPricePoll[FiatRates.BASE_CURRENCY] }
 
     if ((prior == null) || ((now - prior.polledAt > POLL_INTERVAL)&&(now - prior.triedAt > POLL_RETRY_INTERVAL)))
     {
         // Update the last poll attempt time so we don't retry too soon
         nexaPricePollSync.lock {
-            lastNexaPricePoll[fiat] = prior?.let { PricePoll(it.polledAt, it.price, now ) } ?: PricePoll(0, null, millinow())
+            lastNexaPricePoll[FiatRates.BASE_CURRENCY] = prior?.let { PricePoll(it.polledAt, it.price, now ) } ?: PricePoll(0, null, millinow())
         }
         later {
             val data = try
             {
                 val route = "http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt"
-                LogIt.info(sourceLoc() + ": Loading exchange rate for: $fiatCurrencyCode from: $route")
+                LogIt.info(sourceLoc() + ": Loading exchange rate for: $fiat from: $route")
                 Url(route).readText(10000, 20000, 10000)
             }
             catch (e: Exception)
@@ -141,17 +154,9 @@ fun UpdateNexaXchgRates(fiat: String)
                 val v = (obj.Bid + obj.Ask) / TWO_BD
                 val p = PricePoll(now, v, now)
                 nexaPricePollSync.lock {
-                    lastNexaPricePoll[fiat] = p
+                    lastNexaPricePoll[FiatRates.BASE_CURRENCY] = p
                 }
-                // Update all interested accounts with this exchange rate
-                wallyApp?.let { app ->
-                    app.accountLock.lock { app.accounts.values.toList() }.forEach { act ->
-                        if (act.chain.chainSelector == ChainSelector.NEXA)
-                        {
-                            act.fiatPerCoin = CurrencyDecimal(v)
-                        }
-                    }
-                }
+                ApplyNexaXchgRate(fiat, v)
             }
             catch (e: Exception)
             {
@@ -160,6 +165,99 @@ fun UpdateNexaXchgRates(fiat: String)
             }
         }
     }
+    else
+    {
+        // no poll needed, but the currency may have changed since we last applied it
+        prior.price?.let { ApplyNexaXchgRate(fiat, it) }
+    }
+}
+
+// runs when the fiat table arrives, so we reprice with the usd price we already have
+internal fun ReapplyNexaXchgRate(fiat: String)
+{
+    val price = nexaPricePollSync.lock { lastNexaPricePoll[FiatRates.BASE_CURRENCY]?.price }
+    if (price == null)
+    {
+        LogIt.info(sourceLoc() + ": Have $fiat rates but no coin price yet, waiting for the price poll")
+        return
+    }
+    ApplyNexaXchgRate(fiat, price)
+}
+
+// usd price x the usd->fiat rate. -1 means no rate. split out of ApplyNexaXchgRate so it can be tested
+internal fun nexaFiatPerCoin(fiat: String, usdPerCoin: BigDecimal): BigDecimal
+{
+    val rate = fiatRates.usdTo(fiat) ?: return CURRENCY_NEG1
+    return CurrencyDecimal(usdPerCoin * rate)
+}
+
+/** Convert [usdPerCoin] to [fiat] and give it to every NEXA account. */
+internal fun ApplyNexaXchgRate(fiat: String, usdPerCoin: BigDecimal)
+{
+    if (fiat != localCurrency)
+    {
+        LogIt.info(sourceLoc() + ": Dropping a stale $fiat price, the local currency is now $localCurrency")
+        return
+    }
+
+    val rate = fiatRates.usdTo(fiat)
+    val perCoin = nexaFiatPerCoin(fiat, usdPerCoin)
+
+    // update all interested accounts with this exchange rate
+    val changed = mutableListOf<Account>()
+    wallyApp?.let { app ->
+        app.accountLock.lock { app.accounts.values.toList() }.forEach { act ->
+            if (act.chain.chainSelector.isNexaFamily && (act.fiatPerCoin != perCoin))
+            {
+                act.fiatPerCoin = perCoin
+                changed.add(act)
+            }
+        }
+    }
+
+    if (rate == null)
+        LogIt.info(sourceLoc() + ": No $fiat rate available, exchange rate marked unavailable on ${changed.size} account(s)")
+    else
+        LogIt.info(sourceLoc() + ": 1 NEXA = ${usdPerCoin.toPlainString()} USD x ${rate.toPlainString()} $fiat/USD"
+          + " = ${perCoin.toPlainString()} $fiat, applied to ${changed.size} account(s)")
+
+    val available = perCoin > BigDecimal.ZERO
+    val notify = appliedSync.lock {
+        val moved = (appliedCurrency != fiat) || (appliedAvailable != available)
+        appliedCurrency = fiat
+        appliedAvailable = available
+        moved
+    }
+    // not gated on changed, an unsupported currency recomputes the same -1 so nothing looks changed.
+    // still gated on moved so a price tick doesn't redraw every account
+    if (notify)
+    {
+        LogIt.info(sourceLoc() + ": Redrawing ${changed.size} account(s) for the switch to $fiat")
+        triggerAccountsChanged(*changed.toTypedArray())
+    }
+}
+
+fun SetLocalCurrency(currency: String)
+{
+    if ((currency == localCurrency) && (currency == fiatCurrencyCode))
+    {
+        LogIt.info(sourceLoc() + ": Local currency is already $currency, nothing to do")
+        return
+    }
+    LogIt.info(sourceLoc() + ": Local currency changed from $fiatCurrencyCode to $currency")
+    localCurrency = currency
+    fiatCurrencyCode = currency
+
+    val app = wallyApp
+    if (app == null)
+    {
+        LogIt.info(sourceLoc() + ": No app yet, so no accounts to reprice")
+        return
+    }
+    app.accountLock.lock { app.accounts.values.toList() }.forEach { act ->
+        act.fiatPerCoin = CURRENCY_NEG1
+    }
+    UpdateNexaXchgRates(currency)
 }
 
 

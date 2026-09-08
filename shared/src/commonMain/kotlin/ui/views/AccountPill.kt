@@ -144,6 +144,8 @@ class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceVie
         val act = account.collectAsState().value
         if (act == null) return ""
 
+        if (!act.wallet.chainSelector.isMainNet) return ""
+
         val bal = act.balanceState.collectAsState()
         val qty = bal.value ?: return i18n(S.loading)
 
@@ -159,6 +161,7 @@ class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceVie
     {
         val act = account.value
         if (act == null) return ""
+        if (!act.wallet.chainSelector.isMainNet) return ""  // see cFiatBalance
 
         val bal = act.balanceState
         val qty = bal.value ?: return i18n(S.loading)

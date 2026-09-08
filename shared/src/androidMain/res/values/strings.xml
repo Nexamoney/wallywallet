@@ -365,6 +365,7 @@ Good luck!
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
     <string name="incoming" formatted="false">includes %delta %unit pending</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR value is based on the global NEXA/USDT price and the USDT/INR from \"Exchange Rate API\". Actual NEXA OTC/P2P prices in India are typically 20–30% higher due to local USDT/INR rates and market liquidity.</string>
     <string name="fastForward" formatted="false">Fast forward</string>
     <string name="fastforwardStatus" formatted="false">fast forward analysis: %info</string>
     <string name="fastforwardStart" formatted="false">started</string>

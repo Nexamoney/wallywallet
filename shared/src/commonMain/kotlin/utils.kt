@@ -710,5 +710,32 @@ fun formatAmount(qty: BigDecimal, chain: ChainSelector = ChainSelector.NEXA): St
     }
 }
 
+private val SMALLEST_SHOWN_FIAT = CurrencyDecimal("0.01")
+private const val FIAT_SIGNIFICANT_DIGITS = 4
+private const val FIAT_MIN_DECIMALS = 2
+private const val FIAT_MAX_DECIMALS = 12
+private val TEN_BD = CurrencyDecimal(10)
+
+fun formatFiatAmount(qty: BigDecimal, chain: ChainSelector): String
+{
+    if (chain.isMainNet) return FiatFormat.format(qty)
+    val mag = qty.abs()
+    if (mag.isZero() || (mag >= SMALLEST_SHOWN_FIAT)) return FiatFormat.format(qty)
+
+    // zeros between the point and the first real digit: 2 for 0.0026, so 4 digits need 6 places
+    var lead = 0
+    var probe = mag
+    while ((probe < CURRENCY_1) && (lead < FIAT_MAX_DECIMALS))
+    {
+        probe *= TEN_BD
+        lead++
+    }
+    val decimals = (FIAT_SIGNIFICANT_DIGITS - 1 + lead).coerceIn(FIAT_MIN_DECIMALS, FIAT_MAX_DECIMALS)
+    var text = DecimalFormat("###,###,###,##0." + "0".repeat(decimals)).format(qty)
+    // fixed width pads 0.004 to "0.004000", so take it back off, but never below cents
+    while (text.endsWith('0') && (text.substringAfterLast('.').length > FIAT_MIN_DECIMALS)) text = text.dropLast(1)
+    return text
+}
+
 // [Android only] Enable or disable the meditation camouflage app name and icon instead of the normal Wally icon and app name
 expect fun toggleMeditationCamouflage(enable: Boolean)
