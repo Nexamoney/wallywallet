@@ -304,38 +304,67 @@ class SettingsScreenTest: WallyUiTestBase()
         onNodeWithTag("FiatCurrencyDropdown").performClick()
         settle()
 
-        for (code in listOf("BRL", "CAD", "CNY", "EUR", "GBP", "JPY", "RUB", "USD", "XAU"))
+        for (code in listOf("BRL", "CAD", "CNY", "EUR", "GBP", "INR", "JPY", "RUB", "USD", "XAU"))
         {
             onNodeWithTag("FiatCurrency_$code").assertIsDisplayed()
         }
     }
 
+    /** selecting from the dropdown calls SetLocalCurrency, which updates the accounts and makes
+     * requests to both hosts. Disable price data to prevent those requests. Restore the shared
+     * globals and accounts after the test, since SetLocalCurrency clears fiatPerCoin anyway*/
+    private fun withoutTouchingTheNetwork(body: () -> Unit)
+    {
+        val priorAccess = allowAccessPriceData
+        val priorLocal = localCurrency
+        val priorCode = fiatCurrencyCode
+        val app = wallyApp
+        val priorRates = app?.let { a -> a.accountLock.lock { a.accounts.values.toList() } }
+          ?.map { it to it.fiatPerCoin } ?: listOf()
+        allowAccessPriceData = false
+        try
+        {
+            body()
+        }
+        finally
+        {
+            allowAccessPriceData = priorAccess
+            localCurrency = priorLocal
+            fiatCurrencyCode = priorCode
+            priorRates.forEach { (act, rate) -> act.fiatPerCoin = rate }
+        }
+    }
+
     @Test
     fun localCurrency_selectEurPersistsToPrefs() = runComposeUiTest {
-        val prefs = FakeSharedPreferences()
-        setContent { LocalCurrency(prefs) }
-        settle()
+        withoutTouchingTheNetwork {
+            val prefs = FakeSharedPreferences()
+            setContent { LocalCurrency(prefs) }
+            settle()
 
-        onNodeWithTag("FiatCurrencyDropdown").performClick()
-        settle()
-        onNodeWithTag("FiatCurrency_EUR").performClick()
-        settle()
+            onNodeWithTag("FiatCurrencyDropdown").performClick()
+            settle()
+            onNodeWithTag("FiatCurrency_EUR").performClick()
+            settle()
 
-        assertEquals("EUR", prefs.getString(LOCAL_CURRENCY_PREF, ""))
+            assertEquals("EUR", prefs.getString(LOCAL_CURRENCY_PREF, ""))
+        }
     }
 
     @Test
     fun localCurrency_selectJpyPersistsToPrefs() = runComposeUiTest {
-        val prefs = FakeSharedPreferences()
-        setContent { LocalCurrency(prefs) }
-        settle()
+        withoutTouchingTheNetwork {
+            val prefs = FakeSharedPreferences()
+            setContent { LocalCurrency(prefs) }
+            settle()
 
-        onNodeWithTag("FiatCurrencyDropdown").performClick()
-        settle()
-        onNodeWithTag("FiatCurrency_JPY").performClick()
-        settle()
+            onNodeWithTag("FiatCurrencyDropdown").performClick()
+            settle()
+            onNodeWithTag("FiatCurrency_JPY").performClick()
+            settle()
 
-        assertEquals("JPY", prefs.getString(LOCAL_CURRENCY_PREF, ""))
+            assertEquals("JPY", prefs.getString(LOCAL_CURRENCY_PREF, ""))
+        }
     }
 
     // ======================================================================

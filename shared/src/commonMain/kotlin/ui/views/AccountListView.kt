@@ -60,6 +60,7 @@ data class AccountUIData(
   var approximately: String? = null,
   var approximatelyColor: Color = colorPrimaryDark,
   var approximatelyWeight: FontWeight = FontWeight.Normal,
+  var fiatNote: String? = null,
   var devinfo: String="",
   var locked: Boolean = false,
   var lockable: Boolean = false,
@@ -144,9 +145,13 @@ fun Account.uiData(): AccountUIData
         if ((fiatPerCoin > BigDecimal.ZERO)&&(b != null))
         {
             val fiatDisplay = b * fiatPerCoin
-            ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+            // on test chains 2 decimals made this read "approximately 0.00"
+            ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to formatFiatAmount(fiatDisplay, wallet.chainSelector), "fiat" to fiatCurrencyCode)
             ret.approximatelyColor = colorPrimaryDark
             ret.approximatelyWeight = FontWeight.Normal
+            // req from the indian community
+            // we need to write a qualifier because realistic street rates tend to be quite a bit higher than the web-quoted values.
+            if (fiatCurrencyCode == "INR") ret.fiatNote = i18n(S.inrPriceNote)
         }
         else ret.approximately = null
     }
@@ -560,6 +565,21 @@ fun AccountItemView(
                     Row(modifier = Modifier.fillMaxWidth().padding(4.dp,0.dp,4.dp, 0.dp), horizontalArrangement = Arrangement.Center) {
                         uidata.approximately?.let {
                             Text(modifier = Modifier.fillMaxWidth(), text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight, textAlign = TextAlign.Center)
+                        }
+                    }
+                    uidata.fiatNote?.let {
+                        Row(
+                          modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 4.dp),
+                          horizontalArrangement = Arrangement.Center)
+                        {
+                            Text(
+                              modifier = Modifier.fillMaxWidth().testTag("AccountFiatNote"),
+                              text = it,
+                              fontSize = 11.sp,
+                              lineHeight = 13.sp,
+                              color = uidata.approximatelyColor,
+                              textAlign = TextAlign.Center
+                            )
                         }
                     }
                     // includes (amount)   --- NEXA pending amount

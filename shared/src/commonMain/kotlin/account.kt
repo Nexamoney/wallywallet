@@ -411,7 +411,8 @@ class AccountImpl(
         LogIt.info(sourceLoc() + name + ": wallet blockchain ${chain.name} connection completed")
         wallet.fillReceivingWithRetrieveOnly()
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
-        if (wallet.chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
+        // the feeds below are uBCH.  Nexa chains get fiatPerCoin from UpdateNexaXchgRates instead
+        if (!wallet.chainSelector.isNexaFamily)
         {
             val SatPerDisplayUnit = CurrencyDecimal(SATperUBCH)
             wallet.spotPrice = { currencyCode ->

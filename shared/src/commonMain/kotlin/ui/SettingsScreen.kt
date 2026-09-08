@@ -18,6 +18,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,8 +50,8 @@ fun onCopyToClipBoardText(a: String) {
 fun LocalCurrency(preferenceDB: SharedPreferences)
 {
     var expanded by remember { mutableStateOf(false) }
-    val fiatCurrencies = listOf("BRL", "CAD", "CNY", "EUR", "GBP", "JPY", "RUB", "USD", "XAU")
-    val selectedFiatCurrency = remember { mutableStateOf(preferenceDB.getString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, "")) }
+    val fiatCurrencies = listOf("BRL", "CAD", "CNY", "EUR", "GBP", "INR", "JPY", "RUB", "USD", "XAU")
+    val selectedFiatCurrency = remember { mutableStateOf(preferenceDB.getString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, "USD")) }
 
     Row(
       horizontalArrangement = Arrangement.SpaceEvenly,
@@ -80,6 +82,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
                           preferenceDB.edit().putString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, s).commit()
                           selectedFiatCurrency.value = s
                           expanded = false
+                          SetLocalCurrency(s)
                       },
                       text = { Text(text = s) }
                     )
@@ -87,6 +90,22 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
             }
         }
     }
+}
+
+/** Rate provider credit. WRT attribution */
+@Composable
+fun ExchangeRateAttribution()
+{
+    Text(
+      text = FiatRates.ATTRIBUTION_TEXT,
+      textAlign = TextAlign.Center,
+      style = TextStyle(fontSize = 12.sp, color = Color.Blue, textDecoration = TextDecoration.Underline),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 16.dp)
+        .testTag("ExchangeRateAttribution")
+        .clickable { openUrl(FiatRates.ATTRIBUTION_URL) }
+    )
 }
 
 @Composable fun ShowScreenNavSwitch(preference: String, navChoice: NavChoice, textRes: Int, globalPref: MutableStateFlow<Boolean>, testTag: String? = null)
@@ -366,6 +385,9 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                     }
                 }
             }
+
+            Spacer(Modifier.height(24.dp))
+            ExchangeRateAttribution()
         }
     }
 }
