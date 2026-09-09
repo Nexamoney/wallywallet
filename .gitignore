@@ -27,3 +27,4 @@ shared/release/
 /wallyCache
 .gitlab-ci.yml.swp
 /shared/src/commonMain/kotlin/Version.kt
+/public

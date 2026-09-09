@@ -64,6 +64,29 @@ gitlab-advanced-sast:
 secret_detection:
   before_script: []
 
+pages:
+  rules:
+    - *skip-on-schedule-fragment
+    # Only main deploys: GitLab keeps one Pages site per project, so a branch
+    # running this job would overwrite the published docs with its own.
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  stage: docs
+  image: python:3.13-slim
+  before_script:
+    # Replaces the global before_script: this image carries no JDK or gradle,
+    # and a markdown site needs neither.
+    - pip install --no-cache-dir --disable-pip-version-check -r contrib/ci/docs-requirements.txt
+  script:
+    - python3 contrib/ci/build-docs.py
+    - mkdocs build --site-dir "$CI_PROJECT_DIR/public" --config-file build/docs-site/mkdocs.yml
+    - echo "Documentation published at $CI_PAGES_URL"
+  artifacts:
+    paths:
+      - public
+  environment:
+    name: docs
+    url: $CI_PAGES_URL
+
 lintVitalRelease:
   <<: *skip-on-schedule
   stage: lint

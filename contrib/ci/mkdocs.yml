@@ -1,0 +1,57 @@
+# Base MkDocs configuration. contrib/ci/build-docs.py writes this into the
+# staging directory with the docs_dir and the nav it generates from docs/.
+site_name: Wally Personal Wallet
+site_description: Documentation for Wally Personal Wallet, a non-custodial SPV & Electrum protocol wallet for Nexa.
+repo_url: https://gitlab.com/wallywallet/wallet
+repo_name: wallywallet/wallet
+edit_uri: -/edit/main/docs/
+use_directory_urls: true
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/gitlab
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.top
+    - navigation.tracking
+    - navigation.instant
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search

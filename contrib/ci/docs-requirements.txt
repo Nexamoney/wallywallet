@@ -1,0 +1,2 @@
+# Pinned to the 9.x line so a major release cannot silently change the theme.
+mkdocs-material>=9.6,<10
