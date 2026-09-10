@@ -106,3 +106,8 @@ fun setLocaleStringsFrom(strs: ByteArray): Boolean
     LocaleStrings = strings
     return true
 }
+
+/** Abbreviated month names from the iOS locale data. */
+actual fun abbreviatedMonthNames(): List<String> =
+    (NSDateFormatter().shortMonthSymbols.mapNotNull { it as? String })
+      .takeIf { it.size == 12 } ?: EnglishMonthAbbreviations

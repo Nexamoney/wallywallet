@@ -297,7 +297,6 @@ class NonGuiTests
 
         LogIt.info("Test starting block is: ${blkStart}")
 
-        REG_TEST_ONLY = true
         if (wallyApp == null)
         {
             wallyApp = CommonApp(true)

@@ -88,3 +88,8 @@ actual fun setLocale(language: String, country: String, context: Any?):Boolean
     return false
 }
 
+/** Abbreviated month names from Android's own locale data. */
+actual fun abbreviatedMonthNames(): List<String> =
+    java.text.DateFormatSymbols.getInstance(java.util.Locale.getDefault()).shortMonths
+      .filter { it.isNotEmpty() }
+      .takeIf { it.size == 12 } ?: EnglishMonthAbbreviations

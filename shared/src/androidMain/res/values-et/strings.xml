@@ -636,4 +636,100 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="CamouflageDescriptionAndroid">Maskeeringu sisselülitamine sulgeb rakenduse ja maskeerib selle rakenduseks nimega Meditate. Maskeeringu väljalülitamiseks avage rakenduse menüü ja klõpsake viis korda versiooninumbril.</string>
     <string name="CamouflageDescriptionOther">Maskeeringu väljalülitamiseks avage rakenduse Meditate menüü ja klõpsake viis korda versiooninumbril.</string>
     <string name="CamouflageAsMeditateAppAndroid">Maskeeri rakenduseks Meditate</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Ajalukuga varakamber</string>
+    <string name="tlvExplainer">Lukusta mündid nii, et keegi (ka sina ise) ei saa neid kulutada enne sinu valitud kuupäeva.</string>
+    <string name="tlvNewVault">Uus varakamber</string>
+    <string name="tlvMyVaultsCount" formatted="false">MINU VARAKAMBRID · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit lukus</string>
+    <string name="tlvLoadingVaults">Varakambrite laadimine…</string>
+    <string name="tlvNoVaultsYet">Varakambreid pole veel — puuduta üleval Uus varakamber, et üks luua.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable väljavõetav · %locked lukus · %claimed välja võetud</string>
+    <string name="tlvLoadFailed">Ajalukuga varakambreid ei õnnestunud laadida</string>
+    <string name="tlvCreateFailed">Varakambrit ei õnnestunud luua</string>
+    <string name="tlvClaimFailed">Varakambrit ei õnnestunud välja võtta</string>
+    <string name="tlvBalanceLoading">Saldo laadimine</string>
+    <string name="tlvClaimed">Välja võetud</string>
+    <string name="tlvLocked">Lukus</string>
+    <string name="tlvUnlocksBlock" formatted="false">Avaneb plokil %num</string>
+    <string name="tlvBlockNum" formatted="false">Plokk %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Avatud · ootab sissemakset</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Avatud · tasu jaoks on münte vaja</string>
+    <string name="tlvUnlockedReadyToClaim">Avatud · valmis väljavõtmiseks</string>
+    <string name="tlvClaimedFundsArrivedSince">Välja võetud · vahepeal on raha saabunud</string>
+    <string name="tlvClaim">Võta välja</string>
+    <string name="tlvReclaim">Võta uuesti välja</string>
+    <string name="tlvVaultEmptied">See varakamber on tühjendatud</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% möödunud</string>
+    <string name="tlvDaysLeft" formatted="false">%num päeva jäänud</string>
+    <string name="tlvOneDayLeft">1 päev jäänud</string>
+    <string name="tlvHoursLeft" formatted="false">%num tundi jäänud</string>
+    <string name="tlvOneHourLeft">1 tund jäänud</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minutit jäänud</string>
+    <string name="tlvOneMinuteLeft">1 minut jäänud</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count volitusteatepulk · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count volitusteatepulka · %syms</string>
+    <string name="tlvTransactions">Varakambri tehingud</string>
+    <string name="tlvNoTransactions">Sellel varakambril pole veel tehinguid.</string>
+    <string name="tlvVaultCreated">Varakamber loodud</string>
+    <string name="tlvClaimSent">Väljavõtt saadetud</string>
+    <string name="tlvPendingDeposit">Ootel sissemakse</string>
+    <string name="tlvTopUp">Lisamakse</string>
+    <string name="tlvPending">Ootel</string>
+    <string name="tlvNetworkFee" formatted="false">Võrgutasu %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps volitus · %token</string>
+    <string name="tlvAuthority">Volitus</string>
+    <string name="tlvCapMint">Vermi</string>
+    <string name="tlvCapMelt">Sulata</string>
+    <string name="tlvCapBaton">Teatepulk</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Alamgrupp</string>
+    <string name="tlvCreateVault">Loo varakamber</string>
+    <string name="tlvCreateExplainer">Raha koos väikese tasuga liigub ajalukuga aadressile. Näed seda varakambris, kuid kulutada ei saa enne määratud kuupäeva.</string>
+    <string name="tlvMinimumAmount" formatted="false">Miinimum %amt %unit</string>
+    <string name="tlvLockUntil">Lukusta kuni</string>
+    <string name="tlvBlockHeight">Ploki kõrgus</string>
+    <string name="tlvFutureDate">Tulevane kuupäev</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Suurim ploki kõrgus on %num</string>
+    <string name="tlvFeeSatB">Tasu</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Kokku</string>
+    <string name="tlvReview">Vaata üle</string>
+    <string name="tlvDone">Valmis</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Kinnita varakamber</string>
+    <string name="tlvPayTo">Maksa</string>
+    <string name="tlvNewTimeLockVault">Uus ajalukuga varakamber</string>
+    <string name="tlvLockedUntil">Lukus kuni</string>
+    <string name="tlvConfirmAndSign">Kinnita ja allkirjasta</string>
+    <string name="tlvWorking">Töötan…</string>
+    <string name="tlvClaimVault">Võta varakamber välja</string>
+    <string name="tlvClaimExplainerSingle">See varakamber on avanenud. Kinnita, et selle saldo sinu rahakotti tagasi tuua.</string>
+    <string name="tlvYourWallet">(sinu rahakott)</string>
+    <string name="tlvAsset">Vara</string>
+    <string name="tlvYouReceive">Sa saad</string>
+    <string name="tlvNothingToClaim">Pole midagi välja võtta — see varakamber on tühi.</string>
+    <string name="tlvConfirmAndClaim">Kinnita ja võta välja</string>
+    <string name="tlvVaultClaimed">Varakamber välja võetud</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit on teel tagasi sinu rahakotti.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">Raha on teel.</string>
+    <string name="tlvLockedUntilBlock">Lukus kuni plokini</string>
+    <string name="tlvName">Nimi</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Volitusteatepulgad · %count</string>
+    <string name="tlvMovable">Liigutatav</string>
+    <string name="tlvBatonExplainer">Teatepulk on luba, mitte saldo. See külmub koos müntidega ja tuleb koos nendega samas väljavõtus välja.</string>
+    <string name="tlvDepositAddress">Sissemakse aadress</string>
+    <string name="tlvNoAddress">(aadress puudub)</string>
+    <string name="tlvVaultSuccess">Varakambri õnnestumine</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Sulge QR</string>
+    <string name="tlvDepositWarning">Kõik sellele aadressile saadetu on lukus, kuni varakamber avaneb — ka kogemata siia saadetud mündid.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Saada siia tokeneid ainult koos väikese kogusega %unit. Varakamber maksab avanemisel oma tasu ise, ja ainult %unit-ist, mida ta sisaldab.</string>
+    <string name="tlvHistory">Ajalugu</string>
+    <string name="tlvView">Vaata</string>
+    <string name="tlvNoEarlyOpen">Seda varakambrit ei saa ennetähtaegselt avada. See ongi ajaluku mõte.</string>
+    <string name="tlvPublicOnChain">Avanemise kõrgus ja summa on ahelas avalikud alates hetkest, mil see varakamber rahastati — igaüks, kellel on aadress, saab neid lugeda.</string>
 </resources>

@@ -25,8 +25,11 @@ import info.bitcoinunlimited.www.wally.ui.views.AssetViewModelFake
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModelImpl
 import info.bitcoinunlimited.www.wally.ui.views.NativeSplash
 import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
+import kotlin.concurrent.Volatile
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
@@ -83,6 +86,7 @@ internal fun setupTestEnv(openAllAccounts:Boolean = true)
     {
         LogIt.info(sourceLoc() + ": initializing libnexa")
         initializeLibNexa()
+        org.nexa.libnexakotlin.contracts.initializeTimeLockVaultLibrary()
         BLOCKCHAIN_LOGGING = true
         LogIt.info(sourceLoc() + ": creating wallyApp")
         wallyApp = CommonApp(true)
@@ -144,6 +148,38 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
                 assert(wallyApp!=null)
             }
             installedTestDispatcher++
+        }
+    }
+
+    // Stop signal for the runBlockingWithinTest pumper (org.nexa.threads.iThread has no
+    // interrupt, so the pumper polls this flag and is join()ed once it observes the change).
+    @Volatile
+    private var pumpTestMain = false
+
+    /**
+     * You can't runBlocking in a test because it blocks and consumes the coroutine processing
+     * thread.  But this thread needs to be free to advance the test scheduler.  So this function
+     * launches a separate thread that calls sched.runCurrent() every 10ms, moving the test along
+     * even though runBlocking was called.
+     */
+    fun <T> runBlockingWithinTest(block: suspend CoroutineScope.() -> T): T
+    {
+        pumpTestMain = true
+        val pumper = org.nexa.threads.Thread("testMainPump") {
+            while (pumpTestMain)
+            {
+                sched.runCurrent()
+                millisleep(10U)
+            }
+        }
+        try
+        {
+            return runBlocking(block = block)
+        }
+        finally
+        {
+            pumpTestMain = false
+            pumper.join()
         }
     }
 

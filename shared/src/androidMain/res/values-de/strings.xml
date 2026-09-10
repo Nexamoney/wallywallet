@@ -634,4 +634,100 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="CamouflageDescriptionAndroid">Beim Einschalten der Tarnung wird die App geschlossen und als App namens „Meditieren“ getarnt. Um die Tarnung zu beenden, öffnen Sie das App-Menü und tippen Sie fünfmal auf die Versionsnummer.</string>
     <string name="CamouflageDescriptionOther">Um die Tarnung als „Meditieren“ zu beenden, öffnen Sie das App-Menü und tippen Sie fünfmal auf die Versionsnummer.</string>
     <string name="CamouflageAsMeditateAppAndroid">Als Meditieren-App tarnen</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Zeitschloss-Tresor</string>
+    <string name="tlvExplainer">Sperre Coins, sodass niemand (auch du selbst nicht) sie vor deinem gewählten Datum ausgeben kann.</string>
+    <string name="tlvNewVault">Neuer Tresor</string>
+    <string name="tlvMyVaultsCount" formatted="false">MEINE TRESORE · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit gesperrt</string>
+    <string name="tlvLoadingVaults">Tresore werden geladen…</string>
+    <string name="tlvNoVaultsYet">Noch keine Tresore — tippe oben auf Neuer Tresor, um einen anzulegen.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable einlösbar · %locked gesperrt · %claimed eingelöst</string>
+    <string name="tlvLoadFailed">Zeitschloss-Tresore konnten nicht geladen werden</string>
+    <string name="tlvCreateFailed">Der Tresor konnte nicht erstellt werden</string>
+    <string name="tlvClaimFailed">Der Tresor konnte nicht eingelöst werden</string>
+    <string name="tlvBalanceLoading">Guthaben wird geladen</string>
+    <string name="tlvClaimed">Eingelöst</string>
+    <string name="tlvLocked">Gesperrt</string>
+    <string name="tlvUnlocksBlock" formatted="false">Entsperrt bei Block %num</string>
+    <string name="tlvBlockNum" formatted="false">Block %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Entsperrt · wartet auf eine Einzahlung</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Entsperrt · Coins für die Gebühr nötig</string>
+    <string name="tlvUnlockedReadyToClaim">Entsperrt · bereit zum Einlösen</string>
+    <string name="tlvClaimedFundsArrivedSince">Eingelöst · seitdem sind Gelder eingegangen</string>
+    <string name="tlvClaim">Einlösen</string>
+    <string name="tlvReclaim">Erneut einlösen</string>
+    <string name="tlvVaultEmptied">Dieser Tresor wurde geleert</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% verstrichen</string>
+    <string name="tlvDaysLeft" formatted="false">%num Tage verbleiben</string>
+    <string name="tlvOneDayLeft">1 Tag verbleibt</string>
+    <string name="tlvHoursLeft" formatted="false">%num Stunden verbleiben</string>
+    <string name="tlvOneHourLeft">1 Stunde verbleibt</string>
+    <string name="tlvMinutesLeft" formatted="false">%num Minuten verbleiben</string>
+    <string name="tlvOneMinuteLeft">1 Minute verbleibt</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count Autoritäts-Baton · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count Autoritäts-Batons · %syms</string>
+    <string name="tlvTransactions">Tresor-Transaktionen</string>
+    <string name="tlvNoTransactions">Noch keine Transaktionen für diesen Tresor.</string>
+    <string name="tlvVaultCreated">Tresor erstellt</string>
+    <string name="tlvClaimSent">Einlösung gesendet</string>
+    <string name="tlvPendingDeposit">Ausstehende Einzahlung</string>
+    <string name="tlvTopUp">Aufstockung</string>
+    <string name="tlvPending">Ausstehend</string>
+    <string name="tlvNetworkFee" formatted="false">Netzwerkgebühr %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps-Autorität · %token</string>
+    <string name="tlvAuthority">Autorität</string>
+    <string name="tlvCapMint">Prägen</string>
+    <string name="tlvCapMelt">Einschmelzen</string>
+    <string name="tlvCapBaton">Baton</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Untergruppe</string>
+    <string name="tlvCreateVault">Tresor erstellen</string>
+    <string name="tlvCreateExplainer">Die Gelder plus eine kleine Gebühr wandern an eine zeitgesperrte Adresse. Du siehst sie im Tresor, kannst sie aber nicht vor dem festgelegten Datum ausgeben.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
+    <string name="tlvLockUntil">Sperren bis</string>
+    <string name="tlvBlockHeight">Blockhöhe</string>
+    <string name="tlvFutureDate">Zukünftiges Datum</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Die maximale Blockhöhe ist %num</string>
+    <string name="tlvFeeSatB">Gebühr</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Gesamt</string>
+    <string name="tlvReview">Prüfen</string>
+    <string name="tlvDone">Fertig</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Tresor bestätigen</string>
+    <string name="tlvPayTo">Zahlen an</string>
+    <string name="tlvNewTimeLockVault">Neuer Zeitschloss-Tresor</string>
+    <string name="tlvLockedUntil">Gesperrt bis</string>
+    <string name="tlvConfirmAndSign">Bestätigen &amp; signieren</string>
+    <string name="tlvWorking">In Arbeit…</string>
+    <string name="tlvClaimVault">Tresor einlösen</string>
+    <string name="tlvClaimExplainerSingle">Dieser Tresor ist entsperrt. Bestätige, um sein Guthaben in deine Wallet zurückzuholen.</string>
+    <string name="tlvYourWallet">(deine Wallet)</string>
+    <string name="tlvAsset">Asset</string>
+    <string name="tlvYouReceive">Du erhältst</string>
+    <string name="tlvNothingToClaim">Nichts einzulösen — dieser Tresor ist leer.</string>
+    <string name="tlvConfirmAndClaim">Bestätigen &amp; einlösen</string>
+    <string name="tlvVaultClaimed">Tresor eingelöst</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit sind auf dem Weg zurück in deine Wallet.</string>
+    <string name="tlvTxId">TX-ID</string>
+    <string name="tlvFundsOnTheirWay">Die Gelder sind unterwegs.</string>
+    <string name="tlvLockedUntilBlock">Gesperrt bis Block</string>
+    <string name="tlvName">Name</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Autoritäts-Batons · %count</string>
+    <string name="tlvMovable">Beweglich</string>
+    <string name="tlvBatonExplainer">Ein Baton ist eine Berechtigung, kein Guthaben. Er ist mit den Coins eingefroren und kommt mit ihnen in derselben Einlösung heraus.</string>
+    <string name="tlvDepositAddress">Einzahlungsadresse</string>
+    <string name="tlvNoAddress">(keine Adresse)</string>
+    <string name="tlvVaultSuccess">Tresor-Erfolg</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR schließen</string>
+    <string name="tlvDepositWarning">Alles, was an diese Adresse gesendet wird, bleibt gesperrt, bis der Tresor sich öffnet — auch versehentlich gesendete Coins.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Sende Tokens nur zusammen mit etwas %unit hierher. Ein Tresor zahlt seine eigene Gebühr beim Öffnen, und zwar nur aus den %unit, die er enthält.</string>
+    <string name="tlvHistory">Verlauf</string>
+    <string name="tlvView">Anzeigen</string>
+    <string name="tlvNoEarlyOpen">Es gibt keine Möglichkeit, diesen Tresor vorzeitig zu öffnen. Genau das ist der Zweck eines Zeitschlosses.</string>
+    <string name="tlvPublicOnChain">Die Entsperrhöhe und der Betrag sind ab der Finanzierung dieses Tresors öffentlich auf der Chain — jeder mit der Adresse kann sie lesen.</string>
 </resources>

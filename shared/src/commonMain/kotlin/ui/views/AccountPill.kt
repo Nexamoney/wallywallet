@@ -309,7 +309,12 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     }
 
     @Composable
-    protected fun renderPill(act: Account?, animatedOffset:Float, buttonsEnabled: Boolean = true)
+    protected fun renderPill(
+        act: Account?,
+        animatedOffset: Float,
+        buttonsEnabled: Boolean = true,
+        contractLine: (@Composable () -> Unit)? = null,
+    )
     {
         // Fast Sync now runs automatically (see CommonApp.autoFastForwardFocusedAccount), so no manual button is shown.
         // The exception is an account where the user chose the careful (slow) sync at recovery (autoFastForwardSuppressed):
@@ -335,14 +340,19 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 .wrapContentHeight()
                 .fillMaxWidth(0.95f)
                 .background(
-                  Brush.linearGradient(
-                    colors = listOf(
-                      wallyPurple,
-                      Color.White.copy(alpha = 0.2f)
-                    ),
-                    start = Offset(0f, 0f),
-                    end = Offset(Float.POSITIVE_INFINITY, 0f)
-                  )
+                  // Inside a contract the pill fades from the account's purple into that contract's
+                  // color, so the contract line at its foot reads as part of the contract, not the account.
+                  if (contractLine != null)
+                      Brush.verticalGradient(listOf(wallyPurple, ui.timeLockVaultDeep))
+                  else
+                      Brush.linearGradient(
+                        colors = listOf(
+                          wallyPurple,
+                          Color.White.copy(alpha = 0.2f)
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(Float.POSITIVE_INFINITY, 0f)
+                      )
                 )
                 .padding(
                   horizontal = 4.dp,
@@ -455,6 +465,18 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 }
                 else
                     Spacer(Modifier.height(8.dp))
+                contractLine?.let {
+                    Box(
+                      modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .height(1.dp)
+                        .background(Color.White.copy(alpha = 0.22f)),
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    it()
+                    Spacer(Modifier.height(2.dp))
+                }
             }
         }
     }
@@ -484,7 +506,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     }
 
     @Composable
-    fun draw(buttonsEnabled: Boolean = true)
+    fun draw(buttonsEnabled: Boolean = true, contractLine: (@Composable () -> Unit)? = null)
     {
         val ANI_DUR = 300
         val act = account.collectAsState().value
@@ -561,14 +583,14 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
             )
         }) {
             // Renders the main pill
-            renderPill(act, animatedOffset.value, buttonsEnabled)
+            renderPill(act, animatedOffset.value, buttonsEnabled, contractLine)
             // Renders the pill next to the main one during a drag
             if (dupSide != 0f)
             {
                 val curAct = account.collectAsState().value
                 val a = if (midSnap) curAct else nextAct(dupSide, curAct, actLst)
                 if (a!=null) otherBalance.setAccount(a)
-                renderPill(a, animatedOffset.value + (dupSide * boxSize.width), buttonsEnabled)
+                renderPill(a, animatedOffset.value + (dupSide * boxSize.width), buttonsEnabled, contractLine)
             }
         }
     }

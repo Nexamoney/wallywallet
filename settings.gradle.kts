@@ -20,6 +20,7 @@ dependencyResolutionManagement {
         maven { url = uri("https://gitlab.com/api/v4/projects/48544966/packages/maven") }  // mpthreads
         maven { url = uri("https://gitlab.com/api/v4/projects/38119368/packages/maven") }  // libnexarpc
         maven { url = uri("https://gitlab.com/api/v4/projects/48545045/packages/maven") }  // Libnexakotlin
+        maven { url = uri("https://gitlab.com/api/v4/projects/56401871/packages/maven") }  // Libnexakotlin -dev builds (jQrgen fork)
         maven {
             url = uri("https://gitlab.com/api/v4/projects/83996664/packages/maven") // nexaaiskills (skills corpus zip)
             content { includeModule("org.nexa", "nexaaiskills-files") }

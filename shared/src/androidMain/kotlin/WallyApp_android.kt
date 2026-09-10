@@ -200,7 +200,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         {
             //System.loadLibrary("native-lib")
             System.loadLibrary("nexalight")
-            org.nexa.libnexakotlin.initializeLibNexa()
+            initializeLibNexa()
+            org.nexa.libnexakotlin.contracts.initializeTimeLockVaultLibrary()
         }
     }
 

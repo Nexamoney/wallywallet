@@ -636,4 +636,100 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="CamouflageDescriptionAndroid">Al activar el camuflaje, la app se cierra y se camufla como una app llamada Meditate. Para desactivar el camuflaje de la app Meditate, abra el menú de la app y toque el número de versión cinco veces.</string>
     <string name="CamouflageDescriptionOther">Para desactivar el camuflaje de la app Meditate, abra el menú de la app y toque el número de versión cinco veces.</string>
     <string name="CamouflageAsMeditateAppAndroid">Camuflar como app Meditate</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Bóveda con bloqueo temporal</string>
+    <string name="tlvExplainer">Bloquea monedas para que nadie (ni siquiera tú) pueda gastarlas hasta después de la fecha que elijas.</string>
+    <string name="tlvNewVault">Nueva bóveda</string>
+    <string name="tlvMyVaultsCount" formatted="false">MIS BÓVEDAS · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit bloqueados</string>
+    <string name="tlvLoadingVaults">Cargando bóvedas…</string>
+    <string name="tlvNoVaultsYet">Aún no hay bóvedas — toca Nueva bóveda arriba para crear una.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable reclamables · %locked bloqueadas · %claimed reclamadas</string>
+    <string name="tlvLoadFailed">No se pudieron cargar las bóvedas</string>
+    <string name="tlvCreateFailed">No se pudo crear la bóveda</string>
+    <string name="tlvClaimFailed">No se pudo reclamar la bóveda</string>
+    <string name="tlvBalanceLoading">Cargando saldo</string>
+    <string name="tlvClaimed">Reclamada</string>
+    <string name="tlvLocked">Bloqueada</string>
+    <string name="tlvUnlocksBlock" formatted="false">Se desbloquea en el bloque %num</string>
+    <string name="tlvBlockNum" formatted="false">Bloque %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Desbloqueada · esperando un depósito</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Desbloqueada · faltan monedas para la comisión</string>
+    <string name="tlvUnlockedReadyToClaim">Desbloqueada · lista para reclamar</string>
+    <string name="tlvClaimedFundsArrivedSince">Reclamada · llegaron fondos después</string>
+    <string name="tlvClaim">Reclamar</string>
+    <string name="tlvReclaim">Volver a reclamar</string>
+    <string name="tlvVaultEmptied">Esta bóveda ha sido vaciada</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% transcurrido</string>
+    <string name="tlvDaysLeft" formatted="false">Quedan %num días</string>
+    <string name="tlvOneDayLeft">Queda 1 día</string>
+    <string name="tlvHoursLeft" formatted="false">Quedan %num horas</string>
+    <string name="tlvOneHourLeft">Queda 1 hora</string>
+    <string name="tlvMinutesLeft" formatted="false">Quedan %num minutos</string>
+    <string name="tlvOneMinuteLeft">Queda 1 minuto</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count bastón de autoridad · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count bastones de autoridad · %syms</string>
+    <string name="tlvTransactions">Transacciones de la bóveda</string>
+    <string name="tlvNoTransactions">Aún no hay transacciones para esta bóveda.</string>
+    <string name="tlvVaultCreated">Bóveda creada</string>
+    <string name="tlvClaimSent">Reclamación enviada</string>
+    <string name="tlvPendingDeposit">Depósito pendiente</string>
+    <string name="tlvTopUp">Recarga</string>
+    <string name="tlvPending">Pendiente</string>
+    <string name="tlvNetworkFee" formatted="false">Comisión de red %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Autoridad %caps · %token</string>
+    <string name="tlvAuthority">Autoridad</string>
+    <string name="tlvCapMint">Acuñar</string>
+    <string name="tlvCapMelt">Fundir</string>
+    <string name="tlvCapBaton">Bastón</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Subgrupo</string>
+    <string name="tlvCreateVault">Crear bóveda</string>
+    <string name="tlvCreateExplainer">Los fondos más una pequeña comisión se moverán a una dirección con bloqueo temporal. Los verás en la bóveda, pero no podrás gastarlos antes de la fecha especificada.</string>
+    <string name="tlvMinimumAmount" formatted="false">Mínimo %amt %unit</string>
+    <string name="tlvLockUntil">Bloquear hasta</string>
+    <string name="tlvBlockHeight">Altura de bloque</string>
+    <string name="tlvFutureDate">Fecha futura</string>
+    <string name="tlvMaxBlockHeight" formatted="false">La altura máxima de bloque es %num</string>
+    <string name="tlvFeeSatB">Comisión</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Total</string>
+    <string name="tlvReview">Revisar</string>
+    <string name="tlvDone">Hecho</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Confirmar bóveda</string>
+    <string name="tlvPayTo">Pagar a</string>
+    <string name="tlvNewTimeLockVault">Nueva bóveda con bloqueo temporal</string>
+    <string name="tlvLockedUntil">Bloqueada hasta</string>
+    <string name="tlvConfirmAndSign">Confirmar y firmar</string>
+    <string name="tlvWorking">Procesando…</string>
+    <string name="tlvClaimVault">Reclamar bóveda</string>
+    <string name="tlvClaimExplainerSingle">Esta bóveda se ha desbloqueado. Confirma para devolver su saldo a tu monedero.</string>
+    <string name="tlvYourWallet">(tu monedero)</string>
+    <string name="tlvAsset">Activo</string>
+    <string name="tlvYouReceive">Recibes</string>
+    <string name="tlvNothingToClaim">Nada que reclamar — esta bóveda está vacía.</string>
+    <string name="tlvConfirmAndClaim">Confirmar y reclamar</string>
+    <string name="tlvVaultClaimed">Bóveda reclamada</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit van de vuelta a tu monedero.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Los fondos están en camino.</string>
+    <string name="tlvLockedUntilBlock">Bloqueada hasta el bloque</string>
+    <string name="tlvName">Nombre</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Bastones de autoridad · %count</string>
+    <string name="tlvMovable">Movible</string>
+    <string name="tlvBatonExplainer">Un bastón es un permiso, no un saldo. Se congela con las monedas y sale con ellas en la misma reclamación.</string>
+    <string name="tlvDepositAddress">Dirección de depósito</string>
+    <string name="tlvNoAddress">(sin dirección)</string>
+    <string name="tlvVaultSuccess">Éxito de la bóveda</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Cerrar QR</string>
+    <string name="tlvDepositWarning">Todo lo que se envíe a esta dirección queda bloqueado hasta que la bóveda se abra — incluidas las monedas enviadas por error.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Envía tokens aquí solo junto con algo de %unit. Una bóveda paga su propia comisión al abrirse, y solo con los %unit que contiene.</string>
+    <string name="tlvHistory">Historial</string>
+    <string name="tlvView">Ver</string>
+    <string name="tlvNoEarlyOpen">No hay forma de abrir esta bóveda antes de tiempo. Ese es el propósito de un bloqueo temporal.</string>
+    <string name="tlvPublicOnChain">La altura de desbloqueo y el importe son públicos en la cadena desde que se financió esta bóveda — cualquiera con la dirección puede leerlos.</string>
 </resources>

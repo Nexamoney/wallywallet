@@ -636,4 +636,100 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="CamouflageDescriptionAndroid">En activar el camuflatge, l\'aplicació es tanca i es camufla com una aplicació anomenada Meditate. Per desactivar el camuflatge de l\'aplicació Meditate, obriu el menú de l\'aplicació i feu clic cinc vegades al número de versió.</string>
     <string name="CamouflageDescriptionOther">Per desactivar el camuflatge de l\'aplicació Meditate, obriu el menú de l\'aplicació i feu clic cinc vegades al número de versió.</string>
     <string name="CamouflageAsMeditateAppAndroid">Camuflar com a aplicació Meditate</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Caixa forta amb bloqueig temporal</string>
+    <string name="tlvExplainer">Bloqueja monedes perquè ningú (ni tu mateix) les pugui gastar fins després de la data que triïs.</string>
+    <string name="tlvNewVault">Nova caixa forta</string>
+    <string name="tlvMyVaultsCount" formatted="false">LES MEVES CAIXES · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit bloquejats</string>
+    <string name="tlvLoadingVaults">Carregant caixes fortes…</string>
+    <string name="tlvNoVaultsYet">Encara no hi ha cap caixa forta — toca Nova caixa forta a dalt per crear-ne una.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable reclamables · %locked bloquejades · %claimed reclamades</string>
+    <string name="tlvLoadFailed">No s\'han pogut carregar les caixes fortes</string>
+    <string name="tlvCreateFailed">No s\'ha pogut crear la caixa forta</string>
+    <string name="tlvClaimFailed">No s\'ha pogut reclamar la caixa forta</string>
+    <string name="tlvBalanceLoading">Carregant el saldo</string>
+    <string name="tlvClaimed">Reclamada</string>
+    <string name="tlvLocked">Bloquejada</string>
+    <string name="tlvUnlocksBlock" formatted="false">Es desbloqueja al bloc %num</string>
+    <string name="tlvBlockNum" formatted="false">Bloc %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Desbloquejada · esperant un dipòsit</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Desbloquejada · calen monedes per a la comissió</string>
+    <string name="tlvUnlockedReadyToClaim">Desbloquejada · a punt per reclamar</string>
+    <string name="tlvClaimedFundsArrivedSince">Reclamada · han arribat fons després</string>
+    <string name="tlvClaim">Reclamar</string>
+    <string name="tlvReclaim">Tornar a reclamar</string>
+    <string name="tlvVaultEmptied">Aquesta caixa forta s\'ha buidat</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% transcorregut</string>
+    <string name="tlvDaysLeft" formatted="false">Queden %num dies</string>
+    <string name="tlvOneDayLeft">Queda 1 dia</string>
+    <string name="tlvHoursLeft" formatted="false">Queden %num hores</string>
+    <string name="tlvOneHourLeft">Queda 1 hora</string>
+    <string name="tlvMinutesLeft" formatted="false">Queden %num minuts</string>
+    <string name="tlvOneMinuteLeft">Queda 1 minut</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count bastó d\'autoritat · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count bastons d\'autoritat · %syms</string>
+    <string name="tlvTransactions">Transaccions de la caixa forta</string>
+    <string name="tlvNoTransactions">Encara no hi ha transaccions per a aquesta caixa forta.</string>
+    <string name="tlvVaultCreated">Caixa forta creada</string>
+    <string name="tlvClaimSent">Reclamació enviada</string>
+    <string name="tlvPendingDeposit">Dipòsit pendent</string>
+    <string name="tlvTopUp">Recàrrega</string>
+    <string name="tlvPending">Pendent</string>
+    <string name="tlvNetworkFee" formatted="false">Comissió de xarxa %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Autoritat %caps · %token</string>
+    <string name="tlvAuthority">Autoritat</string>
+    <string name="tlvCapMint">Encunyar</string>
+    <string name="tlvCapMelt">Fondre</string>
+    <string name="tlvCapBaton">Bastó</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Subgrup</string>
+    <string name="tlvCreateVault">Crear caixa forta</string>
+    <string name="tlvCreateExplainer">Els fons més una petita comissió es mouran a una adreça bloquejada temporalment. Els veuràs a la caixa forta, però no els podràs gastar abans de la data especificada.</string>
+    <string name="tlvMinimumAmount" formatted="false">Mínim %amt %unit</string>
+    <string name="tlvLockUntil">Bloquejar fins</string>
+    <string name="tlvBlockHeight">Alçada de bloc</string>
+    <string name="tlvFutureDate">Data futura</string>
+    <string name="tlvMaxBlockHeight" formatted="false">L\'alçada màxima de bloc és %num</string>
+    <string name="tlvFeeSatB">Comissió</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Total</string>
+    <string name="tlvReview">Revisar</string>
+    <string name="tlvDone">Fet</string>
+    <string name="tlvOk">D\'acord</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Confirmar caixa forta</string>
+    <string name="tlvPayTo">Pagar a</string>
+    <string name="tlvNewTimeLockVault">Nova caixa forta amb bloqueig temporal</string>
+    <string name="tlvLockedUntil">Bloquejada fins</string>
+    <string name="tlvConfirmAndSign">Confirmar i signar</string>
+    <string name="tlvWorking">Treballant…</string>
+    <string name="tlvClaimVault">Reclamar caixa forta</string>
+    <string name="tlvClaimExplainerSingle">Aquesta caixa forta s\'ha desbloquejat. Confirma per retornar el seu saldo al teu moneder.</string>
+    <string name="tlvYourWallet">(el teu moneder)</string>
+    <string name="tlvAsset">Actiu</string>
+    <string name="tlvYouReceive">Reps</string>
+    <string name="tlvNothingToClaim">Res a reclamar — aquesta caixa forta és buida.</string>
+    <string name="tlvConfirmAndClaim">Confirmar i reclamar</string>
+    <string name="tlvVaultClaimed">Caixa forta reclamada</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit tornen cap al teu moneder.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Els fons són en camí.</string>
+    <string name="tlvLockedUntilBlock">Bloquejada fins al bloc</string>
+    <string name="tlvName">Nom</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Bastons d\'autoritat · %count</string>
+    <string name="tlvMovable">Movible</string>
+    <string name="tlvBatonExplainer">Un bastó és un permís, no un saldo. Es congela amb les monedes i surt amb elles en la mateixa reclamació.</string>
+    <string name="tlvDepositAddress">Adreça de dipòsit</string>
+    <string name="tlvNoAddress">(sense adreça)</string>
+    <string name="tlvVaultSuccess">Èxit de la caixa forta</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Tancar QR</string>
+    <string name="tlvDepositWarning">Tot el que s\'enviï a aquesta adreça queda bloquejat fins que la caixa forta s\'obri — incloses les monedes enviades per error.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Envia-hi tokens només juntament amb una mica de %unit. Una caixa forta paga la seva pròpia comissió quan s\'obre, i només amb els %unit que conté.</string>
+    <string name="tlvHistory">Historial</string>
+    <string name="tlvView">Veure</string>
+    <string name="tlvNoEarlyOpen">No hi ha manera d\'obrir aquesta caixa forta abans d\'hora. Aquest és el propòsit d\'un bloqueig temporal.</string>
+    <string name="tlvPublicOnChain">L\'alçada de desbloqueig i l\'import són públics a la cadena des del moment en què es va finançar aquesta caixa forta — qualsevol persona amb l\'adreça els pot llegir.</string>
 </resources>

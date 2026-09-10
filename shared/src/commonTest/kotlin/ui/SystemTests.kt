@@ -29,12 +29,48 @@ private val LogIt = GetLog("wally.test.SystemTests")
 
 val RPC_USER = "regtest"
 val RPC_PASSWORD = "regtest"
-val REGTEST_IP="127.0.0.1"
+
+/**
+ * Where to look for the regtest node, in order. Loopback first: CI starts its
+ * own nexad inside the test container, and that is the only host a CI job may
+ * assume. The second entry is a developer LAN node — tried only when loopback
+ * has nothing, so a dev box keeps working without pointing CI at an arbitrary
+ * machine on whatever network the runner happens to sit on.
+ */
+val REGTEST_IP_CANDIDATES = listOf("127.0.0.1", "10.0.0.207")
+
+/**
+ * The candidate [getNexaRpc] last connected to. Tests that pin the wallet's
+ * peer ([iChain.exclusiveNodes]) must use this rather than a fixed constant,
+ * so the wallet talks to the same node the RPC calls drive.
+ */
+var REGTEST_IP = REGTEST_IP_CANDIDATES.first()
+    private set
+
 fun getNexaRpc(): NexaRpc
 {
-    LogIt.info("This test requires a Nexa full node running on regtest at ${REGTEST_IP} and port $NexaRegtestRpcPort")
+    LogIt.info("This test requires a Nexa full node running on regtest at one of " +
+        "$REGTEST_IP_CANDIDATES and port $NexaRegtestRpcPort")
+    var lastError: Throwable? = null
+    for (ip in REGTEST_IP_CANDIDATES)
+    {
+        try
+        {
+            return connectNexaRpc(ip).also { REGTEST_IP = ip }
+        }
+        catch (e: Throwable)
+        {
+            LogIt.info("no regtest node at $ip: $e")
+            lastError = e
+        }
+    }
+    throw lastError ?: IllegalStateException("no regtest node reachable")
+}
+
+private fun connectNexaRpc(ip: String): NexaRpc
+{
     // Set up RPC connection
-    val rpcConnection = "http://$RPC_USER:$RPC_PASSWORD@$REGTEST_IP:" + NexaRegtestRpcPort
+    val rpcConnection = "http://$RPC_USER:$RPC_PASSWORD@$ip:" + NexaRegtestRpcPort
     val nexaRpc = NexaRpcFactory.create(rpcConnection)
     val tipIdx = nexaRpc.getblockcount()
     if (tipIdx < 102)

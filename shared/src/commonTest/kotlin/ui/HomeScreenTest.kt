@@ -14,6 +14,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.sourceLoc
 import org.nexa.threads.millisleep
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.minutes
 
 fun SemanticsNodeInteraction.multiplatformImeAction()
@@ -148,6 +149,45 @@ class HomeScreenTest: WallyUiTestBase()
             onNodeWithTag("AccountPillFiatBalance").assertTextEquals(expectedFiatBalance)
         }
         // TODO: Click tabrowitem and verify
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
+    }
+
+    /** A one-shot [requestedHomeTab] (set when leaving the TimeLock screens) opens home on that tab, then clears. */
+    @Test
+    fun requestedHomeTabOpensContractsTab()
+    {
+        val account = wallyApp!!.newAccount("nexaTabTest", 0U, "", ChainSelector.NEXA)!!
+        try
+        {
+            runComposeUiTest {
+                val viewModelStoreOwner = object : ViewModelStoreOwner
+                {
+                    override val viewModelStore: ViewModelStore = ViewModelStore()
+                }
+                setSelectedAccount(account)
+                assignAccountsGuiSlots()
+                val assetViewModel = AssetViewModel()
+                val accountUiDataViewModel = AccountUiDataViewModel()
+                val apvm = AccountPill(wallyApp!!.focusedAccount)
+                val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
+
+                requestedHomeTab = 2
+                setContent {
+                    CompositionLocalProvider(
+                      LocalViewModelStoreOwner provides viewModelStoreOwner
+                    ) {
+                        HomeScreen(false, apvm, assetViewModel, accountUiDataViewModel, unlock = unlock)
+                    }
+                }
+                settle()
+                // The pager landed on the contracts tab (its Time Lock Vaults card shows) and the request is consumed.
+                onNodeWithText(i18n(S.tlvTitle)).assertIsDisplayed()
+                assertEquals(null, requestedHomeTab)
+            }
         }
         finally
         {
