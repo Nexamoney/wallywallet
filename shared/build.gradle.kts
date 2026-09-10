@@ -1045,3 +1045,10 @@ tasks.withType<AbstractTestTask>().configureEach {
     finalizedBy(sweepTestDbs)
 }
 
+tasks.withType<Test>().configureEach {
+    testLogging {
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStackTraces = true
+        showCauses = true
+    }
+}

@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -32,7 +33,11 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -41,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
@@ -61,7 +67,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
+import wpw.src.generated.resources.Res
 import kotlin.random.Random
+
+val VisualOverflowKey = SemanticsPropertyKey<Boolean>("VisualOverflow")
+var SemanticsPropertyReceiver.visualOverflow by VisualOverflowKey
 
 enum class AccountAction
 {
@@ -992,7 +1002,7 @@ fun renderTextToBitmap(text: String, fontSize: TextUnit, width: Int, height: Int
 {
     val secretStyle = remember { TextStyle.Default.copy(fontFamily = FontFamily.Monospace, fontSize = 18.sp) }
     var onOff by remember { mutableStateOf(true) }
-    val flickerSecretPhrase = experimentalUI.collectAsState().value
+    val flickerSecretPhrase = false // experimentalUI.collectAsState().value
 
     if (flickerSecretPhrase)  // Turn off the flickering phrase security feature by default
     {
@@ -1027,17 +1037,25 @@ fun renderTextToBitmap(text: String, fontSize: TextUnit, width: Int, height: Int
     }
     else
     {
-        BasicText(if (onOff) actualPhrase else "", style = secretStyle, minLines = 3)
+        var overflow by remember { mutableStateOf(false) }
+        // We've got to show the words no matter what so make the font a lot smaller if needed, and overflow the containing box if they still are too big (extremely unlikely to happen though)
+        var minSize = TextStyle.Default.fontSize
+        if (minSize == TextUnit.Unspecified) minSize = 6.sp else minSize /= 3
+        var maxSize = TextStyle.Default.fontSize
+        if (maxSize == TextUnit.Unspecified) maxSize = 18.sp
+        BasicText(if (onOff) actualPhrase else "", style = secretStyle, minLines = 3, autoSize = TextAutoSize.StepBased(minSize, maxSize), softWrap = false,
+          overflow = TextOverflow.Visible,
+          onTextLayout = { overflow = it.hasVisualOverflow },
+          modifier = Modifier.testTag("recoveryPhraseWords").semantics { visualOverflow = overflow })
     }
-
 }
 
 
 @Composable
 fun RecoveryPhraseView(account: Account, done: () -> Unit)
 {
-
-    val flickerSecretPhrase = experimentalUI.collectAsState().value
+    // the flickering secret phrase is an interesting direction so its left here, but its irritating and not sufficiently protective right now
+    val flickerSecretPhrase = false // experimentalUI.collectAsState().value
     val phraseCardColors = if (flickerSecretPhrase) CardDefaults.cardColors().copy(containerColor = Color.Black, Color.White)  // maximize visual persistence with strong contrast
        else CardDefaults.cardColors()
 
