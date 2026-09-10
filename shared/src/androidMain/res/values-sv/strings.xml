@@ -640,4 +640,100 @@ Tack och njut av din nya plånbok!</string>
     <string name="CamouflageDescriptionAndroid">När du aktiverar kamouflaget stängs appen och kamoufleras som en app som heter Meditate. Du stänger av kamouflaget i appen Meditate genom att öppna appmenyn och trycka på versionsnumret fem gånger.</string>
     <string name="CamouflageDescriptionOther">Du stänger av kamouflaget i appen Meditate genom att öppna appmenyn och trycka på versionsnumret fem gånger.</string>
     <string name="CamouflageAsMeditateAppAndroid">Kamouflera som appen Meditate</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Tidslåst valv</string>
+    <string name="tlvExplainer">Lås mynt så att ingen (inte ens du själv) kan spendera dem förrän efter ditt valda datum.</string>
+    <string name="tlvNewVault">Nytt valv</string>
+    <string name="tlvMyVaultsCount" formatted="false">MINA VALV · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit låsta</string>
+    <string name="tlvLoadingVaults">Laddar valv…</string>
+    <string name="tlvNoVaultsYet">Inga valv ännu — tryck på Nytt valv ovan för att skapa ett.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable inlösbara · %locked låsta · %claimed inlösta</string>
+    <string name="tlvLoadFailed">Kunde inte ladda tidslåsta valv</string>
+    <string name="tlvCreateFailed">Kunde inte skapa valvet</string>
+    <string name="tlvClaimFailed">Kunde inte lösa in valvet</string>
+    <string name="tlvBalanceLoading">Laddar saldo</string>
+    <string name="tlvClaimed">Inlöst</string>
+    <string name="tlvLocked">Låst</string>
+    <string name="tlvUnlocksBlock" formatted="false">Låses upp vid block %num</string>
+    <string name="tlvBlockNum" formatted="false">Block %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Upplåst · väntar på en insättning</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Upplåst · behöver mynt till avgiften</string>
+    <string name="tlvUnlockedReadyToClaim">Upplåst · redo att lösas in</string>
+    <string name="tlvClaimedFundsArrivedSince">Inlöst · medel har kommit sedan dess</string>
+    <string name="tlvClaim">Lös in</string>
+    <string name="tlvReclaim">Lös in igen</string>
+    <string name="tlvVaultEmptied">Det här valvet har tömts</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% förflutet</string>
+    <string name="tlvDaysLeft" formatted="false">%num dagar kvar</string>
+    <string name="tlvOneDayLeft">1 dag kvar</string>
+    <string name="tlvHoursLeft" formatted="false">%num timmar kvar</string>
+    <string name="tlvOneHourLeft">1 timme kvar</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minuter kvar</string>
+    <string name="tlvOneMinuteLeft">1 minut kvar</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count auktoritetsstafettpinne · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count auktoritetsstafettpinnar · %syms</string>
+    <string name="tlvTransactions">Valvtransaktioner</string>
+    <string name="tlvNoTransactions">Inga transaktioner för det här valvet ännu.</string>
+    <string name="tlvVaultCreated">Valv skapat</string>
+    <string name="tlvClaimSent">Inlösen skickad</string>
+    <string name="tlvPendingDeposit">Väntande insättning</string>
+    <string name="tlvTopUp">Påfyllning</string>
+    <string name="tlvPending">Väntar</string>
+    <string name="tlvNetworkFee" formatted="false">Nätverksavgift %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps-auktoritet · %token</string>
+    <string name="tlvAuthority">Auktoritet</string>
+    <string name="tlvCapMint">Prägla</string>
+    <string name="tlvCapMelt">Smält</string>
+    <string name="tlvCapBaton">Stafettpinne</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Undergrupp</string>
+    <string name="tlvCreateVault">Skapa valv</string>
+    <string name="tlvCreateExplainer">Medlen plus en liten avgift flyttas till en tidslåst adress. Du ser dem i valvet, men kan inte spendera dem före det angivna datumet.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minst %amt %unit</string>
+    <string name="tlvLockUntil">Lås till</string>
+    <string name="tlvBlockHeight">Blockhöjd</string>
+    <string name="tlvFutureDate">Framtida datum</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Största blockhöjd är %num</string>
+    <string name="tlvFeeSatB">Avgift</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Totalt</string>
+    <string name="tlvReview">Granska</string>
+    <string name="tlvDone">Klar</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Bekräfta valv</string>
+    <string name="tlvPayTo">Betala till</string>
+    <string name="tlvNewTimeLockVault">Nytt tidslåst valv</string>
+    <string name="tlvLockedUntil">Låst till</string>
+    <string name="tlvConfirmAndSign">Bekräfta &amp; signera</string>
+    <string name="tlvWorking">Arbetar…</string>
+    <string name="tlvClaimVault">Lös in valv</string>
+    <string name="tlvClaimExplainerSingle">Det här valvet har låsts upp. Bekräfta för att föra tillbaka dess saldo till din plånbok.</string>
+    <string name="tlvYourWallet">(din plånbok)</string>
+    <string name="tlvAsset">Tillgång</string>
+    <string name="tlvYouReceive">Du får</string>
+    <string name="tlvNothingToClaim">Inget att lösa in — det här valvet är tomt.</string>
+    <string name="tlvConfirmAndClaim">Bekräfta &amp; lös in</string>
+    <string name="tlvVaultClaimed">Valv inlöst</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit är på väg tillbaka till din plånbok.</string>
+    <string name="tlvTxId">TX-ID</string>
+    <string name="tlvFundsOnTheirWay">Medlen är på väg.</string>
+    <string name="tlvLockedUntilBlock">Låst till block</string>
+    <string name="tlvName">Namn</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Auktoritetsstafettpinnar · %count</string>
+    <string name="tlvMovable">Flyttbar</string>
+    <string name="tlvBatonExplainer">En stafettpinne är en behörighet, inte ett saldo. Den fryses med mynten och kommer ut med dem i samma inlösen.</string>
+    <string name="tlvDepositAddress">Insättningsadress</string>
+    <string name="tlvNoAddress">(ingen adress)</string>
+    <string name="tlvVaultSuccess">Valv lyckades</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Stäng QR</string>
+    <string name="tlvDepositWarning">Allt som skickas till den här adressen är låst tills valvet öppnas — även mynt som skickas hit av misstag.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Skicka tokens hit bara tillsammans med lite %unit. Ett valv betalar sin egen avgift när det öppnas, och bara med de %unit det innehåller.</string>
+    <string name="tlvHistory">Historik</string>
+    <string name="tlvView">Visa</string>
+    <string name="tlvNoEarlyOpen">Det finns inget sätt att öppna det här valvet i förtid. Det är hela poängen med ett tidslås.</string>
+    <string name="tlvPublicOnChain">Upplåsningshöjden och beloppet är offentliga på kedjan från det ögonblick valvet finansierades — alla med adressen kan läsa dem.</string>
 </resources>

@@ -739,3 +739,9 @@ fun formatFiatAmount(qty: BigDecimal, chain: ChainSelector): String
 
 // [Android only] Enable or disable the meditation camouflage app name and icon instead of the normal Wally icon and app name
 expect fun toggleMeditationCamouflage(enable: Boolean)
+
+/** English fallback, and the desktop answer, for [abbreviatedMonthNames]. */
+internal val EnglishMonthAbbreviations = listOf(
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+)

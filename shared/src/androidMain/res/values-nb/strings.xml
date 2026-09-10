@@ -631,4 +631,100 @@
     <string name="CamouflageDescriptionAndroid">Når du aktiverer kamuflasjen, lukkes appen og kamufleres som en app kalt Meditate. For å deaktivere Meditate-kamuflasjen åpner du app-menyen og trykker fem ganger på versjonsnummeret.</string>
     <string name="CamouflageDescriptionOther">For å deaktivere Meditate-kamuflasjen åpner du app-menyen og trykker fem ganger på versjonsnummeret.</string>
     <string name="CamouflageAsMeditateAppAndroid">Kamufler som Meditate-appen</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Tidslåst hvelv</string>
+    <string name="tlvExplainer">Lås mynter slik at ingen (heller ikke du selv) kan bruke dem før etter datoen du velger.</string>
+    <string name="tlvNewVault">Nytt hvelv</string>
+    <string name="tlvMyVaultsCount" formatted="false">MINE HVELV · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit låst</string>
+    <string name="tlvLoadingVaults">Laster hvelv…</string>
+    <string name="tlvNoVaultsYet">Ingen hvelv ennå — trykk på Nytt hvelv ovenfor for å lage ett.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable innløsbare · %locked låst · %claimed innløst</string>
+    <string name="tlvLoadFailed">Kunne ikke laste tidslåste hvelv</string>
+    <string name="tlvCreateFailed">Kunne ikke opprette hvelvet</string>
+    <string name="tlvClaimFailed">Kunne ikke innløse hvelvet</string>
+    <string name="tlvBalanceLoading">Laster saldo</string>
+    <string name="tlvClaimed">Innløst</string>
+    <string name="tlvLocked">Låst</string>
+    <string name="tlvUnlocksBlock" formatted="false">Låses opp ved blokk %num</string>
+    <string name="tlvBlockNum" formatted="false">Blokk %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Låst opp · venter på et innskudd</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Låst opp · trenger mynter til gebyret</string>
+    <string name="tlvUnlockedReadyToClaim">Låst opp · klart til innløsing</string>
+    <string name="tlvClaimedFundsArrivedSince">Innløst · midler har kommet siden</string>
+    <string name="tlvClaim">Innløs</string>
+    <string name="tlvReclaim">Innløs på nytt</string>
+    <string name="tlvVaultEmptied">Dette hvelvet er tømt</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% gått</string>
+    <string name="tlvDaysLeft" formatted="false">%num dager igjen</string>
+    <string name="tlvOneDayLeft">1 dag igjen</string>
+    <string name="tlvHoursLeft" formatted="false">%num timer igjen</string>
+    <string name="tlvOneHourLeft">1 time igjen</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minutter igjen</string>
+    <string name="tlvOneMinuteLeft">1 minutt igjen</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count autoritetsstafettpinne · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count autoritetsstafettpinner · %syms</string>
+    <string name="tlvTransactions">Hvelvtransaksjoner</string>
+    <string name="tlvNoTransactions">Ingen transaksjoner for dette hvelvet ennå.</string>
+    <string name="tlvVaultCreated">Hvelv opprettet</string>
+    <string name="tlvClaimSent">Innløsing sendt</string>
+    <string name="tlvPendingDeposit">Ventende innskudd</string>
+    <string name="tlvTopUp">Påfyll</string>
+    <string name="tlvPending">Venter</string>
+    <string name="tlvNetworkFee" formatted="false">Nettverksgebyr %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps-autoritet · %token</string>
+    <string name="tlvAuthority">Autoritet</string>
+    <string name="tlvCapMint">Preg</string>
+    <string name="tlvCapMelt">Smelt</string>
+    <string name="tlvCapBaton">Stafettpinne</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Undergruppe</string>
+    <string name="tlvCreateVault">Opprett hvelv</string>
+    <string name="tlvCreateExplainer">Midlene pluss et lite gebyr flyttes til en tidslåst adresse. Du ser dem i hvelvet, men kan ikke bruke dem før den angitte datoen.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
+    <string name="tlvLockUntil">Lås til</string>
+    <string name="tlvBlockHeight">Blokkhøyde</string>
+    <string name="tlvFutureDate">Fremtidig dato</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Maksimal blokkhøyde er %num</string>
+    <string name="tlvFeeSatB">Gebyr</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Totalt</string>
+    <string name="tlvReview">Se over</string>
+    <string name="tlvDone">Ferdig</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Bekreft hvelv</string>
+    <string name="tlvPayTo">Betal til</string>
+    <string name="tlvNewTimeLockVault">Nytt tidslåst hvelv</string>
+    <string name="tlvLockedUntil">Låst til</string>
+    <string name="tlvConfirmAndSign">Bekreft og signer</string>
+    <string name="tlvWorking">Arbeider…</string>
+    <string name="tlvClaimVault">Innløs hvelv</string>
+    <string name="tlvClaimExplainerSingle">Dette hvelvet er låst opp. Bekreft for å føre saldoen tilbake til lommeboken din.</string>
+    <string name="tlvYourWallet">(lommeboken din)</string>
+    <string name="tlvAsset">Eiendel</string>
+    <string name="tlvYouReceive">Du mottar</string>
+    <string name="tlvNothingToClaim">Ingenting å innløse — dette hvelvet er tomt.</string>
+    <string name="tlvConfirmAndClaim">Bekreft og innløs</string>
+    <string name="tlvVaultClaimed">Hvelv innløst</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit er på vei tilbake til lommeboken din.</string>
+    <string name="tlvTxId">TX-ID</string>
+    <string name="tlvFundsOnTheirWay">Midlene er på vei.</string>
+    <string name="tlvLockedUntilBlock">Låst til blokk</string>
+    <string name="tlvName">Navn</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Autoritetsstafettpinner · %count</string>
+    <string name="tlvMovable">Flyttbar</string>
+    <string name="tlvBatonExplainer">En stafettpinne er en tillatelse, ikke en saldo. Den fryses sammen med myntene og kommer ut med dem i samme innløsing.</string>
+    <string name="tlvDepositAddress">Innskuddsadresse</string>
+    <string name="tlvNoAddress">(ingen adresse)</string>
+    <string name="tlvVaultSuccess">Hvelv vellykket</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Lukk QR</string>
+    <string name="tlvDepositWarning">Alt som sendes til denne adressen er låst til hvelvet åpnes — også mynter som sendes hit ved en feil.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Send tokens hit bare sammen med litt %unit. Et hvelv betaler sitt eget gebyr når det åpnes, og bare fra %unit det inneholder.</string>
+    <string name="tlvHistory">Historikk</string>
+    <string name="tlvView">Vis</string>
+    <string name="tlvNoEarlyOpen">Det finnes ingen måte å åpne dette hvelvet tidlig på. Det er selve poenget med en tidslås.</string>
+    <string name="tlvPublicOnChain">Opplåsingshøyden og beløpet er offentlige på kjeden fra det øyeblikket hvelvet ble finansiert — alle med adressen kan lese dem.</string>
 </resources>

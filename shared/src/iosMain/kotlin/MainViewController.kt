@@ -24,6 +24,7 @@ val accounts = mutableMapOf<String, Bip44Wallet>()
 fun OnAppStartup()
 {
     initializeLibNexa()
+    org.nexa.libnexakotlin.contracts.initializeTimeLockVaultLibrary()
     setLocale()
     // TODO discover if we are running in test mode and set this appropriately
     // This is not that necessary for ios tests now, because the tests only run in

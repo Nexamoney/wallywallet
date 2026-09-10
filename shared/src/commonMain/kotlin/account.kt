@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Transient
 import org.nexa.threads.millinow
 import org.nexa.assets.AssetInfo
+import org.nexa.libnexakotlin.contracts.TimeLockVaultDestination
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.triggerAssetCheck
 import org.nexa.assets.triggerAssetCheckOnBlock
@@ -19,6 +20,7 @@ import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.iMutex
 import org.nexa.threads.millisleep
+import repositories.TimeLockContractRepository
 import kotlin.random.Random
 
 /** Account flags: No flag */
@@ -43,6 +45,22 @@ const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
 
 
 private val LogIt = GetLog("BU.wally.Account")
+
+private val screenOwnedTxLock = Mutex()
+private val screenOwnedTxIdems = mutableSetOf<Hash256>()
+
+/** The submitting screen owns this tx's user feedback (animation, notices): the default receive notifications skip it. */
+fun screenOwnsTxFeedback(idem: Hash256)
+{
+    screenOwnedTxLock.lock { screenOwnedTxIdems.add(idem) }
+}
+
+/** True for a screen-owned tx; forgets it once confirmed (the callback fires again then). */
+private fun isScreenOwnedTx(txh: TransactionHistory): Boolean = screenOwnedTxLock.lock {
+    val owned = txh.tx.idem in screenOwnedTxIdems
+    if (owned && txh.confirmedHeight != -1L) screenOwnedTxIdems.remove(txh.tx.idem)
+    owned
+}
 
 /** You can prefix every database (to isolate testing from production, for example) with this string */
 var dbPrefix = ""
@@ -145,6 +163,10 @@ interface Account
     val cnxnMgr: CnxnMgr
     var chain: Blockchain
     val currencyCode: String
+
+    // ----- Contracts -----
+    /** This account's time lock vaults.  Create one Repository per Account (it handles multiple vault contracts) */
+    val timeLockVaults: TimeLockContractRepository
 
     // ----- Assets -----
     var assets: Map<GroupId, AssetPerAccount>
@@ -323,6 +345,10 @@ class AccountImpl(
             Bip44Wallet(walletDb!!, name, chainSelector, secretWords)  // Wallet recovery
     }
 
+    // Lazy so an account that never opens the time lock vault smart contract screens
+    // doesn't pay for the repository, and so construction can read this.wallet.
+    override val timeLockVaults: TimeLockContractRepository by lazy { TimeLockContractRepository(this) }
+
     //? Current balance (cached from accessing the wallet), in the display units
     override var balance: BigDecimal? = null
         set(value)
@@ -466,9 +492,9 @@ class AccountImpl(
       { w, txes ->
           if (txes!=null) for (txh in txes)
           {
-              // A TDPP helper owns user-facing feedback for txs it submitted; skip the default
+              // A TDPP helper or a screen owns user-facing feedback for txs it submitted; skip the default
               // notifications for those idems but keep internal state updates via onChange() below.
-              if (isTdppPending(txh.tx.idem) || txh.relatedTo["TDPP"] != null) continue
+              if (isTdppPending(txh.tx.idem) || txh.relatedTo["TDPP"] != null || isScreenOwnedTx(txh)) continue
 
               // Only show received animation on unconfirmed or recent confirmed block, not for syncing blocks
               if ((txh.confirmedHeight == -1L) || (txh.confirmedHeight >= w.blockchain.curHeight-1))
@@ -782,6 +808,11 @@ class AccountImpl(
         // LogIt.info(sourceLoc() + name + ": Construct assets")
         val ast = mutableMapOf<GroupId, GroupInfo>()
         wallet.forEachUtxo { sp ->
+            // Do not add time-locked assets in the account's main displays of owned assets
+            if (sp.priorOutScript.parseTemplate(sp.amount)?.templateHash?.toHex() ==
+                TimeLockVaultDestination.TIME_LOCK_TEMPLATE_SCRIPT_HASH)
+                return@forEachUtxo false
+
             // TODO: this is a workaround for a bug where the script chain is incorrect
             if (sp.priorOutScript.chainSelector != sp.chainSelector)
             {

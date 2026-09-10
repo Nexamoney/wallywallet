@@ -44,6 +44,9 @@ import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 import kotlin.collections.get
+import repositories.TimeLockContractRepository
+import ui.TimeLockScreen
+import ui.TimeLockViewModel
 import ui.camouflage.MeditationScreen
 import ui.SudokuScreen
 import androidx.compose.runtime.collectAsState
@@ -206,6 +209,7 @@ enum class ScreenId
     SpecialTxPerm,
     AssetInfoPerm,
     SendToPerm,
+    TimeLock,
     Alerts;
 
     val isEntirelyScrollable:Boolean
@@ -404,8 +408,11 @@ open class ScreenNav()
         }
         if (priorId != null)
         {
-            curData.value = null
-            currentSubState.value = null
+            // curData.value = null
+            // currentSubState.value = null
+            // curData/currentSubState were restored from the popped entry above (or cleared when there was none) — clearing them here would break
+            // multi-level sub-state screens like TimeLock's master→detail→txs.
+
             // If the screen is none, that means to keep going back but this will execute any currentScreenDepart
             // associated with the None screen which is how we install a "finish activity" in Android
             if (priorId == ScreenId.None)
@@ -1188,6 +1195,7 @@ fun NavigationRoot(
                     SendSuccessAnimation()
                     SpecialTxSuccessAnimation()
                     ReceivedNexaAnimation()
+                    VaultSuccessAnimation()
 
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (isShowingRecoveryWarning.collectAsState().value)
@@ -1207,7 +1215,10 @@ fun NavigationRoot(
                           modifier = mod
                         ) {
                             LaunchedEffect(curScreen) {
-                                if (curScreen != ScreenId.MoreMenu)
+                                // The vault screen is reached from Home and keeps the home chrome, so Home stays lit.
+                                if (curScreen == ScreenId.TimeLock)
+                                    lastClicked.value = ScreenId.Home.toString()
+                                else if (curScreen != ScreenId.MoreMenu)
                                     lastClicked.value = curScreen.toString()
                             }
                             when (curScreen)
@@ -1332,6 +1343,15 @@ fun NavigationRoot(
                                     {
                                         AssetOfferScreen(nav, offer)
                                     }
+                                }
+
+                                ScreenId.TimeLock -> withAccount { act ->
+                                    // ID by account name so switching between a mainnet, a testnet and a regtest account rebuilds the
+                                    // VM (and its repo) against the new wallet's blockchain — the screen's unit label tracks it.
+                                    val vm = viewModel(key = act.name) {
+                                        TimeLockViewModel(act.timeLockVaults)
+                                    }
+                                    TimeLockScreen(accountPillViewModel, vm)
                                 }
 
                                 ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning.collectAsState().value, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)

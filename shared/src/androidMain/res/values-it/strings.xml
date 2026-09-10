@@ -639,4 +639,100 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="CamouflageDescriptionAndroid">Attivando il camuffamento l\'app si chiude e viene camuffata come un\'app chiamata Meditate. Per disattivare il camuffamento Meditate apri il menu dell\'app e tocca cinque volte il numero di versione.</string>
     <string name="CamouflageDescriptionOther">Per disattivare il camuffamento Meditate apri il menu dell\'app e tocca cinque volte il numero di versione.</string>
     <string name="CamouflageAsMeditateAppAndroid">Camuffa come app Meditate</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Cassaforte a blocco temporale</string>
+    <string name="tlvExplainer">Blocca le monete in modo che nessuno (nemmeno tu) possa spenderle fino a dopo la data scelta.</string>
+    <string name="tlvNewVault">Nuova cassaforte</string>
+    <string name="tlvMyVaultsCount" formatted="false">LE MIE CASSEFORTI · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit bloccati</string>
+    <string name="tlvLoadingVaults">Caricamento casseforti…</string>
+    <string name="tlvNoVaultsYet">Ancora nessuna cassaforte — tocca Nuova cassaforte qui sopra per crearne una.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable riscattabili · %locked bloccate · %claimed riscattate</string>
+    <string name="tlvLoadFailed">Impossibile caricare le casseforti</string>
+    <string name="tlvCreateFailed">Impossibile creare la cassaforte</string>
+    <string name="tlvClaimFailed">Impossibile riscattare la cassaforte</string>
+    <string name="tlvBalanceLoading">Caricamento saldo</string>
+    <string name="tlvClaimed">Riscattata</string>
+    <string name="tlvLocked">Bloccata</string>
+    <string name="tlvUnlocksBlock" formatted="false">Si sblocca al blocco %num</string>
+    <string name="tlvBlockNum" formatted="false">Blocco %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Sbloccata · in attesa di un deposito</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Sbloccata · servono monete per la commissione</string>
+    <string name="tlvUnlockedReadyToClaim">Sbloccata · pronta per il riscatto</string>
+    <string name="tlvClaimedFundsArrivedSince">Riscattata · fondi arrivati in seguito</string>
+    <string name="tlvClaim">Riscatta</string>
+    <string name="tlvReclaim">Riscatta di nuovo</string>
+    <string name="tlvVaultEmptied">Questa cassaforte è stata svuotata</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% trascorso</string>
+    <string name="tlvDaysLeft" formatted="false">%num giorni rimasti</string>
+    <string name="tlvOneDayLeft">1 giorno rimasto</string>
+    <string name="tlvHoursLeft" formatted="false">%num ore rimaste</string>
+    <string name="tlvOneHourLeft">1 ora rimasta</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minuti rimasti</string>
+    <string name="tlvOneMinuteLeft">1 minuto rimasto</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count bastone di autorità · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count bastoni di autorità · %syms</string>
+    <string name="tlvTransactions">Transazioni della cassaforte</string>
+    <string name="tlvNoTransactions">Ancora nessuna transazione per questa cassaforte.</string>
+    <string name="tlvVaultCreated">Cassaforte creata</string>
+    <string name="tlvClaimSent">Riscatto inviato</string>
+    <string name="tlvPendingDeposit">Deposito in sospeso</string>
+    <string name="tlvTopUp">Ricarica</string>
+    <string name="tlvPending">In sospeso</string>
+    <string name="tlvNetworkFee" formatted="false">Commissione di rete %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Autorità %caps · %token</string>
+    <string name="tlvAuthority">Autorità</string>
+    <string name="tlvCapMint">Conia</string>
+    <string name="tlvCapMelt">Fondi</string>
+    <string name="tlvCapBaton">Bastone</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Sottogruppo</string>
+    <string name="tlvCreateVault">Crea cassaforte</string>
+    <string name="tlvCreateExplainer">I fondi più una piccola commissione andranno a un indirizzo con blocco temporale. Li vedrai nella cassaforte, ma non potrai spenderli prima della data specificata.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimo %amt %unit</string>
+    <string name="tlvLockUntil">Blocca fino a</string>
+    <string name="tlvBlockHeight">Altezza del blocco</string>
+    <string name="tlvFutureDate">Data futura</string>
+    <string name="tlvMaxBlockHeight" formatted="false">L\'altezza massima del blocco è %num</string>
+    <string name="tlvFeeSatB">Commissione</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Totale</string>
+    <string name="tlvReview">Rivedi</string>
+    <string name="tlvDone">Fatto</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Conferma cassaforte</string>
+    <string name="tlvPayTo">Paga a</string>
+    <string name="tlvNewTimeLockVault">Nuova cassaforte a blocco temporale</string>
+    <string name="tlvLockedUntil">Bloccata fino a</string>
+    <string name="tlvConfirmAndSign">Conferma e firma</string>
+    <string name="tlvWorking">In corso…</string>
+    <string name="tlvClaimVault">Riscatta cassaforte</string>
+    <string name="tlvClaimExplainerSingle">Questa cassaforte si è sbloccata. Conferma per riportare il suo saldo nel tuo portafoglio.</string>
+    <string name="tlvYourWallet">(il tuo portafoglio)</string>
+    <string name="tlvAsset">Asset</string>
+    <string name="tlvYouReceive">Ricevi</string>
+    <string name="tlvNothingToClaim">Niente da riscattare — questa cassaforte è vuota.</string>
+    <string name="tlvConfirmAndClaim">Conferma e riscatta</string>
+    <string name="tlvVaultClaimed">Cassaforte riscattata</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit stanno tornando nel tuo portafoglio.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">I fondi sono in arrivo.</string>
+    <string name="tlvLockedUntilBlock">Bloccata fino al blocco</string>
+    <string name="tlvName">Nome</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Bastoni di autorità · %count</string>
+    <string name="tlvMovable">Trasferibile</string>
+    <string name="tlvBatonExplainer">Un bastone è un permesso, non un saldo. Si congela con le monete ed esce con loro nello stesso riscatto.</string>
+    <string name="tlvDepositAddress">Indirizzo di deposito</string>
+    <string name="tlvNoAddress">(nessun indirizzo)</string>
+    <string name="tlvVaultSuccess">Successo della cassaforte</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Chiudi QR</string>
+    <string name="tlvDepositWarning">Tutto ciò che viene inviato a questo indirizzo resta bloccato finché la cassaforte non si apre — incluse le monete inviate qui per errore.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Invia token qui solo insieme a un po\' di %unit. Una cassaforte paga la propria commissione all\'apertura, e solo con i %unit che contiene.</string>
+    <string name="tlvHistory">Cronologia</string>
+    <string name="tlvView">Vedi</string>
+    <string name="tlvNoEarlyOpen">Non c\'è modo di aprire questa cassaforte in anticipo. È proprio questo lo scopo di un blocco temporale.</string>
+    <string name="tlvPublicOnChain">L\'altezza di sblocco e l\'importo sono pubblici sulla catena dal momento in cui questa cassaforte è stata finanziata — chiunque abbia l\'indirizzo può leggerli.</string>
 </resources>

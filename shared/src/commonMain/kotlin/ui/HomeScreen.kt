@@ -19,6 +19,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.*
+import ui.views.ContractListView
+import ui.views.ContractListViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -97,6 +99,41 @@ data class TabRowItem(
   val description: String
 )
 
+// One-shot tab request consumed by the next HomeScreen composition (set before navigating home).
+var requestedHomeTab: Int? = null
+
+/** The home header tab row (accounts / transactions / contracts). Also drawn by the TimeLock screen so its sub-screens keep the home chrome. */
+@Composable
+fun HomeTabRow(selectedIndex: Int, onSelect: (Int) -> Unit)
+{
+    val tabRowItems = listOf(
+        TabRowItem(
+            icon = Icons.Outlined.Group,
+            description = "Accounts"
+        ),
+        TabRowItem(
+            icon = Icons.Outlined.History,
+            description = "Transactions"
+        ),
+        TabRowItem(
+            icon = Icons.Outlined.Description,
+            description = "Contracts"
+        ),
+    )
+    TabRow(
+      selectedTabIndex = selectedIndex
+    ) {
+        tabRowItems.forEachIndexed { index, item ->
+            Tab(
+              // text = { Text(text = item.description)},
+              icon = { Icon(imageVector = item.icon, item.description) },
+              selected = selectedIndex == index,
+              onClick = { onSelect(index) }
+            )
+        }
+    }
+}
+
 val txHistViewModel = TxHistoryViewModel()
 
 @Composable
@@ -110,23 +147,14 @@ fun HomeScreen(
 {
     val assets = assetViewModel.assets.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
+    val initialTab = remember { requestedHomeTab?.also { requestedHomeTab = null } ?: 0 }
     val pagerState = rememberPagerState(
-      initialPage = 0,
-      pageCount = { 2 }
+      initialPage = initialTab,
+      pageCount = { 3 }
     )
     var isScanningQr by remember { mutableStateOf(false) }
+    val contractVm: ContractListViewModel = viewModel { ContractListViewModel() }
 
-
-    val tabRowItems = listOf(
-        TabRowItem(
-            icon = Icons.Outlined.Group,
-            description = "Accounts"
-        ),
-        TabRowItem(
-            icon = Icons.Outlined.History,
-            description = "Transactions"
-        ),
-    )
 
     Box (
       modifier = Modifier.fillMaxSize(),
@@ -135,7 +163,9 @@ fun HomeScreen(
         Column {
             if (!isShowingRecoveryWarning)
                 Spacer(Modifier.height(16.dp))
-            pill.draw(true)
+            // The contracts tab only lists contracts, so the pill stays the account's own; the vault
+            // summary line belongs to the vault screen, once that contract is actually open.
+            pill.draw()
             Spacer(modifier = Modifier.height(8.dp))
             if (assets.isNotEmpty())
             {
@@ -143,17 +173,8 @@ fun HomeScreen(
                 AssetCarousel(assetViewModel)
                 Spacer(Modifier.height(6.dp))
             }
-            TabRow(
-              selectedTabIndex = pagerState.currentPage
-            ) {
-                tabRowItems.forEachIndexed { index, item ->
-                    Tab(
-                      // text = { Text(text = item.description)},
-                      icon = { Icon(imageVector = item.icon,"") },
-                      selected = pagerState.currentPage == index,
-                      onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } }
-                    )
-                }
+            HomeTabRow(pagerState.currentPage) { index ->
+                coroutineScope.launch { pagerState.animateScrollToPage(index) }
             }
             HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
                 when (page) {
@@ -173,6 +194,15 @@ fun HomeScreen(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             TransactionsList(Modifier, txHistViewModel)
+                        }
+                    2 ->
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            ContractListView(
+                                onOpenTimeLock = { nav.go(ScreenId.TimeLock) },
+                                vm = contractVm,
+                            )
                         }
                 }
             }

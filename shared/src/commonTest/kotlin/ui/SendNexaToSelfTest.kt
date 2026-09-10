@@ -28,8 +28,10 @@ import info.bitcoinunlimited.www.wally.ui.views.AccountUiDataViewModel
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModelImpl
 import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
+import info.bitcoinunlimited.www.wally.SELECTED_ACCOUNT_NAME_PREF
 import info.bitcoinunlimited.www.wally.wallyApp
 import org.nexa.libnexakotlin.DecimalFormat
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -38,6 +40,21 @@ import kotlin.time.Duration.Companion.minutes
 @OptIn(ExperimentalTestApi::class)
 class SendNexaToSelfTest : WallyUiTestBase()
 {
+    val priorSelectedAccount = wallyApp!!.focusedAccount.value
+    val priorSelectedAccountName = wallyApp!!.preferenceDB.getString(SELECTED_ACCOUNT_NAME_PREF, "") ?: ""
+
+    @AfterTest
+    fun restoreGlobals()
+    {
+        nav.switch(ScreenId.Home)
+        wallyApp!!.focusedAccount.value = priorSelectedAccount
+        with(wallyApp!!.preferenceDB.edit())
+        {
+            putString(SELECTED_ACCOUNT_NAME_PREF, priorSelectedAccountName)
+            commit()
+        }
+    }
+
     @Test
     fun sendNexaToSelfDeductsFee()
     {

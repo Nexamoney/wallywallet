@@ -84,6 +84,11 @@ fun getAccountIconResPath(chainSelector: ChainSelector?): String
     }
 }
 
+/** The focused account's chain icon. The yellow Nexa mark means mainnet, so never hardcode it. */
+@Composable
+fun focusedChainIconResPath(): String =
+    getAccountIconResPath(info.bitcoinunlimited.www.wally.wallyApp?.focusedAccount?.collectAsState()?.value?.wallet?.chainSelector)
+
 // TODO: Implement dark mode
 val DarkColorPalette = darkColorScheme(
   primary = colorPrimary,

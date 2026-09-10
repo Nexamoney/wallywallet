@@ -873,4 +873,120 @@ Thank you and enjoy your new wallet!</string>
     <string name="CamouflageDescriptionAndroid">Enabling the camouflage closes the app and camouflages it as an app named Meditate. To disable the Meditate app camouflage open the app menu and click the version number five times.</string>
     <string name="CamouflageDescriptionOther">To disable the Meditate app camouflage open the app menu and click the version number five times.</string>
     <string name="CamouflageAsMeditateAppAndroid">Camouflage as Meditate app</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Time Lock Vault</string>
+    <string name="tlvExplainer">Lock coins so nobody (including yourself) can spend them until after your chosen date.</string>
+    <string name="tlvNewVault">New vault</string>
+    <string name="tlvContractLineLabel">Time Lock Vault:</string>
+    <string name="tlvMyVaultsCount" formatted="false">MY VAULTS · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit locked</string>
+    <string name="tlvLoadingVaults">Loading vaults…</string>
+    <string name="tlvNoVaultsYet">No vaults yet — tap New vault above to make one.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable claimable · %locked locked · %claimed claimed</string>
+    <string name="tlvLoadFailed">Could not load time lock vaults</string>
+    <string name="tlvCreateFailed">Could not create the vault</string>
+    <string name="tlvClaimFailed">Could not claim the vault</string>
+    <string name="tlvBalanceLoading">Balance loading</string>
+    <string name="tlvClaimed">Claimed</string>
+    <string name="tlvClaimedOn" formatted="false">Claimed %date</string>
+    <string name="tlvLocked">Locked</string>
+    <string name="tlvLockedOn" formatted="false">Locked %date</string>
+    <string name="tlvUnlocked">Unlocked</string>
+    <string name="tlvUnlockedOn" formatted="false">Unlocked %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Locked %locked · Unlocked %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Locked · Unlocked</string>
+    <string name="tlvLockedUnlockedClaimedFields">Locked · Unlocked · Claimed</string>
+    <string name="tlvUnlocksBlock" formatted="false">Unlocks block %num</string>
+    <string name="tlvBlockNum" formatted="false">Block %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Block %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Unlocked · waiting for a deposit</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Unlocked · needs coin for the fee</string>
+    <string name="tlvUnlockedReadyToClaim">Unlocked · ready to claim</string>
+    <string name="tlvClaimedFundsArrivedSince">Claimed · funds arrived since</string>
+    <string name="tlvClaim">Claim</string>
+    <string name="tlvReclaim">Re-claim</string>
+    <string name="tlvVaultEmptied">This vault has been emptied</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% elapsed</string>
+    <string name="tlvDaysLeft" formatted="false">%num days left</string>
+    <string name="tlvOneDayLeft">1 day left</string>
+    <string name="tlvHoursLeft" formatted="false">%num hours left</string>
+    <string name="tlvOneHourLeft">1 hour left</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minutes left</string>
+    <string name="tlvOneMinuteLeft">1 minute left</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count authority baton · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count authority batons · %syms</string>
+    <string name="tlvTransactions">Vault transactions</string>
+    <string name="tlvNoTransactions">No transactions yet for this vault.</string>
+    <string name="tlvVaultCreated">Vault created</string>
+    <string name="tlvClaimSent">Claim sent</string>
+    <string name="tlvPendingDeposit">Pending deposit</string>
+    <string name="tlvTopUp">Top-up</string>
+    <string name="tlvTxCreated">Created</string>
+    <string name="tlvTxDeposit">Deposit</string>
+    <string name="tlvTxReceived">Received</string>
+    <string name="tlvPending">Pending</string>
+    <string name="tlvNetworkFee" formatted="false">Network fee %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps authority · %token</string>
+    <string name="tlvAuthority">Authority</string>
+    <string name="tlvCapMint">Mint</string>
+    <string name="tlvCapMelt">Melt</string>
+    <string name="tlvCapBaton">Baton</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Subgroup</string>
+    <string name="tlvCreateTitle">Create time lock vault</string>
+    <string name="tlvCreateVault">Create vault</string>
+    <string name="tlvCreateExplainer">Funds plus a small fee will move into a time-locked address. You\'ll see them in the vault, but can\'t spend before the specified date.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
+    <string name="tlvLockUntil">Lock until</string>
+    <string name="tlvBlockHeight">Block height</string>
+    <string name="tlvFutureDate">Future date</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Maximum block height is %num</string>
+    <string name="tlvFeeSatB">Fee</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Total</string>
+    <string name="tlvReview">Review</string>
+    <string name="tlvDone">Done</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Confirm vault</string>
+    <string name="tlvPayTo">Pay to</string>
+    <string name="tlvNewTimeLockVault">New time lock vault</string>
+    <string name="tlvLockedUntil">Locked until</string>
+    <string name="tlvLock">Lock</string>
+    <string name="tlvLockExplainer" formatted="false">Signing locks %amt %unit in %name until %date. It cannot be claimed before then.</string>
+    <string name="tlvConfirmAndSign">Confirm &amp; sign</string>
+    <string name="tlvWorking">Working…</string>
+    <string name="tlvClaimVault">Claim vault</string>
+    <string name="tlvClaimExplainerSingle">This vault has unlocked. Confirm to sweep its balance back to your wallet.</string>
+    <string name="tlvClaimTo">Claim to</string>
+    <string name="tlvClaimedTo">Claimed to</string>
+    <string name="tlvYourWallet">(your wallet)</string>
+    <string name="tlvAsset">Asset</string>
+    <string name="tlvYouReceive">You receive</string>
+    <string name="tlvNothingToClaim">Nothing to claim — this vault is empty.</string>
+    <string name="tlvConfirmAndClaim">Confirm &amp; claim</string>
+    <string name="tlvVaultClaimed">Vault claimed</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit is on its way back to your wallet.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">Funds are on their way.</string>
+    <string name="tlvLockedUntilBlock">Locked until block</string>
+    <string name="tlvName">Name</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Authority batons · %count</string>
+    <string name="tlvTokens">Tokens</string>
+    <string name="tlvBatons">Batons</string>
+    <string name="tlvMovable">Movable</string>
+    <string name="tlvBatonExplainer">A baton is a permission, not a balance. It is frozen with the coins and comes out with them in the same claim.</string>
+    <string name="tlvDepositAddress">Deposit address</string>
+    <string name="tlvNoAddress">(no address)</string>
+    <string name="tlvVaultSuccess">Vault success</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Close QR</string>
+    <string name="tlvDepositWarning">Anything sent to this address is locked until the vault opens — including coins sent here by mistake.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Send tokens here only together with some %unit. A vault pays its own fee when it opens, and only from the %unit it holds.</string>
+    <string name="tlvHistory">History</string>
+    <string name="tlvView">View</string>
+    <string name="tlvNoEarlyOpen">There is no way to open this vault early. That is the purpose of a time lock vault.</string>
+    <string name="tlvPublicOnChain">The unlock height and the amount are public on the chain from the moment this vault was funded — anyone with the address can read them.</string>
 </resources>

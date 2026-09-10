@@ -40,3 +40,39 @@ final class iosAppUITests: XCTestCase {
         }
     }
 }
+
+/// Runtime cover for the time lock vault list on iOS.
+///
+/// The list is gated behind TimeLockContractRepository.start(), whose one-shot walk raced a
+/// concurrent discoverVaultsFromChain() and left the row spinning on "Loading vaults..."
+/// indefinitely. The guard that fixes it reads a @Volatile flag across threads, and
+/// Kotlin/Native has a different memory model from the JVM, so it must be exercised on a
+/// Native target rather than only on JVM.
+final class TimeLockVaultUITests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
+    func testContractListLeavesLoadingState() {
+        let app = XCUIApplication()
+        XCTAssertTrue(app.launchAndWaitForHome(), "Home never became interactive")
+
+        // Home's third tab. The tab row exposes each icon's contentDescription.
+        let contractsTab = app.buttons["Contracts"].firstMatch
+        XCTAssertTrue(contractsTab.waitForExistence(timeout: 30), "Contracts tab not found")
+        contractsTab.tap()
+
+        // The row itself proves the contract list composed at all.
+        let vaultRow = app.staticTexts["Time Lock Vault"].firstMatch
+        XCTAssertTrue(vaultRow.waitForExistence(timeout: 60), "Time Lock Vault row never appeared")
+
+        // start() must finish and publish counts. Before the fix this never cleared.
+        let loading = app.staticTexts["Loading vaults..."]
+        expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: loading, handler: nil)
+        waitForExpectations(timeout: 90) { error in
+            XCTAssertNil(error, "still showing 'Loading vaults...' after 90s - start() did not complete")
+        }
+    }
+}

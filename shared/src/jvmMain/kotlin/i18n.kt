@@ -62,3 +62,6 @@ actual fun setLocale(language: String, country: String, context: Any?):Boolean
     LocaleStrings = strings
     return true
 }
+
+/** Desktop has no platform month-name source, so it uses the built-in English names. */
+actual fun abbreviatedMonthNames(): List<String> = EnglishMonthAbbreviations

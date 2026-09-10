@@ -637,4 +637,100 @@
     <string name="CamouflageDescriptionAndroid">위장을 켜면 앱이 종료되고 명상이라는 이름의 앱으로 위장됩니다. 명상 앱 위장을 해제하려면 앱 메뉴를 열고 버전 번호를 다섯 번 누르세요.</string>
     <string name="CamouflageDescriptionOther">명상 앱 위장을 해제하려면 앱 메뉴를 열고 버전 번호를 다섯 번 누르세요.</string>
     <string name="CamouflageAsMeditateAppAndroid">명상 앱으로 위장하기</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">타임락 금고</string>
+    <string name="tlvExplainer">선택한 날짜가 지나기 전까지는 아무도 (본인 포함) 코인을 쓸 수 없도록 잠급니다.</string>
+    <string name="tlvNewVault">새 금고</string>
+    <string name="tlvMyVaultsCount" formatted="false">내 금고 · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit 잠김</string>
+    <string name="tlvLoadingVaults">금고 불러오는 중…</string>
+    <string name="tlvNoVaultsYet">아직 금고가 없습니다 — 위의 새 금고를 눌러 만들어 보세요.</string>
+    <string name="tlvContractCounts" formatted="false">수령 가능 %claimable · 잠김 %locked · 수령됨 %claimed</string>
+    <string name="tlvLoadFailed">타임락 금고를 불러오지 못했습니다</string>
+    <string name="tlvCreateFailed">금고를 만들지 못했습니다</string>
+    <string name="tlvClaimFailed">금고를 수령하지 못했습니다</string>
+    <string name="tlvBalanceLoading">잔액 불러오는 중</string>
+    <string name="tlvClaimed">수령됨</string>
+    <string name="tlvLocked">잠김</string>
+    <string name="tlvUnlocksBlock" formatted="false">블록 %num에서 잠금 해제</string>
+    <string name="tlvBlockNum" formatted="false">블록 %num</string>
+    <string name="tlvUnlockedWaitingDeposit">잠금 해제됨 · 입금 대기 중</string>
+    <string name="tlvUnlockedNeedsFeeCoin">잠금 해제됨 · 수수료용 코인 필요</string>
+    <string name="tlvUnlockedReadyToClaim">잠금 해제됨 · 수령 준비 완료</string>
+    <string name="tlvClaimedFundsArrivedSince">수령됨 · 이후 자금 도착</string>
+    <string name="tlvClaim">수령</string>
+    <string name="tlvReclaim">다시 수령</string>
+    <string name="tlvVaultEmptied">이 금고는 비워졌습니다</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% 경과</string>
+    <string name="tlvDaysLeft" formatted="false">%num일 남음</string>
+    <string name="tlvOneDayLeft">1일 남음</string>
+    <string name="tlvHoursLeft" formatted="false">%num시간 남음</string>
+    <string name="tlvOneHourLeft">1시간 남음</string>
+    <string name="tlvMinutesLeft" formatted="false">%num분 남음</string>
+    <string name="tlvOneMinuteLeft">1분 남음</string>
+    <string name="tlvAuthorityBaton" formatted="false">권한 바통 %count개 · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">권한 바통 %count개 · %syms</string>
+    <string name="tlvTransactions">금고 거래 내역</string>
+    <string name="tlvNoTransactions">이 금고의 거래가 아직 없습니다.</string>
+    <string name="tlvVaultCreated">금고 생성됨</string>
+    <string name="tlvClaimSent">수령 전송됨</string>
+    <string name="tlvPendingDeposit">입금 대기 중</string>
+    <string name="tlvTopUp">추가 입금</string>
+    <string name="tlvPending">대기 중</string>
+    <string name="tlvNetworkFee" formatted="false">네트워크 수수료 %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps 권한 · %token</string>
+    <string name="tlvAuthority">권한</string>
+    <string name="tlvCapMint">발행</string>
+    <string name="tlvCapMelt">소각</string>
+    <string name="tlvCapBaton">바통</string>
+    <string name="tlvCapRescript">리스크립트</string>
+    <string name="tlvCapSubgroup">하위 그룹</string>
+    <string name="tlvCreateVault">금고 만들기</string>
+    <string name="tlvCreateExplainer">자금과 소액의 수수료가 타임락 주소로 이동합니다. 금고에서 볼 수는 있지만 지정한 날짜 이전에는 쓸 수 없습니다.</string>
+    <string name="tlvMinimumAmount" formatted="false">최소 %amt %unit</string>
+    <string name="tlvLockUntil">잠금 기한</string>
+    <string name="tlvBlockHeight">블록 높이</string>
+    <string name="tlvFutureDate">미래 날짜</string>
+    <string name="tlvMaxBlockHeight" formatted="false">최대 블록 높이는 %num입니다</string>
+    <string name="tlvFeeSatB">수수료</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">합계</string>
+    <string name="tlvReview">검토</string>
+    <string name="tlvDone">완료</string>
+    <string name="tlvOk">확인</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">금고 확인</string>
+    <string name="tlvPayTo">받는 곳</string>
+    <string name="tlvNewTimeLockVault">새 타임락 금고</string>
+    <string name="tlvLockedUntil">잠금 기한</string>
+    <string name="tlvConfirmAndSign">확인 후 서명</string>
+    <string name="tlvWorking">처리 중…</string>
+    <string name="tlvClaimVault">금고 수령</string>
+    <string name="tlvClaimExplainerSingle">이 금고의 잠금이 해제되었습니다. 확인하면 잔액이 지갑으로 돌아옵니다.</string>
+    <string name="tlvYourWallet">(내 지갑)</string>
+    <string name="tlvAsset">자산</string>
+    <string name="tlvYouReceive">받는 금액</string>
+    <string name="tlvNothingToClaim">수령할 것이 없습니다 — 이 금고는 비어 있습니다.</string>
+    <string name="tlvConfirmAndClaim">확인 후 수령</string>
+    <string name="tlvVaultClaimed">금고 수령됨</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit이(가) 지갑으로 돌아가는 중입니다.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">자금이 이동 중입니다.</string>
+    <string name="tlvLockedUntilBlock">잠금 해제 블록</string>
+    <string name="tlvName">이름</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">권한 바통 · %count</string>
+    <string name="tlvMovable">이동 가능</string>
+    <string name="tlvBatonExplainer">바통은 잔액이 아니라 권한입니다. 코인과 함께 동결되며 같은 수령에서 함께 나옵니다.</string>
+    <string name="tlvDepositAddress">입금 주소</string>
+    <string name="tlvNoAddress">(주소 없음)</string>
+    <string name="tlvVaultSuccess">금고 성공</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR 닫기</string>
+    <string name="tlvDepositWarning">이 주소로 보낸 모든 것은 금고가 열릴 때까지 잠깁니다 — 실수로 보낸 코인도 마찬가지입니다.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">토큰은 반드시 약간의 %unit과 함께 보내세요. 금고는 열릴 때 자체 수수료를 내며, 보유한 %unit에서만 지불합니다.</string>
+    <string name="tlvHistory">내역</string>
+    <string name="tlvView">보기</string>
+    <string name="tlvNoEarlyOpen">이 금고를 미리 열 방법은 없습니다. 그것이 타임락의 목적입니다.</string>
+    <string name="tlvPublicOnChain">잠금 해제 높이와 금액은 금고에 자금이 들어온 순간부터 체인에 공개됩니다 — 주소를 아는 누구나 읽을 수 있습니다.</string>
 </resources>

@@ -636,4 +636,100 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="CamouflageDescriptionAndroid">Mengaktifkan samaran akan menutup aplikasi dan menyamarkannya sebagai aplikasi bernama Meditate. Untuk menonaktifkan samaran aplikasi Meditate, buka menu aplikasi dan ketuk nomor versi lima kali.</string>
     <string name="CamouflageDescriptionOther">Untuk menonaktifkan samaran aplikasi Meditate, buka menu aplikasi dan ketuk nomor versi lima kali.</string>
     <string name="CamouflageAsMeditateAppAndroid">Samarkan sebagai aplikasi Meditate</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Brankas Kunci Waktu</string>
+    <string name="tlvExplainer">Kunci koin agar tidak ada siapa pun (termasuk Anda sendiri) yang bisa membelanjakannya sampai setelah tanggal pilihan Anda.</string>
+    <string name="tlvNewVault">Brankas baru</string>
+    <string name="tlvMyVaultsCount" formatted="false">BRANKAS SAYA · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit terkunci</string>
+    <string name="tlvLoadingVaults">Memuat brankas…</string>
+    <string name="tlvNoVaultsYet">Belum ada brankas — ketuk Brankas baru di atas untuk membuatnya.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable dapat diklaim · %locked terkunci · %claimed diklaim</string>
+    <string name="tlvLoadFailed">Tidak dapat memuat brankas kunci waktu</string>
+    <string name="tlvCreateFailed">Tidak dapat membuat brankas</string>
+    <string name="tlvClaimFailed">Tidak dapat mengklaim brankas</string>
+    <string name="tlvBalanceLoading">Memuat saldo</string>
+    <string name="tlvClaimed">Diklaim</string>
+    <string name="tlvLocked">Terkunci</string>
+    <string name="tlvUnlocksBlock" formatted="false">Terbuka di blok %num</string>
+    <string name="tlvBlockNum" formatted="false">Blok %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Terbuka · menunggu setoran</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Terbuka · perlu koin untuk biaya</string>
+    <string name="tlvUnlockedReadyToClaim">Terbuka · siap diklaim</string>
+    <string name="tlvClaimedFundsArrivedSince">Diklaim · dana masuk setelahnya</string>
+    <string name="tlvClaim">Klaim</string>
+    <string name="tlvReclaim">Klaim ulang</string>
+    <string name="tlvVaultEmptied">Brankas ini telah dikosongkan</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% berlalu</string>
+    <string name="tlvDaysLeft" formatted="false">%num hari tersisa</string>
+    <string name="tlvOneDayLeft">1 hari tersisa</string>
+    <string name="tlvHoursLeft" formatted="false">%num jam tersisa</string>
+    <string name="tlvOneHourLeft">1 jam tersisa</string>
+    <string name="tlvMinutesLeft" formatted="false">%num menit tersisa</string>
+    <string name="tlvOneMinuteLeft">1 menit tersisa</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count tongkat otoritas · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count tongkat otoritas · %syms</string>
+    <string name="tlvTransactions">Transaksi brankas</string>
+    <string name="tlvNoTransactions">Belum ada transaksi untuk brankas ini.</string>
+    <string name="tlvVaultCreated">Brankas dibuat</string>
+    <string name="tlvClaimSent">Klaim terkirim</string>
+    <string name="tlvPendingDeposit">Setoran tertunda</string>
+    <string name="tlvTopUp">Isi ulang</string>
+    <string name="tlvPending">Tertunda</string>
+    <string name="tlvNetworkFee" formatted="false">Biaya jaringan %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Otoritas %caps · %token</string>
+    <string name="tlvAuthority">Otoritas</string>
+    <string name="tlvCapMint">Mint</string>
+    <string name="tlvCapMelt">Melt</string>
+    <string name="tlvCapBaton">Baton</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Subgrup</string>
+    <string name="tlvCreateVault">Buat brankas</string>
+    <string name="tlvCreateExplainer">Dana ditambah biaya kecil akan pindah ke alamat berkunci waktu. Anda akan melihatnya di brankas, tetapi tidak dapat membelanjakannya sebelum tanggal yang ditentukan.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
+    <string name="tlvLockUntil">Kunci sampai</string>
+    <string name="tlvBlockHeight">Tinggi blok</string>
+    <string name="tlvFutureDate">Tanggal mendatang</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Tinggi blok maksimum adalah %num</string>
+    <string name="tlvFeeSatB">Biaya</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Total</string>
+    <string name="tlvReview">Tinjau</string>
+    <string name="tlvDone">Selesai</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Konfirmasi brankas</string>
+    <string name="tlvPayTo">Bayar ke</string>
+    <string name="tlvNewTimeLockVault">Brankas kunci waktu baru</string>
+    <string name="tlvLockedUntil">Terkunci sampai</string>
+    <string name="tlvConfirmAndSign">Konfirmasi &amp; tanda tangani</string>
+    <string name="tlvWorking">Sedang bekerja…</string>
+    <string name="tlvClaimVault">Klaim brankas</string>
+    <string name="tlvClaimExplainerSingle">Brankas ini telah terbuka. Konfirmasi untuk mengembalikan saldonya ke dompet Anda.</string>
+    <string name="tlvYourWallet">(dompet Anda)</string>
+    <string name="tlvAsset">Aset</string>
+    <string name="tlvYouReceive">Anda menerima</string>
+    <string name="tlvNothingToClaim">Tidak ada yang bisa diklaim — brankas ini kosong.</string>
+    <string name="tlvConfirmAndClaim">Konfirmasi &amp; klaim</string>
+    <string name="tlvVaultClaimed">Brankas diklaim</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit sedang dalam perjalanan kembali ke dompet Anda.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Dana sedang dalam perjalanan.</string>
+    <string name="tlvLockedUntilBlock">Terkunci sampai blok</string>
+    <string name="tlvName">Nama</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Tongkat otoritas · %count</string>
+    <string name="tlvMovable">Dapat dipindah</string>
+    <string name="tlvBatonExplainer">Tongkat adalah izin, bukan saldo. Ia membeku bersama koin dan keluar bersamanya dalam klaim yang sama.</string>
+    <string name="tlvDepositAddress">Alamat setoran</string>
+    <string name="tlvNoAddress">(tanpa alamat)</string>
+    <string name="tlvVaultSuccess">Keberhasilan brankas</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Tutup QR</string>
+    <string name="tlvDepositWarning">Apa pun yang dikirim ke alamat ini terkunci sampai brankas terbuka — termasuk koin yang terkirim ke sini karena keliru.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Kirim token ke sini hanya bersama sedikit %unit. Brankas membayar biayanya sendiri saat terbuka, dan hanya dari %unit yang dimilikinya.</string>
+    <string name="tlvHistory">Riwayat</string>
+    <string name="tlvView">Lihat</string>
+    <string name="tlvNoEarlyOpen">Tidak ada cara membuka brankas ini lebih awal. Itulah tujuan kunci waktu.</string>
+    <string name="tlvPublicOnChain">Tinggi pembukaan dan jumlahnya bersifat publik di rantai sejak brankas ini didanai — siapa pun yang memiliki alamatnya dapat membacanya.</string>
 </resources>

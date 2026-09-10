@@ -597,6 +597,10 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
                         }
                         LogIt.info("Sending TX: ${tx.toHex()}")
                         clearAlerts()
+                        // The payment is complete, so the nav params that populated this screen are spent.
+                        // Drop them BEFORE navigating: go() snapshots curData into the stack entry it pushes, and
+                        // back() restores it — which would re-arm this screen with the address and amount just paid.
+                        nav.curData.value = null
                         nav.go(ScreenId.Home)
                         clear()
                         uiState.value = SendScreenUi() // We are done with a send so reset state machine

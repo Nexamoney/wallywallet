@@ -31,6 +31,7 @@ import dev.mokkery.mock
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetOffer
 import kotlinx.coroutines.flow.MutableStateFlow
+import repositories.TimeLockContractRepository
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import info.bitcoinunlimited.www.wally.ui.views.RecentTransactionUIData
 import org.nexa.assets.AssetInfo
@@ -505,6 +506,10 @@ fun mockAccount(
         every { setBlockchainAccessModeFromPrefs() } returns Unit
         every { constructAssetMap(any()) } returns Unit
         every { asyncInit(any(), any()) } returns Unit
+
+        // Contracts: a real repository over the mock wallet (the class is final, so it can't be mocked)
+        val timeLockRepo by lazy { TimeLockContractRepository(this@mock) }
+        every { timeLockVaults } calls { timeLockRepo }
 
         // Wallet change callbacks
         every { cb1 } returns { _, _ -> }

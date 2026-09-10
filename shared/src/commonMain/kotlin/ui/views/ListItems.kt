@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.nav
+import info.bitcoinunlimited.www.wally.ui.theme.focusedChainIconResPath
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurpleExtraLight
 import org.nexa.assets.AssetInfo
@@ -177,7 +178,7 @@ fun RecentTransactionListItem(tx: RecentTransactionUIData)
                   Row(
                       verticalAlignment = Alignment.CenterVertically
                   ) {
-                      ResImageView("icons/nexa_icon.png", Modifier.size(16.dp), "Blockchain icon")
+                      ResImageView(focusedChainIconResPath(), Modifier.size(16.dp), "Blockchain icon")
                       Spacer(Modifier.width(8.dp))
                       // Nexa transferred
                       Text(

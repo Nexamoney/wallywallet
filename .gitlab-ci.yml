@@ -282,6 +282,10 @@ jvmTest-ubuntu-docker:
   tags:
     - berlin
   script:
+    # Start the regtest Nexa node bundled in the docker image, because our tests use it.
+    - /root/nexa/bin/nexad --daemon
+    - sleep 10 # TODO command that waits until full node is ready
+    - /root/nexa/bin/nexa-cli generate 1
     - ./gradlew :shared:cleanJvmTest :shared:jvmTest
   artifacts:
     reports:

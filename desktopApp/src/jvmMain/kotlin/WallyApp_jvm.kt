@@ -71,6 +71,7 @@ object WallyJvmApp
     fun main(args: Array<String>)
     {
         initializeLibNexa()
+        org.nexa.libnexakotlin.contracts.initializeTimeLockVaultLibrary()
         initializeGraphicsResources()
         setLocale()
         LogIt.warning("Starting Wally Enterprise Wallet")

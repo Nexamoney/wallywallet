@@ -638,4 +638,100 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="CamouflageDescriptionAndroid">Kamuflaj etkinleştirildiğinde uygulama kapanır ve Meditate adlı bir uygulama gibi görünür. Meditate kamuflajını kapatmak için uygulama menüsünü açın ve sürüm numarasına beş kez dokunun.</string>
     <string name="CamouflageDescriptionOther">Meditate kamuflajını kapatmak için uygulama menüsünü açın ve sürüm numarasına beş kez dokunun.</string>
     <string name="CamouflageAsMeditateAppAndroid">Meditate uygulaması olarak kamufle et</string>
+
+    <!-- Time Lock Vault -->
+    <string name="tlvTitle">Zaman Kilitli Kasa</string>
+    <string name="tlvExplainer">Koinleri, seçtiğin tarihten önce kimsenin (sen dahil) harcayamayacağı şekilde kilitle.</string>
+    <string name="tlvNewVault">Yeni kasa</string>
+    <string name="tlvMyVaultsCount" formatted="false">KASALARIM · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit kilitli</string>
+    <string name="tlvLoadingVaults">Kasalar yükleniyor…</string>
+    <string name="tlvNoVaultsYet">Henüz kasa yok — bir tane oluşturmak için yukarıdaki Yeni kasa düğmesine dokun.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable talep edilebilir · %locked kilitli · %claimed talep edildi</string>
+    <string name="tlvLoadFailed">Zaman kilitli kasalar yüklenemedi</string>
+    <string name="tlvCreateFailed">Kasa oluşturulamadı</string>
+    <string name="tlvClaimFailed">Kasa talep edilemedi</string>
+    <string name="tlvBalanceLoading">Bakiye yükleniyor</string>
+    <string name="tlvClaimed">Talep edildi</string>
+    <string name="tlvLocked">Kilitli</string>
+    <string name="tlvUnlocksBlock" formatted="false">%num bloğunda açılır</string>
+    <string name="tlvBlockNum" formatted="false">Blok %num</string>
+    <string name="tlvUnlockedWaitingDeposit">Kilit açıldı · yatırma bekleniyor</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Kilit açıldı · ücret için koin gerekli</string>
+    <string name="tlvUnlockedReadyToClaim">Kilit açıldı · talep edilmeye hazır</string>
+    <string name="tlvClaimedFundsArrivedSince">Talep edildi · sonrasında fon geldi</string>
+    <string name="tlvClaim">Talep et</string>
+    <string name="tlvReclaim">Yeniden talep et</string>
+    <string name="tlvVaultEmptied">Bu kasa boşaltıldı</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% geçti</string>
+    <string name="tlvDaysLeft" formatted="false">%num gün kaldı</string>
+    <string name="tlvOneDayLeft">1 gün kaldı</string>
+    <string name="tlvHoursLeft" formatted="false">%num saat kaldı</string>
+    <string name="tlvOneHourLeft">1 saat kaldı</string>
+    <string name="tlvMinutesLeft" formatted="false">%num dakika kaldı</string>
+    <string name="tlvOneMinuteLeft">1 dakika kaldı</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count yetki batonu · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count yetki batonu · %syms</string>
+    <string name="tlvTransactions">Kasa işlemleri</string>
+    <string name="tlvNoTransactions">Bu kasa için henüz işlem yok.</string>
+    <string name="tlvVaultCreated">Kasa oluşturuldu</string>
+    <string name="tlvClaimSent">Talep gönderildi</string>
+    <string name="tlvPendingDeposit">Bekleyen yatırma</string>
+    <string name="tlvTopUp">Ek yükleme</string>
+    <string name="tlvPending">Bekliyor</string>
+    <string name="tlvNetworkFee" formatted="false">Ağ ücreti %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps yetkisi · %token</string>
+    <string name="tlvAuthority">Yetki</string>
+    <string name="tlvCapMint">Basım</string>
+    <string name="tlvCapMelt">Eritme</string>
+    <string name="tlvCapBaton">Baton</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Alt grup</string>
+    <string name="tlvCreateVault">Kasa oluştur</string>
+    <string name="tlvCreateExplainer">Fonlar artı küçük bir ücret, zaman kilitli bir adrese taşınacak. Onları kasada görürsün ama belirtilen tarihten önce harcayamazsın.</string>
+    <string name="tlvMinimumAmount" formatted="false">En az %amt %unit</string>
+    <string name="tlvLockUntil">Şu zamana kadar kilitle</string>
+    <string name="tlvBlockHeight">Blok yüksekliği</string>
+    <string name="tlvFutureDate">Gelecek tarih</string>
+    <string name="tlvMaxBlockHeight" formatted="false">En büyük blok yüksekliği %num</string>
+    <string name="tlvFeeSatB">Ücret</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Toplam</string>
+    <string name="tlvReview">Gözden geçir</string>
+    <string name="tlvDone">Bitti</string>
+    <string name="tlvOk">Tamam</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Kasayı onayla</string>
+    <string name="tlvPayTo">Alıcı</string>
+    <string name="tlvNewTimeLockVault">Yeni zaman kilitli kasa</string>
+    <string name="tlvLockedUntil">Şu zamana kadar kilitli</string>
+    <string name="tlvConfirmAndSign">Onayla ve imzala</string>
+    <string name="tlvWorking">Çalışıyor…</string>
+    <string name="tlvClaimVault">Kasayı talep et</string>
+    <string name="tlvClaimExplainerSingle">Bu kasanın kilidi açıldı. Bakiyesini cüzdanına geri almak için onayla.</string>
+    <string name="tlvYourWallet">(cüzdanın)</string>
+    <string name="tlvAsset">Varlık</string>
+    <string name="tlvYouReceive">Alacağın</string>
+    <string name="tlvNothingToClaim">Talep edilecek bir şey yok — bu kasa boş.</string>
+    <string name="tlvConfirmAndClaim">Onayla ve talep et</string>
+    <string name="tlvVaultClaimed">Kasa talep edildi</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit cüzdanına geri dönüyor.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">Fonlar yolda.</string>
+    <string name="tlvLockedUntilBlock">Şu bloğa kadar kilitli</string>
+    <string name="tlvName">Ad</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Yetki batonları · %count</string>
+    <string name="tlvMovable">Taşınabilir</string>
+    <string name="tlvBatonExplainer">Baton bir izindir, bakiye değil. Koinlerle birlikte donar ve aynı taleple onlarla birlikte çıkar.</string>
+    <string name="tlvDepositAddress">Yatırma adresi</string>
+    <string name="tlvNoAddress">(adres yok)</string>
+    <string name="tlvVaultSuccess">Kasa başarılı</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR\'yi kapat</string>
+    <string name="tlvDepositWarning">Bu adrese gönderilen her şey, kasa açılana kadar kilitli kalır — yanlışlıkla buraya gönderilen koinler dahil.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Buraya tokenları yalnızca bir miktar %unit ile birlikte gönder. Kasa açılırken kendi ücretini, yalnızca içindeki %unit üzerinden öder.</string>
+    <string name="tlvHistory">Geçmiş</string>
+    <string name="tlvView">Görüntüle</string>
+    <string name="tlvNoEarlyOpen">Bu kasayı erken açmanın bir yolu yok. Zaman kilidinin amacı da budur.</string>
+    <string name="tlvPublicOnChain">Kilit açma yüksekliği ve tutar, kasa fonlandığı andan itibaren zincirde herkese açıktır — adrese sahip olan herkes okuyabilir.</string>
 </resources>
