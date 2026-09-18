@@ -48,7 +48,7 @@ class SendNexaToSelfTest : WallyUiTestBase()
         val initialBalance = BigDecimal.parseString("50000.00")
         val finalBalance = initialBalance - simulatedFee
 
-        val mockAccount = mockAccount(initialBalance)
+        val mockAccount = mockAccount(initialBalance = initialBalance)
         assignAccountsGuiSlots()
 
         // ReceiveScreen / SendScreen. read `wallyApp.focusedAccount` directly,

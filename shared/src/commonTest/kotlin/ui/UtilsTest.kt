@@ -51,6 +51,7 @@ import org.nexa.libnexakotlin.PayAddress
 import org.nexa.libnexakotlin.PayDestination
 import org.nexa.libnexakotlin.UnsecuredSecret
 import org.nexa.libnexakotlin.Spendable
+import org.nexa.libnexakotlin.TxDatabase
 import org.nexa.libnexakotlin.TxoDatabase
 import org.nexa.libnexakotlin.WalletDatabase
 import org.nexa.threads.Mutex
@@ -330,7 +331,10 @@ fun deleteMockAccountDbs()
 *     address to render and copy to the clipboard.
  */
 fun mockAccount(
+  name: String? = null,
   initialBalance: BigDecimal = BigDecimal.ZERO,
+  numTransactions: Long = 0L,
+  numLedgerEntries: Int = 0,
   initialAssets: Map<GroupId, AssetPerAccount> = emptyMap(),
   chainSelector: ChainSelector = ChainSelector.NEXA,
   walletBalance: Long = 0L
@@ -362,19 +366,31 @@ fun mockAccount(
         every { headersHandler } returns Callbacker()
         every { invHandler } returns Callbacker()
     }
+    val txMock = mock<TxDatabase>(MockMode.autofill) {
+        every { size() } returns numTransactions
+    }
     // The wallet's own balance is computed by CommonWallet from the TXOs the database hands back,
-    // so a non-zero walletBalance is provided as a single unspent, ungrouped TXO of that amount.
-    val txoDb = mock<TxoDatabase>(MockMode.autofill) {
-        if (walletBalance > 0L)
+    // so a non-zero walletBalance is provided as a single unspent, ungrouped TXO of that amount,
+    // and numLedgerEntries further TXOs feed the wallet's forEachTxo iteration.
+    val txoMock = mock<TxoDatabase>(MockMode.autofill) {
+        if (walletBalance > 0L || numLedgerEntries > 0)
             every { forEach(any()) } calls { (doit: (Spendable) -> Boolean) ->
-                doit(Spendable(chainSelector).apply { amount = walletBalance })
+                if (walletBalance > 0L)
+                    doit(Spendable(chainSelector).apply { amount = walletBalance })
+                for (i in 0 until numLedgerEntries) {
+                    val s = Spendable(chainSelector)
+                    s.amount = 100L
+                    s.commitHeight = (1000 + i).toLong()
+                    s.spentHeight = -1L
+                    if (doit(s)) break
+                }
                 Unit
             }
     }
     val walletDb = mock<WalletDatabase>(MockMode.autofill) {
         every { kvp } returns mock(MockMode.autofill)
-        every { tx } returns mock(MockMode.autofill)
-        every { txo } returns txoDb
+        every { tx } returns txMock
+        every { txo } returns txoMock
     }
 
     val randomNumber = Random.nextInt(1, 1333333337).toString()
@@ -396,7 +412,14 @@ fun mockAccount(
       false,
     )
     mockAccountChains.add("test_$randomNumber" to dummyChain)
-    val dummyWallet = Bip44Wallet("mockSelfSendWallet_$randomNumber", chainSelector, walletDb)
+    val dummyWallet = if (name != null)
+    {
+        Bip44Wallet("${name}Wallet", chainSelector, walletDb)
+    }
+    else
+    {
+        Bip44Wallet("mockSelfSendWallet_$randomNumber", chainSelector, walletDb)
+    }
     // Set the secret because the Bip44Wallet throws an exception if an attempt is made to save it without a secret
     dummyWallet.secretWords = UnsecuredSecret("obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious".encodeUtf8())
     dummyWallet.secret = UnsecuredSecret(generateBip39Seed(dummyWallet.secretWords.getSecret().decodeUtf8(), dummyWallet.seedPassCode))
@@ -417,8 +440,9 @@ fun mockAccount(
         val nexaFormat = DecimalFormat("##,###,###,###,##0.00")
 
         // Identity / display
-        every { name } returns "mockSelfSend"
-        every { nameAndChain } returns "mockSelfSend on nexa"
+        val walName = name ?: "mockSelfSend"
+        every { this@mock.name } returns walName
+        every { nameAndChain } returns "$walName on nexa"
         every { currencyCode } returns "NEXA"
         every { cryptoFormat } returns nexaFormat
         every { cryptoInputFormat } returns DecimalFormat("##########.##")
