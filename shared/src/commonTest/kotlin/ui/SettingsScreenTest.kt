@@ -1,9 +1,15 @@
 package ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertWidthIsAtLeast
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
@@ -30,6 +36,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.chainToCurrencyCode
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class SettingsScreenTest: WallyUiTestBase()
@@ -417,5 +424,43 @@ class SettingsScreenTest: WallyUiTestBase()
         settle()
 
         onNodeWithText("TNexa").assertIsDisplayed()
+    }
+
+    /** A label too wide for the row must not starve the amount entry or the currency code (gitlab #651). */
+    @Test
+    fun confirmAbove_labelTooWideForRow_doesNotStarveEntryOrCurrencyCode() = runComposeUiTest {
+        val prefs = FakeSharedPreferences()
+        setContent {
+            Box(Modifier.width(140.dp)) { ConfirmAbove(prefs) }
+        }
+        settle()
+
+        // width vs height comparison is independent of the platform's font metrics
+        val code = chainToCurrencyCode[ChainSelector.NEXA]!!
+        val codeBounds = onNodeWithText(code).getUnclippedBoundsInRoot()
+        val codeWidth = codeBounds.right - codeBounds.left
+        val codeHeight = codeBounds.bottom - codeBounds.top
+        assertTrue(
+          codeWidth > codeHeight,
+          "currency code '$code' wrapped vertically: $codeWidth x $codeHeight"
+        )
+
+        onNodeWithTag("ConfirmAboveEntry").assertWidthIsAtLeast(32.dp)
+    }
+
+    /** The dropdown belongs at the right edge of the row like every other settings row (gitlab #651). */
+    @Test
+    fun localCurrency_spreadsLabelAndDropdownAcrossTheRow() = runComposeUiTest {
+        val prefs = FakeSharedPreferences()
+        setContent {
+            Box(Modifier.width(300.dp)) { LocalCurrency(prefs) }
+        }
+        settle()
+
+        val dropdown = onNodeWithTag("FiatCurrencyDropdown").getUnclippedBoundsInRoot()
+        assertTrue(
+          dropdown.right > 250.dp,
+          "fiat dropdown did not reach the end of the row: right edge at ${dropdown.right} of 300.dp"
+        )
     }
 }

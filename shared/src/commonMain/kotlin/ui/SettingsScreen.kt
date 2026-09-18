@@ -54,10 +54,11 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     val selectedFiatCurrency = remember { mutableStateOf(preferenceDB.getString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, "USD")) }
 
     Row(
-      horizontalArrangement = Arrangement.SpaceEvenly,
+      Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = i18n(S.localCurrency), Modifier.testTag(i18n(S.localCurrency)))
+        Text(text = i18n(S.localCurrency), Modifier.weight(1f).testTag(i18n(S.localCurrency)))
         Spacer(modifier = Modifier.width(8.dp))
         Box {
             Row(
@@ -406,39 +407,44 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
     var textState = remember { mutableStateOf<String>(preferenceDB.getString(CONFIRM_ABOVE_PREF, NexaFormat.format(dec)) ?: "0") }
 
     Row(
+      Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(i18n(S.WhenAskSure), Modifier.weight(1f))
-        WallyDecimalEntry(
-          value = textState,
-          bkgCol = Color.White,
-          onValueChange = {
-              try {
-                  val newStr = it.ifEmpty {
-                      "0"
+        Text(i18n(S.WhenAskSure), modifier = Modifier.weight(1f))
+        // WallyDataEntry puts the caller's modifier on its inner text field, so the weight
+        // must be carried on a Box the Row can see (gitlab #651)
+        Box(Modifier.weight(1f)) {
+            WallyDecimalEntry(
+              value = textState,
+              bkgCol = Color.White,
+              onValueChange = {
+                  try {
+                      val newStr = it.ifEmpty {
+                          "0"
+                      }
+                      val newDec = BigDecimal.fromString(newStr, NexaMathMode)
+                      with(preferenceDB.edit())
+                      {
+                          putString(CONFIRM_ABOVE_PREF, NexaInputFormat.format(newDec))
+                          commit()
+                      }
                   }
-                  val newDec = BigDecimal.fromString(newStr, NexaMathMode)
-                  with(preferenceDB.edit())
+                  catch (e:Exception) // number format exception, for one
                   {
-                      putString(CONFIRM_ABOVE_PREF, NexaInputFormat.format(newDec))
-                      commit()
+                      logThreadException(e)
                   }
+                  textState.value = it
+                  textState.value
               }
-              catch (e:Exception) // number format exception, for one
-              {
-                  logThreadException(e)
-              }
-              textState.value = it
-              textState.value
-          }
-          //colors = textFieldColors(containerColor = Color.Transparent),
-          //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
-          //  unfocusedContainerColor = Color.Transparent
-          ,
-          modifier = Modifier.width(120.dp).padding(4.dp,0.dp,0.dp,0.dp).testTag("ConfirmAboveEntry")
-        )
-        Text(chainToCurrencyCode[ChainSelector.NEXA]!!)
+              //colors = textFieldColors(containerColor = Color.Transparent),
+              //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
+              //  unfocusedContainerColor = Color.Transparent
+              ,
+              modifier = Modifier.fillMaxWidth().padding(4.dp,0.dp,0.dp,0.dp).testTag("ConfirmAboveEntry")
+            )
+        }
+        Text(chainToCurrencyCode[ChainSelector.NEXA]!!, softWrap = false)
     }
 }
 
