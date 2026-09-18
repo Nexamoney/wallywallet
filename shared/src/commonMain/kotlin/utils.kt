@@ -620,6 +620,21 @@ fun String.splitIntoSet():Set<String>
     return split(","," ").map({it.trim()}).filter({(it.isNotEmpty())&&(it.isNotBlank())}).toSet()
 }
 
+/** Node fields want a bare host[:port], but users routinely paste a full URL, so tolerate one by
+ * dropping any scheme prefix and anything after the host (path, query or fragment).
+ */
+fun String.asHostPort():String
+{
+    val afterScheme = trim().substringAfter("://").trimStart('/')
+    return afterScheme.substringBefore("/").substringBefore("?").substringBefore("#").trim()
+}
+
+/** Split a node list field the standard way, tolerating URLs where a bare host[:port] is wanted */
+fun String.splitIntoNodeSet():Set<String>
+{
+    return splitIntoSet().map { it.asHostPort() }.filter { it.isNotBlank() }.toSet()
+}
+
 fun formatLocalDateTime(ldt: LocalDateTime,splitter:String=" "): String
 {
     val year = ldt.year.toString()

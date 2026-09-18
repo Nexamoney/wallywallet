@@ -11,6 +11,8 @@ import info.bitcoinunlimited.www.wally.onlyDecimal
 import info.bitcoinunlimited.www.wally.onlyDigits
 import info.bitcoinunlimited.www.wally.resolve
 import info.bitcoinunlimited.www.wally.scanForFirstAddress
+import info.bitcoinunlimited.www.wally.asHostPort
+import info.bitcoinunlimited.www.wally.splitIntoNodeSet
 import info.bitcoinunlimited.www.wally.splitIntoSet
 import info.bitcoinunlimited.www.wally.trimToNull
 import info.bitcoinunlimited.www.wally.first
@@ -69,6 +71,29 @@ class UtilsKtTest : WallyUiTestBase()
     @Test fun splitIntoSet_empty() = assertEquals(emptySet(), "".splitIntoSet())
     @Test fun splitIntoSet_separatorsOnly() = assertEquals(emptySet(), ",, ,".splitIntoSet())
     @Test fun splitIntoSet_dedup() = assertEquals(setOf("a", "b"), "a,a,b".splitIntoSet())
+
+    // ---------- String.asHostPort / String.splitIntoNodeSet ----------
+
+    @Test fun asHostPort_plainHost() = assertEquals("foo.bar.com", "foo.bar.com".asHostPort())
+    @Test fun asHostPort_hostAndPort() = assertEquals("foo.bar.com:20000", "foo.bar.com:20000".asHostPort())
+    @Test fun asHostPort_http() = assertEquals("foo.bar.com", "http://foo.bar.com".asHostPort())
+    @Test fun asHostPort_httpsWithPort() = assertEquals("foo.bar.com:20000", "https://foo.bar.com:20000".asHostPort())
+    @Test fun asHostPort_trailingSlash() = assertEquals("foo.bar.com", "http://foo.bar.com/".asHostPort())
+    @Test fun asHostPort_path() = assertEquals("foo.bar.com", "http://foo.bar.com/some/path".asHostPort())
+    @Test fun asHostPort_queryAndFragment() = assertEquals("foo.bar.com", "http://foo.bar.com?a=1#b".asHostPort())
+    @Test fun asHostPort_otherScheme() = assertEquals("1.2.3.4:1234", "tcp://1.2.3.4:1234".asHostPort())
+    @Test fun asHostPort_schemeRelative() = assertEquals("foo.bar.com", "//foo.bar.com".asHostPort())
+    @Test fun asHostPort_surroundingSpace() = assertEquals("foo.bar.com", "  http://foo.bar.com  ".asHostPort())
+    @Test fun asHostPort_ipAndPort() = assertEquals("10.0.2.2:18444", "10.0.2.2:18444".asHostPort())
+
+    @Test fun splitIntoNodeSet_stripsSchemes() =
+      assertEquals(setOf("a.com", "b.com:2020"), "http://a.com, https://b.com:2020".splitIntoNodeSet())
+    @Test fun splitIntoNodeSet_mixesBareAndUrl() =
+      assertEquals(setOf("a.com", "b.com"), "a.com http://b.com/".splitIntoNodeSet())
+    @Test fun splitIntoNodeSet_dedupsAfterStripping() =
+      assertEquals(setOf("a.com"), "a.com,http://a.com".splitIntoNodeSet())
+    @Test fun splitIntoNodeSet_dropsSchemeOnly() = assertEquals(emptySet(), "http://".splitIntoNodeSet())
+    @Test fun splitIntoNodeSet_empty() = assertEquals(emptySet(), "".splitIntoNodeSet())
 
     // ---------- isCashAddrScheme ----------
 
