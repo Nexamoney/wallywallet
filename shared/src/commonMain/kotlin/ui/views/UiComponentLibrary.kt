@@ -1053,12 +1053,15 @@ fun QrCode(qrText: String, modifier: Modifier)
 @Composable
 fun NoticeText(noticeText: String, modifier: Modifier)
 {
+    // Matches the native Android ActionBar title: 20sp sans-serif-medium, white, start aligned
     Text(text = noticeText,
       style = LocalTextStyle.current.copy(
-        color = Color.Black,
-        fontWeight = FontWeight.Normal
+        color = Color.White,
+        fontSize = defaultFontSize * 1.25,
+        fontWeight = FontWeight.Medium,
+        textAlign = TextAlign.Start
       ),
-      modifier = modifier.wrapContentWidth(align = Alignment.CenterHorizontally)
+      modifier = modifier
     )
 }
 
