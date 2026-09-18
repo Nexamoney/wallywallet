@@ -293,6 +293,23 @@ jvmTest-ubuntu-docker:
     paths:
       - build/reports/problems/problems-report.html
 
+# Recovers a wallet on testnet from the WALLY_TEST_MNEMONIC CI variable and fast syncs it (#577).  This one talks to
+# live testnet nodes, so it is manual and the other test jobs leave it out (they do not pass -PsystemTests).
+systemTestRecoverTestnet:
+  rules:
+    - *skip-on-schedule-fragment
+    - when: manual
+  stage: test
+  tags:
+    - berlin
+  allow_failure: true
+  script:
+    - ./gradlew :shared:cleanJvmTest :shared:jvmTest -PsystemTests --tests "ui.RecoverTestnetSystemTest"
+  artifacts:
+    reports:
+      junit: shared/build/test-results/jvmTest/TEST-*.xml
+    when: always
+
 jvmTestCoverageXml:
   <<: *skip-on-schedule
   stage: test

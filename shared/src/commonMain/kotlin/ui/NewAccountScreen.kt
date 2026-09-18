@@ -584,7 +584,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
             }
             if (newAcState.earliestActivity != null) Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
             {
-                OutlinedButton(onClick = onClickCreateAccount) {
+                OutlinedButton(onClick = onClickCreateAccount, modifier = Modifier.testTag("onClickCreateSyncAccount")) {
                     Text(i18n(S.createSyncAccount))
                 }
             }

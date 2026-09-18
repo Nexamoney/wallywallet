@@ -157,8 +157,8 @@ fun RecomposeCounter(pfx:String="f", modifier: Modifier = Modifier.clip(RoundedC
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        WallySwitch(isChecked, onCheckedChange)
-        Text(text = i18n(textRes), modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp).then(modifier))
+        WallySwitch(isChecked, modifier, onCheckedChange)
+        Text(text = i18n(textRes), modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp))
     }
 }
 
@@ -1171,7 +1171,7 @@ fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewM
         if (isSynced)
         {
             val syncedText = i18n(S.synced)
-            Text(text = syncedText, style = MaterialTheme.typography.labelLarge.copy(
+            Text(text = syncedText, modifier = Modifier.testTag("SyncStatusText"), style = MaterialTheme.typography.labelLarge.copy(
               color = syncColor,
               fontWeight = FontWeight.Bold,
               textAlign = TextAlign.Center
@@ -1180,7 +1180,7 @@ fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewM
         else
         {
             val syncingText = i18n(S.unsynced)
-            Text(text = syncingText, style = MaterialTheme.typography.labelLarge.copy(
+            Text(text = syncingText, modifier = Modifier.testTag("SyncStatusText"), style = MaterialTheme.typography.labelLarge.copy(
               color = syncColor,
               fontWeight = FontWeight.Bold,
               textAlign = TextAlign.Center
