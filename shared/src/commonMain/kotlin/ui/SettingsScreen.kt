@@ -183,7 +183,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
             {
                 if (account.chain.chainSelector == chain.key)
                 {
-                    val nodeSet: Set<String> = nodeAddr?.splitIntoSet() ?: setOf()
+                    val nodeSet: Set<String> = nodeAddr?.splitIntoNodeSet() ?: setOf()
                     if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
                     else account.cnxnMgr.exclusiveNodes(nodeSet)
                     if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)

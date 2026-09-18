@@ -567,7 +567,7 @@ class AccountImpl(
             val nodeStr = prefDB.getString(name + "." + CONFIGURED_NODE, null)
             if (nodeStr != null && nodeStr.isNotBlank() && nodeStr.isNotEmpty())
             {
-                val nodes = nodeStr.splitIntoSet().toTypedArray()
+                val nodes = nodeStr.splitIntoNodeSet().toTypedArray()
                 if (nodes.size > 0)
                 {
                     // In the preference case, after going thru all preferred choices,
@@ -667,7 +667,7 @@ class AccountImpl(
             LogIt.info(sourceLoc() + chain.name + ": Exclusive node mode")
             try
             {
-                val nodeSet:Set<String> = exclusiveNode.splitIntoSet()
+                val nodeSet:Set<String> = exclusiveNode.splitIntoNodeSet()
                 cnxnMgr.exclusiveNodes(nodeSet)
             }
             catch (e: Exception)
@@ -680,7 +680,7 @@ class AccountImpl(
             LogIt.info(sourceLoc() + chain.name + ": Preferred node mode")
             try
             {
-                val nodeSet:Set<String> = preferredNode.splitIntoSet()
+                val nodeSet:Set<String> = preferredNode.splitIntoNodeSet()
                 cnxnMgr.preferNodes(nodeSet)
             }
             catch (e: Exception)
