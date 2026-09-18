@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -246,8 +247,8 @@ fun TransactionHistory.gatherRelevantAddresses():Set<PayAddress>
     return addrs
 }
 
-private val txHistoryInfo = MutableStateFlow<Array<MutableStateFlow<TransactionHistory?>>?>(null)
-private val txHistoryAccount = MutableStateFlow<Account?>(null)
+internal val txHistoryInfo = MutableStateFlow<Array<MutableStateFlow<TransactionHistory?>>?>(null)
+internal val txHistoryAccount = MutableStateFlow<Account?>(null)
 private val txHistoryMutex = Mutex("txHistory")
 fun calcTxHistoryInfo(acc : Account)
 {
@@ -347,7 +348,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
         CenteredText(i18n(S.NoAccountActivity), Modifier.padding(16.dp, 24.dp, 16.dp))
     } else
     {
-        LazyColumn {
+        LazyColumn(modifier = Modifier.testTag("TxHistoryList")) {
             txes.forEachIndexed { idx, it ->
                 item(key = idx) {
                     val txh = it.collectAsState().value
