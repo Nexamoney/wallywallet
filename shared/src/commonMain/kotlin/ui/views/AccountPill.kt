@@ -406,7 +406,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                             )
                             IconTextButton(
                               icon = Icons.Outlined.FastForward,
-                              modifier = Modifier.weight(1f),
+                              modifier = Modifier.weight(1f).testTag("FastSyncButton"),
                               description = i18n(S.fastSync)
                             ) {
                                 act?.let {

@@ -1013,6 +1013,11 @@ tasks.withType<Test> {
         showStandardStreams = true
     }
     outputs.upToDateWhen { false }  // Always rerun test tasks
+
+    // System tests drive live networks and take minutes, so they are left out of the normal suite.  Run them with
+    // -PsystemTests, and the 12 word recovery phrase of the account under test in WALLY_TEST_MNEMONIC.
+    if (!project.hasProperty("systemTests")) filter { excludeTestsMatching("ui.RecoverTestnetSystemTest") }
+    else providers.environmentVariable("WALLY_TEST_MNEMONIC").orNull?.let { environment("WALLY_TEST_MNEMONIC", it) }
 }
 
 // Tests run with dbPrefix "test_" and drop their databases in the project directory. The tests

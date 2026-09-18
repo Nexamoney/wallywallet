@@ -457,12 +457,12 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
               }
           },
           keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Done),
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.weight(1f).testTag("${name}NodeEntry"),
           textStyle = TextStyle(fontSize = 14.sp),
           bkgCol = Color.White
         )
         Spacer(modifier = Modifier.weight(0.01f).alignBy(switchAlignment))
-        WallySwitch(onlyChecked, S.only) {
+        WallySwitch(onlyChecked, S.only, Modifier.testTag("${name}OnlySwitch")) {
             onlyChecked.value = it
             if (it) preferChecked.value = false  // if one is true the other must be false
             CoroutineScope(Dispatchers.IO).launch {
@@ -470,7 +470,7 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
             }
         }
         Spacer(modifier = Modifier.weight(0.01f))
-        WallySwitch(preferChecked, S.prefer) {
+        WallySwitch(preferChecked, S.prefer, Modifier.testTag("${name}PreferSwitch")) {
             preferChecked.value = it
             if (it) onlyChecked.value = false  // if one is true the other must be false
             CoroutineScope(Dispatchers.IO).launch {
