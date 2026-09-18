@@ -12,7 +12,6 @@ import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.FiatFormat
-import org.nexa.threads.millisleep
 import kotlin.test.Test
 import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
 import org.nexa.libnexakotlin.NexaMathMode
@@ -89,22 +88,30 @@ class AccountPillTest:WallyUiTestBase()
                 val s = account.cryptoFormat.format(tmp)
                 // TODO remove "100.1" check when decimal 0 extension fixed on native platforms
                 check(s == balance2)
-                account.balance = BigDecimal.fromString(balance2, NexaMathMode)
-                settle()
+                // The account's own startup balance update is async and is not stopped by
+                // removeChangeHandlers(), so it can overwrite our fake balance. Keep re-applying it
+                // until the pill shows it.
+                waitForCatching(10000, {"AccountPillBalance never showed $balance2"}) {
+                    account.balance = BigDecimal.fromString(balance2, NexaMathMode)
+                    settle()
+                    // TODO remove "100.1" when decimal 0 extension fixed on native platforms
+                    //if (platformName().contains("JVM") || platformName().contains("Android"))
+                    onNodeWithTag("AccountPillBalance").assertTextEquals(balance2)
+                    //else
+                    //    onNodeWithTag("AccountPillBalance").assertTextEquals("100.1")
+                    true
+                }
                 onNodeWithTag("AccountPillBalance").assertIsDisplayed()
 
-                // TODO remove "100.1" when decimal 0 extension fixed on native platforms
-                //if (platformName().contains("JVM") || platformName().contains("Android"))
-                onNodeWithTag("AccountPillBalance").assertTextEquals(balance2)
-                //else
-                //    onNodeWithTag("AccountPillBalance").assertTextEquals("100.1")
-
-                settle()
-                millisleep(1000UL)
                 println("Fiat per coin: ${account.fiatPerCoin} balance: ${account.balance}")
                 // We cannot trick the fiat balance because it is auto-updated based on the real account balance.
                 val fiatBalance2 = FiatFormat.format(account.fiatPerCoin * account.balance!!)
-                onNodeWithTag("AccountPillFiatBalance").assertTextEquals(fiatBalance2).assertIsDisplayed()
+                waitForCatching(10000, {"AccountPillFiatBalance never showed $fiatBalance2"}) {
+                    settle()
+                    onNodeWithTag("AccountPillFiatBalance").assertTextEquals(fiatBalance2)
+                    true
+                }
+                onNodeWithTag("AccountPillFiatBalance").assertIsDisplayed()
                 onNodeWithTag("AccountPillFiatCurrencyCode").assertIsDisplayed()
                 settle()
             }
