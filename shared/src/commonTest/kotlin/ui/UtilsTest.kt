@@ -338,9 +338,12 @@ fun mockAccount(
   numLedgerEntries: Int = 0,
   initialAssets: Map<GroupId, AssetPerAccount> = emptyMap(),
   chainSelector: ChainSelector = ChainSelector.NEXA,
+  visible: Boolean = true,
   walletBalance: Long = 0L
 ): Account
 {
+    val isVisible = visible  // captured here: inside the mock block `visible` resolves to the mock's own property
+
     // Real PayDestination — just a value object, not linked to an account. Provides a non-null address
     val ownDest: PayDestination = Pay2PubKeyTemplateDestination(
       chainSelector,
@@ -462,7 +465,7 @@ fun mockAccount(
         every { fiatPerCoinObservable } returns fiatPerCoinFlow
 
         // Lock / visibility
-        every { visible } returns true
+        every { this@mock.visible } returns isVisible
         every { lockable } returns false
         every { locked } returns false
         every { pinEntered } returns true
