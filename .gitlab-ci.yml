@@ -144,8 +144,7 @@ build:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    # Exclude the android host (unit) tests; they are covered by jvmTest and the device tests
-    - ./gradlew build -x :shared:testAndroidHostTest
+    - ./gradlew build
   artifacts:
     when: always
     reports:
