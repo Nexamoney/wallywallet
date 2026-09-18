@@ -328,6 +328,117 @@ class NavigationRootTest: WallyUiTestBase()
     }
 
     @Test
+    fun selectingSecondAccountShowsCorrectAccountInDetail()
+    {
+        // Without a loaded locale table i18n() returns "STR<id>" placeholders that drop the %num
+        // token, so the rendered statistics carry no numbers to assert on. JVM and Android load it;
+        // the iOS test binary keeps the .bin files in compose-resources/, where NSBundle misses them.
+        val localized = setLocale("en", "US")
+
+        val accountName1 = "detailSelAcc1"
+        val accountName2 = "detailSelAcc2"
+        val numTransactionsAccount1 = 12L
+        val numLedgerEntriesAccount1 = 6
+        val numTransactionsAccount2 = 24L
+        val numLedgerEntriesAccount2 = 18
+
+        val account1 = mockAccount(name = accountName1, numTransactions = numTransactionsAccount1, numLedgerEntries = numLedgerEntriesAccount1)
+        val account2 = mockAccount(name = accountName2, numTransactions = numTransactionsAccount2, numLedgerEntries = numLedgerEntriesAccount2)
+
+        // Replace with only mock accounts so the carousel shows just these two. The real accounts stay
+        // open, so put them back afterwards -- otherwise the next setupTestEnv() reopens a second
+        // AccountImpl on top of the still-live wallet DB.
+        val savedAccounts = wallyApp!!.accounts.toMap()
+        val savedFocus = wallyApp!!.focusedAccount.value
+        wallyApp!!.accounts.clear()
+        wallyApp!!.accounts[accountName1] = account1
+        wallyApp!!.accounts[accountName2] = account2
+        setSelectedAccount(account1)
+
+        try
+        {
+            runComposeUiTest {
+                val viewModelStoreOwner = object : ViewModelStoreOwner {
+                    override val viewModelStore: ViewModelStore = ViewModelStore()
+                }
+
+                val assetViewModel = AssetViewModelFake()
+                val accountUiDataViewModel = AccountUiDataViewModel()
+                val apvm = AccountPillViewModelFake(
+                  wallyApp!!.focusedAccount,
+                  balance = BalanceViewModelImpl(wallyApp!!.focusedAccount),
+                  sync = SyncViewModelFake(),
+                )
+                val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
+                val wInsets = WindowInsets(0, 0, 0, 0)
+
+                setContent {
+                    CompositionLocalProvider(
+                      LocalViewModelStoreOwner provides viewModelStoreOwner
+                    ) {
+                        NavigationRoot(Modifier, wInsets, apvm, assetViewModel, accountUiDataViewModel, unlock)
+                    }
+                }
+                settle()
+                nav.switch(ScreenId.Home)
+                settle()
+                assignAccountsGuiSlots()
+                settle()
+
+                // Verify both accounts are visible in the carousel
+                waitForCatching {
+                    onNode(hasTestTag("CarouselAccountName") and hasText(accountName1), useUnmergedTree = true)
+                      .assertTextEquals(accountName1)
+                }
+                onNode(hasTestTag("CarouselAccountName") and hasText(accountName2), useUnmergedTree = true)
+                  .assertTextEquals(accountName2)
+
+                // Verify the pill initially shows the first account
+                onNodeWithTag("AccountPillAccountName").assertTextEquals(accountName1)
+
+                // Click the second account in the carousel to select it
+                onNode(hasTestTag("CarouselAccountName") and hasText(accountName2), useUnmergedTree = true)
+                  .performClick()
+                settle()
+
+                // Verify the pill now shows the second account
+                onNodeWithTag("AccountPillAccountName").assertTextEquals(accountName2)
+
+                // Click the account details button (gear icon, only visible on selected account)
+                onNode(hasTestTag("AccountDetailsButton"), useUnmergedTree = true).performClick()
+                settle()
+
+                // Verify the account detail screen shows the second account in the pill
+                onNodeWithTag("AccountPillAccountName").assertTextEquals(accountName2)
+
+                // Verify account statistics card exists (may require scrolling)
+                onNodeWithText(i18n(S.AccountStatistics)).performScrollTo()
+                onNodeWithText(i18n(S.AccountStatistics)).assertIsDisplayed()
+
+                // Verify the stats shown are account2's, not account1's
+                if (localized)
+                {
+                    onNodeWithText(i18n(S.AccountNumTx) % mapOf("num" to numTransactionsAccount2.toString()), substring = true).assertExists()
+                    onNodeWithText(i18n(S.AccountNumUtxos) % mapOf("num" to numLedgerEntriesAccount2.toString()), substring = true).assertExists()
+                    onNodeWithText(i18n(S.AccountNumTx) % mapOf("num" to numTransactionsAccount1.toString()), substring = true).assertDoesNotExist()
+                    onNodeWithText(i18n(S.AccountNumUtxos) % mapOf("num" to numLedgerEntriesAccount1.toString()), substring = true).assertDoesNotExist()
+                }
+            }
+
+            // The numbers the screen renders come from here, so check them on every platform
+            val stats = account2.wallet.statistics()
+            assertEquals(numTransactionsAccount2.toInt(), stats.numTransactions)
+            assertEquals(numLedgerEntriesAccount2, stats.numUnspentTxos)
+        }
+        finally
+        {
+            wallyApp!!.accounts.clear()
+            wallyApp!!.accounts.putAll(savedAccounts)
+            savedFocus?.let { setSelectedAccount(it) }
+        }
+    }
+
+    @Test
     fun deleteSecondAccountFromAccountDetail()
     {
         // Start from a clean slate so that "account number two" is unambiguous.
