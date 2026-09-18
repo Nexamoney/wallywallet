@@ -201,6 +201,50 @@ class AppTest : WallyUiTestBase()
         app.focusedAccount.value = null
     }
 
+    @Test
+    fun preferredVisibleAccountOrNullReturnsNullWhenAllHidden()
+    {
+        val app = wallyApp!!
+        val savedAccounts = app.accounts.toMap()
+        val savedFocus = app.focusedAccount.value
+        val savedPrimary = app.nullablePrimaryAccount
+
+        val hidden = mockAccount(visible = false)
+        app.accounts.clear()
+        app.accounts[hidden.name] = hidden
+        app.focusedAccount.value = hidden
+        app.nullablePrimaryAccount = hidden
+
+        val result = app.preferredVisibleAccountOrNull()
+
+        app.accounts.clear()
+        app.accounts.putAll(savedAccounts)
+        app.focusedAccount.value = savedFocus
+        app.nullablePrimaryAccount = savedPrimary
+
+        assertNull(result)
+    }
+
+    @Test
+    fun preferredVisibleAccountOrNullFallsBackToPrimaryWhenFocusedHidden()
+    {
+        val app = wallyApp!!
+        val savedFocus = app.focusedAccount.value
+        val savedPrimary = app.nullablePrimaryAccount
+
+        val hidden = mockAccount(visible = false)
+        val primary = mockAccount()
+        app.focusedAccount.value = hidden
+        app.nullablePrimaryAccount = primary
+
+        val result = app.preferredVisibleAccountOrNull()
+
+        app.focusedAccount.value = savedFocus
+        app.nullablePrimaryAccount = savedPrimary
+
+        assertEquals(primary, result)
+    }
+
     // --- handlePaste tests ---
 
     @Test
