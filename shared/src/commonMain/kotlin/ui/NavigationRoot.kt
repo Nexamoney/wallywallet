@@ -77,8 +77,6 @@ val camouflage = MutableStateFlow(
 // control variable to navigate the app without disabling the camouflage mode
 val camouflageTemp = MutableStateFlow(camouflage.value)
 
-var behindTitleBarPadding = MutableStateFlow(0.dp)
-
 var permanentMenuItems: Set<NavChoice> = if ((platform().target == KotlinTarget.iOS)||(platform().target == KotlinTarget.Android))
     setOf(
       NavChoice(ScreenId.Home, S.title_home, Icons.Default.Home),
@@ -750,11 +748,7 @@ fun BottomNavMenu(lastClicked: MutableState<String>)
             }
         }
     }
-    else
-    {
-        // Position the content to below the native title bar...
-        Spacer(Modifier.height(behindTitleBarPadding.collectAsState().value))
-    }
+    // with a native title bar the platform pads the content below it (see systemPadding)
 }
 
 @Composable fun RecoveryPhraseWarning(clickable: Modifier, account:Account?=null)

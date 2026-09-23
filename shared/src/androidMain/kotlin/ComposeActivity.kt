@@ -4,25 +4,28 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
 import android.os.Build
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.core.content.FileProvider
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -30,7 +33,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.work.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
-import info.bitcoinunlimited.www.wally.ui.theme.colorTitleBackground
 import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.logThreadException
@@ -39,8 +41,8 @@ import org.nexa.libnexakotlin.runningTheTests
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
-import androidx.core.graphics.toColorInt
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -68,6 +70,51 @@ class ComposeActivity: CommonActivity()
     var unlockViewModel: UnlockViewModel? = null
 
     private lateinit var pickMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+
+    /** padding in px needed by the compose content. */
+    private val contentPadding = MutableStateFlow(Insets.NONE)
+
+    @Composable
+    private fun PaddedUiRoot()
+    {
+        val pad = contentPadding.collectAsState().value
+        val systemPadding = WindowInsets(pxToDp(pad.left), pxToDp(pad.top), pxToDp(pad.right), pxToDp(pad.bottom))
+
+        // systemPadding already handles the bars, so consume the insets to prevent double padding.
+        // only the wallet ui consumes them, the camouflage still needs the original insets.
+        UiRoot(Modifier.consumeWindowInsets(WindowInsets.safeDrawing), systemPadding, unlockViewModel!!)
+    }
+
+    /**
+     * measures the space needed to keep the content clear of the system bars and action bar.
+     * uses the actual view positions instead of hardcoded offsets for different android versions.
+     */
+    private fun measureContentPadding(content: View, actionBar: View?): Insets
+    {
+        val insets = ViewCompat.getRootWindowInsets(content) ?: return contentPadding.value
+        val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        val loc = IntArray(2)
+
+        // getLocationInWindow includes the adjustPan offset, unlike the insets and rootView.height.
+        // remove the offset here so it doesn't affect the padding when the keyboard is open.
+        content.rootView.getLocationInWindow(loc)
+        val pan = loc[1]
+
+        content.getLocationInWindow(loc)
+        val contentTop = loc[1] - pan
+        val contentBottom = contentTop + content.height
+
+        // use the action bar when visible, otherwise use the status bar
+        var coveredTop = bars.top
+        if (actionBar != null && actionBar.isShown)
+        {
+            actionBar.getLocationInWindow(loc)
+            coveredTop = maxOf(coveredTop, loc[1] - pan + actionBar.height)
+        }
+        val coveredBottom = content.rootView.height - bars.bottom
+
+        return Insets.of(bars.left, maxOf(0, coveredTop - contentTop), bars.right, maxOf(0, contentBottom - coveredBottom))
+    }
 
     fun ImageQrCode(imageParsed: (String?) -> Unit)
     {
@@ -212,7 +259,6 @@ class ComposeActivity: CommonActivity()
     override fun onResume()
     {
         super.onResume()
-        WindowCompat.setDecorFitsSystemWindows(window, true)
         // Sets the top/bottom icons to dark for meditation camouflage with white system bars
         val meditationCamouflage = camouflage.value == Camouflage.Meditation && camouflageTemp.value == Camouflage.Meditation
         if (meditationCamouflage)
@@ -226,32 +272,21 @@ class ComposeActivity: CommonActivity()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-        // enableEdgeToEdge() // This has to be disabled after updating to the new splash screen because it was creating a white bar above the top action bar in Android 12+
-        // WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        // Android 12+ overrides these colors from the system theme, so only set for older versions
-        val meditationCamouflage = camouflage.value == Camouflage.Meditation && camouflageTemp.value == Camouflage.Meditation
-        if (meditationCamouflage)
-        {
-            window.statusBarColor = "#fef7ff".toColorInt()
-            window.navigationBarColor = "#fef7ff".toColorInt()
-        }
-        else
-        {
-            window.statusBarColor = colorTitleBackground.toArgb()
-            window.navigationBarColor = colorTitleBackground.toArgb()
-        }
+        // use edge-to-edge on all android versions. please refer to this https://gitlab.com/wallywallet/wallet/-/work_items/669.
+        // android 15+ ignores window.statusBarColor, so we need to keep the bars transparent and draw behind them.
+        // this must run after super.onCreate because the splash screen changes the theme there.
+        enableEdgeToEdge(
+          statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+          navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+        )
 
+        // meditation camouflage has white bars so it needs dark icons, everything else is purple with light icons
         camouflageTemp.onEach {
-            if (it == Camouflage.Meditation)
-            {
-                window.statusBarColor = "#fef7ff".toColorInt()
-                window.navigationBarColor = "#fef7ff".toColorInt()
-            }
-            else
-            {
-                window.statusBarColor = colorTitleBackground.toArgb()
-                window.navigationBarColor = colorTitleBackground.toArgb()
+            val lightBars = it == Camouflage.Meditation && camouflage.value == Camouflage.Meditation
+            WindowCompat.getInsetsController(window, window.decorView).apply {
+                isAppearanceLightStatusBars = lightBars
+                isAppearanceLightNavigationBars = lightBars
             }
         }.launchIn(lifecycleScope)
 
@@ -279,7 +314,7 @@ class ComposeActivity: CommonActivity()
             }
         })
 
-        (decorView.findViewById(android.R.id.content) as View).setOnApplyWindowInsetsListener { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(decorView.findViewById(android.R.id.content)) { v, insets ->
             if (android.os.Build.VERSION.SDK_INT >= 30)
             {
                 val system = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -291,23 +326,20 @@ class ComposeActivity: CommonActivity()
                 // We sanity check the system insets to 30 dp just in case something crazy is going on
                 androidPlatformCharacteristics.bottomSystemBarOverlap = min(60.dp, pxToDp(system.bottom))
             }
-            insets
+            // appcompat adds the action bar height to the insets it gives the content, even when the bar is hidden.
+            // dispatch the real insets manually, on android 11+ children get the original insets whatever this returns.
+            val real = ViewCompat.getRootWindowInsets(v) ?: insets
+            val group = v as ViewGroup
+            for (i in 0 until group.childCount) ViewCompat.dispatchApplyWindowInsets(group.getChildAt(i), real)
+            WindowInsetsCompat.CONSUMED
         }
 
-        // Monitor the content view and the action bar (top bar) view to see if the action bar overlaps the content.
-        // If so, set a global mutable state flow that is used to pad the content so it always appears below the action bar.
+        // calculate the padding needed to keep compose content clear of the system bars and action bar.
+        // recalculate on layout because the content position depends on the android version and action bar state.
         val actionBar = findViewById<View>(actionBarId)
         val content = findViewById<View>(android.R.id.content)
         content.viewTreeObserver.addOnGlobalLayoutListener {
-            // The content is behind the action bar, so pad it
-            if (content.top < actionBar.bottom)
-            {
-                behindTitleBarPadding.value = TopAppBarDefaults.TopAppBarExpandedHeight
-            }
-            else
-            {
-                behindTitleBarPadding.value = 0.dp
-            }
+            contentPadding.value = measureContentPadding(content, actionBar)
         }
 
         // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work
@@ -322,7 +354,6 @@ class ComposeActivity: CommonActivity()
             WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)
         }
 
-        var actionb:Int? = null
         val intentDataStr = intent.data.toString()  // Save the intent data string in case the app clears it later
         // Grab the intent if we haven't already marked it as handled
         val tmp = com.eygraber.uri.Uri.parseOrNull(intent.toUri(0))
@@ -450,19 +481,7 @@ class ComposeActivity: CommonActivity()
             }
 
             setTitle(nav.title())
-            // Note that modern versions of android place the app view behind the system "insets". Old ones do not.
-            // DONT MESS WITH THIS CODE unless you are ready to test multiple android versions!
-            val insets = ViewCompat.getRootWindowInsets(LocalView.current)
-            if (actionb == null)
-            {
-                val sysInsets = insets!!.getInsets(WindowInsetsCompat.Type.systemBars())
-                actionb = if (android.os.Build.VERSION.SDK_INT < 35) 0 else sysInsets.top
-            }
-            val navInsets = insets!!.getInsets(WindowInsetsCompat.Type.navigationBars())
-            val navBottom = if (android.os.Build.VERSION.SDK_INT < 35) 0 else navInsets.bottom
-            val systemPadding = WindowInsets(0.dp, pxToDp(actionb ?: 0), 0.dp, pxToDp(navBottom)) // pxToDp(sysInsets.bottom))
-
-            UiRoot(Modifier, systemPadding, unlockViewModel!!)
+            PaddedUiRoot()
 
             LaunchedEffect(Unit) {
                 invalidateOptionsMenu()
