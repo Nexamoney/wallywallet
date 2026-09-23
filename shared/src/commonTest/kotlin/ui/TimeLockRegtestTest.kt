@@ -388,6 +388,7 @@ class TimeLockRegtestTest : WallyUiTestBase(openAllAccounts = false)
         val startHeight = h.repo.currentBlockHeight() ?: error("wallet unsynced")
         // Lock far ahead so the vault stays funded (unclaimed) through recovery.
         val created = h.repo.addVault(startHeight + 5_000L, amountSat = 5_000L)
+        waitForNodeToSee(h, created.fundingTxIdem)
         h.rpc.generate(1)
         waitUntil(60_000, "vault funded on chain") {
             (h.repo.snapshot(created.name)?.nativeBalanceSat ?: 0L) >= 5_000L
