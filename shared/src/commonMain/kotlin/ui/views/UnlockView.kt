@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
@@ -63,36 +62,22 @@ class UnlockViewModel(val account:MutableStateFlow<Account?>): ViewModel()
         }
     }
 
-    /** Try to unlock a particular account with what is in the dialog, if it is shown, but do not dismiss it if it does not work. */
-    fun tryUnlock(account: Account? = null): Int
-    {
-        if (unlockTileSize.value > 0)
-        {
-            if (account != null)
-            {
-                return account.submitAccountPin(pin.value)
-            }
-            else
-                return wallyApp!!.unlockAccounts(pin.value)
-        }
-        return 0
-    }
-
     internal fun attemptUnlock(pin: String, dismissOnFailure: Boolean = true)
     {
-        val actsUnlocked = wallyApp!!.unlockAccounts(pin)
-        if (actsUnlocked == 0)  // nothing got unlocked
-            displayError(S.InvalidPIN, persistAcrossScreens = 0)
-        else
-        {
-            LogIt.info("Unlocked ${actsUnlocked} accounts")
-            clearAlerts()
-            triggerAccountsChanged()
-            assignAccountsGuiSlots()  // In case accounts should be showed
-        }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
-        if (dismissOnFailure) triggerUnlockDialog(false)
-        unlockThen?.invoke()
-        unlockThen = null
+        wallyApp!!.unlockAccountsThen(pin) { actsUnlocked ->
+            if (actsUnlocked == 0)  // nothing got unlocked
+                displayError(S.InvalidPIN, persistAcrossScreens = 0)
+            else
+            {
+                LogIt.info("Unlocked ${actsUnlocked} accounts")
+                clearAlerts()
+                triggerAccountsChanged()
+                assignAccountsGuiSlots()  // In case accounts should be showed
+            }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
+            if (dismissOnFailure) triggerUnlockDialog(false)
+            unlockThen?.invoke()
+            unlockThen = null
+        }
     }
 }
 
@@ -105,6 +90,7 @@ fun UnlockTile(vm: UnlockViewModel, enterPin: String = i18n(S.EnterPIN))
 
     if (curSz != 0)
     {
+        LaunchedEffect(Unit) { withFrameNanos { }; focusRequester.requestFocus() }
         Box(modifier = Modifier.fillMaxWidth().padding(8.dp, 8.dp, 8.dp, 8.dp).wallyTile(wallyAttention).heightIn(0.dp, curSz.dp),
           contentAlignment = Alignment.Center) {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -156,7 +142,7 @@ fun UnlockTile(vm: UnlockViewModel, enterPin: String = i18n(S.EnterPIN))
                                 false
                             }
                             else false// Do not accept this key
-                        }.onGloballyPositioned { focusRequester.requestFocus() },
+                        },
                       singleLine = true,
                       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                       keyboardActions = KeyboardActions(

@@ -108,6 +108,10 @@ configurations.all {
 kotlin {
     applyDefaultHierarchyTemplate()
 
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
+
     jvm {
         //withJava()
         tasks.withType<KotlinCompile>() {
