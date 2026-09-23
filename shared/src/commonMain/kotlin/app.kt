@@ -163,12 +163,12 @@ fun cancelBackgroundSync()
 {
     // DRAFT: Improve and test this function
     backgroundStop = true
-    wallyApp!!.accountLock.lock {
-        for (c in wallyApp!!.accounts.values)
-        {
-            c.wallet.stop()
-            c.chain.stop()
-        }
+    val acts = wallyApp!!.accountLock.lock { wallyApp!!.accounts.values }
+
+    for (c in acts)
+    {
+        c.wallet.stop()
+        c.chain.stop()
     }
 }
 
@@ -918,8 +918,9 @@ open class CommonApp(val runningTests: Boolean)
         soundEnabled.value = preferenceDB.getBoolean(SOUND_ENABLED_PREF, true)
         showRecompositions.value = preferenceDB.getBoolean(RECOMPOSITIONS_MODE_PREF, false)
 
+        openKvpDbIfNeeded()
         openAccountsTriggerGui()
-        tpDomains.load()
+        laterJob { tpDomains.load() }
 
         assetLoaderThread = AssetLoaderThread({ nullablePrimaryAccount != null}) {
             accountLock.lock {
@@ -1056,6 +1057,22 @@ open class CommonApp(val runningTests: Boolean)
         return unlocked
     }
 
+    /** Submit this PIN to all accounts, unlocking any that match */
+    fun unlockAccountsThen(pin: String, doit: (Int)->Unit)
+    {
+        laterJob {
+            var unlocked = 0
+            val acts = accountLock.lock { accounts.values }
+
+            for (account in acts)
+            {
+                unlocked += account.submitAccountPin(pin)
+            }
+            if (unlocked > 0) notifyAccountUnlocked()
+            doit(unlocked)
+        }
+    }
+
     val interestedInAccountUnlock = mutableListOf<() -> Unit>()
     fun notifyAccountUnlocked()
     {
@@ -1066,7 +1083,6 @@ open class CommonApp(val runningTests: Boolean)
     fun saveActiveAccountList()
     {
         if (accountsClosed) return // do not save this if I've already closed some accounts
-        openKvpDbIfNeeded()
 
         val s: String = accountLock.lock { accounts.keys.joinToString(",") }
         val db = kvpDb!!
@@ -1084,7 +1100,6 @@ open class CommonApp(val runningTests: Boolean)
     fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector): Account?
     {
         dbgAssertNotGuiThread()
-        openKvpDbIfNeeded()
         // Reject names that would corrupt the comma-delimited account lists or the wallet filename.
         if (!isValidAccountName(name))
         {
@@ -1169,7 +1184,6 @@ open class CommonApp(val runningTests: Boolean)
     // Caller must hold pendingDeletionsLock.
     private fun readPending(): Set<String>
     {
-        openKvpDbIfNeeded()
         val db = kvpDb ?: return emptySet()
         val raw = db.getOrNull("pendingDeletions") ?: return emptySet()
         val s = raw.decodeUtf8()
@@ -1249,7 +1263,6 @@ open class CommonApp(val runningTests: Boolean)
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
-        openKvpDbIfNeeded()
         // Don't race a still-running Phase B file teardown on the same name.
         if (isPendingDeletion(name))
             throw IllegalStateException("Account '$name' is still being deleted")
@@ -1321,7 +1334,6 @@ open class CommonApp(val runningTests: Boolean)
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
-        openKvpDbIfNeeded()
         // Don't race a still-running Phase B file teardown on the same name.
         if (isPendingDeletion(name))
             throw IllegalStateException("Account '$name' is still being deleted")
@@ -1401,8 +1413,6 @@ open class CommonApp(val runningTests: Boolean)
 
     fun openAllAccounts()
     {
-        openKvpDbIfNeeded()
-
         if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
         {
             /*  Removed as our test infra has expanded

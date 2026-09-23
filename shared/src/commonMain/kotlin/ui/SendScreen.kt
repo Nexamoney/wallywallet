@@ -907,7 +907,7 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel, unlockViewM
               description = i18n(S.Send),
               color = wallyPurple,
             ) {
-                viewModel.onSendButtonClicked()
+                laterJob { viewModel.onSendButtonClicked() }
             }
         IconTextButton(
           icon = Icons.Outlined.Cancel,

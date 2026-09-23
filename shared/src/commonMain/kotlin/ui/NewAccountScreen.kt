@@ -397,8 +397,10 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                 // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
                 // thread(true, true, null, "peekWallet") // kotlin api does not offer stack size setting
                 aborter.value.obj = true  // Abort the current peek
-                firstActThread?.join()
-                allActThread?.join()
+                // If these threads are slow to clean themselves up, its ok
+                firstActThread?.detach()
+                allActThread?.detach()
+
                 aborter.value = Objectify<Boolean>(false)  // and create a new object for the next one
                 recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
 

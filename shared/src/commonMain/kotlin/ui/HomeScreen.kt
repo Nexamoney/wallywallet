@@ -73,21 +73,33 @@ class SyncViewModelImpl : SyncViewModel()
 }
 
 private val FalseFlow = MutableStateFlow<Boolean>(false)
+
+/** How often an account's sync state is re-checked for conditions that have no flow to observe:
+ *  the node connection count, and the synced date aging past the freshness window. */
+private const val ACCOUNT_SYNC_RECHECK_MS = 5_000L
+
+/** Emits immediately, then every [periodMs]. It only runs while someone is collecting. */
+private fun ticker(periodMs: Long): Flow<Unit> = flow {
+    while (true)
+    {
+        emit(Unit)
+        delay(periodMs)
+    }
+}
+
 class SyncViewModelAccount(val account: MutableStateFlow<Account?>) : SyncViewModel()
 {
     // Flatmap takes a MutableStateFlow of MutableStateFlows and lets you apply a transform and get the final flow.
     // (that takes the first, resolved the second, then xforms the second), resulting in a StateFlow of your transformed second MSF.
+
+    // Rebuild whenever the account changes.  Within one account, it is re-evaluated when syncedDate changes AND
+    // periodically, because "has a connection" and "synced within 5 minutes" change without notification.
     override val isSynced: StateFlow<Boolean> = account.flatMapLatest { act ->
           if (act == null) FalseFlow  // no account
-          else {
-              if ((act.wallet.chainstate?.chain?.net?.size ?: 0) == 0) FalseFlow  // no net connection
-              else
-              {
-                  act.syncedDate.map {
-                      val now = millinow() / 1000
-                      it + 5 * 60 > now  // Within 5 minutes
-                  }
-              }
+          else combine(act.syncedDate, ticker(ACCOUNT_SYNC_RECHECK_MS)) { syncedDate, _ ->
+              val connected = (act.wallet.chainstate?.chain?.net?.size ?: 0) > 0
+              val now = millinow() / 1000
+              connected && (syncedDate + 5 * 60 > now)  // Within 5 minutes
           }
       }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), false)
 }
