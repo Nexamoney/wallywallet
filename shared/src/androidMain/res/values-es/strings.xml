@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">La moneda de la cuenta es %walletCrypto, la dirección es %addressCrypto. Utilice el cuadro combinado para cambiar la cuenta de envío a una que coincida con el blockchain de la dirección.</string>
     <string name="incoming" formatted="false">Incluye %delta %unit pendiente</string>
     <string name="approximatelyT" formatted="false">aproximadamente %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">El valor en INR se basa en el precio global NEXA/USDT y en el USDT/INR de \"Exchange Rate API\". Los precios reales NEXA OTC/P2P en India suelen ser un 20–30% más altos por las tasas USDT/INR locales y la liquidez del mercado.</string>
     <string name="fastForward" formatted="false">Avance rápido</string>
     <string name="fastforwardStatus" formatted="false">análisis de avance rápido: %info</string>
     <string name="fastforwardStart" formatted="false">iniciado</string>
@@ -641,6 +642,7 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="tlvTitle">Bóveda con bloqueo temporal</string>
     <string name="tlvExplainer">Bloquea monedas para que nadie (ni siquiera tú) pueda gastarlas hasta después de la fecha que elijas.</string>
     <string name="tlvNewVault">Nueva bóveda</string>
+    <string name="tlvContractLineLabel">Bóveda con bloqueo temporal:</string>
     <string name="tlvMyVaultsCount" formatted="false">MIS BÓVEDAS · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit bloqueados</string>
     <string name="tlvLoadingVaults">Cargando bóvedas…</string>
@@ -651,9 +653,18 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="tlvClaimFailed">No se pudo reclamar la bóveda</string>
     <string name="tlvBalanceLoading">Cargando saldo</string>
     <string name="tlvClaimed">Reclamada</string>
+    <string name="tlvClaimedOn" formatted="false">Reclamada el %date</string>
     <string name="tlvLocked">Bloqueada</string>
+    <string name="tlvLockedOn" formatted="false">Bloqueada el %date</string>
+    <string name="tlvUnlocked">Desbloqueada</string>
+    <string name="tlvUnlockedOn" formatted="false">Desbloqueada el %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Bloqueada %locked · Desbloqueada %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Bloqueada · Desbloqueada</string>
+    <string name="tlvLockedUnlockedClaimedFields">Bloqueada · Desbloqueada · Reclamada</string>
     <string name="tlvUnlocksBlock" formatted="false">Se desbloquea en el bloque %num</string>
     <string name="tlvBlockNum" formatted="false">Bloque %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Bloque %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Desbloqueada · esperando un depósito</string>
     <string name="tlvUnlockedNeedsFeeCoin">Desbloqueada · faltan monedas para la comisión</string>
     <string name="tlvUnlockedReadyToClaim">Desbloqueada · lista para reclamar</string>
@@ -676,6 +687,9 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="tlvClaimSent">Reclamación enviada</string>
     <string name="tlvPendingDeposit">Depósito pendiente</string>
     <string name="tlvTopUp">Recarga</string>
+    <string name="tlvTxCreated">Creada</string>
+    <string name="tlvTxDeposit">Depósito</string>
+    <string name="tlvTxReceived">Recibido</string>
     <string name="tlvPending">Pendiente</string>
     <string name="tlvNetworkFee" formatted="false">Comisión de red %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">Autoridad %caps · %token</string>
@@ -685,6 +699,7 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="tlvCapBaton">Bastón</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Subgrupo</string>
+    <string name="tlvCreateTitle">Crear bóveda con bloqueo temporal</string>
     <string name="tlvCreateVault">Crear bóveda</string>
     <string name="tlvCreateExplainer">Los fondos más una pequeña comisión se moverán a una dirección con bloqueo temporal. Los verás en la bóveda, pero no podrás gastarlos antes de la fecha especificada.</string>
     <string name="tlvMinimumAmount" formatted="false">Mínimo %amt %unit</string>
@@ -703,10 +718,14 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="tlvPayTo">Pagar a</string>
     <string name="tlvNewTimeLockVault">Nueva bóveda con bloqueo temporal</string>
     <string name="tlvLockedUntil">Bloqueada hasta</string>
+    <string name="tlvLock">Bloquear</string>
+    <string name="tlvLockExplainer" formatted="false">Al firmar se bloquean %amt %unit en %name hasta el %date. No se podrá reclamar antes.</string>
     <string name="tlvConfirmAndSign">Confirmar y firmar</string>
     <string name="tlvWorking">Procesando…</string>
     <string name="tlvClaimVault">Reclamar bóveda</string>
     <string name="tlvClaimExplainerSingle">Esta bóveda se ha desbloqueado. Confirma para devolver su saldo a tu monedero.</string>
+    <string name="tlvClaimTo">Reclamar a</string>
+    <string name="tlvClaimedTo">Reclamada a</string>
     <string name="tlvYourWallet">(tu monedero)</string>
     <string name="tlvAsset">Activo</string>
     <string name="tlvYouReceive">Recibes</string>
@@ -719,6 +738,8 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="tlvLockedUntilBlock">Bloqueada hasta el bloque</string>
     <string name="tlvName">Nombre</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Bastones de autoridad · %count</string>
+    <string name="tlvTokens">Tokens</string>
+    <string name="tlvBatons">Bastones</string>
     <string name="tlvMovable">Movible</string>
     <string name="tlvBatonExplainer">Un bastón es un permiso, no un saldo. Se congela con las monedas y sale con ellas en la misma reclamación.</string>
     <string name="tlvDepositAddress">Dirección de depósito</string>

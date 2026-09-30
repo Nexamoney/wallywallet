@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">ଖାତାର ମୁଦ୍ରା %walletCrypto, ଠିକଣା %addressCrypto ର।  ଠିକଣାର ବ୍ଲକଚେନ୍ ସହ ମେଳ ଖାଉଥିବା ଖାତାକୁ ବାଛିବା ପାଇଁ କମ୍ବୋ ବକ୍ସରୁ “ଖାତାରୁ ପଠାନ୍ତୁ” ବଦଳାନ୍ତୁ।</string>
     <string name="incoming" formatted="false">%delta %unit ଅପେକ୍ଷାରତ ସହିତ</string>
     <string name="approximatelyT" formatted="false">ପ୍ରାୟ %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR ମୂଲ୍ୟ ବିଶ୍ୱବ୍ୟାପୀ NEXA/USDT ଦର ଏବଂ \"Exchange Rate API\" ର USDT/INR ଉପରେ ଆଧାରିତ। ସ୍ଥାନୀୟ USDT/INR ଦର ଏବଂ ବଜାର ତରଳତା କାରଣରୁ ଭାରତରେ ପ୍ରକୃତ NEXA OTC/P2P ଦର ସାଧାରଣତଃ 20–30% ଅଧିକ ହୋଇଥାଏ।</string>
     <string name="fastForward" formatted="false">ଫାଷ୍ଟ ଫରୱାର୍ଡ</string>
     <string name="fastforwardStatus" formatted="false">ଫାଷ୍ଟ ଫରୱାର୍ଡ ବିଶ୍ଳେଷଣ: %info</string>
     <string name="fastforwardStart" formatted="false">ଆରମ୍ଭ ହେଲା</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">ସର୍ବାଧିକ ଖାତା</string>
     <string name="accountUnavailableDetails">ଏହି ବ୍ଲକଚେନ୍ ସହ କୌଣସି ଖାତା ମେଳ ଖାଉନାହିଁ, କିମ୍ବା ଖାତା ଅନଲକ୍ ହୋଇନାହିଁ।</string>
     <string name="accountUnavailable">କୌଣସି ଅନଲକ୍ ଉପଯୁକ୍ତ ଖାତା ନାହିଁ</string>
+    <string name="accountCouldNotBeOpened">ଖାତା ଖୋଲାଯାଇପାରିଲା ନାହିଁ</string>
     <string name="sendMoreThanBalance">ଆପଣଙ୍କ ପାଖରେ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଥିବାଠାରୁ ଅଧିକ କଏନ୍ ପଠାଇବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି।\n\nଯଦି ଆପଣ ଭାବୁଛନ୍ତି ଯେ ନିଜ ବ୍ୟାଲାନ୍ସଠାରୁ ଅଧିକ ଖର୍ଚ୍ଚ କରୁନାହାନ୍ତି, ତେବେ ହୁଏତ ଆପଣ ଭୁଲିଯାଇଛନ୍ତି ଯେ ପ୍ରତ୍ୟେକ ଲେଣଦେଣରେ ଅଳ୍ପ ଅତିରିକ୍ତ ଶୁଳ୍କ ଲାଗେ, କିମ୍ବା ଯଦି ଆପଣଙ୍କ ପୂରା ବ୍ୟାଲାନ୍ସ ଅନିଶ୍ଚିତ ଦେଖାଉଛି ତେବେ ଆପଣ ଲଗାତାର ବହୁତ ଅଧିକ ଲେଣଦେଣ କରିଛନ୍ତି।\n\nଆପଣ ବ୍ଲକଚେନ୍‌ଠାରୁ କେତେ “ଆଗେଇ” ଯାଇପାରିବେ ତାହାର ଏକ ସୀମା ଅଛି। ଆପଣଙ୍କ ଅନିଶ୍ଚିତ ବ୍ୟାଲାନ୍ସ ନିଶ୍ଚିତ ହେବାକୁ ଦିଅନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
     <string name="sendMoreTokensThanBalance">ଆପଣଙ୍କ ପାଖରେ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଥିବାଠାରୁ ଅଧିକ ଟୋକନ୍ ପଠାଇବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି।</string>
     <string name="deductedFeeLargerThanSendAmount">କଟାଯାଉଥିବା ଶୁଳ୍କ ପଠାଯାଉଥିବା ରାଶିଠାରୁ ଅଧିକ</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">ଏବଂ %tokSnd ପ୍ରକାରର ଟୋକନ୍ ପଠାଉଛି।</string>
     <string name="TpReceivingTokens" formatted="false">ଏବଂ %tokRcv ପ୍ରକାରର ଟୋକନ୍ ପାଉଛି।</string>
     <string name="TpHasNoPurpose">ଏହି ଅନୁରୋଧର ଏହି ଖାତା ଉପରେ କୌଣସି ପ୍ରଭାବ ନାହିଁ।</string>
+    <string name="TpProposalMissingSignature">ଏହି କାରବାରରେ ଅନୁରୋଧକାରୀ ସାଇଟ୍ ଦେବାକୁ ଥିବା ସ୍ୱାକ୍ଷର ନାହିଁ, ତେଣୁ ଏହା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇପାରିବ ନାହିଁ। ଆପଣଙ୍କ ୱାଲେଟ୍‌ରୁ କିଛି ଖର୍ଚ୍ଚ ହୋଇନାହିଁ।</string>
     <string name="TpSendToTitle">ପେମେଣ୍ଟ ଅନୁରୋଧକାରୀ</string>
     <string name="TpSpends">ଖର୍ଚ୍ଚ</string>
     <string name="TpSendRequestDenied">ପେମେଣ୍ଟ ଅଗ୍ରାହ୍ୟ</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">ଛଦ୍ମବେଶ ଚାଲୁ କଲେ ଆପ୍ ବନ୍ଦ ହୋଇଯିବ ଏବଂ ଏହା Meditate ନାମକ ଏକ ଆପ୍ ଭାବେ ଲୁଚିଯିବ। Meditate ଆପ୍ ଛଦ୍ମବେଶ ବନ୍ଦ କରିବାକୁ ଆପ୍ ମେନୁ ଖୋଲି ସଂସ୍କରଣ ସଂଖ୍ୟାକୁ ପାଞ୍ଚ ଥର କ୍ଲିକ୍ କରନ୍ତୁ।</string>
     <string name="CamouflageDescriptionOther">Meditate ଆପ୍ ଛଦ୍ମବେଶ ବନ୍ଦ କରିବାକୁ ଆପ୍ ମେନୁ ଖୋଲି ସଂସ୍କରଣ ସଂଖ୍ୟାକୁ ପାଞ୍ଚ ଥର କ୍ଲିକ୍ କରନ୍ତୁ।</string>
     <string name="CamouflageAsMeditateAppAndroid">Meditate ଆପ୍ ଭାବେ ଛଦ୍ମବେଶ</string>
+    <string name="tlvTitle">ଟାଇମ୍ ଲକ୍ ଭଲ୍ଟ</string>
+    <string name="tlvExplainer">କଏନ୍ ଲକ୍ କରନ୍ତୁ ଯାହାଫଳରେ ଆପଣ ବାଛିଥିବା ତାରିଖ ପରେ ପର୍ଯ୍ୟନ୍ତ କେହି (ଆପଣ ନିଜେ ମଧ୍ୟ) ସେଗୁଡ଼ିକ ଖର୍ଚ୍ଚ କରିପାରିବେ ନାହିଁ।</string>
+    <string name="tlvNewVault">ନୂଆ ଭଲ୍ଟ</string>
+    <string name="tlvContractLineLabel">ଟାଇମ୍ ଲକ୍ ଭଲ୍ଟ:</string>
+    <string name="tlvMyVaultsCount" formatted="false">ମୋର ଭଲ୍ଟ · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit ଲକ୍ ହୋଇଛି</string>
+    <string name="tlvLoadingVaults">ଭଲ୍ଟ ଲୋଡ୍ ହେଉଛି…</string>
+    <string name="tlvNoVaultsYet">ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଭଲ୍ଟ ନାହିଁ — ଗୋଟିଏ ତିଆରି କରିବାକୁ ଉପରେ ନୂଆ ଭଲ୍ଟ ଟ୍ୟାପ୍ କରନ୍ତୁ।</string>
+    <string name="tlvContractCounts" formatted="false">%claimable ଦାବିଯୋଗ୍ୟ · %locked ଲକ୍ · %claimed ଦାବି ହୋଇଛି</string>
+    <string name="tlvLoadFailed">ଟାଇମ୍ ଲକ୍ ଭଲ୍ଟ ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ</string>
+    <string name="tlvCreateFailed">ଭଲ୍ଟ ତିଆରି ହୋଇପାରିଲା ନାହିଁ</string>
+    <string name="tlvClaimFailed">ଭଲ୍ଟ ଦାବି କରାଯାଇପାରିଲା ନାହିଁ</string>
+    <string name="tlvBalanceLoading">ବ୍ୟାଲାନ୍ସ ଲୋଡ୍ ହେଉଛି</string>
+    <string name="tlvClaimed">ଦାବି ହୋଇଛି</string>
+    <string name="tlvClaimedOn" formatted="false">%date ରେ ଦାବି ହୋଇଛି</string>
+    <string name="tlvLocked">ଲକ୍ ହୋଇଛି</string>
+    <string name="tlvLockedOn" formatted="false">%date ରେ ଲକ୍ ହୋଇଛି</string>
+    <string name="tlvUnlocked">ଅନଲକ୍ ହୋଇଛି</string>
+    <string name="tlvUnlockedOn" formatted="false">%date ରେ ଅନଲକ୍ ହୋଇଛି</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">ଲକ୍ %locked · ଅନଲକ୍ %unlocked</string>
+    <string name="tlvLockedUnlockedFields">ଲକ୍ · ଅନଲକ୍</string>
+    <string name="tlvLockedUnlockedClaimedFields">ଲକ୍ · ଅନଲକ୍ · ଦାବି</string>
+    <string name="tlvUnlocksBlock" formatted="false">ବ୍ଲକ୍ %num ରେ ଅନଲକ୍ ହେବ</string>
+    <string name="tlvBlockNum" formatted="false">ବ୍ଲକ୍ %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">ବ୍ଲକ୍ %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">ଅନଲକ୍ · ଜମା ପାଇଁ ଅପେକ୍ଷା</string>
+    <string name="tlvUnlockedNeedsFeeCoin">ଅନଲକ୍ · ଶୁଳ୍କ ପାଇଁ କଏନ୍ ଦରକାର</string>
+    <string name="tlvUnlockedReadyToClaim">ଅନଲକ୍ · ଦାବି ପାଇଁ ପ୍ରସ୍ତୁତ</string>
+    <string name="tlvClaimedFundsArrivedSince">ଦାବି ହୋଇଛି · ପରେ ପାଣ୍ଠି ଆସିଛି</string>
+    <string name="tlvClaim">ଦାବି କରନ୍ତୁ</string>
+    <string name="tlvReclaim">ପୁଣି ଦାବି କରନ୍ତୁ</string>
+    <string name="tlvVaultEmptied">ଏହି ଭଲ୍ଟ ଖାଲି କରାଯାଇଛି</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% ବିତିଛି</string>
+    <string name="tlvDaysLeft" formatted="false">%num ଦିନ ବାକି</string>
+    <string name="tlvOneDayLeft">1 ଦିନ ବାକି</string>
+    <string name="tlvHoursLeft" formatted="false">%num ଘଣ୍ଟା ବାକି</string>
+    <string name="tlvOneHourLeft">1 ଘଣ୍ଟା ବାକି</string>
+    <string name="tlvMinutesLeft" formatted="false">%num ମିନିଟ୍ ବାକି</string>
+    <string name="tlvOneMinuteLeft">1 ମିନିଟ୍ ବାକି</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count ପ୍ରାଧିକାର ବ୍ୟାଟନ୍ · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count ପ୍ରାଧିକାର ବ୍ୟାଟନ୍ · %syms</string>
+    <string name="tlvTransactions">ଭଲ୍ଟ କାରବାର</string>
+    <string name="tlvNoTransactions">ଏହି ଭଲ୍ଟ ପାଇଁ ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି କାରବାର ନାହିଁ।</string>
+    <string name="tlvVaultCreated">ଭଲ୍ଟ ତିଆରି ହୋଇଛି</string>
+    <string name="tlvClaimSent">ଦାବି ପଠାଯାଇଛି</string>
+    <string name="tlvPendingDeposit">ଅପେକ୍ଷାରତ ଜମା</string>
+    <string name="tlvTopUp">ଟପ୍-ଅପ୍</string>
+    <string name="tlvTxCreated">ତିଆରି</string>
+    <string name="tlvTxDeposit">ଜମା</string>
+    <string name="tlvTxReceived">ପ୍ରାପ୍ତ</string>
+    <string name="tlvPending">ଅପେକ୍ଷାରତ</string>
+    <string name="tlvNetworkFee" formatted="false">ନେଟୱାର୍କ ଶୁଳ୍କ %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps ପ୍ରାଧିକାର · %token</string>
+    <string name="tlvAuthority">ପ୍ରାଧିକାର</string>
+    <string name="tlvCapMint">ମିଣ୍ଟ</string>
+    <string name="tlvCapMelt">ମେଲ୍ଟ</string>
+    <string name="tlvCapBaton">ବ୍ୟାଟନ୍</string>
+    <string name="tlvCapRescript">ରିସ୍କ୍ରିପ୍ଟ</string>
+    <string name="tlvCapSubgroup">ସବ୍‌ଗ୍ରୁପ୍</string>
+    <string name="tlvCreateTitle">ଟାଇମ୍ ଲକ୍ ଭଲ୍ଟ ତିଆରି କରନ୍ତୁ</string>
+    <string name="tlvCreateVault">ଭଲ୍ଟ ତିଆରି କରନ୍ତୁ</string>
+    <string name="tlvCreateExplainer">ପାଣ୍ଠି ଏବଂ ଛୋଟ ଶୁଳ୍କ ଟାଇମ୍-ଲକ୍ ଠିକଣାକୁ ଯିବ। ଆପଣ ସେଗୁଡ଼ିକ ଭଲ୍ଟରେ ଦେଖିବେ, କିନ୍ତୁ ନିର୍ଦ୍ଦିଷ୍ଟ ତାରିଖ ପୂର୍ବରୁ ଖର୍ଚ୍ଚ କରିପାରିବେ ନାହିଁ।</string>
+    <string name="tlvMinimumAmount" formatted="false">ସର୍ବନିମ୍ନ %amt %unit</string>
+    <string name="tlvLockUntil">ଏହା ପର୍ଯ୍ୟନ୍ତ ଲକ୍ କରନ୍ତୁ</string>
+    <string name="tlvBlockHeight">ବ୍ଲକ୍ ଉଚ୍ଚତା</string>
+    <string name="tlvFutureDate">ଭବିଷ୍ୟତ ତାରିଖ</string>
+    <string name="tlvMaxBlockHeight" formatted="false">ସର୍ବାଧିକ ବ୍ଲକ୍ ଉଚ୍ଚତା %num</string>
+    <string name="tlvFeeSatB">ଶୁଳ୍କ</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">ମୋଟ</string>
+    <string name="tlvReview">ସମୀକ୍ଷା</string>
+    <string name="tlvDone">ହୋଇଗଲା</string>
+    <string name="tlvOk">ଠିକ୍ ଅଛି</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">ଭଲ୍ଟ ନିଶ୍ଚିତ କରନ୍ତୁ</string>
+    <string name="tlvPayTo">ଦେୟ</string>
+    <string name="tlvNewTimeLockVault">ନୂଆ ଟାଇମ୍ ଲକ୍ ଭଲ୍ଟ</string>
+    <string name="tlvLockedUntil">ଏହା ପର୍ଯ୍ୟନ୍ତ ଲକ୍</string>
+    <string name="tlvLock">ଲକ୍ କରନ୍ତୁ</string>
+    <string name="tlvLockExplainer" formatted="false">ସ୍ୱାକ୍ଷର କଲେ %amt %unit %name ରେ %date ପର୍ଯ୍ୟନ୍ତ ଲକ୍ ହେବ। ତା ପୂର୍ବରୁ ଦାବି କରାଯାଇପାରିବ ନାହିଁ।</string>
+    <string name="tlvConfirmAndSign">ନିଶ୍ଚିତ &amp; ସ୍ୱାକ୍ଷର</string>
+    <string name="tlvWorking">କାମ ଚାଲିଛି…</string>
+    <string name="tlvClaimVault">ଭଲ୍ଟ ଦାବି କରନ୍ତୁ</string>
+    <string name="tlvClaimExplainerSingle">ଏହି ଭଲ୍ଟ ଅନଲକ୍ ହୋଇଛି। ଏହାର ବ୍ୟାଲାନ୍ସ ଆପଣଙ୍କ ୱାଲେଟ୍‌କୁ ଫେରାଇ ଆଣିବାକୁ ନିଶ୍ଚିତ କରନ୍ତୁ।</string>
+    <string name="tlvClaimTo">ଏଠାକୁ ଦାବି କରନ୍ତୁ</string>
+    <string name="tlvClaimedTo">ଏଠାକୁ ଦାବି ହୋଇଛି</string>
+    <string name="tlvYourWallet">(ଆପଣଙ୍କ ୱାଲେଟ୍)</string>
+    <string name="tlvAsset">ସମ୍ପତ୍ତି</string>
+    <string name="tlvYouReceive">ଆପଣ ପାଇବେ</string>
+    <string name="tlvNothingToClaim">ଦାବି କରିବାକୁ କିଛି ନାହିଁ — ଏହି ଭଲ୍ଟ ଖାଲି।</string>
+    <string name="tlvConfirmAndClaim">ନିଶ୍ଚିତ &amp; ଦାବି</string>
+    <string name="tlvVaultClaimed">ଭଲ୍ଟ ଦାବି ହୋଇଛି</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit ଆପଣଙ୍କ ୱାଲେଟ୍‌କୁ ଫେରୁଛି।</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">ପାଣ୍ଠି ବାଟରେ ଅଛି।</string>
+    <string name="tlvLockedUntilBlock">ଏହି ବ୍ଲକ୍ ପର୍ଯ୍ୟନ୍ତ ଲକ୍</string>
+    <string name="tlvName">ନାମ</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">ପ୍ରାଧିକାର ବ୍ୟାଟନ୍ · %count</string>
+    <string name="tlvTokens">ଟୋକନ୍</string>
+    <string name="tlvBatons">ବ୍ୟାଟନ୍</string>
+    <string name="tlvMovable">ସ୍ଥାନାନ୍ତରଯୋଗ୍ୟ</string>
+    <string name="tlvBatonExplainer">ବ୍ୟାଟନ୍ ଏକ ଅନୁମତି, ବ୍ୟାଲାନ୍ସ ନୁହେଁ। ଏହା କଏନ୍ ସହିତ ଜମାଟ ବାନ୍ଧେ ଏବଂ ସେହି ଦାବିରେ ସେଗୁଡ଼ିକ ସହିତ ବାହାରି ଆସେ।</string>
+    <string name="tlvDepositAddress">ଜମା ଠିକଣା</string>
+    <string name="tlvNoAddress">(ଠିକଣା ନାହିଁ)</string>
+    <string name="tlvVaultSuccess">ଭଲ୍ଟ ସଫଳ</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR ବନ୍ଦ କରନ୍ତୁ</string>
+    <string name="tlvDepositWarning">ଏହି ଠିକଣାକୁ ପଠାଯାଇଥିବା ସବୁକିଛି ଭଲ୍ଟ ଖୋଲିବା ପର୍ଯ୍ୟନ୍ତ ଲକ୍ ରହେ — ଭୁଲରେ ପଠାଯାଇଥିବା କଏନ୍ ମଧ୍ୟ।</string>
+    <string name="tlvTokenFeeWarning" formatted="false">ଏଠାକୁ ଟୋକନ୍ କେବଳ କିଛି %unit ସହିତ ପଠାନ୍ତୁ। ଭଲ୍ଟ ଖୋଲିବା ସମୟରେ ନିଜ ଶୁଳ୍କ ନିଜେ ଦିଏ, ଏବଂ କେବଳ ନିଜ ପାଖରେ ଥିବା %unit ରୁ।</string>
+    <string name="tlvHistory">ଇତିହାସ</string>
+    <string name="tlvView">ଦେଖନ୍ତୁ</string>
+    <string name="tlvNoEarlyOpen">ଏହି ଭଲ୍ଟ ଶୀଘ୍ର ଖୋଲିବାର କୌଣସି ଉପାୟ ନାହିଁ। ଟାଇମ୍ ଲକ୍ ଭଲ୍ଟର ଉଦ୍ଦେଶ୍ୟ ହିଁ ତାହା।</string>
+    <string name="tlvPublicOnChain">ଏହି ଭଲ୍ଟରେ ପାଣ୍ଠି ଆସିବା ମୁହୂର୍ତ୍ତରୁ ଅନଲକ୍ ଉଚ୍ଚତା ଏବଂ ପରିମାଣ ଚେନ୍‌ରେ ସାର୍ବଜନୀନ — ଠିକଣା ଥିବା ଯେକେହି ପଢ଼ିପାରିବେ।</string>
 </resources>

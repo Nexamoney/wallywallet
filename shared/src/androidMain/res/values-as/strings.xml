@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">একাউণ্টৰ মুদ্ৰা %walletCrypto, ঠিকনাটো %addressCrypto। ঠিকনাৰ ব্লকচেইনৰ সৈতে মিল থকা একাউণ্টলৈ সলনি কৰিবলৈ কম্বো বক্স ব্যৱহাৰ কৰক।</string>
     <string name="incoming" formatted="false">ইয়াত %delta %unit অপেক্ষাৰত আছে</string>
     <string name="approximatelyT" formatted="false">প্ৰায় %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR মূল্য বিশ্বব্যাপী NEXA/USDT দাম আৰু \"Exchange Rate API\" ৰ USDT/INR ৰ ওপৰত আধাৰিত। স্থানীয় USDT/INR হাৰ আৰু বজাৰৰ তাৰল্যৰ বাবে ভাৰতত প্ৰকৃত NEXA OTC/P2P দাম সাধাৰণতে 20–30% বেছি হয়।</string>
     <string name="fastForward" formatted="false">ফাষ্ট ফৰৱাৰ্ড</string>
     <string name="fastforwardStatus" formatted="false">ফাষ্ট ফৰৱাৰ্ড বিশ্লেষণ: %info</string>
     <string name="fastforwardStart" formatted="false">আৰম্ভ হ\'ল</string>
@@ -403,6 +404,7 @@
     <string name="accountLimitReached">সৰ্বাধিক একাউণ্ট</string>
     <string name="accountUnavailableDetails">হয় এই ব্লকচেইনৰ সৈতে মিলা কোনো একাউণ্ট নাই, নহয় একাউণ্টটো আনলক কৰা হোৱা নাই।</string>
     <string name="accountUnavailable">আনলক কৰা উপযোগী একাউণ্ট নাই</string>
+    <string name="accountCouldNotBeOpened">একাউণ্ট খুলিব পৰা নগ\'ল</string>
     <string name="sendMoreThanBalance">আপোনাৰ এতিয়া যিমান ধন আছে, তাতকৈ বেছি পঠাবলৈ চেষ্টা কৰিছে।\n\nযদি ভাবিছে যে বেলেন্সতকৈ বেছি খৰচ কৰা নাই, তেন্তে হয়তো পাহৰি গৈছে যে প্ৰতিটো লেনদেনত সামান্য অতিৰিক্ত মাচুল লাগে; নাইবা গোটেই বেলেন্স নিশ্চিত নোহোৱা দেখিলে আপুনি একেৰাহে বহুত লেনদেন কৰিছে।\n\nব্লকচেইনতকৈ কিমান আগবাঢ়ি যাব পাৰি তাৰ এটা সীমা আছে। আপোনাৰ নিশ্চিত নোহোৱা বেলেন্স নিশ্চিত হ\'বলৈ দিয়ক আৰু আকৌ চেষ্টা কৰক।</string>
     <string name="sendMoreTokensThanBalance">আপোনাৰ এতিয়া যিমান টোকেন আছে, তাতকৈ বেছি পঠাবলৈ চেষ্টা কৰিছে।</string>
     <string name="deductedFeeLargerThanSendAmount">কটা মাচুল পঠোৱা পৰিমাণতকৈ বেছি</string>
@@ -502,6 +504,7 @@
     <string name="TpSendingTokens" formatted="false">আৰু %tokSnd প্ৰকাৰৰ টোকেন পঠিয়াই।</string>
     <string name="TpReceivingTokens" formatted="false">আৰু %tokRcv প্ৰকাৰৰ টোকেন গ্ৰহণ কৰি।</string>
     <string name="TpHasNoPurpose">এই অনুৰোধে এই একাউণ্টত কোনো প্ৰভাৱ নেপেলায়।</string>
+    <string name="TpProposalMissingSignature">এই লেনদেনত অনুৰোধকাৰী ছাইটে দিব লগা স্বাক্ষৰ নাই, সেয়ে ইয়াক সম্পূৰ্ণ কৰিব নোৱাৰি। আপোনাৰ ৱালেটৰ পৰা একো খৰচ হোৱা নাই।</string>
     <string name="TpSendToTitle">পৰিশোধৰ অনুৰোধকাৰী</string>
     <string name="TpSpends">খৰচ কৰে</string>
     <string name="TpSendRequestDenied">পৰিশোধ নাকচ কৰা হ\'ল</string>
@@ -634,4 +637,118 @@
     <string name="CamouflageDescriptionAndroid">ছদ্মবেশ সক্ৰিয় কৰিলে এপটো বন্ধ হৈ Meditate নামৰ এপ হিচাপে ছদ্মবেশ লয়। Meditate এপৰ ছদ্মবেশ বন্ধ কৰিবলৈ এপ মেনু খুলি সংস্কৰণ নম্বৰটোত পাঁচবাৰ টিপক।</string>
     <string name="CamouflageDescriptionOther">Meditate এপৰ ছদ্মবেশ বন্ধ কৰিবলৈ এপ মেনু খুলি সংস্কৰণ নম্বৰটোত পাঁচবাৰ টিপক।</string>
     <string name="CamouflageAsMeditateAppAndroid">Meditate এপৰ ছদ্মবেশ</string>
+    <string name="tlvTitle">টাইম লক ভল্ট</string>
+    <string name="tlvExplainer">মুদ্ৰা লক কৰক যাতে আপুনি বছা তাৰিখৰ পিছলৈকে কোনেও (আপুনিও) সেইবোৰ খৰচ কৰিব নোৱাৰে।</string>
+    <string name="tlvNewVault">নতুন ভল্ট</string>
+    <string name="tlvContractLineLabel">টাইম লক ভল্ট:</string>
+    <string name="tlvMyVaultsCount" formatted="false">মোৰ ভল্ট · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit লক কৰা</string>
+    <string name="tlvLoadingVaults">ভল্ট ল\'ড হৈ আছে…</string>
+    <string name="tlvNoVaultsYet">এতিয়ালৈকে কোনো ভল্ট নাই — এটা বনাবলৈ ওপৰৰ নতুন ভল্ট টিপক।</string>
+    <string name="tlvContractCounts" formatted="false">%claimable দাবীযোগ্য · %locked লক কৰা · %claimed দাবী কৰা</string>
+    <string name="tlvLoadFailed">টাইম লক ভল্ট ল\'ড কৰিব পৰা নগ\'ল</string>
+    <string name="tlvCreateFailed">ভল্ট সৃষ্টি কৰিব পৰা নগ\'ল</string>
+    <string name="tlvClaimFailed">ভল্ট দাবী কৰিব পৰা নগ\'ল</string>
+    <string name="tlvBalanceLoading">বেলেন্স ল\'ড হৈ আছে</string>
+    <string name="tlvClaimed">দাবী কৰা</string>
+    <string name="tlvClaimedOn" formatted="false">%date ত দাবী কৰা</string>
+    <string name="tlvLocked">লক কৰা</string>
+    <string name="tlvLockedOn" formatted="false">%date ত লক কৰা</string>
+    <string name="tlvUnlocked">আনলক</string>
+    <string name="tlvUnlockedOn" formatted="false">%date ত আনলক</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">লক %locked · আনলক %unlocked</string>
+    <string name="tlvLockedUnlockedFields">লক · আনলক</string>
+    <string name="tlvLockedUnlockedClaimedFields">লক · আনলক · দাবী</string>
+    <string name="tlvUnlocksBlock" formatted="false">ব্লক %num ত আনলক হ\'ব</string>
+    <string name="tlvBlockNum" formatted="false">ব্লক %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">ব্লক %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">আনলক · জমাৰ অপেক্ষাত</string>
+    <string name="tlvUnlockedNeedsFeeCoin">আনলক · মাচুলৰ বাবে মুদ্ৰা লাগে</string>
+    <string name="tlvUnlockedReadyToClaim">আনলক · দাবীৰ বাবে সাজু</string>
+    <string name="tlvClaimedFundsArrivedSince">দাবী কৰা · পিছত পুঁজি আহিছে</string>
+    <string name="tlvClaim">দাবী কৰক</string>
+    <string name="tlvReclaim">পুনৰ দাবী কৰক</string>
+    <string name="tlvVaultEmptied">এই ভল্ট খালী কৰা হৈছে</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% পাৰ হ\'ল</string>
+    <string name="tlvDaysLeft" formatted="false">%num দিন বাকী</string>
+    <string name="tlvOneDayLeft">1 দিন বাকী</string>
+    <string name="tlvHoursLeft" formatted="false">%num ঘণ্টা বাকী</string>
+    <string name="tlvOneHourLeft">1 ঘণ্টা বাকী</string>
+    <string name="tlvMinutesLeft" formatted="false">%num মিনিট বাকী</string>
+    <string name="tlvOneMinuteLeft">1 মিনিট বাকী</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count অথৰিটি বেটন · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count অথৰিটি বেটন · %syms</string>
+    <string name="tlvTransactions">ভল্টৰ লেনদেন</string>
+    <string name="tlvNoTransactions">এই ভল্টৰ বাবে এতিয়ালৈকে কোনো লেনদেন নাই।</string>
+    <string name="tlvVaultCreated">ভল্ট সৃষ্টি হ\'ল</string>
+    <string name="tlvClaimSent">দাবী পঠোৱা হ\'ল</string>
+    <string name="tlvPendingDeposit">অপেক্ষাৰত জমা</string>
+    <string name="tlvTopUp">টপ-আপ</string>
+    <string name="tlvTxCreated">সৃষ্টি</string>
+    <string name="tlvTxDeposit">জমা</string>
+    <string name="tlvTxReceived">প্ৰাপ্ত</string>
+    <string name="tlvPending">অপেক্ষাৰত</string>
+    <string name="tlvNetworkFee" formatted="false">নেটৱৰ্ক মাচুল %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps অথৰিটি · %token</string>
+    <string name="tlvAuthority">অথৰিটি</string>
+    <string name="tlvCapMint">মিণ্ট</string>
+    <string name="tlvCapMelt">মেল্ট</string>
+    <string name="tlvCapBaton">বেটন</string>
+    <string name="tlvCapRescript">ৰিস্ক্ৰিপ্ট</string>
+    <string name="tlvCapSubgroup">ছাবগ্ৰুপ</string>
+    <string name="tlvCreateTitle">টাইম লক ভল্ট সৃষ্টি কৰক</string>
+    <string name="tlvCreateVault">ভল্ট সৃষ্টি কৰক</string>
+    <string name="tlvCreateExplainer">পুঁজি আৰু সৰু মাচুল টাইম-লক ঠিকনালৈ যাব। আপুনি সেইবোৰ ভল্টত দেখিব, কিন্তু নিৰ্দিষ্ট তাৰিখৰ আগতে খৰচ কৰিব নোৱাৰিব।</string>
+    <string name="tlvMinimumAmount" formatted="false">নূন্যতম %amt %unit</string>
+    <string name="tlvLockUntil">ইয়ালৈকে লক কৰক</string>
+    <string name="tlvBlockHeight">ব্লক উচ্চতা</string>
+    <string name="tlvFutureDate">ভৱিষ্যতৰ তাৰিখ</string>
+    <string name="tlvMaxBlockHeight" formatted="false">সৰ্বাধিক ব্লক উচ্চতা %num</string>
+    <string name="tlvFeeSatB">মাচুল</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">মুঠ</string>
+    <string name="tlvReview">পৰীক্ষা কৰক</string>
+    <string name="tlvDone">হ\'ল</string>
+    <string name="tlvOk">ঠিক আছে</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">ভল্ট নিশ্চিত কৰক</string>
+    <string name="tlvPayTo">পৰিশোধ কৰক</string>
+    <string name="tlvNewTimeLockVault">নতুন টাইম লক ভল্ট</string>
+    <string name="tlvLockedUntil">ইয়ালৈকে লক</string>
+    <string name="tlvLock">লক কৰক</string>
+    <string name="tlvLockExplainer" formatted="false">স্বাক্ষৰ কৰিলে %amt %unit %name ত %date লৈকে লক হ\'ব। তাৰ আগতে দাবী কৰিব নোৱাৰি।</string>
+    <string name="tlvConfirmAndSign">নিশ্চিত &amp; স্বাক্ষৰ</string>
+    <string name="tlvWorking">কাম চলি আছে…</string>
+    <string name="tlvClaimVault">ভল্ট দাবী কৰক</string>
+    <string name="tlvClaimExplainerSingle">এই ভল্ট আনলক হৈছে। ইয়াৰ বেলেন্স আপোনাৰ ৱালেটলৈ ঘূৰাই আনিবলৈ নিশ্চিত কৰক।</string>
+    <string name="tlvClaimTo">ইয়ালৈ দাবী কৰক</string>
+    <string name="tlvClaimedTo">ইয়ালৈ দাবী কৰা</string>
+    <string name="tlvYourWallet">(আপোনাৰ ৱালেট)</string>
+    <string name="tlvAsset">সম্পদ</string>
+    <string name="tlvYouReceive">আপুনি পাব</string>
+    <string name="tlvNothingToClaim">দাবী কৰিবলৈ একো নাই — এই ভল্ট খালী।</string>
+    <string name="tlvConfirmAndClaim">নিশ্চিত &amp; দাবী</string>
+    <string name="tlvVaultClaimed">ভল্ট দাবী কৰা হ\'ল</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit আপোনাৰ ৱালেটলৈ ঘূৰি আহি আছে।</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">পুঁজি বাটত আছে।</string>
+    <string name="tlvLockedUntilBlock">এই ব্লকলৈকে লক</string>
+    <string name="tlvName">নাম</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">অথৰিটি বেটন · %count</string>
+    <string name="tlvTokens">টোকেন</string>
+    <string name="tlvBatons">বেটন</string>
+    <string name="tlvMovable">স্থানান্তৰযোগ্য</string>
+    <string name="tlvBatonExplainer">বেটন এটা অনুমতি, বেলেন্স নহয়। ই মুদ্ৰাৰ সৈতে জমা হৈ থাকে আৰু একেটা দাবীতে সেইবোৰৰ সৈতে ওলাই আহে।</string>
+    <string name="tlvDepositAddress">জমা ঠিকনা</string>
+    <string name="tlvNoAddress">(ঠিকনা নাই)</string>
+    <string name="tlvVaultSuccess">ভল্ট সফল</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR বন্ধ কৰক</string>
+    <string name="tlvDepositWarning">এই ঠিকনালৈ পঠোৱা সকলো ভল্ট খোলালৈকে লক থাকে — ভুলতে ইয়ালৈ পঠোৱা মুদ্ৰাও।</string>
+    <string name="tlvTokenFeeWarning" formatted="false">ইয়ালৈ টোকেন কেৱল কিছু %unit ৰ সৈতেহে পঠাওক। ভল্টে খোলাৰ সময়ত নিজৰ মাচুল নিজে দিয়ে, আৰু কেৱল নিজৰ ওচৰত থকা %unit ৰ পৰাহে।</string>
+    <string name="tlvHistory">ইতিহাস</string>
+    <string name="tlvView">চাওক</string>
+    <string name="tlvNoEarlyOpen">এই ভল্ট আগতীয়াকৈ খোলাৰ কোনো উপায় নাই। টাইম লক ভল্টৰ উদ্দেশ্য সেয়াই।</string>
+    <string name="tlvPublicOnChain">এই ভল্টত পুঁজি অহাৰ মুহূৰ্তৰ পৰা আনলক উচ্চতা আৰু পৰিমাণ চেইনত ৰাজহুৱা — ঠিকনা থকা যিকোনোৱে পঢ়িব পাৰে।</string>
 </resources>

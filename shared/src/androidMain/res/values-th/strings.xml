@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">สกุลเงินของบัญชีคือ %walletCrypto แต่ที่อยู่เป็น %addressCrypto ใช้กล่องตัวเลือกเพื่อเปลี่ยนบัญชีที่ส่งให้ตรงกับบล็อกเชนของที่อยู่</string>
     <string name="incoming" formatted="false">รวม %delta %unit ที่รอยืนยัน</string>
     <string name="approximatelyT" formatted="false">ประมาณ %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">มูลค่า INR อิงจากราคา NEXA/USDT ทั่วโลกและอัตรา USDT/INR จาก \"Exchange Rate API\" ราคา NEXA OTC/P2P จริงในอินเดียมักสูงกว่า 20–30% เนื่องจากอัตรา USDT/INR ในประเทศและสภาพคล่องของตลาด</string>
     <string name="fastForward" formatted="false">กรอไปข้างหน้า</string>
     <string name="fastforwardStatus" formatted="false">การวิเคราะห์กรอไปข้างหน้า: %info</string>
     <string name="fastforwardStart" formatted="false">เริ่มแล้ว</string>
@@ -403,6 +404,7 @@
     <string name="accountLimitReached">บัญชีเต็มแล้ว</string>
     <string name="accountUnavailableDetails">ไม่มีบัญชีที่ตรงกับบล็อกเชนนี้ หรือบัญชียังไม่ถูกปลดล็อก</string>
     <string name="accountUnavailable">ไม่มีบัญชีที่ปลดล็อกแล้วและใช้ได้</string>
+    <string name="accountCouldNotBeOpened">ไม่สามารถเปิดบัญชีได้</string>
     <string name="sendMoreThanBalance">คุณกำลังพยายามส่งเหรียญมากกว่าที่มีอยู่ในขณะนี้\n\nหากคุณคิดว่าไม่ได้ใช้จ่ายเกินยอดคงเหลือ คุณอาจลืมว่าธุรกรรมมีค่าธรรมเนียมเพิ่มเล็กน้อย หรือหากยอดคงเหลือทั้งหมดของคุณยังไม่ยืนยัน คุณอาจทำธุรกรรมติดต่อกันมากเกินไป\n\nมีขีดจำกัดว่าคุณจะ “ล้ำหน้า” บล็อกเชนได้มากแค่ไหน กรุณารอให้ยอดคงเหลือที่ยังไม่ยืนยันได้รับการยืนยัน แล้วลองใหม่</string>
     <string name="sendMoreTokensThanBalance">คุณกำลังพยายามส่งโทเคนมากกว่าที่มีอยู่ในขณะนี้</string>
     <string name="deductedFeeLargerThanSendAmount">ค่าธรรมเนียมที่หักมากกว่าจำนวนที่ส่ง</string>
@@ -502,6 +504,7 @@
     <string name="TpSendingTokens" formatted="false">และส่งโทเคน %tokSnd ประเภท</string>
     <string name="TpReceivingTokens" formatted="false">และรับโทเคน %tokRcv ประเภท</string>
     <string name="TpHasNoPurpose">คำขอนี้ไม่มีผลกับบัญชีนี้</string>
+    <string name="TpProposalMissingSignature">ธุรกรรมนี้ขาดลายเซ็นที่เว็บไซต์ผู้ร้องขอควรจัดให้ จึงไม่สามารถดำเนินการให้เสร็จได้ ยังไม่มีการใช้จ่ายใด ๆ จากกระเป๋าของคุณ</string>
     <string name="TpSendToTitle">คำขอชำระเงินจาก</string>
     <string name="TpSpends">ใช้จ่าย</string>
     <string name="TpSendRequestDenied">ปฏิเสธการชำระเงิน</string>
@@ -634,4 +637,118 @@
     <string name="CamouflageDescriptionAndroid">เมื่อเปิดโหมดอำพราง แอปจะปิดตัวลงและอำพรางเป็นแอปชื่อ Meditate หากต้องการปิดการอำพรางเป็นแอป Meditate ให้เปิดเมนูของแอปแล้วแตะที่หมายเลขเวอร์ชัน 5 ครั้ง</string>
     <string name="CamouflageDescriptionOther">หากต้องการปิดการอำพรางเป็นแอป Meditate ให้เปิดเมนูของแอปแล้วแตะที่หมายเลขเวอร์ชัน 5 ครั้ง</string>
     <string name="CamouflageAsMeditateAppAndroid">อำพรางเป็นแอป Meditate</string>
+    <string name="tlvTitle">ตู้นิรภัยล็อกเวลา</string>
+    <string name="tlvExplainer">ล็อกเหรียญไว้เพื่อไม่ให้ใคร (รวมถึงตัวคุณเอง) ใช้จ่ายได้จนกว่าจะพ้นวันที่คุณเลือก</string>
+    <string name="tlvNewVault">ตู้นิรภัยใหม่</string>
+    <string name="tlvContractLineLabel">ตู้นิรภัยล็อกเวลา:</string>
+    <string name="tlvMyVaultsCount" formatted="false">ตู้นิรภัยของฉัน · %count</string>
+    <string name="tlvTotalLocked" formatted="false">ล็อกไว้ %amt %unit</string>
+    <string name="tlvLoadingVaults">กำลังโหลดตู้นิรภัย…</string>
+    <string name="tlvNoVaultsYet">ยังไม่มีตู้นิรภัย — แตะ ตู้นิรภัยใหม่ ด้านบนเพื่อสร้าง</string>
+    <string name="tlvContractCounts" formatted="false">รับได้ %claimable · ล็อกอยู่ %locked · รับแล้ว %claimed</string>
+    <string name="tlvLoadFailed">ไม่สามารถโหลดตู้นิรภัยล็อกเวลาได้</string>
+    <string name="tlvCreateFailed">ไม่สามารถสร้างตู้นิรภัยได้</string>
+    <string name="tlvClaimFailed">ไม่สามารถรับจากตู้นิรภัยได้</string>
+    <string name="tlvBalanceLoading">กำลังโหลดยอดคงเหลือ</string>
+    <string name="tlvClaimed">รับแล้ว</string>
+    <string name="tlvClaimedOn" formatted="false">รับแล้วเมื่อ %date</string>
+    <string name="tlvLocked">ล็อกอยู่</string>
+    <string name="tlvLockedOn" formatted="false">ล็อกเมื่อ %date</string>
+    <string name="tlvUnlocked">ปลดล็อกแล้ว</string>
+    <string name="tlvUnlockedOn" formatted="false">ปลดล็อกเมื่อ %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">ล็อก %locked · ปลดล็อก %unlocked</string>
+    <string name="tlvLockedUnlockedFields">ล็อก · ปลดล็อก</string>
+    <string name="tlvLockedUnlockedClaimedFields">ล็อก · ปลดล็อก · รับแล้ว</string>
+    <string name="tlvUnlocksBlock" formatted="false">ปลดล็อกที่บล็อก %num</string>
+    <string name="tlvBlockNum" formatted="false">บล็อก %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">บล็อก %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">ปลดล็อกแล้ว · รอการฝาก</string>
+    <string name="tlvUnlockedNeedsFeeCoin">ปลดล็อกแล้ว · ต้องมีเหรียญสำหรับค่าธรรมเนียม</string>
+    <string name="tlvUnlockedReadyToClaim">ปลดล็อกแล้ว · พร้อมรับ</string>
+    <string name="tlvClaimedFundsArrivedSince">รับแล้ว · มีเงินเข้ามาหลังจากนั้น</string>
+    <string name="tlvClaim">รับ</string>
+    <string name="tlvReclaim">รับอีกครั้ง</string>
+    <string name="tlvVaultEmptied">ตู้นิรภัยนี้ถูกถอนจนหมดแล้ว</string>
+    <string name="tlvPercentElapsed" formatted="false">ผ่านไปแล้ว %pct%</string>
+    <string name="tlvDaysLeft" formatted="false">เหลืออีก %num วัน</string>
+    <string name="tlvOneDayLeft">เหลืออีก 1 วัน</string>
+    <string name="tlvHoursLeft" formatted="false">เหลืออีก %num ชั่วโมง</string>
+    <string name="tlvOneHourLeft">เหลืออีก 1 ชั่วโมง</string>
+    <string name="tlvMinutesLeft" formatted="false">เหลืออีก %num นาที</string>
+    <string name="tlvOneMinuteLeft">เหลืออีก 1 นาที</string>
+    <string name="tlvAuthorityBaton" formatted="false">ไม้ต่อสิทธิ์ %count อัน · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">ไม้ต่อสิทธิ์ %count อัน · %syms</string>
+    <string name="tlvTransactions">ธุรกรรมของตู้นิรภัย</string>
+    <string name="tlvNoTransactions">ตู้นิรภัยนี้ยังไม่มีธุรกรรม</string>
+    <string name="tlvVaultCreated">สร้างตู้นิรภัยแล้ว</string>
+    <string name="tlvClaimSent">ส่งคำขอรับแล้ว</string>
+    <string name="tlvPendingDeposit">การฝากที่รอดำเนินการ</string>
+    <string name="tlvTopUp">เติมเพิ่ม</string>
+    <string name="tlvTxCreated">สร้าง</string>
+    <string name="tlvTxDeposit">ฝาก</string>
+    <string name="tlvTxReceived">ได้รับ</string>
+    <string name="tlvPending">รอดำเนินการ</string>
+    <string name="tlvNetworkFee" formatted="false">ค่าธรรมเนียมเครือข่าย %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">สิทธิ์ %caps · %token</string>
+    <string name="tlvAuthority">สิทธิ์</string>
+    <string name="tlvCapMint">สร้างเหรียญ</string>
+    <string name="tlvCapMelt">ทำลายเหรียญ</string>
+    <string name="tlvCapBaton">ไม้ต่อ</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">กลุ่มย่อย</string>
+    <string name="tlvCreateTitle">สร้างตู้นิรภัยล็อกเวลา</string>
+    <string name="tlvCreateVault">สร้างตู้นิรภัย</string>
+    <string name="tlvCreateExplainer">เงินพร้อมค่าธรรมเนียมเล็กน้อยจะย้ายไปยังที่อยู่ที่ล็อกเวลาไว้ คุณจะเห็นเงินในตู้นิรภัย แต่ใช้จ่ายไม่ได้ก่อนวันที่กำหนด</string>
+    <string name="tlvMinimumAmount" formatted="false">ขั้นต่ำ %amt %unit</string>
+    <string name="tlvLockUntil">ล็อกจนถึง</string>
+    <string name="tlvBlockHeight">ความสูงบล็อก</string>
+    <string name="tlvFutureDate">วันที่ในอนาคต</string>
+    <string name="tlvMaxBlockHeight" formatted="false">ความสูงบล็อกสูงสุดคือ %num</string>
+    <string name="tlvFeeSatB">ค่าธรรมเนียม</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">รวม</string>
+    <string name="tlvReview">ตรวจสอบ</string>
+    <string name="tlvDone">เสร็จสิ้น</string>
+    <string name="tlvOk">ตกลง</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">ยืนยันตู้นิรภัย</string>
+    <string name="tlvPayTo">จ่ายให้</string>
+    <string name="tlvNewTimeLockVault">ตู้นิรภัยล็อกเวลาใหม่</string>
+    <string name="tlvLockedUntil">ล็อกจนถึง</string>
+    <string name="tlvLock">ล็อก</string>
+    <string name="tlvLockExplainer" formatted="false">การเซ็นจะล็อก %amt %unit ใน %name จนถึง %date ไม่สามารถรับได้ก่อนหน้านั้น</string>
+    <string name="tlvConfirmAndSign">ยืนยัน &amp; เซ็น</string>
+    <string name="tlvWorking">กำลังดำเนินการ…</string>
+    <string name="tlvClaimVault">รับจากตู้นิรภัย</string>
+    <string name="tlvClaimExplainerSingle">ตู้นิรภัยนี้ปลดล็อกแล้ว ยืนยันเพื่อโอนยอดคงเหลือกลับเข้ากระเป๋าของคุณ</string>
+    <string name="tlvClaimTo">รับไปที่</string>
+    <string name="tlvClaimedTo">รับไปที่</string>
+    <string name="tlvYourWallet">(กระเป๋าของคุณ)</string>
+    <string name="tlvAsset">สินทรัพย์</string>
+    <string name="tlvYouReceive">คุณจะได้รับ</string>
+    <string name="tlvNothingToClaim">ไม่มีอะไรให้รับ — ตู้นิรภัยนี้ว่างเปล่า</string>
+    <string name="tlvConfirmAndClaim">ยืนยัน &amp; รับ</string>
+    <string name="tlvVaultClaimed">รับจากตู้นิรภัยแล้ว</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit กำลังส่งกลับเข้ากระเป๋าของคุณ</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">เงินกำลังอยู่ระหว่างการโอน</string>
+    <string name="tlvLockedUntilBlock">ล็อกจนถึงบล็อก</string>
+    <string name="tlvName">ชื่อ</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">ไม้ต่อสิทธิ์ · %count</string>
+    <string name="tlvTokens">โทเคน</string>
+    <string name="tlvBatons">ไม้ต่อ</string>
+    <string name="tlvMovable">ย้ายได้</string>
+    <string name="tlvBatonExplainer">ไม้ต่อคือสิทธิ์ ไม่ใช่ยอดคงเหลือ มันถูกแช่แข็งไว้พร้อมเหรียญและออกมาพร้อมกันในการรับครั้งเดียวกัน</string>
+    <string name="tlvDepositAddress">ที่อยู่สำหรับฝาก</string>
+    <string name="tlvNoAddress">(ไม่มีที่อยู่)</string>
+    <string name="tlvVaultSuccess">สร้างตู้นิรภัยสำเร็จ</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">ปิด QR</string>
+    <string name="tlvDepositWarning">ทุกอย่างที่ส่งมายังที่อยู่นี้จะถูกล็อกจนกว่าตู้นิรภัยจะเปิด — รวมถึงเหรียญที่ส่งมาผิด</string>
+    <string name="tlvTokenFeeWarning" formatted="false">ส่งโทเคนมาที่นี่พร้อมกับ %unit จำนวนหนึ่งเท่านั้น ตู้นิรภัยจะจ่ายค่าธรรมเนียมเองเมื่อเปิด และจ่ายจาก %unit ที่มีอยู่เท่านั้น</string>
+    <string name="tlvHistory">ประวัติ</string>
+    <string name="tlvView">ดู</string>
+    <string name="tlvNoEarlyOpen">ไม่มีทางเปิดตู้นิรภัยนี้ก่อนกำหนด นั่นคือจุดประสงค์ของตู้นิรภัยล็อกเวลา</string>
+    <string name="tlvPublicOnChain">ความสูงที่ปลดล็อกและจำนวนเงินเป็นข้อมูลสาธารณะบนเชนตั้งแต่ตอนที่ตู้นิรภัยนี้ได้รับเงิน — ใครก็ตามที่มีที่อยู่สามารถอ่านได้</string>
 </resources>

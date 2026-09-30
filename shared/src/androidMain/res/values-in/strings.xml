@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Mata uang akun adalah %walletCrypto, alamat adalah %addressCrypto. Gunakan kotak pilihan untuk mengganti akun pengirim ke akun yang cocok dengan blockchain alamat tersebut.</string>
     <string name="incoming" formatted="false">termasuk %delta %unit tertunda</string>
     <string name="approximatelyT" formatted="false">kira-kira %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Nilai INR didasarkan pada harga global NEXA/USDT dan kurs USDT/INR dari \"Exchange Rate API\". Harga NEXA OTC/P2P sebenarnya di India biasanya 20–30% lebih tinggi karena kurs USDT/INR lokal dan likuiditas pasar.</string>
     <string name="fastForward" formatted="false">Maju cepat</string>
     <string name="fastforwardStatus" formatted="false">analisis maju cepat: %info</string>
     <string name="fastforwardStart" formatted="false">dimulai</string>
@@ -641,6 +642,7 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="tlvTitle">Brankas Kunci Waktu</string>
     <string name="tlvExplainer">Kunci koin agar tidak ada siapa pun (termasuk Anda sendiri) yang bisa membelanjakannya sampai setelah tanggal pilihan Anda.</string>
     <string name="tlvNewVault">Brankas baru</string>
+    <string name="tlvContractLineLabel">Brankas Kunci Waktu:</string>
     <string name="tlvMyVaultsCount" formatted="false">BRANKAS SAYA · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit terkunci</string>
     <string name="tlvLoadingVaults">Memuat brankas…</string>
@@ -651,9 +653,18 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="tlvClaimFailed">Tidak dapat mengklaim brankas</string>
     <string name="tlvBalanceLoading">Memuat saldo</string>
     <string name="tlvClaimed">Diklaim</string>
+    <string name="tlvClaimedOn" formatted="false">Diklaim %date</string>
     <string name="tlvLocked">Terkunci</string>
+    <string name="tlvLockedOn" formatted="false">Terkunci %date</string>
+    <string name="tlvUnlocked">Terbuka</string>
+    <string name="tlvUnlockedOn" formatted="false">Terbuka %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Terkunci %locked · Terbuka %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Terkunci · Terbuka</string>
+    <string name="tlvLockedUnlockedClaimedFields">Terkunci · Terbuka · Diklaim</string>
     <string name="tlvUnlocksBlock" formatted="false">Terbuka di blok %num</string>
     <string name="tlvBlockNum" formatted="false">Blok %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blok %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Terbuka · menunggu setoran</string>
     <string name="tlvUnlockedNeedsFeeCoin">Terbuka · perlu koin untuk biaya</string>
     <string name="tlvUnlockedReadyToClaim">Terbuka · siap diklaim</string>
@@ -676,6 +687,9 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="tlvClaimSent">Klaim terkirim</string>
     <string name="tlvPendingDeposit">Setoran tertunda</string>
     <string name="tlvTopUp">Isi ulang</string>
+    <string name="tlvTxCreated">Dibuat</string>
+    <string name="tlvTxDeposit">Setoran</string>
+    <string name="tlvTxReceived">Diterima</string>
     <string name="tlvPending">Tertunda</string>
     <string name="tlvNetworkFee" formatted="false">Biaya jaringan %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">Otoritas %caps · %token</string>
@@ -685,6 +699,7 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="tlvCapBaton">Baton</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Subgrup</string>
+    <string name="tlvCreateTitle">Buat brankas kunci waktu</string>
     <string name="tlvCreateVault">Buat brankas</string>
     <string name="tlvCreateExplainer">Dana ditambah biaya kecil akan pindah ke alamat berkunci waktu. Anda akan melihatnya di brankas, tetapi tidak dapat membelanjakannya sebelum tanggal yang ditentukan.</string>
     <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
@@ -703,10 +718,14 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="tlvPayTo">Bayar ke</string>
     <string name="tlvNewTimeLockVault">Brankas kunci waktu baru</string>
     <string name="tlvLockedUntil">Terkunci sampai</string>
+    <string name="tlvLock">Kunci</string>
+    <string name="tlvLockExplainer" formatted="false">Penandatanganan mengunci %amt %unit di %name sampai %date. Tidak dapat diklaim sebelum itu.</string>
     <string name="tlvConfirmAndSign">Konfirmasi &amp; tanda tangani</string>
     <string name="tlvWorking">Sedang bekerja…</string>
     <string name="tlvClaimVault">Klaim brankas</string>
     <string name="tlvClaimExplainerSingle">Brankas ini telah terbuka. Konfirmasi untuk mengembalikan saldonya ke dompet Anda.</string>
+    <string name="tlvClaimTo">Klaim ke</string>
+    <string name="tlvClaimedTo">Diklaim ke</string>
     <string name="tlvYourWallet">(dompet Anda)</string>
     <string name="tlvAsset">Aset</string>
     <string name="tlvYouReceive">Anda menerima</string>
@@ -719,6 +738,8 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="tlvLockedUntilBlock">Terkunci sampai blok</string>
     <string name="tlvName">Nama</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Tongkat otoritas · %count</string>
+    <string name="tlvTokens">Token</string>
+    <string name="tlvBatons">Tongkat</string>
     <string name="tlvMovable">Dapat dipindah</string>
     <string name="tlvBatonExplainer">Tongkat adalah izin, bukan saldo. Ia membeku bersama koin dan keluar bersamanya dalam klaim yang sama.</string>
     <string name="tlvDepositAddress">Alamat setoran</string>

@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Sarafu ya akaunti ni %walletCrypto, anwani ni %addressCrypto.  Tumia kisanduku cha kuchagua kubadilisha akaunti ya kutuma iwe inayolingana na blockchain ya anwani.</string>
     <string name="incoming" formatted="false">inajumuisha %delta %unit inayosubiri</string>
     <string name="approximatelyT" formatted="false">takriban %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Thamani ya INR inategemea bei ya kimataifa ya NEXA/USDT na USDT/INR kutoka \"Exchange Rate API\". Bei halisi za NEXA OTC/P2P nchini India kwa kawaida ni 20–30% zaidi kutokana na viwango vya ndani vya USDT/INR na ukwasi wa soko.</string>
     <string name="fastForward" formatted="false">Ruka mbele</string>
     <string name="fastforwardStatus" formatted="false">uchambuzi wa ruka mbele: %info</string>
     <string name="fastforwardStart" formatted="false">imeanza</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">kikomo cha akaunti</string>
     <string name="accountUnavailableDetails">Ama hakuna akaunti inayolingana na blockchain hii, au akaunti haijafunguliwa.</string>
     <string name="accountUnavailable">Hakuna akaunti inayooana iliyofunguliwa</string>
+    <string name="accountCouldNotBeOpened">Imeshindwa kufungua akaunti</string>
     <string name="sendMoreThanBalance">Unajaribu kutuma sarafu zaidi kuliko ulizonazo kwa sasa.\n\nKama unadhani hutumii zaidi ya salio lako, huenda umesahau kwamba miamala ina ada ndogo ya ziada, au kama unaona salio lako lote halijathibitishwa, huenda umefanya miamala mingi mfululizo.\n\nKuna kikomo cha jinsi unavyoweza kuitangulia blockchain. Acha salio lako lisilothibitishwa lithibitishwe kisha ujaribu tena.</string>
     <string name="sendMoreTokensThanBalance">Unajaribu kutuma tokeni zaidi kuliko ulizonazo kwa sasa.</string>
     <string name="deductedFeeLargerThanSendAmount">Ada iliyokatwa ni kubwa kuliko kiasi kinachotumwa</string>
@@ -638,4 +640,118 @@ Asante na furahia pochi yako mpya!</string>
     <string name="CamouflageDescriptionAndroid">Kuwasha kificho hufunga programu na kuificha kama programu iitwayo Meditate. Kuzima kificho cha programu ya Meditate, fungua menyu ya programu na ubonyeze nambari ya toleo mara tano.</string>
     <string name="CamouflageDescriptionOther">Kuzima kificho cha programu ya Meditate, fungua menyu ya programu na ubonyeze nambari ya toleo mara tano.</string>
     <string name="CamouflageAsMeditateAppAndroid">Ficha kama programu ya Meditate</string>
+    <string name="tlvTitle">Kasha la Kufunga kwa Muda</string>
+    <string name="tlvExplainer">Funga sarafu ili mtu yeyote (hata wewe mwenyewe) asiweze kuzitumia hadi baada ya tarehe uliyochagua.</string>
+    <string name="tlvNewVault">Kasha jipya</string>
+    <string name="tlvContractLineLabel">Kasha la Kufunga kwa Muda:</string>
+    <string name="tlvMyVaultsCount" formatted="false">MAKASHA YANGU · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit zimefungwa</string>
+    <string name="tlvLoadingVaults">Inapakia makasha…</string>
+    <string name="tlvNoVaultsYet">Bado hakuna makasha — gusa Kasha jipya hapo juu ili kutengeneza moja.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable zinazoweza kudaiwa · %locked zimefungwa · %claimed zimedaiwa</string>
+    <string name="tlvLoadFailed">Imeshindwa kupakia makasha ya kufunga kwa muda</string>
+    <string name="tlvCreateFailed">Imeshindwa kutengeneza kasha</string>
+    <string name="tlvClaimFailed">Imeshindwa kudai kasha</string>
+    <string name="tlvBalanceLoading">Salio linapakiwa</string>
+    <string name="tlvClaimed">Limedaiwa</string>
+    <string name="tlvClaimedOn" formatted="false">Limedaiwa %date</string>
+    <string name="tlvLocked">Limefungwa</string>
+    <string name="tlvLockedOn" formatted="false">Limefungwa %date</string>
+    <string name="tlvUnlocked">Limefunguliwa</string>
+    <string name="tlvUnlockedOn" formatted="false">Limefunguliwa %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Limefungwa %locked · Limefunguliwa %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Limefungwa · Limefunguliwa</string>
+    <string name="tlvLockedUnlockedClaimedFields">Limefungwa · Limefunguliwa · Limedaiwa</string>
+    <string name="tlvUnlocksBlock" formatted="false">Litafunguliwa kwenye bloku %num</string>
+    <string name="tlvBlockNum" formatted="false">Bloku %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Bloku %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Limefunguliwa · linasubiri amana</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Limefunguliwa · linahitaji sarafu kwa ada</string>
+    <string name="tlvUnlockedReadyToClaim">Limefunguliwa · tayari kudaiwa</string>
+    <string name="tlvClaimedFundsArrivedSince">Limedaiwa · fedha zimeingia baada ya hapo</string>
+    <string name="tlvClaim">Dai</string>
+    <string name="tlvReclaim">Dai tena</string>
+    <string name="tlvVaultEmptied">Kasha hili limeondolewa kila kitu</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% imepita</string>
+    <string name="tlvDaysLeft" formatted="false">Zimebaki siku %num</string>
+    <string name="tlvOneDayLeft">Imebaki siku 1</string>
+    <string name="tlvHoursLeft" formatted="false">Zimebaki saa %num</string>
+    <string name="tlvOneHourLeft">Imebaki saa 1</string>
+    <string name="tlvMinutesLeft" formatted="false">Zimebaki dakika %num</string>
+    <string name="tlvOneMinuteLeft">Imebaki dakika 1</string>
+    <string name="tlvAuthorityBaton" formatted="false">Fimbo ya mamlaka %count · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">Fimbo za mamlaka %count · %syms</string>
+    <string name="tlvTransactions">Miamala ya kasha</string>
+    <string name="tlvNoTransactions">Bado hakuna miamala kwa kasha hili.</string>
+    <string name="tlvVaultCreated">Kasha limetengenezwa</string>
+    <string name="tlvClaimSent">Dai limetumwa</string>
+    <string name="tlvPendingDeposit">Amana inayosubiri</string>
+    <string name="tlvTopUp">Ongeza</string>
+    <string name="tlvTxCreated">Limetengenezwa</string>
+    <string name="tlvTxDeposit">Amana</string>
+    <string name="tlvTxReceived">Imepokelewa</string>
+    <string name="tlvPending">Inasubiri</string>
+    <string name="tlvNetworkFee" formatted="false">Ada ya mtandao %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Mamlaka ya %caps · %token</string>
+    <string name="tlvAuthority">Mamlaka</string>
+    <string name="tlvCapMint">Kutengeneza</string>
+    <string name="tlvCapMelt">Kuyeyusha</string>
+    <string name="tlvCapBaton">Fimbo</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Kikundi kidogo</string>
+    <string name="tlvCreateTitle">Tengeneza kasha la kufunga kwa muda</string>
+    <string name="tlvCreateVault">Tengeneza kasha</string>
+    <string name="tlvCreateExplainer">Fedha pamoja na ada ndogo zitahamia kwenye anwani iliyofungwa kwa muda. Utaziona kwenye kasha, lakini huwezi kuzitumia kabla ya tarehe iliyowekwa.</string>
+    <string name="tlvMinimumAmount" formatted="false">Kiwango cha chini %amt %unit</string>
+    <string name="tlvLockUntil">Funga hadi</string>
+    <string name="tlvBlockHeight">Urefu wa bloku</string>
+    <string name="tlvFutureDate">Tarehe ya baadaye</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Urefu wa juu wa bloku ni %num</string>
+    <string name="tlvFeeSatB">Ada</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Jumla</string>
+    <string name="tlvReview">Kagua</string>
+    <string name="tlvDone">Imekamilika</string>
+    <string name="tlvOk">Sawa</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Thibitisha kasha</string>
+    <string name="tlvPayTo">Lipa kwa</string>
+    <string name="tlvNewTimeLockVault">Kasha jipya la kufunga kwa muda</string>
+    <string name="tlvLockedUntil">Limefungwa hadi</string>
+    <string name="tlvLock">Funga</string>
+    <string name="tlvLockExplainer" formatted="false">Kusaini kunafunga %amt %unit ndani ya %name hadi %date. Haziwezi kudaiwa kabla ya hapo.</string>
+    <string name="tlvConfirmAndSign">Thibitisha &amp; saini</string>
+    <string name="tlvWorking">Inafanya kazi…</string>
+    <string name="tlvClaimVault">Dai kasha</string>
+    <string name="tlvClaimExplainerSingle">Kasha hili limefunguliwa. Thibitisha ili kurudisha salio lake kwenye pochi yako.</string>
+    <string name="tlvClaimTo">Dai kwenda</string>
+    <string name="tlvClaimedTo">Limedaiwa kwenda</string>
+    <string name="tlvYourWallet">(pochi yako)</string>
+    <string name="tlvAsset">Mali</string>
+    <string name="tlvYouReceive">Unapokea</string>
+    <string name="tlvNothingToClaim">Hakuna cha kudai — kasha hili ni tupu.</string>
+    <string name="tlvConfirmAndClaim">Thibitisha &amp; dai</string>
+    <string name="tlvVaultClaimed">Kasha limedaiwa</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit ziko njiani kurudi kwenye pochi yako.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">Fedha ziko njiani.</string>
+    <string name="tlvLockedUntilBlock">Limefungwa hadi bloku</string>
+    <string name="tlvName">Jina</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Fimbo za mamlaka · %count</string>
+    <string name="tlvTokens">Tokeni</string>
+    <string name="tlvBatons">Fimbo</string>
+    <string name="tlvMovable">Inahamishika</string>
+    <string name="tlvBatonExplainer">Fimbo ni ruhusa, si salio. Inagandishwa pamoja na sarafu na hutoka nazo katika dai moja.</string>
+    <string name="tlvDepositAddress">Anwani ya amana</string>
+    <string name="tlvNoAddress">(hakuna anwani)</string>
+    <string name="tlvVaultSuccess">Kasha limefanikiwa</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Funga QR</string>
+    <string name="tlvDepositWarning">Chochote kinachotumwa kwenye anwani hii kinafungwa hadi kasha lifunguke — ikiwa ni pamoja na sarafu zilizotumwa hapa kimakosa.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Tuma tokeni hapa pamoja na kiasi kidogo cha %unit tu. Kasha hulipa ada yake lenyewe linapofunguka, na kutoka kwenye %unit lililo nalo tu.</string>
+    <string name="tlvHistory">Historia</string>
+    <string name="tlvView">Tazama</string>
+    <string name="tlvNoEarlyOpen">Hakuna njia ya kufungua kasha hili mapema. Ndio kusudi la kasha la kufunga kwa muda.</string>
+    <string name="tlvPublicOnChain">Urefu wa kufungua na kiasi ni vya wazi kwenye mnyororo tangu kasha hili lilipowekewa fedha — yeyote mwenye anwani anaweza kuvisoma.</string>
 </resources>

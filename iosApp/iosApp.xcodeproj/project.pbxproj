@@ -22,7 +22,6 @@
 		8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA652AA957D200759B4F /* strings_en.bin */; };
 		8E1ECA742AAA002000759B4F /* strings_es.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA672AAA001B00759B4F /* strings_es.bin */; };
 		8E1ECA752AAA002000759B4F /* strings_hi.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA682AAA001C00759B4F /* strings_hi.bin */; };
-		8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA692AAA001C00759B4F /* strings_round.bin */; };
 		8E1ECA772AAA002000759B4F /* strings_sl.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6A2AAA001C00759B4F /* strings_sl.bin */; };
 		8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6B2AAA001D00759B4F /* strings_et.bin */; };
 		8E1ECA792AAA002000759B4F /* strings_nb.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */; };
@@ -111,7 +110,6 @@
 		8E1ECA652AA957D200759B4F /* strings_en.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_en.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_en.bin; sourceTree = "<group>"; };
 		8E1ECA672AAA001B00759B4F /* strings_es.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_es.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_es.bin; sourceTree = "<group>"; };
 		8E1ECA682AAA001C00759B4F /* strings_hi.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_hi.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_hi.bin; sourceTree = "<group>"; };
-		8E1ECA692AAA001C00759B4F /* strings_round.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_round.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_round.bin; sourceTree = "<group>"; };
 		8E1ECA6A2AAA001C00759B4F /* strings_sl.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_sl.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_sl.bin; sourceTree = "<group>"; };
 		8E1ECA6B2AAA001D00759B4F /* strings_et.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_et.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_et.bin; sourceTree = "<group>"; };
 		8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_nb.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_nb.bin; sourceTree = "<group>"; };
@@ -248,7 +246,6 @@
 				C1B396E31DA60000F17E0000 /* strings_am.bin */,
 				8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */,
 				8E1ECA712AAA001F00759B4F /* strings_no.bin */,
-				8E1ECA692AAA001C00759B4F /* strings_round.bin */,
 				8E1ECA6A2AAA001C00759B4F /* strings_sl.bin */,
 				8E1ECA6F2AAA001E00759B4F /* strings_sv.bin */,
 				8E1ECA702AAA001F00759B4F /* strings_tr.bin */,
@@ -424,7 +421,6 @@
 				8E1ECA7A2AAA002000759B4F /* strings_ca.bin in Resources */,
 				8E1ECA7F2AAA002000759B4F /* strings_de.bin in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
-				8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */,
 				8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -451,7 +447,6 @@
 				"$(SRCROOT)/../i18n/res/values-ko/strings.xml",
 				"$(SRCROOT)/../i18n/res/values-nb/strings.xml",
 				"$(SRCROOT)/../i18n/res/values-no/strings.xml",
-				"$(SRCROOT)/../i18n/res/values-round/strings.xml",
 				"$(SRCROOT)/../i18n/res/values-sl/strings.xml",
 				"$(SRCROOT)/../i18n/res/values-sv/strings.xml",
 				"$(SRCROOT)/../i18n/res/values-tr/strings.xml",
@@ -500,7 +495,6 @@
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_am.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_nb.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_no.bin",
-				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_round.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_sl.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_sv.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_tr.bin",

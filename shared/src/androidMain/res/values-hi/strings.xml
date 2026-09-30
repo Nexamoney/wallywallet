@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">खाता मुद्रा %walletCrypto है, पता %addressCrypto है। कॉम्बो बॉक्स से भेजने वाला खाता बदलकर ऐसा खाता चुनें जो पते के ब्लॉकचेन से मेल खाता हो।</string>
     <string name="incoming" formatted="false">इसमें %delta %unit लंबित शामिल है</string>
     <string name="approximatelyT" formatted="false">लगभग %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR मूल्य वैश्विक NEXA/USDT कीमत और \"Exchange Rate API\" के USDT/INR पर आधारित है। भारत में वास्तविक NEXA OTC/P2P कीमतें स्थानीय USDT/INR दरों और बाज़ार की तरलता के कारण आम तौर पर 20–30% अधिक होती हैं।</string>
     <string name="fastForward" formatted="false">फास्ट फॉरवर्ड</string>
     <string name="fastforwardStatus" formatted="false">फास्ट फॉरवर्ड विश्लेषण: %info</string>
     <string name="fastforwardStart" formatted="false">शुरू हुआ</string>
@@ -641,6 +642,7 @@
     <string name="tlvTitle">टाइम लॉक वॉल्ट</string>
     <string name="tlvExplainer">सिक्कों को इस तरह लॉक करें कि आपकी चुनी तारीख़ के बाद तक कोई भी (आप सहित) उन्हें खर्च न कर सके।</string>
     <string name="tlvNewVault">नया वॉल्ट</string>
+    <string name="tlvContractLineLabel">टाइम लॉक वॉल्ट:</string>
     <string name="tlvMyVaultsCount" formatted="false">मेरे वॉल्ट · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit लॉक</string>
     <string name="tlvLoadingVaults">वॉल्ट लोड हो रहे हैं…</string>
@@ -651,9 +653,18 @@
     <string name="tlvClaimFailed">वॉल्ट क्लेम नहीं किया जा सका</string>
     <string name="tlvBalanceLoading">बैलेंस लोड हो रहा है</string>
     <string name="tlvClaimed">क्लेम किया गया</string>
+    <string name="tlvClaimedOn" formatted="false">%date को क्लेम किया गया</string>
     <string name="tlvLocked">लॉक</string>
+    <string name="tlvLockedOn" formatted="false">%date को लॉक किया गया</string>
+    <string name="tlvUnlocked">अनलॉक</string>
+    <string name="tlvUnlockedOn" formatted="false">%date को अनलॉक</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">लॉक %locked · अनलॉक %unlocked</string>
+    <string name="tlvLockedUnlockedFields">लॉक · अनलॉक</string>
+    <string name="tlvLockedUnlockedClaimedFields">लॉक · अनलॉक · क्लेम किया गया</string>
     <string name="tlvUnlocksBlock" formatted="false">ब्लॉक %num पर अनलॉक होगा</string>
     <string name="tlvBlockNum" formatted="false">ब्लॉक %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">ब्लॉक %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">अनलॉक · जमा की प्रतीक्षा</string>
     <string name="tlvUnlockedNeedsFeeCoin">अनलॉक · शुल्क के लिए सिक्के चाहिए</string>
     <string name="tlvUnlockedReadyToClaim">अनलॉक · क्लेम के लिए तैयार</string>
@@ -676,6 +687,9 @@
     <string name="tlvClaimSent">क्लेम भेजा गया</string>
     <string name="tlvPendingDeposit">लंबित जमा</string>
     <string name="tlvTopUp">टॉप-अप</string>
+    <string name="tlvTxCreated">बनाया गया</string>
+    <string name="tlvTxDeposit">जमा</string>
+    <string name="tlvTxReceived">प्राप्त</string>
     <string name="tlvPending">लंबित</string>
     <string name="tlvNetworkFee" formatted="false">नेटवर्क शुल्क %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">%caps अथॉरिटी · %token</string>
@@ -685,6 +699,7 @@
     <string name="tlvCapBaton">बैटन</string>
     <string name="tlvCapRescript">रीस्क्रिप्ट</string>
     <string name="tlvCapSubgroup">सबग्रुप</string>
+    <string name="tlvCreateTitle">टाइम लॉक वॉल्ट बनाएँ</string>
     <string name="tlvCreateVault">वॉल्ट बनाएँ</string>
     <string name="tlvCreateExplainer">धनराशि और एक छोटा शुल्क टाइम-लॉक पते पर चला जाएगा। वे वॉल्ट में दिखेंगे, पर निर्दिष्ट तारीख़ से पहले खर्च नहीं किए जा सकते।</string>
     <string name="tlvMinimumAmount" formatted="false">न्यूनतम %amt %unit</string>
@@ -703,10 +718,14 @@
     <string name="tlvPayTo">भुगतान करें</string>
     <string name="tlvNewTimeLockVault">नया टाइम लॉक वॉल्ट</string>
     <string name="tlvLockedUntil">इस समय तक लॉक</string>
+    <string name="tlvLock">लॉक करें</string>
+    <string name="tlvLockExplainer" formatted="false">हस्ताक्षर करने पर %amt %unit %name में %date तक लॉक हो जाएँगे। उससे पहले क्लेम नहीं किया जा सकता।</string>
     <string name="tlvConfirmAndSign">पुष्टि करें और हस्ताक्षर करें</string>
     <string name="tlvWorking">काम जारी…</string>
     <string name="tlvClaimVault">वॉल्ट क्लेम करें</string>
     <string name="tlvClaimExplainerSingle">यह वॉल्ट अनलॉक हो गया है। इसका बैलेंस अपने वॉलेट में वापस लाने के लिए पुष्टि करें।</string>
+    <string name="tlvClaimTo">यहाँ क्लेम करें</string>
+    <string name="tlvClaimedTo">यहाँ क्लेम किया गया</string>
     <string name="tlvYourWallet">(आपका वॉलेट)</string>
     <string name="tlvAsset">संपत्ति</string>
     <string name="tlvYouReceive">आपको मिलेगा</string>
@@ -719,6 +738,8 @@
     <string name="tlvLockedUntilBlock">इस ब्लॉक तक लॉक</string>
     <string name="tlvName">नाम</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">अथॉरिटी बैटन · %count</string>
+    <string name="tlvTokens">टोकन</string>
+    <string name="tlvBatons">बैटन</string>
     <string name="tlvMovable">चल</string>
     <string name="tlvBatonExplainer">बैटन एक अनुमति है, बैलेंस नहीं। यह सिक्कों के साथ जमता है और उसी क्लेम में उनके साथ बाहर आता है।</string>
     <string name="tlvDepositAddress">जमा पता</string>

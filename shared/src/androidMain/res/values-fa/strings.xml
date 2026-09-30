@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">ارز حساب %walletCrypto است و آدرس %addressCrypto. با فهرست کشویی، حساب مبدأ ارسال را به حسابی تغییر دهید که با بلاک‌چین آدرس هم‌خوانی دارد.</string>
     <string name="incoming" formatted="false">شامل %delta %unit در انتظار</string>
     <string name="approximatelyT" formatted="false">تقریباً %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">ارزش INR بر پایهٔ قیمت جهانی NEXA/USDT و نرخ USDT/INR از \"Exchange Rate API\" است. قیمت‌های واقعی NEXA در معاملات OTC/P2P هند به دلیل نرخ‌های محلی USDT/INR و نقدینگی بازار معمولاً 20–30% بالاتر است.</string>
     <string name="fastForward" formatted="false">پیش‌روی سریع</string>
     <string name="fastforwardStatus" formatted="false">تحلیل پیش‌روی سریع: %info</string>
     <string name="fastforwardStart" formatted="false">آغاز شد</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">حداکثر تعداد حساب</string>
     <string name="accountUnavailableDetails">یا هیچ حساب موجودی با این بلاک‌چین مطابقت ندارد، یا قفل حساب باز نشده است.</string>
     <string name="accountUnavailable">حساب سازگار بازشده‌ای وجود ندارد</string>
+    <string name="accountCouldNotBeOpened">حساب باز نشد</string>
     <string name="sendMoreThanBalance">شما در حال تلاش برای ارسال وجهی بیش از موجودی در دسترس خود هستید.\n\nاگر فکر می‌کنید بیش از موجودی خود خرج نمی‌کنید، شاید فراموش کرده‌اید که تراکنش‌ها کارمزد کوچکی دارند، یا اگر همه موجودی شما تأییدنشده است، شاید تراکنش‌های زیادی را پشت سر هم انجام داده‌اید.\n\nمیزان «جلو زدن» از بلاک‌چین محدودیت دارد. بگذارید موجودی تأییدنشده شما تأیید شود و دوباره تلاش کنید.</string>
     <string name="sendMoreTokensThanBalance">شما در حال تلاش برای ارسال توکن بیشتر از مقدار در دسترس خود هستید.</string>
     <string name="deductedFeeLargerThanSendAmount">کارمزد کسرشده از مبلغ ارسالی بیشتر است</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">و ارسال %tokSnd نوع توکن.</string>
     <string name="TpReceivingTokens" formatted="false">و دریافت %tokRcv نوع توکن.</string>
     <string name="TpHasNoPurpose">این درخواست هیچ تأثیری بر این حساب ندارد.</string>
+    <string name="TpProposalMissingSignature">این تراکنش فاقد امضایی است که سایت درخواست‌کننده باید ارائه می‌کرد، بنابراین نمی‌توان آن را تکمیل کرد. چیزی از کیف پول شما خرج نشده است.</string>
     <string name="TpSendToTitle">درخواست پرداخت از سوی</string>
     <string name="TpSpends">پرداخت</string>
     <string name="TpSendRequestDenied">پرداخت رد شد</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">با فعال کردن استتار، برنامه بسته می‌شود و به شکل برنامه‌ای به نام Meditate استتار می‌شود. برای غیرفعال کردن استتار برنامه Meditate، منوی برنامه را باز کنید و پنج بار روی شماره نسخه بزنید.</string>
     <string name="CamouflageDescriptionOther">برای غیرفعال کردن استتار برنامه Meditate، منوی برنامه را باز کنید و پنج بار روی شماره نسخه بزنید.</string>
     <string name="CamouflageAsMeditateAppAndroid">استتار به شکل برنامه Meditate</string>
+    <string name="tlvTitle">گاوصندوق قفل زمانی</string>
+    <string name="tlvExplainer">سکه‌ها را قفل کنید تا هیچ‌کس (حتی خودتان) نتواند تا پس از تاریخ انتخابی آن‌ها را خرج کند.</string>
+    <string name="tlvNewVault">گاوصندوق جدید</string>
+    <string name="tlvContractLineLabel">گاوصندوق قفل زمانی:</string>
+    <string name="tlvMyVaultsCount" formatted="false">گاوصندوق‌های من · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit قفل شده</string>
+    <string name="tlvLoadingVaults">در حال بارگذاری گاوصندوق‌ها…</string>
+    <string name="tlvNoVaultsYet">هنوز گاوصندوقی نیست — برای ساختن، «گاوصندوق جدید» را در بالا لمس کنید.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable قابل برداشت · %locked قفل · %claimed برداشت‌شده</string>
+    <string name="tlvLoadFailed">بارگذاری گاوصندوق‌های قفل زمانی ممکن نشد</string>
+    <string name="tlvCreateFailed">ساخت گاوصندوق ممکن نشد</string>
+    <string name="tlvClaimFailed">برداشت از گاوصندوق ممکن نشد</string>
+    <string name="tlvBalanceLoading">در حال بارگذاری موجودی</string>
+    <string name="tlvClaimed">برداشت‌شده</string>
+    <string name="tlvClaimedOn" formatted="false">برداشت در %date</string>
+    <string name="tlvLocked">قفل</string>
+    <string name="tlvLockedOn" formatted="false">قفل در %date</string>
+    <string name="tlvUnlocked">باز</string>
+    <string name="tlvUnlockedOn" formatted="false">باز در %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">قفل %locked · باز %unlocked</string>
+    <string name="tlvLockedUnlockedFields">قفل · باز</string>
+    <string name="tlvLockedUnlockedClaimedFields">قفل · باز · برداشت‌شده</string>
+    <string name="tlvUnlocksBlock" formatted="false">در بلاک %num باز می‌شود</string>
+    <string name="tlvBlockNum" formatted="false">بلاک %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">بلاک %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">باز · در انتظار واریز</string>
+    <string name="tlvUnlockedNeedsFeeCoin">باز · برای کارمزد سکه لازم است</string>
+    <string name="tlvUnlockedReadyToClaim">باز · آمادهٔ برداشت</string>
+    <string name="tlvClaimedFundsArrivedSince">برداشت‌شده · پس از آن وجهی رسیده است</string>
+    <string name="tlvClaim">برداشت</string>
+    <string name="tlvReclaim">برداشت دوباره</string>
+    <string name="tlvVaultEmptied">این گاوصندوق خالی شده است</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% سپری شده</string>
+    <string name="tlvDaysLeft" formatted="false">%num روز مانده</string>
+    <string name="tlvOneDayLeft">۱ روز مانده</string>
+    <string name="tlvHoursLeft" formatted="false">%num ساعت مانده</string>
+    <string name="tlvOneHourLeft">۱ ساعت مانده</string>
+    <string name="tlvMinutesLeft" formatted="false">%num دقیقه مانده</string>
+    <string name="tlvOneMinuteLeft">۱ دقیقه مانده</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count چوب اختیار · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count چوب اختیار · %syms</string>
+    <string name="tlvTransactions">تراکنش‌های گاوصندوق</string>
+    <string name="tlvNoTransactions">هنوز تراکنشی برای این گاوصندوق نیست.</string>
+    <string name="tlvVaultCreated">گاوصندوق ساخته شد</string>
+    <string name="tlvClaimSent">برداشت ارسال شد</string>
+    <string name="tlvPendingDeposit">واریز در انتظار</string>
+    <string name="tlvTopUp">افزایش موجودی</string>
+    <string name="tlvTxCreated">ساخت</string>
+    <string name="tlvTxDeposit">واریز</string>
+    <string name="tlvTxReceived">دریافت</string>
+    <string name="tlvPending">در انتظار</string>
+    <string name="tlvNetworkFee" formatted="false">کارمزد شبکه %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">اختیار %caps · %token</string>
+    <string name="tlvAuthority">اختیار</string>
+    <string name="tlvCapMint">ضرب</string>
+    <string name="tlvCapMelt">سوزاندن</string>
+    <string name="tlvCapBaton">چوب</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">زیرگروه</string>
+    <string name="tlvCreateTitle">ساخت گاوصندوق قفل زمانی</string>
+    <string name="tlvCreateVault">ساخت گاوصندوق</string>
+    <string name="tlvCreateExplainer">وجوه به‌همراه کارمزدی اندک به یک آدرس با قفل زمانی منتقل می‌شود. آن‌ها را در گاوصندوق می‌بینید، اما پیش از تاریخ تعیین‌شده نمی‌توانید خرجشان کنید.</string>
+    <string name="tlvMinimumAmount" formatted="false">حداقل %amt %unit</string>
+    <string name="tlvLockUntil">قفل تا</string>
+    <string name="tlvBlockHeight">ارتفاع بلاک</string>
+    <string name="tlvFutureDate">تاریخ آینده</string>
+    <string name="tlvMaxBlockHeight" formatted="false">حداکثر ارتفاع بلاک %num است</string>
+    <string name="tlvFeeSatB">کارمزد</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">جمع</string>
+    <string name="tlvReview">بازبینی</string>
+    <string name="tlvDone">انجام شد</string>
+    <string name="tlvOk">باشه</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">تأیید گاوصندوق</string>
+    <string name="tlvPayTo">پرداخت به</string>
+    <string name="tlvNewTimeLockVault">گاوصندوق قفل زمانی جدید</string>
+    <string name="tlvLockedUntil">قفل تا</string>
+    <string name="tlvLock">قفل کردن</string>
+    <string name="tlvLockExplainer" formatted="false">امضا %amt %unit را در %name تا %date قفل می‌کند. پیش از آن نمی‌توان برداشت کرد.</string>
+    <string name="tlvConfirmAndSign">تأیید &amp; امضا</string>
+    <string name="tlvWorking">در حال انجام…</string>
+    <string name="tlvClaimVault">برداشت از گاوصندوق</string>
+    <string name="tlvClaimExplainerSingle">این گاوصندوق باز شده است. برای بازگرداندن موجودی آن به کیف پولتان تأیید کنید.</string>
+    <string name="tlvClaimTo">برداشت به</string>
+    <string name="tlvClaimedTo">برداشت‌شده به</string>
+    <string name="tlvYourWallet">(کیف پول شما)</string>
+    <string name="tlvAsset">دارایی</string>
+    <string name="tlvYouReceive">دریافت می‌کنید</string>
+    <string name="tlvNothingToClaim">چیزی برای برداشت نیست — این گاوصندوق خالی است.</string>
+    <string name="tlvConfirmAndClaim">تأیید &amp; برداشت</string>
+    <string name="tlvVaultClaimed">از گاوصندوق برداشت شد</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit در راه بازگشت به کیف پول شماست.</string>
+    <string name="tlvTxId">شناسهٔ تراکنش</string>
+    <string name="tlvFundsOnTheirWay">وجوه در راه است.</string>
+    <string name="tlvLockedUntilBlock">قفل تا بلاک</string>
+    <string name="tlvName">نام</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">چوب‌های اختیار · %count</string>
+    <string name="tlvTokens">توکن‌ها</string>
+    <string name="tlvBatons">چوب‌ها</string>
+    <string name="tlvMovable">قابل انتقال</string>
+    <string name="tlvBatonExplainer">چوب یک مجوز است، نه موجودی. همراه سکه‌ها منجمد می‌شود و در همان برداشت همراه آن‌ها بیرون می‌آید.</string>
+    <string name="tlvDepositAddress">آدرس واریز</string>
+    <string name="tlvNoAddress">(بدون آدرس)</string>
+    <string name="tlvVaultSuccess">گاوصندوق با موفقیت ساخته شد</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">بستن QR</string>
+    <string name="tlvDepositWarning">هرچه به این آدرس فرستاده شود تا باز شدن گاوصندوق قفل می‌ماند — از جمله سکه‌هایی که اشتباهاً به اینجا فرستاده شوند.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">توکن‌ها را فقط همراه با مقداری %unit به اینجا بفرستید. گاوصندوق هنگام باز شدن کارمزد خود را می‌پردازد، آن هم فقط از %unit موجود در آن.</string>
+    <string name="tlvHistory">تاریخچه</string>
+    <string name="tlvView">مشاهده</string>
+    <string name="tlvNoEarlyOpen">هیچ راهی برای باز کردن زودتر این گاوصندوق نیست. هدف گاوصندوق قفل زمانی همین است.</string>
+    <string name="tlvPublicOnChain">ارتفاع باز شدن و مبلغ از لحظهٔ تأمین وجه این گاوصندوق روی زنجیره عمومی است — هرکس آدرس را داشته باشد می‌تواند آن‌ها را بخواند.</string>
 </resources>

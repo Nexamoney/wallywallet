@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">عملة الحساب هي %walletCrypto، والعنوان هو %addressCrypto. استخدم القائمة المنسدلة لتغيير حساب الإرسال إلى حساب يطابق بلوكشين العنوان.</string>
     <string name="incoming" formatted="false">يشمل %delta %unit قيد الانتظار</string>
     <string name="approximatelyT" formatted="false">تقريبا %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">تستند قيمة INR إلى سعر NEXA/USDT العالمي وسعر USDT/INR من \"Exchange Rate API\". أسعار NEXA الفعلية في التداول خارج البورصة/بين الأفراد في الهند أعلى عادةً بنسبة 20–30% بسبب أسعار USDT/INR المحلية وسيولة السوق.</string>
     <string name="fastForward" formatted="false">تقديم سريع</string>
     <string name="fastforwardStatus" formatted="false">تحليل التقديم السريع: %info</string>
     <string name="fastforwardStart" formatted="false">بدأ</string>
@@ -403,6 +404,7 @@
     <string name="accountLimitReached">الحد الأقصى للحسابات</string>
     <string name="accountUnavailableDetails">إما أنه لا يوجد حساب يطابق هذا البلوكشين، وإما أن الحساب لم يتم فتح قفله.</string>
     <string name="accountUnavailable">لا يوجد حساب متوافق مفتوح</string>
+    <string name="accountCouldNotBeOpened">تعذّر فتح الحساب</string>
     <string name="sendMoreThanBalance">أنت تحاول إرسال عملات أكثر من المتاح لديك الآن.\n\nإذا كنت ترى أنك لا تنفق أكثر من رصيدك، فربما نسيت أن المعاملات عليها رسوم إضافية صغيرة، أو إذا كان رصيدك كله يظهر غير مؤكد فربما أجريت معاملات كثيرة متتالية.\n\nهناك حد لمدى ما يمكنك «التقدم» به على البلوكشين. انتظر حتى يتم تأكيد رصيدك غير المؤكد ثم حاول مرة أخرى.</string>
     <string name="sendMoreTokensThanBalance">أنت تحاول إرسال توكنات أكثر من المتاح لديك الآن.</string>
     <string name="deductedFeeLargerThanSendAmount">الرسوم المخصومة أكبر من المبلغ المرسل</string>
@@ -502,6 +504,7 @@
     <string name="TpSendingTokens" formatted="false">وإرسال %tokSnd من أنواع التوكنات.</string>
     <string name="TpReceivingTokens" formatted="false">واستلام %tokRcv من أنواع التوكنات.</string>
     <string name="TpHasNoPurpose">هذا الطلب لا يؤثر على هذا الحساب.</string>
+    <string name="TpProposalMissingSignature">تفتقر هذه المعاملة إلى توقيع كان ينبغي أن يوفّره الموقع الطالب، لذا لا يمكن إتمامها. لم يُنفَق أي شيء من محفظتك.</string>
     <string name="TpSendToTitle">طلب الدفع من</string>
     <string name="TpSpends">ينفق</string>
     <string name="TpSendRequestDenied">تم رفض الدفع</string>
@@ -634,4 +637,118 @@
     <string name="CamouflageDescriptionAndroid">تفعيل التمويه يغلق التطبيق ويموهه كتطبيق باسم Meditate. لإلغاء تمويه تطبيق Meditate، افتح قائمة التطبيق واضغط على رقم الإصدار خمس مرات.</string>
     <string name="CamouflageDescriptionOther">لإلغاء تمويه تطبيق Meditate، افتح قائمة التطبيق واضغط على رقم الإصدار خمس مرات.</string>
     <string name="CamouflageAsMeditateAppAndroid">التمويه كتطبيق Meditate</string>
+    <string name="tlvTitle">خزنة القفل الزمني</string>
+    <string name="tlvExplainer">اقفل العملات بحيث لا يستطيع أحد (بمن فيهم أنت) إنفاقها حتى بعد التاريخ الذي تختاره.</string>
+    <string name="tlvNewVault">خزنة جديدة</string>
+    <string name="tlvContractLineLabel">خزنة القفل الزمني:</string>
+    <string name="tlvMyVaultsCount" formatted="false">خزائني · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit مقفلة</string>
+    <string name="tlvLoadingVaults">جارٍ تحميل الخزائن…</string>
+    <string name="tlvNoVaultsYet">لا توجد خزائن بعد — اضغط على «خزنة جديدة» أعلاه لإنشاء واحدة.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable قابلة للاستلام · %locked مقفلة · %claimed مستلَمة</string>
+    <string name="tlvLoadFailed">تعذّر تحميل خزائن القفل الزمني</string>
+    <string name="tlvCreateFailed">تعذّر إنشاء الخزنة</string>
+    <string name="tlvClaimFailed">تعذّر استلام الخزنة</string>
+    <string name="tlvBalanceLoading">جارٍ تحميل الرصيد</string>
+    <string name="tlvClaimed">مستلَمة</string>
+    <string name="tlvClaimedOn" formatted="false">استُلمت في %date</string>
+    <string name="tlvLocked">مقفلة</string>
+    <string name="tlvLockedOn" formatted="false">قُفلت في %date</string>
+    <string name="tlvUnlocked">مفتوحة</string>
+    <string name="tlvUnlockedOn" formatted="false">فُتحت في %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">قُفلت %locked · فُتحت %unlocked</string>
+    <string name="tlvLockedUnlockedFields">مقفلة · مفتوحة</string>
+    <string name="tlvLockedUnlockedClaimedFields">مقفلة · مفتوحة · مستلَمة</string>
+    <string name="tlvUnlocksBlock" formatted="false">تُفتح عند الكتلة %num</string>
+    <string name="tlvBlockNum" formatted="false">الكتلة %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">الكتلة %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">مفتوحة · بانتظار إيداع</string>
+    <string name="tlvUnlockedNeedsFeeCoin">مفتوحة · تحتاج عملات للرسوم</string>
+    <string name="tlvUnlockedReadyToClaim">مفتوحة · جاهزة للاستلام</string>
+    <string name="tlvClaimedFundsArrivedSince">مستلَمة · وصلت أموال بعد ذلك</string>
+    <string name="tlvClaim">استلام</string>
+    <string name="tlvReclaim">استلام مجددًا</string>
+    <string name="tlvVaultEmptied">أُفرغت هذه الخزنة</string>
+    <string name="tlvPercentElapsed" formatted="false">انقضى %pct%</string>
+    <string name="tlvDaysLeft" formatted="false">متبقٍ %num يوم</string>
+    <string name="tlvOneDayLeft">متبقٍ يوم واحد</string>
+    <string name="tlvHoursLeft" formatted="false">متبقٍ %num ساعة</string>
+    <string name="tlvOneHourLeft">متبقٍ ساعة واحدة</string>
+    <string name="tlvMinutesLeft" formatted="false">متبقٍ %num دقيقة</string>
+    <string name="tlvOneMinuteLeft">متبقٍ دقيقة واحدة</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count عصا صلاحية · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count عصي صلاحية · %syms</string>
+    <string name="tlvTransactions">معاملات الخزنة</string>
+    <string name="tlvNoTransactions">لا توجد معاملات لهذه الخزنة بعد.</string>
+    <string name="tlvVaultCreated">أُنشئت الخزنة</string>
+    <string name="tlvClaimSent">أُرسل الاستلام</string>
+    <string name="tlvPendingDeposit">إيداع قيد الانتظار</string>
+    <string name="tlvTopUp">تعبئة</string>
+    <string name="tlvTxCreated">إنشاء</string>
+    <string name="tlvTxDeposit">إيداع</string>
+    <string name="tlvTxReceived">استلام</string>
+    <string name="tlvPending">قيد الانتظار</string>
+    <string name="tlvNetworkFee" formatted="false">رسوم الشبكة %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">صلاحية %caps · %token</string>
+    <string name="tlvAuthority">صلاحية</string>
+    <string name="tlvCapMint">سكّ</string>
+    <string name="tlvCapMelt">حرق</string>
+    <string name="tlvCapBaton">عصا</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">مجموعة فرعية</string>
+    <string name="tlvCreateTitle">إنشاء خزنة قفل زمني</string>
+    <string name="tlvCreateVault">إنشاء الخزنة</string>
+    <string name="tlvCreateExplainer">ستنتقل الأموال مع رسوم صغيرة إلى عنوان مقفل زمنيًا. ستراها في الخزنة، لكن لا يمكنك إنفاقها قبل التاريخ المحدد.</string>
+    <string name="tlvMinimumAmount" formatted="false">الحد الأدنى %amt %unit</string>
+    <string name="tlvLockUntil">قفل حتى</string>
+    <string name="tlvBlockHeight">ارتفاع الكتلة</string>
+    <string name="tlvFutureDate">تاريخ مستقبلي</string>
+    <string name="tlvMaxBlockHeight" formatted="false">الحد الأقصى لارتفاع الكتلة هو %num</string>
+    <string name="tlvFeeSatB">الرسوم</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">الإجمالي</string>
+    <string name="tlvReview">مراجعة</string>
+    <string name="tlvDone">تم</string>
+    <string name="tlvOk">حسنًا</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">تأكيد الخزنة</string>
+    <string name="tlvPayTo">الدفع إلى</string>
+    <string name="tlvNewTimeLockVault">خزنة قفل زمني جديدة</string>
+    <string name="tlvLockedUntil">مقفلة حتى</string>
+    <string name="tlvLock">قفل</string>
+    <string name="tlvLockExplainer" formatted="false">التوقيع يقفل %amt %unit في %name حتى %date. لا يمكن استلامها قبل ذلك.</string>
+    <string name="tlvConfirmAndSign">تأكيد &amp; توقيع</string>
+    <string name="tlvWorking">جارٍ العمل…</string>
+    <string name="tlvClaimVault">استلام الخزنة</string>
+    <string name="tlvClaimExplainerSingle">فُتحت هذه الخزنة. أكّد لإعادة رصيدها إلى محفظتك.</string>
+    <string name="tlvClaimTo">الاستلام إلى</string>
+    <string name="tlvClaimedTo">استُلمت إلى</string>
+    <string name="tlvYourWallet">(محفظتك)</string>
+    <string name="tlvAsset">الأصل</string>
+    <string name="tlvYouReceive">ستستلم</string>
+    <string name="tlvNothingToClaim">لا شيء للاستلام — هذه الخزنة فارغة.</string>
+    <string name="tlvConfirmAndClaim">تأكيد &amp; استلام</string>
+    <string name="tlvVaultClaimed">استُلمت الخزنة</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit في طريقها إلى محفظتك.</string>
+    <string name="tlvTxId">معرّف المعاملة</string>
+    <string name="tlvFundsOnTheirWay">الأموال في الطريق.</string>
+    <string name="tlvLockedUntilBlock">مقفلة حتى الكتلة</string>
+    <string name="tlvName">الاسم</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">عصي الصلاحية · %count</string>
+    <string name="tlvTokens">التوكنات</string>
+    <string name="tlvBatons">العصي</string>
+    <string name="tlvMovable">قابلة للنقل</string>
+    <string name="tlvBatonExplainer">العصا صلاحية وليست رصيدًا. تُجمَّد مع العملات وتخرج معها في الاستلام نفسه.</string>
+    <string name="tlvDepositAddress">عنوان الإيداع</string>
+    <string name="tlvNoAddress">(لا يوجد عنوان)</string>
+    <string name="tlvVaultSuccess">نجحت الخزنة</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">إغلاق QR</string>
+    <string name="tlvDepositWarning">كل ما يُرسل إلى هذا العنوان يبقى مقفلًا حتى تُفتح الخزنة — بما في ذلك العملات المرسلة إليه بالخطأ.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">أرسل التوكنات إلى هنا فقط مع بعض %unit. تدفع الخزنة رسومها بنفسها عند فتحها، ومن %unit التي تحتويها فقط.</string>
+    <string name="tlvHistory">السجل</string>
+    <string name="tlvView">عرض</string>
+    <string name="tlvNoEarlyOpen">لا توجد طريقة لفتح هذه الخزنة مبكرًا. هذا هو الغرض من خزنة القفل الزمني.</string>
+    <string name="tlvPublicOnChain">ارتفاع الفتح والمبلغ علنيان على السلسلة منذ لحظة تمويل هذه الخزنة — يمكن لأي شخص لديه العنوان قراءتهما.</string>
 </resources>

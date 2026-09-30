@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">A moeda da conta é %walletCrypto e o endereço é %addressCrypto.  Use a lista pendente para mudar a conta de envio para uma que corresponda à blockchain do endereço.</string>
     <string name="incoming" formatted="false">inclui %delta %unit pendente</string>
     <string name="approximatelyT" formatted="false">cerca de %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">O valor em INR baseia-se no preço global NEXA/USDT e no USDT/INR da \"Exchange Rate API\". Os preços reais NEXA OTC/P2P na Índia costumam ser 20–30% mais altos devido às taxas USDT/INR locais e à liquidez do mercado.</string>
     <string name="fastForward" formatted="false">Avanço rápido</string>
     <string name="fastforwardStatus" formatted="false">análise do avanço rápido: %info</string>
     <string name="fastforwardStart" formatted="false">iniciado</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">limite de contas</string>
     <string name="accountUnavailableDetails">Ou não existe nenhuma conta para esta blockchain, ou a conta não foi desbloqueada.</string>
     <string name="accountUnavailable">Sem conta compatível desbloqueada</string>
+    <string name="accountCouldNotBeOpened">Não foi possível abrir a conta</string>
     <string name="sendMoreThanBalance">Está a tentar enviar mais moedas do que tem disponíveis neste momento.\n\nSe acha que não está a gastar mais do que o seu saldo, pode ter-se esquecido de que as transações têm uma pequena taxa adicional; ou, se vê todo o seu saldo como não confirmado, pode ter feito demasiadas transações seguidas.\n\nExiste um limite para o quanto se pode “adiantar” à blockchain. Aguarde que o saldo não confirmado seja confirmado e tente novamente.</string>
     <string name="sendMoreTokensThanBalance">Está a tentar enviar mais tokens do que tem disponíveis neste momento.</string>
     <string name="deductedFeeLargerThanSendAmount">A taxa deduzida é maior do que o valor a enviar</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">e a enviar %tokSnd tipos de tokens.</string>
     <string name="TpReceivingTokens" formatted="false">e a receber %tokRcv tipos de tokens.</string>
     <string name="TpHasNoPurpose">Este pedido não tem qualquer efeito nesta conta.</string>
+    <string name="TpProposalMissingSignature">Falta nesta transação uma assinatura que o site solicitante deveria ter fornecido, por isso não pode ser concluída. Nada foi gasto da sua carteira.</string>
     <string name="TpSendToTitle">Pagamento pedido por</string>
     <string name="TpSpends">Gasta</string>
     <string name="TpSendRequestDenied">Pagamento recusado</string>
@@ -637,4 +640,118 @@ Obrigado e boa utilização da sua nova carteira!</string>
     <string name="CamouflageDescriptionAndroid">Ao ativar a camuflagem, a aplicação fecha-se e passa a apresentar-se como uma aplicação chamada Meditate. Para desativar a camuflagem da aplicação Meditate, abra o menu da aplicação e toque cinco vezes no número da versão.</string>
     <string name="CamouflageDescriptionOther">Para desativar a camuflagem da aplicação Meditate, abra o menu da aplicação e toque cinco vezes no número da versão.</string>
     <string name="CamouflageAsMeditateAppAndroid">Camuflar como aplicação Meditate</string>
+    <string name="tlvTitle">Cofre com bloqueio temporal</string>
+    <string name="tlvExplainer">Bloqueie moedas para que ninguém (nem você) possa gastá-las até depois da data escolhida.</string>
+    <string name="tlvNewVault">Novo cofre</string>
+    <string name="tlvContractLineLabel">Cofre com bloqueio temporal:</string>
+    <string name="tlvMyVaultsCount" formatted="false">MEUS COFRES · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit bloqueados</string>
+    <string name="tlvLoadingVaults">Carregando cofres…</string>
+    <string name="tlvNoVaultsYet">Ainda não há cofres — toque em Novo cofre acima para criar um.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable resgatáveis · %locked bloqueados · %claimed resgatados</string>
+    <string name="tlvLoadFailed">Não foi possível carregar os cofres com bloqueio temporal</string>
+    <string name="tlvCreateFailed">Não foi possível criar o cofre</string>
+    <string name="tlvClaimFailed">Não foi possível resgatar o cofre</string>
+    <string name="tlvBalanceLoading">Carregando saldo</string>
+    <string name="tlvClaimed">Resgatado</string>
+    <string name="tlvClaimedOn" formatted="false">Resgatado em %date</string>
+    <string name="tlvLocked">Bloqueado</string>
+    <string name="tlvLockedOn" formatted="false">Bloqueado em %date</string>
+    <string name="tlvUnlocked">Desbloqueado</string>
+    <string name="tlvUnlockedOn" formatted="false">Desbloqueado em %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Bloqueado %locked · Desbloqueado %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Bloqueado · Desbloqueado</string>
+    <string name="tlvLockedUnlockedClaimedFields">Bloqueado · Desbloqueado · Resgatado</string>
+    <string name="tlvUnlocksBlock" formatted="false">Desbloqueia no bloco %num</string>
+    <string name="tlvBlockNum" formatted="false">Bloco %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Bloco %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Desbloqueado · aguardando um depósito</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Desbloqueado · precisa de moedas para a taxa</string>
+    <string name="tlvUnlockedReadyToClaim">Desbloqueado · pronto para resgatar</string>
+    <string name="tlvClaimedFundsArrivedSince">Resgatado · fundos chegaram depois</string>
+    <string name="tlvClaim">Resgatar</string>
+    <string name="tlvReclaim">Resgatar novamente</string>
+    <string name="tlvVaultEmptied">Este cofre foi esvaziado</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% decorridos</string>
+    <string name="tlvDaysLeft" formatted="false">%num dias restantes</string>
+    <string name="tlvOneDayLeft">1 dia restante</string>
+    <string name="tlvHoursLeft" formatted="false">%num horas restantes</string>
+    <string name="tlvOneHourLeft">1 hora restante</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minutos restantes</string>
+    <string name="tlvOneMinuteLeft">1 minuto restante</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count bastão de autoridade · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count bastões de autoridade · %syms</string>
+    <string name="tlvTransactions">Transações do cofre</string>
+    <string name="tlvNoTransactions">Ainda não há transações para este cofre.</string>
+    <string name="tlvVaultCreated">Cofre criado</string>
+    <string name="tlvClaimSent">Resgate enviado</string>
+    <string name="tlvPendingDeposit">Depósito pendente</string>
+    <string name="tlvTopUp">Recarga</string>
+    <string name="tlvTxCreated">Criado</string>
+    <string name="tlvTxDeposit">Depósito</string>
+    <string name="tlvTxReceived">Recebido</string>
+    <string name="tlvPending">Pendente</string>
+    <string name="tlvNetworkFee" formatted="false">Taxa de rede %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Autoridade %caps · %token</string>
+    <string name="tlvAuthority">Autoridade</string>
+    <string name="tlvCapMint">Emitir</string>
+    <string name="tlvCapMelt">Queimar</string>
+    <string name="tlvCapBaton">Bastão</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Subgrupo</string>
+    <string name="tlvCreateTitle">Criar cofre com bloqueio temporal</string>
+    <string name="tlvCreateVault">Criar cofre</string>
+    <string name="tlvCreateExplainer">Os fundos mais uma pequena taxa serão movidos para um endereço com bloqueio temporal. Você os verá no cofre, mas não poderá gastá-los antes da data especificada.</string>
+    <string name="tlvMinimumAmount" formatted="false">Mínimo %amt %unit</string>
+    <string name="tlvLockUntil">Bloquear até</string>
+    <string name="tlvBlockHeight">Altura do bloco</string>
+    <string name="tlvFutureDate">Data futura</string>
+    <string name="tlvMaxBlockHeight" formatted="false">A altura máxima do bloco é %num</string>
+    <string name="tlvFeeSatB">Taxa</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Total</string>
+    <string name="tlvReview">Revisar</string>
+    <string name="tlvDone">Concluído</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Confirmar cofre</string>
+    <string name="tlvPayTo">Pagar a</string>
+    <string name="tlvNewTimeLockVault">Novo cofre com bloqueio temporal</string>
+    <string name="tlvLockedUntil">Bloqueado até</string>
+    <string name="tlvLock">Bloquear</string>
+    <string name="tlvLockExplainer" formatted="false">Ao assinar, %amt %unit ficam bloqueados em %name até %date. Não é possível resgatar antes disso.</string>
+    <string name="tlvConfirmAndSign">Confirmar &amp; assinar</string>
+    <string name="tlvWorking">Processando…</string>
+    <string name="tlvClaimVault">Resgatar cofre</string>
+    <string name="tlvClaimExplainerSingle">Este cofre foi desbloqueado. Confirme para devolver o saldo à sua carteira.</string>
+    <string name="tlvClaimTo">Resgatar para</string>
+    <string name="tlvClaimedTo">Resgatado para</string>
+    <string name="tlvYourWallet">(sua carteira)</string>
+    <string name="tlvAsset">Ativo</string>
+    <string name="tlvYouReceive">Você recebe</string>
+    <string name="tlvNothingToClaim">Nada a resgatar — este cofre está vazio.</string>
+    <string name="tlvConfirmAndClaim">Confirmar &amp; resgatar</string>
+    <string name="tlvVaultClaimed">Cofre resgatado</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit estão a caminho da sua carteira.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Os fundos estão a caminho.</string>
+    <string name="tlvLockedUntilBlock">Bloqueado até o bloco</string>
+    <string name="tlvName">Nome</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Bastões de autoridade · %count</string>
+    <string name="tlvTokens">Tokens</string>
+    <string name="tlvBatons">Bastões</string>
+    <string name="tlvMovable">Transferível</string>
+    <string name="tlvBatonExplainer">Um bastão é uma permissão, não um saldo. Ele fica congelado com as moedas e sai com elas no mesmo resgate.</string>
+    <string name="tlvDepositAddress">Endereço de depósito</string>
+    <string name="tlvNoAddress">(sem endereço)</string>
+    <string name="tlvVaultSuccess">Cofre concluído</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Fechar QR</string>
+    <string name="tlvDepositWarning">Tudo o que for enviado a este endereço fica bloqueado até o cofre abrir — inclusive moedas enviadas aqui por engano.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Envie tokens para cá apenas junto com algum %unit. Um cofre paga a própria taxa ao abrir, e somente com o %unit que contém.</string>
+    <string name="tlvHistory">Histórico</string>
+    <string name="tlvView">Ver</string>
+    <string name="tlvNoEarlyOpen">Não há como abrir este cofre antes do prazo. Esse é justamente o propósito de um cofre com bloqueio temporal.</string>
+    <string name="tlvPublicOnChain">A altura de desbloqueio e o valor são públicos na cadeia desde o momento em que este cofre foi financiado — qualquer pessoa com o endereço pode lê-los.</string>
 </resources>

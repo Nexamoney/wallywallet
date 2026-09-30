@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Kontovalutan är %walletCrypto, adressen är %addressCrypto.  Använd listrutan för att ändra kontot du skickar från till ett som matchar adressens blockkedja.</string>
     <string name="incoming" formatted="false">inkluderar %delta %unit väntande</string>
     <string name="approximatelyT" formatted="false">ungefär %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR-värdet bygger på det globala NEXA/USDT-priset och USDT/INR från \"Exchange Rate API\". Faktiska NEXA OTC/P2P-priser i Indien är vanligtvis 20–30% högre på grund av lokala USDT/INR-kurser och marknadslikviditet.</string>
     <string name="fastForward" formatted="false">Snabbspola</string>
     <string name="fastforwardStatus" formatted="false">snabbspolningsanalys: %info</string>
     <string name="fastforwardStart" formatted="false">startad</string>
@@ -645,6 +646,7 @@ Tack och njut av din nya plånbok!</string>
     <string name="tlvTitle">Tidslåst valv</string>
     <string name="tlvExplainer">Lås mynt så att ingen (inte ens du själv) kan spendera dem förrän efter ditt valda datum.</string>
     <string name="tlvNewVault">Nytt valv</string>
+    <string name="tlvContractLineLabel">Tidslåst valv:</string>
     <string name="tlvMyVaultsCount" formatted="false">MINA VALV · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit låsta</string>
     <string name="tlvLoadingVaults">Laddar valv…</string>
@@ -655,9 +657,18 @@ Tack och njut av din nya plånbok!</string>
     <string name="tlvClaimFailed">Kunde inte lösa in valvet</string>
     <string name="tlvBalanceLoading">Laddar saldo</string>
     <string name="tlvClaimed">Inlöst</string>
+    <string name="tlvClaimedOn" formatted="false">Inlöst %date</string>
     <string name="tlvLocked">Låst</string>
+    <string name="tlvLockedOn" formatted="false">Låst %date</string>
+    <string name="tlvUnlocked">Upplåst</string>
+    <string name="tlvUnlockedOn" formatted="false">Upplåst %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Låst %locked · Upplåst %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Låst · Upplåst</string>
+    <string name="tlvLockedUnlockedClaimedFields">Låst · Upplåst · Inlöst</string>
     <string name="tlvUnlocksBlock" formatted="false">Låses upp vid block %num</string>
     <string name="tlvBlockNum" formatted="false">Block %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Block %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Upplåst · väntar på en insättning</string>
     <string name="tlvUnlockedNeedsFeeCoin">Upplåst · behöver mynt till avgiften</string>
     <string name="tlvUnlockedReadyToClaim">Upplåst · redo att lösas in</string>
@@ -680,6 +691,9 @@ Tack och njut av din nya plånbok!</string>
     <string name="tlvClaimSent">Inlösen skickad</string>
     <string name="tlvPendingDeposit">Väntande insättning</string>
     <string name="tlvTopUp">Påfyllning</string>
+    <string name="tlvTxCreated">Skapat</string>
+    <string name="tlvTxDeposit">Insättning</string>
+    <string name="tlvTxReceived">Mottaget</string>
     <string name="tlvPending">Väntar</string>
     <string name="tlvNetworkFee" formatted="false">Nätverksavgift %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">%caps-auktoritet · %token</string>
@@ -689,6 +703,7 @@ Tack och njut av din nya plånbok!</string>
     <string name="tlvCapBaton">Stafettpinne</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Undergrupp</string>
+    <string name="tlvCreateTitle">Skapa tidslåst valv</string>
     <string name="tlvCreateVault">Skapa valv</string>
     <string name="tlvCreateExplainer">Medlen plus en liten avgift flyttas till en tidslåst adress. Du ser dem i valvet, men kan inte spendera dem före det angivna datumet.</string>
     <string name="tlvMinimumAmount" formatted="false">Minst %amt %unit</string>
@@ -707,10 +722,14 @@ Tack och njut av din nya plånbok!</string>
     <string name="tlvPayTo">Betala till</string>
     <string name="tlvNewTimeLockVault">Nytt tidslåst valv</string>
     <string name="tlvLockedUntil">Låst till</string>
+    <string name="tlvLock">Lås</string>
+    <string name="tlvLockExplainer" formatted="false">Signeringen låser %amt %unit i %name till %date. Det kan inte lösas in före dess.</string>
     <string name="tlvConfirmAndSign">Bekräfta &amp; signera</string>
     <string name="tlvWorking">Arbetar…</string>
     <string name="tlvClaimVault">Lös in valv</string>
     <string name="tlvClaimExplainerSingle">Det här valvet har låsts upp. Bekräfta för att föra tillbaka dess saldo till din plånbok.</string>
+    <string name="tlvClaimTo">Lös in till</string>
+    <string name="tlvClaimedTo">Inlöst till</string>
     <string name="tlvYourWallet">(din plånbok)</string>
     <string name="tlvAsset">Tillgång</string>
     <string name="tlvYouReceive">Du får</string>
@@ -723,6 +742,8 @@ Tack och njut av din nya plånbok!</string>
     <string name="tlvLockedUntilBlock">Låst till block</string>
     <string name="tlvName">Namn</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Auktoritetsstafettpinnar · %count</string>
+    <string name="tlvTokens">Tokens</string>
+    <string name="tlvBatons">Stafettpinnar</string>
     <string name="tlvMovable">Flyttbar</string>
     <string name="tlvBatonExplainer">En stafettpinne är en behörighet, inte ett saldo. Den fryses med mynten och kommer ut med dem i samma inlösen.</string>
     <string name="tlvDepositAddress">Insättningsadress</string>

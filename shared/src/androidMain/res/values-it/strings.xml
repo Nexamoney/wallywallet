@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">La valuta dell\'account è %walletCrypto, l\'indirizzo è %addressCrypto. Usa il menu a tendina per scegliere un account di invio compatibile con la blockchain dell\'indirizzo.</string>
     <string name="incoming" formatted="false">di cui %delta %unit in attesa</string>
     <string name="approximatelyT" formatted="false">circa %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Il valore in INR si basa sul prezzo globale NEXA/USDT e sul cambio USDT/INR di \"Exchange Rate API\". I prezzi reali NEXA OTC/P2P in India sono in genere del 20–30% più alti a causa dei tassi USDT/INR locali e della liquidità del mercato.</string>
     <string name="fastForward" formatted="false">Avanti veloce</string>
     <string name="fastforwardStatus" formatted="false">analisi avanti veloce: %info</string>
     <string name="fastforwardStart" formatted="false">avviata</string>
@@ -644,6 +645,7 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="tlvTitle">Cassaforte a blocco temporale</string>
     <string name="tlvExplainer">Blocca le monete in modo che nessuno (nemmeno tu) possa spenderle fino a dopo la data scelta.</string>
     <string name="tlvNewVault">Nuova cassaforte</string>
+    <string name="tlvContractLineLabel">Cassaforte a blocco temporale:</string>
     <string name="tlvMyVaultsCount" formatted="false">LE MIE CASSEFORTI · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit bloccati</string>
     <string name="tlvLoadingVaults">Caricamento casseforti…</string>
@@ -654,9 +656,18 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="tlvClaimFailed">Impossibile riscattare la cassaforte</string>
     <string name="tlvBalanceLoading">Caricamento saldo</string>
     <string name="tlvClaimed">Riscattata</string>
+    <string name="tlvClaimedOn" formatted="false">Riscattata il %date</string>
     <string name="tlvLocked">Bloccata</string>
+    <string name="tlvLockedOn" formatted="false">Bloccata il %date</string>
+    <string name="tlvUnlocked">Sbloccata</string>
+    <string name="tlvUnlockedOn" formatted="false">Sbloccata il %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Bloccata %locked · Sbloccata %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Bloccata · Sbloccata</string>
+    <string name="tlvLockedUnlockedClaimedFields">Bloccata · Sbloccata · Riscattata</string>
     <string name="tlvUnlocksBlock" formatted="false">Si sblocca al blocco %num</string>
     <string name="tlvBlockNum" formatted="false">Blocco %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blocco %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Sbloccata · in attesa di un deposito</string>
     <string name="tlvUnlockedNeedsFeeCoin">Sbloccata · servono monete per la commissione</string>
     <string name="tlvUnlockedReadyToClaim">Sbloccata · pronta per il riscatto</string>
@@ -679,6 +690,9 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="tlvClaimSent">Riscatto inviato</string>
     <string name="tlvPendingDeposit">Deposito in sospeso</string>
     <string name="tlvTopUp">Ricarica</string>
+    <string name="tlvTxCreated">Creata</string>
+    <string name="tlvTxDeposit">Deposito</string>
+    <string name="tlvTxReceived">Ricevuto</string>
     <string name="tlvPending">In sospeso</string>
     <string name="tlvNetworkFee" formatted="false">Commissione di rete %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">Autorità %caps · %token</string>
@@ -688,6 +702,7 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="tlvCapBaton">Bastone</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Sottogruppo</string>
+    <string name="tlvCreateTitle">Crea cassaforte a blocco temporale</string>
     <string name="tlvCreateVault">Crea cassaforte</string>
     <string name="tlvCreateExplainer">I fondi più una piccola commissione andranno a un indirizzo con blocco temporale. Li vedrai nella cassaforte, ma non potrai spenderli prima della data specificata.</string>
     <string name="tlvMinimumAmount" formatted="false">Minimo %amt %unit</string>
@@ -706,10 +721,14 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="tlvPayTo">Paga a</string>
     <string name="tlvNewTimeLockVault">Nuova cassaforte a blocco temporale</string>
     <string name="tlvLockedUntil">Bloccata fino a</string>
+    <string name="tlvLock">Blocca</string>
+    <string name="tlvLockExplainer" formatted="false">Firmando blocchi %amt %unit in %name fino al %date. Non potrà essere riscattata prima di allora.</string>
     <string name="tlvConfirmAndSign">Conferma e firma</string>
     <string name="tlvWorking">In corso…</string>
     <string name="tlvClaimVault">Riscatta cassaforte</string>
     <string name="tlvClaimExplainerSingle">Questa cassaforte si è sbloccata. Conferma per riportare il suo saldo nel tuo portafoglio.</string>
+    <string name="tlvClaimTo">Riscatta verso</string>
+    <string name="tlvClaimedTo">Riscattata verso</string>
     <string name="tlvYourWallet">(il tuo portafoglio)</string>
     <string name="tlvAsset">Asset</string>
     <string name="tlvYouReceive">Ricevi</string>
@@ -722,6 +741,8 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="tlvLockedUntilBlock">Bloccata fino al blocco</string>
     <string name="tlvName">Nome</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Bastoni di autorità · %count</string>
+    <string name="tlvTokens">Token</string>
+    <string name="tlvBatons">Bastoni</string>
     <string name="tlvMovable">Trasferibile</string>
     <string name="tlvBatonExplainer">Un bastone è un permesso, non un saldo. Si congela con le monete ed esce con loro nello stesso riscatto.</string>
     <string name="tlvDepositAddress">Indirizzo di deposito</string>

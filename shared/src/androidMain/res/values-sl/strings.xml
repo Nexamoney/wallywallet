@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Valuta računa je %walletCrypto, naslov je %addressCrypto. Uporabite kombinirano polje in izberite račun za pošiljanje, ki se ujema z verigo blokov naslova.</string>
     <string name="incoming" formatted="false">vsebuje %delta %unit v čakanju</string>
     <string name="approximatelyT" formatted="false">približno %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Vrednost v INR temelji na globalni ceni NEXA/USDT in tečaju USDT/INR iz \"Exchange Rate API\". Dejanske cene NEXA OTC/P2P v Indiji so zaradi lokalnih tečajev USDT/INR in likvidnosti trga običajno 20–30% višje.</string>
     <string name="fastForward" formatted="false">Hitri preskok</string>
     <string name="fastforwardStatus" formatted="false">analiza hitrega preskoka: %info</string>
     <string name="fastforwardStart" formatted="false">začeto</string>
@@ -641,6 +642,7 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="tlvTitle">Časovno zaklenjen trezor</string>
     <string name="tlvExplainer">Zakleni kovance tako, da jih nihče (niti ti sam) ne more porabiti do izbranega datuma.</string>
     <string name="tlvNewVault">Nov trezor</string>
+    <string name="tlvContractLineLabel">Časovno zaklenjen trezor:</string>
     <string name="tlvMyVaultsCount" formatted="false">MOJI TREZORJI · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit zaklenjeno</string>
     <string name="tlvLoadingVaults">Nalaganje trezorjev…</string>
@@ -651,9 +653,18 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="tlvClaimFailed">Trezorja ni bilo mogoče unovčiti</string>
     <string name="tlvBalanceLoading">Nalaganje stanja</string>
     <string name="tlvClaimed">Unovčen</string>
+    <string name="tlvClaimedOn" formatted="false">Unovčen %date</string>
     <string name="tlvLocked">Zaklenjen</string>
+    <string name="tlvLockedOn" formatted="false">Zaklenjen %date</string>
+    <string name="tlvUnlocked">Odklenjen</string>
+    <string name="tlvUnlockedOn" formatted="false">Odklenjen %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Zaklenjen %locked · Odklenjen %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Zaklenjen · Odklenjen</string>
+    <string name="tlvLockedUnlockedClaimedFields">Zaklenjen · Odklenjen · Unovčen</string>
     <string name="tlvUnlocksBlock" formatted="false">Odklene se pri bloku %num</string>
     <string name="tlvBlockNum" formatted="false">Blok %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blok %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Odklenjen · čaka na polog</string>
     <string name="tlvUnlockedNeedsFeeCoin">Odklenjen · potrebni kovanci za provizijo</string>
     <string name="tlvUnlockedReadyToClaim">Odklenjen · pripravljen za unovčenje</string>
@@ -676,6 +687,9 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="tlvClaimSent">Unovčenje poslano</string>
     <string name="tlvPendingDeposit">Čakajoči polog</string>
     <string name="tlvTopUp">Dopolnitev</string>
+    <string name="tlvTxCreated">Ustvarjen</string>
+    <string name="tlvTxDeposit">Polog</string>
+    <string name="tlvTxReceived">Prejeto</string>
     <string name="tlvPending">V teku</string>
     <string name="tlvNetworkFee" formatted="false">Omrežna provizija %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">Pooblastilo %caps · %token</string>
@@ -685,6 +699,7 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="tlvCapBaton">Palica</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Podskupina</string>
+    <string name="tlvCreateTitle">Ustvari časovno zaklenjen trezor</string>
     <string name="tlvCreateVault">Ustvari trezor</string>
     <string name="tlvCreateExplainer">Sredstva in majhna provizija se bodo premaknila na časovno zaklenjen naslov. Videl jih boš v trezorju, porabiti pa jih ne moreš pred določenim datumom.</string>
     <string name="tlvMinimumAmount" formatted="false">Najmanj %amt %unit</string>
@@ -703,10 +718,14 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="tlvPayTo">Plačaj</string>
     <string name="tlvNewTimeLockVault">Nov časovno zaklenjen trezor</string>
     <string name="tlvLockedUntil">Zaklenjen do</string>
+    <string name="tlvLock">Zakleni</string>
+    <string name="tlvLockExplainer" formatted="false">S podpisom zakleneš %amt %unit v trezorju %name do %date. Pred tem ga ni mogoče unovčiti.</string>
     <string name="tlvConfirmAndSign">Potrdi in podpiši</string>
     <string name="tlvWorking">Delam…</string>
     <string name="tlvClaimVault">Unovči trezor</string>
     <string name="tlvClaimExplainerSingle">Ta trezor se je odklenil. Potrdi, da se njegovo stanje vrne v tvojo denarnico.</string>
+    <string name="tlvClaimTo">Unovči na</string>
+    <string name="tlvClaimedTo">Unovčen na</string>
     <string name="tlvYourWallet">(tvoja denarnica)</string>
     <string name="tlvAsset">Sredstvo</string>
     <string name="tlvYouReceive">Prejmeš</string>
@@ -719,6 +738,8 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="tlvLockedUntilBlock">Zaklenjen do bloka</string>
     <string name="tlvName">Ime</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Pooblastitvene palice · %count</string>
+    <string name="tlvTokens">Žetoni</string>
+    <string name="tlvBatons">Palice</string>
     <string name="tlvMovable">Premično</string>
     <string name="tlvBatonExplainer">Palica je dovoljenje, ne stanje. Zamrzne se skupaj s kovanci in pride ven z njimi v istem unovčenju.</string>
     <string name="tlvDepositAddress">Naslov za polog</string>

@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Tiền tệ của tài khoản là %walletCrypto, còn địa chỉ là %addressCrypto.  Dùng hộp chọn để đổi tài khoản gửi sang tài khoản khớp với blockchain của địa chỉ.</string>
     <string name="incoming" formatted="false">gồm %delta %unit đang chờ</string>
     <string name="approximatelyT" formatted="false">khoảng %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Giá trị INR dựa trên giá NEXA/USDT toàn cầu và tỷ giá USDT/INR từ \"Exchange Rate API\". Giá NEXA OTC/P2P thực tế tại Ấn Độ thường cao hơn 20–30% do tỷ giá USDT/INR địa phương và thanh khoản thị trường.</string>
     <string name="fastForward" formatted="false">Tua nhanh</string>
     <string name="fastforwardStatus" formatted="false">phân tích tua nhanh: %info</string>
     <string name="fastforwardStart" formatted="false">đã bắt đầu</string>
@@ -403,6 +404,7 @@
     <string name="accountLimitReached">số tài khoản tối đa</string>
     <string name="accountUnavailableDetails">Không có tài khoản nào khớp với blockchain này, hoặc tài khoản chưa được mở khóa.</string>
     <string name="accountUnavailable">Không có tài khoản tương thích đã mở khóa</string>
+    <string name="accountCouldNotBeOpened">Không thể mở tài khoản</string>
     <string name="sendMoreThanBalance">Bạn đang cố gửi nhiều coin hơn số bạn đang có lúc này.\n\nNếu bạn nghĩ mình không chi quá số dư, có thể bạn quên rằng mỗi giao dịch có thêm một khoản phí nhỏ; hoặc nếu toàn bộ số dư đang hiện là chưa xác nhận thì có thể bạn đã tạo quá nhiều giao dịch liên tiếp.\n\nCó giới hạn cho mức bạn có thể “đi trước” blockchain. Hãy đợi số dư chưa xác nhận được xác nhận rồi thử lại.</string>
     <string name="sendMoreTokensThanBalance">Bạn đang cố gửi nhiều token hơn số bạn đang có lúc này.</string>
     <string name="deductedFeeLargerThanSendAmount">Phí bị trừ lớn hơn số tiền đang gửi</string>
@@ -502,6 +504,7 @@
     <string name="TpSendingTokens" formatted="false">và gửi %tokSnd loại token.</string>
     <string name="TpReceivingTokens" formatted="false">và nhận %tokRcv loại token.</string>
     <string name="TpHasNoPurpose">Yêu cầu này không ảnh hưởng đến tài khoản này.</string>
+    <string name="TpProposalMissingSignature">Giao dịch này thiếu một chữ ký mà trang web yêu cầu lẽ ra phải cung cấp, nên không thể hoàn tất. Chưa có gì bị chi tiêu từ ví của bạn.</string>
     <string name="TpSendToTitle">Yêu cầu thanh toán từ</string>
     <string name="TpSpends">Chi tiêu</string>
     <string name="TpSendRequestDenied">Đã từ chối thanh toán</string>
@@ -634,4 +637,118 @@ Cảm ơn bạn và chúc bạn dùng ví mới thật vui!</string>
     <string name="CamouflageDescriptionAndroid">Bật ngụy trang sẽ đóng ứng dụng và ngụy trang nó thành ứng dụng tên Meditate. Để tắt ngụy trang ứng dụng Meditate, hãy mở menu ứng dụng và nhấn vào số phiên bản năm lần.</string>
     <string name="CamouflageDescriptionOther">Để tắt ngụy trang ứng dụng Meditate, hãy mở menu ứng dụng và nhấn vào số phiên bản năm lần.</string>
     <string name="CamouflageAsMeditateAppAndroid">Ngụy trang thành ứng dụng Meditate</string>
+    <string name="tlvTitle">Két khóa thời gian</string>
+    <string name="tlvExplainer">Khóa coin để không ai (kể cả bạn) có thể tiêu chúng cho đến sau ngày bạn chọn.</string>
+    <string name="tlvNewVault">Két mới</string>
+    <string name="tlvContractLineLabel">Két khóa thời gian:</string>
+    <string name="tlvMyVaultsCount" formatted="false">KÉT CỦA TÔI · %count</string>
+    <string name="tlvTotalLocked" formatted="false">Đã khóa %amt %unit</string>
+    <string name="tlvLoadingVaults">Đang tải các két…</string>
+    <string name="tlvNoVaultsYet">Chưa có két nào — chạm Két mới ở trên để tạo một két.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable có thể nhận · %locked đang khóa · %claimed đã nhận</string>
+    <string name="tlvLoadFailed">Không thể tải các két khóa thời gian</string>
+    <string name="tlvCreateFailed">Không thể tạo két</string>
+    <string name="tlvClaimFailed">Không thể nhận từ két</string>
+    <string name="tlvBalanceLoading">Đang tải số dư</string>
+    <string name="tlvClaimed">Đã nhận</string>
+    <string name="tlvClaimedOn" formatted="false">Đã nhận %date</string>
+    <string name="tlvLocked">Đang khóa</string>
+    <string name="tlvLockedOn" formatted="false">Đã khóa %date</string>
+    <string name="tlvUnlocked">Đã mở khóa</string>
+    <string name="tlvUnlockedOn" formatted="false">Đã mở khóa %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Khóa %locked · Mở khóa %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Khóa · Mở khóa</string>
+    <string name="tlvLockedUnlockedClaimedFields">Khóa · Mở khóa · Nhận</string>
+    <string name="tlvUnlocksBlock" formatted="false">Mở khóa ở khối %num</string>
+    <string name="tlvBlockNum" formatted="false">Khối %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Khối %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Đã mở khóa · đang chờ nạp</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Đã mở khóa · cần coin để trả phí</string>
+    <string name="tlvUnlockedReadyToClaim">Đã mở khóa · sẵn sàng nhận</string>
+    <string name="tlvClaimedFundsArrivedSince">Đã nhận · có tiền đến sau đó</string>
+    <string name="tlvClaim">Nhận</string>
+    <string name="tlvReclaim">Nhận lại</string>
+    <string name="tlvVaultEmptied">Két này đã được rút hết</string>
+    <string name="tlvPercentElapsed" formatted="false">Đã trôi qua %pct%</string>
+    <string name="tlvDaysLeft" formatted="false">Còn %num ngày</string>
+    <string name="tlvOneDayLeft">Còn 1 ngày</string>
+    <string name="tlvHoursLeft" formatted="false">Còn %num giờ</string>
+    <string name="tlvOneHourLeft">Còn 1 giờ</string>
+    <string name="tlvMinutesLeft" formatted="false">Còn %num phút</string>
+    <string name="tlvOneMinuteLeft">Còn 1 phút</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count gậy quyền · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count gậy quyền · %syms</string>
+    <string name="tlvTransactions">Giao dịch của két</string>
+    <string name="tlvNoTransactions">Két này chưa có giao dịch nào.</string>
+    <string name="tlvVaultCreated">Đã tạo két</string>
+    <string name="tlvClaimSent">Đã gửi yêu cầu nhận</string>
+    <string name="tlvPendingDeposit">Nạp đang chờ</string>
+    <string name="tlvTopUp">Nạp thêm</string>
+    <string name="tlvTxCreated">Tạo</string>
+    <string name="tlvTxDeposit">Nạp</string>
+    <string name="tlvTxReceived">Đã nhận</string>
+    <string name="tlvPending">Đang chờ</string>
+    <string name="tlvNetworkFee" formatted="false">Phí mạng %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Quyền %caps · %token</string>
+    <string name="tlvAuthority">Quyền</string>
+    <string name="tlvCapMint">Đúc</string>
+    <string name="tlvCapMelt">Hủy</string>
+    <string name="tlvCapBaton">Gậy</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Nhóm con</string>
+    <string name="tlvCreateTitle">Tạo két khóa thời gian</string>
+    <string name="tlvCreateVault">Tạo két</string>
+    <string name="tlvCreateExplainer">Tiền cộng với một khoản phí nhỏ sẽ chuyển vào một địa chỉ khóa thời gian. Bạn sẽ thấy chúng trong két nhưng không thể tiêu trước ngày đã định.</string>
+    <string name="tlvMinimumAmount" formatted="false">Tối thiểu %amt %unit</string>
+    <string name="tlvLockUntil">Khóa đến</string>
+    <string name="tlvBlockHeight">Chiều cao khối</string>
+    <string name="tlvFutureDate">Ngày trong tương lai</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Chiều cao khối tối đa là %num</string>
+    <string name="tlvFeeSatB">Phí</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Tổng</string>
+    <string name="tlvReview">Xem lại</string>
+    <string name="tlvDone">Xong</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Xác nhận két</string>
+    <string name="tlvPayTo">Trả cho</string>
+    <string name="tlvNewTimeLockVault">Két khóa thời gian mới</string>
+    <string name="tlvLockedUntil">Khóa đến</string>
+    <string name="tlvLock">Khóa</string>
+    <string name="tlvLockExplainer" formatted="false">Ký sẽ khóa %amt %unit trong %name đến %date. Không thể nhận trước thời điểm đó.</string>
+    <string name="tlvConfirmAndSign">Xác nhận &amp; ký</string>
+    <string name="tlvWorking">Đang xử lý…</string>
+    <string name="tlvClaimVault">Nhận từ két</string>
+    <string name="tlvClaimExplainerSingle">Két này đã mở khóa. Xác nhận để chuyển số dư về ví của bạn.</string>
+    <string name="tlvClaimTo">Nhận về</string>
+    <string name="tlvClaimedTo">Đã nhận về</string>
+    <string name="tlvYourWallet">(ví của bạn)</string>
+    <string name="tlvAsset">Tài sản</string>
+    <string name="tlvYouReceive">Bạn nhận được</string>
+    <string name="tlvNothingToClaim">Không có gì để nhận — két này trống.</string>
+    <string name="tlvConfirmAndClaim">Xác nhận &amp; nhận</string>
+    <string name="tlvVaultClaimed">Đã nhận từ két</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit đang trên đường về ví của bạn.</string>
+    <string name="tlvTxId">ID giao dịch</string>
+    <string name="tlvFundsOnTheirWay">Tiền đang được chuyển.</string>
+    <string name="tlvLockedUntilBlock">Khóa đến khối</string>
+    <string name="tlvName">Tên</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Gậy quyền · %count</string>
+    <string name="tlvTokens">Token</string>
+    <string name="tlvBatons">Gậy</string>
+    <string name="tlvMovable">Có thể chuyển</string>
+    <string name="tlvBatonExplainer">Gậy là một quyền, không phải số dư. Nó bị đóng băng cùng với coin và được lấy ra cùng chúng trong cùng một lần nhận.</string>
+    <string name="tlvDepositAddress">Địa chỉ nạp</string>
+    <string name="tlvNoAddress">(không có địa chỉ)</string>
+    <string name="tlvVaultSuccess">Tạo két thành công</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Đóng QR</string>
+    <string name="tlvDepositWarning">Mọi thứ gửi đến địa chỉ này đều bị khóa cho đến khi két mở — kể cả coin gửi nhầm vào đây.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Chỉ gửi token vào đây kèm theo một ít %unit. Két tự trả phí khi mở, và chỉ từ số %unit mà nó giữ.</string>
+    <string name="tlvHistory">Lịch sử</string>
+    <string name="tlvView">Xem</string>
+    <string name="tlvNoEarlyOpen">Không có cách nào mở két này sớm hơn. Đó chính là mục đích của két khóa thời gian.</string>
+    <string name="tlvPublicOnChain">Chiều cao mở khóa và số tiền được công khai trên chuỗi từ lúc két này được nạp — ai có địa chỉ đều có thể đọc.</string>
 </resources>

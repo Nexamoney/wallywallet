@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">アカウントの通貨は%walletCrypto、アドレスは%addressCryptoです。コンボボックスで、アドレスのブロックチェーンに合うアカウントを送金元に選び直してください。</string>
     <string name="incoming" formatted="false">未承認の%delta %unitを含みます</string>
     <string name="approximatelyT" formatted="false">約%qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR の価値は、世界の NEXA/USDT 価格と \"Exchange Rate API\" の USDT/INR レートに基づいています。インド国内の実際の NEXA OTC/P2P 価格は、現地の USDT/INR レートと市場の流動性により、通常 20–30% 高くなります。</string>
     <string name="fastForward" formatted="false">高速同期</string>
     <string name="fastforwardStatus" formatted="false">高速同期の解析: %info</string>
     <string name="fastforwardStart" formatted="false">開始しました</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">アカウント数の上限</string>
     <string name="accountUnavailableDetails">このブロックチェーンに一致するアカウントがないか、アカウントがロック解除されていません。</string>
     <string name="accountUnavailable">対応するロック解除済みアカウントなし</string>
+    <string name="accountCouldNotBeOpened">アカウントを開けませんでした</string>
     <string name="sendMoreThanBalance">現在利用可能なコインより多く送金しようとしています。\n\n残高を超えて使っていないはずだとお考えの場合、取引にわずかな手数料がかかることをお忘れかもしれません。また、残高がすべて未承認と表示されている場合は、続けて取引を行いすぎた可能性があります。\n\nブロックチェーンより先に「進める」範囲には限りがあります。未承認の残高が承認されるまで待ってから、もう一度お試しください。</string>
     <string name="sendMoreTokensThanBalance">現在利用可能なトークンより多く送金しようとしています。</string>
     <string name="deductedFeeLargerThanSendAmount">差し引かれる手数料が送金額を上回っています</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">%tokSnd種類のトークンを送金します。</string>
     <string name="TpReceivingTokens" formatted="false">%tokRcv種類のトークンを受け取ります。</string>
     <string name="TpHasNoPurpose">このリクエストはこのアカウントに影響しません。</string>
+    <string name="TpProposalMissingSignature">この取引には、要求元サイトが提供すべき署名が欠けているため完了できません。ウォレットからは何も送金されていません。</string>
     <string name="TpSendToTitle">支払いのリクエスト元</string>
     <string name="TpSpends">支出</string>
     <string name="TpSendRequestDenied">支払いを拒否</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">カモフラージュを有効にするとアプリが終了し、「Meditate」という名前のアプリとしてカモフラージュされます。カモフラージュを解除するには、アプリのメニューを開き、バージョン番号を5回タップします。</string>
     <string name="CamouflageDescriptionOther">「Meditate」アプリのカモフラージュを解除するには、アプリのメニューを開き、バージョン番号を5回タップします。</string>
     <string name="CamouflageAsMeditateAppAndroid">「Meditate」アプリとしてカモフラージュ</string>
+    <string name="tlvTitle">タイムロック金庫</string>
+    <string name="tlvExplainer">コインをロックして、選んだ日付を過ぎるまで誰も（自分自身も）使えないようにします。</string>
+    <string name="tlvNewVault">新しい金庫</string>
+    <string name="tlvContractLineLabel">タイムロック金庫:</string>
+    <string name="tlvMyVaultsCount" formatted="false">マイ金庫 · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit をロック中</string>
+    <string name="tlvLoadingVaults">金庫を読み込み中…</string>
+    <string name="tlvNoVaultsYet">金庫はまだありません — 上の「新しい金庫」をタップして作成してください。</string>
+    <string name="tlvContractCounts" formatted="false">受取可能 %claimable · ロック中 %locked · 受取済み %claimed</string>
+    <string name="tlvLoadFailed">タイムロック金庫を読み込めませんでした</string>
+    <string name="tlvCreateFailed">金庫を作成できませんでした</string>
+    <string name="tlvClaimFailed">金庫から受け取れませんでした</string>
+    <string name="tlvBalanceLoading">残高を読み込み中</string>
+    <string name="tlvClaimed">受取済み</string>
+    <string name="tlvClaimedOn" formatted="false">%date に受取</string>
+    <string name="tlvLocked">ロック中</string>
+    <string name="tlvLockedOn" formatted="false">%date にロック</string>
+    <string name="tlvUnlocked">ロック解除済み</string>
+    <string name="tlvUnlockedOn" formatted="false">%date にロック解除</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">ロック %locked · 解除 %unlocked</string>
+    <string name="tlvLockedUnlockedFields">ロック · 解除</string>
+    <string name="tlvLockedUnlockedClaimedFields">ロック · 解除 · 受取</string>
+    <string name="tlvUnlocksBlock" formatted="false">ブロック %num で解除</string>
+    <string name="tlvBlockNum" formatted="false">ブロック %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">ブロック %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">ロック解除済み · 入金待ち</string>
+    <string name="tlvUnlockedNeedsFeeCoin">ロック解除済み · 手数料用のコインが必要</string>
+    <string name="tlvUnlockedReadyToClaim">ロック解除済み · 受取可能</string>
+    <string name="tlvClaimedFundsArrivedSince">受取済み · その後に入金あり</string>
+    <string name="tlvClaim">受け取る</string>
+    <string name="tlvReclaim">再度受け取る</string>
+    <string name="tlvVaultEmptied">この金庫は空になりました</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% 経過</string>
+    <string name="tlvDaysLeft" formatted="false">残り %num 日</string>
+    <string name="tlvOneDayLeft">残り 1 日</string>
+    <string name="tlvHoursLeft" formatted="false">残り %num 時間</string>
+    <string name="tlvOneHourLeft">残り 1 時間</string>
+    <string name="tlvMinutesLeft" formatted="false">残り %num 分</string>
+    <string name="tlvOneMinuteLeft">残り 1 分</string>
+    <string name="tlvAuthorityBaton" formatted="false">権限バトン %count 個 · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">権限バトン %count 個 · %syms</string>
+    <string name="tlvTransactions">金庫の取引</string>
+    <string name="tlvNoTransactions">この金庫にはまだ取引がありません。</string>
+    <string name="tlvVaultCreated">金庫を作成しました</string>
+    <string name="tlvClaimSent">受取を送信しました</string>
+    <string name="tlvPendingDeposit">入金保留中</string>
+    <string name="tlvTopUp">追加入金</string>
+    <string name="tlvTxCreated">作成</string>
+    <string name="tlvTxDeposit">入金</string>
+    <string name="tlvTxReceived">受取</string>
+    <string name="tlvPending">保留中</string>
+    <string name="tlvNetworkFee" formatted="false">ネットワーク手数料 %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps 権限 · %token</string>
+    <string name="tlvAuthority">権限</string>
+    <string name="tlvCapMint">発行</string>
+    <string name="tlvCapMelt">焼却</string>
+    <string name="tlvCapBaton">バトン</string>
+    <string name="tlvCapRescript">リスクリプト</string>
+    <string name="tlvCapSubgroup">サブグループ</string>
+    <string name="tlvCreateTitle">タイムロック金庫を作成</string>
+    <string name="tlvCreateVault">金庫を作成</string>
+    <string name="tlvCreateExplainer">資金と少額の手数料がタイムロックされたアドレスに移動します。金庫内で確認できますが、指定日より前に使うことはできません。</string>
+    <string name="tlvMinimumAmount" formatted="false">最低 %amt %unit</string>
+    <string name="tlvLockUntil">ロック期限</string>
+    <string name="tlvBlockHeight">ブロック高</string>
+    <string name="tlvFutureDate">将来の日付</string>
+    <string name="tlvMaxBlockHeight" formatted="false">ブロック高の上限は %num です</string>
+    <string name="tlvFeeSatB">手数料</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">合計</string>
+    <string name="tlvReview">確認</string>
+    <string name="tlvDone">完了</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">金庫を確定</string>
+    <string name="tlvPayTo">支払先</string>
+    <string name="tlvNewTimeLockVault">新しいタイムロック金庫</string>
+    <string name="tlvLockedUntil">ロック期限</string>
+    <string name="tlvLock">ロック</string>
+    <string name="tlvLockExplainer" formatted="false">署名すると %amt %unit が %name に %date までロックされます。それ以前に受け取ることはできません。</string>
+    <string name="tlvConfirmAndSign">確認 &amp; 署名</string>
+    <string name="tlvWorking">処理中…</string>
+    <string name="tlvClaimVault">金庫から受け取る</string>
+    <string name="tlvClaimExplainerSingle">この金庫はロック解除されました。確認すると残高がウォレットに戻ります。</string>
+    <string name="tlvClaimTo">受取先</string>
+    <string name="tlvClaimedTo">受取先</string>
+    <string name="tlvYourWallet">（あなたのウォレット）</string>
+    <string name="tlvAsset">アセット</string>
+    <string name="tlvYouReceive">受取額</string>
+    <string name="tlvNothingToClaim">受け取るものがありません — この金庫は空です。</string>
+    <string name="tlvConfirmAndClaim">確認 &amp; 受取</string>
+    <string name="tlvVaultClaimed">金庫から受け取りました</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit がウォレットに戻る途中です。</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">資金は送金中です。</string>
+    <string name="tlvLockedUntilBlock">ロック解除ブロック</string>
+    <string name="tlvName">名前</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">権限バトン · %count</string>
+    <string name="tlvTokens">トークン</string>
+    <string name="tlvBatons">バトン</string>
+    <string name="tlvMovable">移動可能</string>
+    <string name="tlvBatonExplainer">バトンは残高ではなく権限です。コインと一緒に凍結され、同じ受取で一緒に取り出されます。</string>
+    <string name="tlvDepositAddress">入金アドレス</string>
+    <string name="tlvNoAddress">（アドレスなし）</string>
+    <string name="tlvVaultSuccess">金庫の作成完了</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR を閉じる</string>
+    <string name="tlvDepositWarning">このアドレスに送られたものは、金庫が開くまですべてロックされます — 誤って送られたコインも含みます。</string>
+    <string name="tlvTokenFeeWarning" formatted="false">トークンは必ずいくらかの %unit と一緒に送ってください。金庫は開くときに自分で手数料を払い、保有する %unit からのみ支払います。</string>
+    <string name="tlvHistory">履歴</string>
+    <string name="tlvView">表示</string>
+    <string name="tlvNoEarlyOpen">この金庫を早く開ける方法はありません。それがタイムロック金庫の目的です。</string>
+    <string name="tlvPublicOnChain">解除ブロック高と金額は、この金庫に入金された時点からチェーン上で公開されます — アドレスを知る人なら誰でも読めます。</string>
 </resources>

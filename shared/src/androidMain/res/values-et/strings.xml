@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Konto valuuta on %walletCrypto, aadress on %addressCrypto.  Valige rippmenüüst saatja konto, mis sobib aadressi plokiahelaga.</string>
     <string name="incoming" formatted="false">sisaldab ootel %delta %unit</string>
     <string name="approximatelyT" formatted="false">umbes %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR väärtus põhineb globaalsel NEXA/USDT hinnal ja \"Exchange Rate API\" USDT/INR kursil. Tegelikud NEXA OTC/P2P hinnad Indias on kohalike USDT/INR kursside ja turu likviidsuse tõttu tavaliselt 20–30% kõrgemad.</string>
     <string name="fastForward" formatted="false">Keri edasi</string>
     <string name="fastforwardStatus" formatted="false">edasikerimise analüüs: %info</string>
     <string name="fastforwardStart" formatted="false">alustatud</string>
@@ -641,6 +642,7 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="tlvTitle">Ajalukuga varakamber</string>
     <string name="tlvExplainer">Lukusta mündid nii, et keegi (ka sina ise) ei saa neid kulutada enne sinu valitud kuupäeva.</string>
     <string name="tlvNewVault">Uus varakamber</string>
+    <string name="tlvContractLineLabel">Ajalukuga varakamber:</string>
     <string name="tlvMyVaultsCount" formatted="false">MINU VARAKAMBRID · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit lukus</string>
     <string name="tlvLoadingVaults">Varakambrite laadimine…</string>
@@ -651,9 +653,18 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="tlvClaimFailed">Varakambrit ei õnnestunud välja võtta</string>
     <string name="tlvBalanceLoading">Saldo laadimine</string>
     <string name="tlvClaimed">Välja võetud</string>
+    <string name="tlvClaimedOn" formatted="false">Välja võetud %date</string>
     <string name="tlvLocked">Lukus</string>
+    <string name="tlvLockedOn" formatted="false">Lukustatud %date</string>
+    <string name="tlvUnlocked">Avatud</string>
+    <string name="tlvUnlockedOn" formatted="false">Avatud %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Lukustatud %locked · Avatud %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Lukustatud · Avatud</string>
+    <string name="tlvLockedUnlockedClaimedFields">Lukustatud · Avatud · Välja võetud</string>
     <string name="tlvUnlocksBlock" formatted="false">Avaneb plokil %num</string>
     <string name="tlvBlockNum" formatted="false">Plokk %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Plokk %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Avatud · ootab sissemakset</string>
     <string name="tlvUnlockedNeedsFeeCoin">Avatud · tasu jaoks on münte vaja</string>
     <string name="tlvUnlockedReadyToClaim">Avatud · valmis väljavõtmiseks</string>
@@ -676,6 +687,9 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="tlvClaimSent">Väljavõtt saadetud</string>
     <string name="tlvPendingDeposit">Ootel sissemakse</string>
     <string name="tlvTopUp">Lisamakse</string>
+    <string name="tlvTxCreated">Loodud</string>
+    <string name="tlvTxDeposit">Sissemakse</string>
+    <string name="tlvTxReceived">Saadud</string>
     <string name="tlvPending">Ootel</string>
     <string name="tlvNetworkFee" formatted="false">Võrgutasu %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">%caps volitus · %token</string>
@@ -685,6 +699,7 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="tlvCapBaton">Teatepulk</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Alamgrupp</string>
+    <string name="tlvCreateTitle">Loo ajalukuga varakamber</string>
     <string name="tlvCreateVault">Loo varakamber</string>
     <string name="tlvCreateExplainer">Raha koos väikese tasuga liigub ajalukuga aadressile. Näed seda varakambris, kuid kulutada ei saa enne määratud kuupäeva.</string>
     <string name="tlvMinimumAmount" formatted="false">Miinimum %amt %unit</string>
@@ -703,10 +718,14 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="tlvPayTo">Maksa</string>
     <string name="tlvNewTimeLockVault">Uus ajalukuga varakamber</string>
     <string name="tlvLockedUntil">Lukus kuni</string>
+    <string name="tlvLock">Lukusta</string>
+    <string name="tlvLockExplainer" formatted="false">Allkirjastamine lukustab %amt %unit varakambris %name kuni %date. Enne seda ei saa seda välja võtta.</string>
     <string name="tlvConfirmAndSign">Kinnita ja allkirjasta</string>
     <string name="tlvWorking">Töötan…</string>
     <string name="tlvClaimVault">Võta varakamber välja</string>
     <string name="tlvClaimExplainerSingle">See varakamber on avanenud. Kinnita, et selle saldo sinu rahakotti tagasi tuua.</string>
+    <string name="tlvClaimTo">Võta välja aadressile</string>
+    <string name="tlvClaimedTo">Välja võetud aadressile</string>
     <string name="tlvYourWallet">(sinu rahakott)</string>
     <string name="tlvAsset">Vara</string>
     <string name="tlvYouReceive">Sa saad</string>
@@ -719,6 +738,8 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="tlvLockedUntilBlock">Lukus kuni plokini</string>
     <string name="tlvName">Nimi</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Volitusteatepulgad · %count</string>
+    <string name="tlvTokens">Tokenid</string>
+    <string name="tlvBatons">Teatepulgad</string>
     <string name="tlvMovable">Liigutatav</string>
     <string name="tlvBatonExplainer">Teatepulk on luba, mitte saldo. See külmub koos müntidega ja tuleb koos nendega samas väljavõtus välja.</string>
     <string name="tlvDepositAddress">Sissemakse aadress</string>

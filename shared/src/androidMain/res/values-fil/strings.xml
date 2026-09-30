@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Ang currency ng account ay %walletCrypto, ang address naman ay %addressCrypto.  Gamitin ang combo box para palitan ang pinagmumulang account ng isang tumutugma sa blockchain ng address.</string>
     <string name="incoming" formatted="false">kasama ang %delta %unit na pending</string>
     <string name="approximatelyT" formatted="false">humigit-kumulang %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Ang halaga sa INR ay batay sa pandaigdigang presyo ng NEXA/USDT at sa USDT/INR mula sa \"Exchange Rate API\". Ang aktuwal na presyo ng NEXA OTC/P2P sa India ay karaniwang 20–30% na mas mataas dahil sa lokal na USDT/INR rate at liquidity ng merkado.</string>
     <string name="fastForward" formatted="false">Fast forward</string>
     <string name="fastforwardStatus" formatted="false">pagsusuri sa fast forward: %info</string>
     <string name="fastforwardStart" formatted="false">nagsimula</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">max na account</string>
     <string name="accountUnavailableDetails">Walang account na tugma sa blockchain na ito, o hindi pa naka-unlock ang account.</string>
     <string name="accountUnavailable">Walang naka-unlock na tugmang account</string>
+    <string name="accountCouldNotBeOpened">Hindi mabuksan ang account</string>
     <string name="sendMoreThanBalance">Sinusubukan mong magpadala ng mas maraming coin kaysa sa available mo ngayon.\n\nKung sa tingin mo ay hindi ka naman lumalampas sa balanse mo, baka nakalimutan mong may maliit na dagdag na fee ang bawat transaksyon, o kung hindi kumpirmado ang lahat ng balanse mo, baka masyadong maraming transaksyon ang ginawa mo nang sunod-sunod.\n\nMay limitasyon kung gaano ka kalayo makakauna sa blockchain. Hintayin munang makumpirma ang balanse mo at subukan ulit.</string>
     <string name="sendMoreTokensThanBalance">Sinusubukan mong magpadala ng mas maraming token kaysa sa available mo ngayon.</string>
     <string name="deductedFeeLargerThanSendAmount">Mas malaki ang ibinawas na fee kaysa sa halagang ipapadala</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">at nagpapadala ng %tokSnd uri ng token.</string>
     <string name="TpReceivingTokens" formatted="false">at tumatanggap ng %tokRcv uri ng token.</string>
     <string name="TpHasNoPurpose">Walang epekto sa account na ito ang request na ito.</string>
+    <string name="TpProposalMissingSignature">Kulang ang transaksyong ito ng pirmang dapat ibinigay ng humihiling na site, kaya hindi ito makukumpleto. Walang nagastos mula sa iyong wallet.</string>
     <string name="TpSendToTitle">Bayad na hiniling ng</string>
     <string name="TpSpends">Gastos</string>
     <string name="TpSendRequestDenied">Tinanggihan ang bayad</string>
@@ -637,4 +640,118 @@ Salamat at mag-enjoy sa bago mong wallet!</string>
     <string name="CamouflageDescriptionAndroid">Kapag na-enable ang camouflage, magsasara ang app at itatago ito bilang app na tinatawag na Meditate. Para i-disable ang Meditate camouflage, buksan ang app menu at i-click ang version number nang limang beses.</string>
     <string name="CamouflageDescriptionOther">Para i-disable ang Meditate camouflage, buksan ang app menu at i-click ang version number nang limang beses.</string>
     <string name="CamouflageAsMeditateAppAndroid">Itago bilang Meditate app</string>
+    <string name="tlvTitle">Time Lock Vault</string>
+    <string name="tlvExplainer">I-lock ang mga coin para walang sinuman (kasama ka) ang makakagastos nito hanggang lumampas ang napili mong petsa.</string>
+    <string name="tlvNewVault">Bagong vault</string>
+    <string name="tlvContractLineLabel">Time Lock Vault:</string>
+    <string name="tlvMyVaultsCount" formatted="false">MGA VAULT KO · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit naka-lock</string>
+    <string name="tlvLoadingVaults">Nilo-load ang mga vault…</string>
+    <string name="tlvNoVaultsYet">Wala pang vault — i-tap ang Bagong vault sa itaas para gumawa.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable makukuha · %locked naka-lock · %claimed nakuha na</string>
+    <string name="tlvLoadFailed">Hindi ma-load ang mga time lock vault</string>
+    <string name="tlvCreateFailed">Hindi magawa ang vault</string>
+    <string name="tlvClaimFailed">Hindi makuha ang vault</string>
+    <string name="tlvBalanceLoading">Nilo-load ang balanse</string>
+    <string name="tlvClaimed">Nakuha na</string>
+    <string name="tlvClaimedOn" formatted="false">Nakuha noong %date</string>
+    <string name="tlvLocked">Naka-lock</string>
+    <string name="tlvLockedOn" formatted="false">Na-lock noong %date</string>
+    <string name="tlvUnlocked">Bukas na</string>
+    <string name="tlvUnlockedOn" formatted="false">Nabuksan noong %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Na-lock %locked · Nabuksan %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Na-lock · Nabuksan</string>
+    <string name="tlvLockedUnlockedClaimedFields">Na-lock · Nabuksan · Nakuha</string>
+    <string name="tlvUnlocksBlock" formatted="false">Mabubuksan sa block %num</string>
+    <string name="tlvBlockNum" formatted="false">Block %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Block %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Bukas na · naghihintay ng deposito</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Bukas na · kailangan ng coin para sa fee</string>
+    <string name="tlvUnlockedReadyToClaim">Bukas na · handa nang kunin</string>
+    <string name="tlvClaimedFundsArrivedSince">Nakuha na · may dumating na pondo pagkatapos</string>
+    <string name="tlvClaim">Kunin</string>
+    <string name="tlvReclaim">Kunin muli</string>
+    <string name="tlvVaultEmptied">Naubos na ang vault na ito</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% lumipas na</string>
+    <string name="tlvDaysLeft" formatted="false">%num araw na lang</string>
+    <string name="tlvOneDayLeft">1 araw na lang</string>
+    <string name="tlvHoursLeft" formatted="false">%num oras na lang</string>
+    <string name="tlvOneHourLeft">1 oras na lang</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minuto na lang</string>
+    <string name="tlvOneMinuteLeft">1 minuto na lang</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count authority baton · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count authority baton · %syms</string>
+    <string name="tlvTransactions">Mga transaksyon ng vault</string>
+    <string name="tlvNoTransactions">Wala pang transaksyon ang vault na ito.</string>
+    <string name="tlvVaultCreated">Nagawa ang vault</string>
+    <string name="tlvClaimSent">Naipadala ang pagkuha</string>
+    <string name="tlvPendingDeposit">Nakabinbing deposito</string>
+    <string name="tlvTopUp">Top-up</string>
+    <string name="tlvTxCreated">Nagawa</string>
+    <string name="tlvTxDeposit">Deposito</string>
+    <string name="tlvTxReceived">Natanggap</string>
+    <string name="tlvPending">Nakabinbin</string>
+    <string name="tlvNetworkFee" formatted="false">Network fee %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps authority · %token</string>
+    <string name="tlvAuthority">Authority</string>
+    <string name="tlvCapMint">Mint</string>
+    <string name="tlvCapMelt">Melt</string>
+    <string name="tlvCapBaton">Baton</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Subgroup</string>
+    <string name="tlvCreateTitle">Gumawa ng time lock vault</string>
+    <string name="tlvCreateVault">Gumawa ng vault</string>
+    <string name="tlvCreateExplainer">Ang pondo at maliit na fee ay ililipat sa isang time-locked na address. Makikita mo ito sa vault, pero hindi magagastos bago ang itinakdang petsa.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
+    <string name="tlvLockUntil">I-lock hanggang</string>
+    <string name="tlvBlockHeight">Block height</string>
+    <string name="tlvFutureDate">Petsa sa hinaharap</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Ang maximum block height ay %num</string>
+    <string name="tlvFeeSatB">Fee</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Kabuuan</string>
+    <string name="tlvReview">Suriin</string>
+    <string name="tlvDone">Tapos na</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Kumpirmahin ang vault</string>
+    <string name="tlvPayTo">Bayaran si</string>
+    <string name="tlvNewTimeLockVault">Bagong time lock vault</string>
+    <string name="tlvLockedUntil">Naka-lock hanggang</string>
+    <string name="tlvLock">I-lock</string>
+    <string name="tlvLockExplainer" formatted="false">Ang pagpirma ay maglo-lock ng %amt %unit sa %name hanggang %date. Hindi ito makukuha bago nito.</string>
+    <string name="tlvConfirmAndSign">Kumpirmahin &amp; pirmahan</string>
+    <string name="tlvWorking">Ginagawa…</string>
+    <string name="tlvClaimVault">Kunin ang vault</string>
+    <string name="tlvClaimExplainerSingle">Bukas na ang vault na ito. Kumpirmahin para ibalik ang balanse nito sa iyong wallet.</string>
+    <string name="tlvClaimTo">Kunin papunta sa</string>
+    <string name="tlvClaimedTo">Nakuha papunta sa</string>
+    <string name="tlvYourWallet">(iyong wallet)</string>
+    <string name="tlvAsset">Asset</string>
+    <string name="tlvYouReceive">Matatanggap mo</string>
+    <string name="tlvNothingToClaim">Walang makukuha — walang laman ang vault na ito.</string>
+    <string name="tlvConfirmAndClaim">Kumpirmahin &amp; kunin</string>
+    <string name="tlvVaultClaimed">Nakuha na ang vault</string>
+    <string name="tlvOnItsWayBack" formatted="false">Pabalik na sa iyong wallet ang %amt %unit.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">Papunta na ang pondo.</string>
+    <string name="tlvLockedUntilBlock">Naka-lock hanggang block</string>
+    <string name="tlvName">Pangalan</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Mga authority baton · %count</string>
+    <string name="tlvTokens">Mga token</string>
+    <string name="tlvBatons">Mga baton</string>
+    <string name="tlvMovable">Nalilipat</string>
+    <string name="tlvBatonExplainer">Ang baton ay isang pahintulot, hindi balanse. Naka-freeze ito kasama ng mga coin at lumalabas kasama nila sa iisang pagkuha.</string>
+    <string name="tlvDepositAddress">Address ng deposito</string>
+    <string name="tlvNoAddress">(walang address)</string>
+    <string name="tlvVaultSuccess">Matagumpay ang vault</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Isara ang QR</string>
+    <string name="tlvDepositWarning">Lahat ng ipinadala sa address na ito ay naka-lock hanggang mabuksan ang vault — kasama ang mga coin na aksidenteng naipadala rito.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Magpadala ng token dito kasama lang ng kaunting %unit. Ang vault ang nagbabayad ng sarili nitong fee kapag nagbukas, at mula lang sa %unit na hawak nito.</string>
+    <string name="tlvHistory">Kasaysayan</string>
+    <string name="tlvView">Tingnan</string>
+    <string name="tlvNoEarlyOpen">Walang paraan para buksan nang maaga ang vault na ito. Iyon ang layunin ng time lock vault.</string>
+    <string name="tlvPublicOnChain">Ang unlock height at ang halaga ay pampubliko sa chain mula nang mapondohan ang vault na ito — mababasa ito ng sinumang may address.</string>
 </resources>

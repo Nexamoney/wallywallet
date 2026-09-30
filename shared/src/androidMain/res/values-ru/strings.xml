@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Валюта счёта — %walletCrypto, а адрес — %addressCrypto. Выберите в списке счёт, блокчейн которого совпадает с блокчейном адреса.</string>
     <string name="incoming" formatted="false">включая %delta %unit в ожидании</string>
     <string name="approximatelyT" formatted="false">примерно %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Стоимость в INR основана на мировой цене NEXA/USDT и курсе USDT/INR от \"Exchange Rate API\". Реальные цены NEXA OTC/P2P в Индии обычно на 20–30% выше из-за местных курсов USDT/INR и ликвидности рынка.</string>
     <string name="fastForward" formatted="false">Ускорить</string>
     <string name="fastforwardStatus" formatted="false">анализ ускорения: %info</string>
     <string name="fastforwardStart" formatted="false">начато</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">лимит счетов</string>
     <string name="accountUnavailableDetails">Нет счёта для этого блокчейна либо счёт не разблокирован.</string>
     <string name="accountUnavailable">Нет доступного подходящего счёта</string>
+    <string name="accountCouldNotBeOpened">Не удалось открыть счёт</string>
     <string name="sendMoreThanBalance">Вы пытаетесь отправить больше монет, чем у вас сейчас доступно.\n\nЕсли вам кажется, что вы тратите не больше баланса, вспомните: у транзакций есть небольшая дополнительная комиссия. А если весь баланс показан как неподтверждённый, вы могли сделать слишком много транзакций подряд.\n\nЕсть предел того, насколько можно «убежать вперёд» от блокчейна. Дождитесь подтверждения баланса и попробуйте снова.</string>
     <string name="sendMoreTokensThanBalance">Вы пытаетесь отправить больше токенов, чем у вас сейчас доступно.</string>
     <string name="deductedFeeLargerThanSendAmount">Удерживаемая комиссия больше отправляемой суммы</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">и отправка %tokSnd типов токенов.</string>
     <string name="TpReceivingTokens" formatted="false">и получение %tokRcv типов токенов.</string>
     <string name="TpHasNoPurpose">Этот запрос никак не влияет на этот счёт.</string>
+    <string name="TpProposalMissingSignature">В этой транзакции не хватает подписи, которую должен был предоставить запрашивающий сайт, поэтому её нельзя завершить. Из вашего кошелька ничего не потрачено.</string>
     <string name="TpSendToTitle">Платёж запрашивает</string>
     <string name="TpSpends">Расходы</string>
     <string name="TpSendRequestDenied">Платёж отклонён</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">Включение маскировки закроет приложение и замаскирует его под приложение Meditate. Чтобы отключить маскировку, откройте меню приложения и нажмите на номер версии пять раз.</string>
     <string name="CamouflageDescriptionOther">Чтобы отключить маскировку под приложение Meditate, откройте меню приложения и нажмите на номер версии пять раз.</string>
     <string name="CamouflageAsMeditateAppAndroid">Замаскировать под Meditate</string>
+    <string name="tlvTitle">Хранилище с временной блокировкой</string>
+    <string name="tlvExplainer">Заблокируйте монеты, чтобы никто (включая вас) не мог потратить их до выбранной даты.</string>
+    <string name="tlvNewVault">Новое хранилище</string>
+    <string name="tlvContractLineLabel">Хранилище с временной блокировкой:</string>
+    <string name="tlvMyVaultsCount" formatted="false">МОИ ХРАНИЛИЩА · %count</string>
+    <string name="tlvTotalLocked" formatted="false">Заблокировано %amt %unit</string>
+    <string name="tlvLoadingVaults">Загрузка хранилищ…</string>
+    <string name="tlvNoVaultsYet">Хранилищ пока нет — нажмите «Новое хранилище» выше, чтобы создать.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable к получению · %locked заблокировано · %claimed получено</string>
+    <string name="tlvLoadFailed">Не удалось загрузить хранилища с временной блокировкой</string>
+    <string name="tlvCreateFailed">Не удалось создать хранилище</string>
+    <string name="tlvClaimFailed">Не удалось забрать средства из хранилища</string>
+    <string name="tlvBalanceLoading">Загрузка баланса</string>
+    <string name="tlvClaimed">Получено</string>
+    <string name="tlvClaimedOn" formatted="false">Получено %date</string>
+    <string name="tlvLocked">Заблокировано</string>
+    <string name="tlvLockedOn" formatted="false">Заблокировано %date</string>
+    <string name="tlvUnlocked">Разблокировано</string>
+    <string name="tlvUnlockedOn" formatted="false">Разблокировано %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Заблокировано %locked · Разблокировано %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Заблокировано · Разблокировано</string>
+    <string name="tlvLockedUnlockedClaimedFields">Заблокировано · Разблокировано · Получено</string>
+    <string name="tlvUnlocksBlock" formatted="false">Разблокируется в блоке %num</string>
+    <string name="tlvBlockNum" formatted="false">Блок %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Блок %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Разблокировано · ожидает пополнения</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Разблокировано · нужны монеты на комиссию</string>
+    <string name="tlvUnlockedReadyToClaim">Разблокировано · можно забрать</string>
+    <string name="tlvClaimedFundsArrivedSince">Получено · после этого поступили средства</string>
+    <string name="tlvClaim">Забрать</string>
+    <string name="tlvReclaim">Забрать снова</string>
+    <string name="tlvVaultEmptied">Это хранилище опустошено</string>
+    <string name="tlvPercentElapsed" formatted="false">Прошло %pct%</string>
+    <string name="tlvDaysLeft" formatted="false">Осталось дней: %num</string>
+    <string name="tlvOneDayLeft">Остался 1 день</string>
+    <string name="tlvHoursLeft" formatted="false">Осталось часов: %num</string>
+    <string name="tlvOneHourLeft">Остался 1 час</string>
+    <string name="tlvMinutesLeft" formatted="false">Осталось минут: %num</string>
+    <string name="tlvOneMinuteLeft">Осталась 1 минута</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count жезл полномочий · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">Жезлов полномочий: %count · %syms</string>
+    <string name="tlvTransactions">Транзакции хранилища</string>
+    <string name="tlvNoTransactions">У этого хранилища пока нет транзакций.</string>
+    <string name="tlvVaultCreated">Хранилище создано</string>
+    <string name="tlvClaimSent">Запрос на получение отправлен</string>
+    <string name="tlvPendingDeposit">Ожидаемое пополнение</string>
+    <string name="tlvTopUp">Пополнение</string>
+    <string name="tlvTxCreated">Создано</string>
+    <string name="tlvTxDeposit">Пополнение</string>
+    <string name="tlvTxReceived">Получено</string>
+    <string name="tlvPending">В ожидании</string>
+    <string name="tlvNetworkFee" formatted="false">Комиссия сети %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Полномочие %caps · %token</string>
+    <string name="tlvAuthority">Полномочие</string>
+    <string name="tlvCapMint">Выпуск</string>
+    <string name="tlvCapMelt">Сжигание</string>
+    <string name="tlvCapBaton">Жезл</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Подгруппа</string>
+    <string name="tlvCreateTitle">Создать хранилище с временной блокировкой</string>
+    <string name="tlvCreateVault">Создать хранилище</string>
+    <string name="tlvCreateExplainer">Средства плюс небольшая комиссия перейдут на адрес с временной блокировкой. Вы увидите их в хранилище, но не сможете потратить до указанной даты.</string>
+    <string name="tlvMinimumAmount" formatted="false">Минимум %amt %unit</string>
+    <string name="tlvLockUntil">Заблокировать до</string>
+    <string name="tlvBlockHeight">Высота блока</string>
+    <string name="tlvFutureDate">Будущая дата</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Максимальная высота блока — %num</string>
+    <string name="tlvFeeSatB">Комиссия</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Итого</string>
+    <string name="tlvReview">Проверить</string>
+    <string name="tlvDone">Готово</string>
+    <string name="tlvOk">ОК</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Подтвердить хранилище</string>
+    <string name="tlvPayTo">Оплатить на</string>
+    <string name="tlvNewTimeLockVault">Новое хранилище с временной блокировкой</string>
+    <string name="tlvLockedUntil">Заблокировано до</string>
+    <string name="tlvLock">Заблокировать</string>
+    <string name="tlvLockExplainer" formatted="false">Подпись блокирует %amt %unit в хранилище %name до %date. Раньше забрать их нельзя.</string>
+    <string name="tlvConfirmAndSign">Подтвердить &amp; подписать</string>
+    <string name="tlvWorking">Выполняется…</string>
+    <string name="tlvClaimVault">Забрать из хранилища</string>
+    <string name="tlvClaimExplainerSingle">Это хранилище разблокировано. Подтвердите, чтобы вернуть его баланс в ваш кошелёк.</string>
+    <string name="tlvClaimTo">Забрать на</string>
+    <string name="tlvClaimedTo">Получено на</string>
+    <string name="tlvYourWallet">(ваш кошелёк)</string>
+    <string name="tlvAsset">Актив</string>
+    <string name="tlvYouReceive">Вы получите</string>
+    <string name="tlvNothingToClaim">Забирать нечего — это хранилище пусто.</string>
+    <string name="tlvConfirmAndClaim">Подтвердить &amp; забрать</string>
+    <string name="tlvVaultClaimed">Средства из хранилища получены</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit возвращаются в ваш кошелёк.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Средства в пути.</string>
+    <string name="tlvLockedUntilBlock">Заблокировано до блока</string>
+    <string name="tlvName">Название</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Жезлы полномочий · %count</string>
+    <string name="tlvTokens">Токены</string>
+    <string name="tlvBatons">Жезлы</string>
+    <string name="tlvMovable">Передаваемый</string>
+    <string name="tlvBatonExplainer">Жезл — это разрешение, а не баланс. Он замораживается вместе с монетами и выходит вместе с ними при том же получении.</string>
+    <string name="tlvDepositAddress">Адрес для пополнения</string>
+    <string name="tlvNoAddress">(нет адреса)</string>
+    <string name="tlvVaultSuccess">Хранилище готово</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Закрыть QR</string>
+    <string name="tlvDepositWarning">Всё, что отправлено на этот адрес, заблокировано до открытия хранилища — включая монеты, отправленные сюда по ошибке.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Отправляйте сюда токены только вместе с небольшим количеством %unit. Хранилище само платит комиссию при открытии, и только из %unit, которые в нём есть.</string>
+    <string name="tlvHistory">История</string>
+    <string name="tlvView">Открыть</string>
+    <string name="tlvNoEarlyOpen">Открыть это хранилище раньше срока невозможно. В этом и состоит смысл временной блокировки.</string>
+    <string name="tlvPublicOnChain">Высота разблокировки и сумма публичны в блокчейне с момента пополнения хранилища — их может прочитать любой, у кого есть адрес.</string>
 </resources>
