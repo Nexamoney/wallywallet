@@ -2,6 +2,7 @@ package ui
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.IdentitySession
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.SendScreenNavParams
 import info.bitcoinunlimited.www.wally.ui.nav
@@ -316,6 +317,161 @@ class AppTest : WallyUiTestBase()
         // BadAmountException path — invalid amount triggers displayError and returns false
         val result = wallyApp!!.handlePaste("nexa:nqtsq5g5fxz9qyup04g288qy2pxf9aemxjysnzqnn2nky4xw?amount=notanumber")
         assertFalse(result)
+    }
+
+    @Test
+    fun handlePasteTestnetAddressNavigatesToSend()
+    {
+        val result = wallyApp!!.handlePaste("nexatest:qzphn2evl555afrjr8nq2ls4hsn58fvspsxyqr9tjn")
+        assertTrue(result)
+        assertEquals(ScreenId.Send, nav.currentScreen.value)
+        val params = nav.curData.value as SendScreenNavParams
+        assertEquals("nexatest:qzphn2evl555afrjr8nq2ls4hsn58fvspsxyqr9tjn", params.toAddress)
+    }
+
+    @Test
+    fun handlePasteRegtestAddressNavigatesToSend()
+    {
+        val result = wallyApp!!.handlePaste("nexareg:nqtsq5g53q3sqyhhp45a86792a7wkkm3gyw9gylhp7kr703l?amount=0.5")
+        assertTrue(result)
+        assertEquals(ScreenId.Send, nav.currentScreen.value)
+        val params = nav.curData.value as SendScreenNavParams
+        assertEquals("nexareg:nqtsq5g53q3sqyhhp45a86792a7wkkm3gyw9gylhp7kr703l", params.toAddress)
+        assertEquals(BigDecimal.parseString("0.5"), params.amount)
+    }
+
+    @Test
+    fun handlePasteHttpsWrapperUnwrapsSlashToNexaAddress()
+    {
+        // The <scheme>/<body> form is what the wrapper is documented to carry: nexa/address -> nexa:address
+        val result = wallyApp!!.handlePaste("https://fake.com/nexa/nqtsq5g5fxz9qyup04g288qy2pxf9aemxjysnzqnn2nky4xw?amount=2")
+        assertTrue(result)
+        assertEquals(ScreenId.Send, nav.currentScreen.value)
+        val params = nav.curData.value as SendScreenNavParams
+        assertEquals("nexa:nqtsq5g5fxz9qyup04g288qy2pxf9aemxjysnzqnn2nky4xw", params.toAddress)
+        assertEquals(BigDecimal.parseString("2"), params.amount)
+    }
+
+    // --- handlePaste identity (nexid:) tests ---
+
+    @Test
+    fun handlePasteIdentityLoginUnknownDomainDoesNotNavigate()
+    {
+        // An account exists, it is just not registered with this domain, so login has nothing to offer.
+        // handlePaste still reports the scheme as handled
+        val account = wallyApp!!.newAccount("idUnknownDomain", 0U, "", ChainSelector.NEXA)!!
+        try
+        {
+            nav.switch(ScreenId.Home)
+            val result = wallyApp!!.handlePaste("nexid://unregistered.example.com/?op=login")
+            assertTrue(result)
+            assertEquals(ScreenId.Home, nav.currentScreen.value)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
+    }
+
+    @Test
+    fun handlePasteIdentityLoginKnownDomainNavigatesToIdentityOp()
+    {
+        val domain = "login.example.com"
+        val account = wallyApp!!.newAccount("idLogin", 0U, "", ChainSelector.NEXA)!!
+        try
+        {
+            account.wallet.upsertIdentityDomain(IdentityDomain(domain, IdentityDomain.COMMON_IDENTITY))
+            val result = wallyApp!!.handlePaste("nexid://$domain/?op=login&cookie=abc")
+            assertTrue(result)
+            assertEquals(ScreenId.IdentityOp, nav.currentScreen.value)
+            val sess = nav.curData.value as IdentitySession
+            assertEquals("login", sess.op)
+            assertEquals("abc", sess.cookie)
+            assertTrue(sess.candidateAccounts!!.contains(account))
+            // For login the two account lists are the same
+            assertEquals(sess.candidateAccounts!!.toList(), sess.associatedAccounts!!.toList())
+        }
+        finally
+        {
+            nav.switch(ScreenId.Home)
+            wallyApp!!.deleteAccount(account)
+        }
+    }
+
+    @Test
+    fun handlePasteIdentityRegNewDomainNavigatesToIdentityScreen()
+    {
+        val account = wallyApp!!.newAccount("idReg", 0U, "", ChainSelector.NEXA)!!
+        try
+        {
+            // Nothing is registered with this domain yet, so the user must be asked to register
+            val result = wallyApp!!.handlePaste("nexid://reg.example.com/?op=reg&email=m")
+            assertTrue(result)
+            assertEquals(ScreenId.Identity, nav.currentScreen.value)
+            val sess = nav.curData.value as IdentitySession
+            assertEquals("reg", sess.op)
+            assertTrue(sess.newDomain)
+            assertTrue(sess.candidateAccounts!!.contains(account))
+            assertTrue(sess.associatedAccounts!!.isEmpty())
+            assertEquals('m', sess.idData.value!!.emailR)
+        }
+        finally
+        {
+            nav.switch(ScreenId.Home)
+            wallyApp!!.deleteAccount(account)
+        }
+    }
+
+    @Test
+    fun handlePasteIdentitySignNavigatesToIdentityOp()
+    {
+        val account = wallyApp!!.newAccount("idSign", 0U, "", ChainSelector.NEXA)!!
+        try
+        {
+            // Signing does not require a prior registration -- any account is a candidate
+            val result = wallyApp!!.handlePaste("nexid://sign.example.com/?op=sign&data=68656c6c6f")
+            assertTrue(result)
+            assertEquals(ScreenId.IdentityOp, nav.currentScreen.value)
+            val sess = nav.curData.value as IdentitySession
+            assertEquals("sign", sess.op)
+            assertTrue(sess.candidateAccounts!!.contains(account))
+            assertNull(sess.associatedAccounts)
+        }
+        finally
+        {
+            nav.switch(ScreenId.Home)
+            wallyApp!!.deleteAccount(account)
+        }
+    }
+
+    @Test
+    fun handlePasteIdentityWithoutOpDoesNotNavigate()
+    {
+        nav.switch(ScreenId.Home)
+        val result = wallyApp!!.handlePaste("nexid://example.com/")
+        assertTrue(result)
+        assertEquals(ScreenId.Home, nav.currentScreen.value)
+    }
+
+    @Test
+    fun handlePasteHttpsWrapperUnwrapsToIdentityUri()
+    {
+        // Non-blockchain schemes keep their authority: nexid/example.com -> nexid://example.com
+        val account = wallyApp!!.newAccount("idWrapped", 0U, "", ChainSelector.NEXA)!!
+        try
+        {
+            val result = wallyApp!!.handlePaste("https://fake.com/nexid/wrapped.example.com/?op=reg")
+            assertTrue(result)
+            assertEquals(ScreenId.Identity, nav.currentScreen.value)
+            val sess = nav.curData.value as IdentitySession
+            assertEquals("reg", sess.op)
+            assertEquals("wrapped.example.com", sess.uri!!.host)
+        }
+        finally
+        {
+            nav.switch(ScreenId.Home)
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     // --- postThen tests ---
