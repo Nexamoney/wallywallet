@@ -5,6 +5,8 @@ import androidx.compose.ui.test.*
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.views.AssetCarouselItem
 import info.bitcoinunlimited.www.wally.ui.views.AssetListItem
 import info.bitcoinunlimited.www.wally.ui.views.RecentTransactionListItem
@@ -90,6 +92,23 @@ class ListItemsTest : WallyUiTestBase()
         onNodeWithText(title).assertIsDisplayed()
         // Unique tokens (amount == 1) should not show quantity
         onNodeWithText("1").assertDoesNotExist()
+    }
+
+    @Test
+    fun assetListItemShowsExplorerButton() = runComposeUiTest {
+        val assetInfo = createAssetInfo("explorerAsset", null)
+        val asset = createAssetPerAccount(assetInfo, 5L)
+        val tx = createRecentTransactionUIData()
+
+        setContent {
+            CompositionLocalProvider(LocalViewModelStoreOwner provides createViewModelStoreOwner()) {
+                AssetListItem(asset, tx)
+            }
+        }
+        settle()
+
+        onNodeWithTag("AssetExplorerButton").assertIsDisplayed().assertHasClickAction()
+        onNodeWithContentDescription(i18n(S.openInBrowser)).assertExists()
     }
 
     @Test
