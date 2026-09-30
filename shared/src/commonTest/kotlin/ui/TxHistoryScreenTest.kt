@@ -1,6 +1,7 @@
 package ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.runComposeUiTest
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.AssetListItemViewOld
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui.TxHistoryScreen
 import info.bitcoinunlimited.www.wally.ui.txHistoryAccount
@@ -102,5 +104,17 @@ class TxHistoryScreenTest: WallyUiTestBase(false)
             txHistoryAccount.value = null
             account.wallet.close()
         }
+    }
+
+    @Test
+    fun assetRowShowsExplorerButton() = runComposeUiTest {
+        val asset = createAssetPerAccount(createAssetInfo("explorerAsset", null), 5L)
+
+        setContent {
+            AssetListItemViewOld(asset, 0, false)
+        }
+        settle()
+
+        onNodeWithTag("AssetExplorerButton").assertIsDisplayed().assertHasClickAction()
     }
 }

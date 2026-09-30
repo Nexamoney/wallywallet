@@ -10,8 +10,10 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -567,6 +569,10 @@ fun AssetListItemViewOld(assetPerAccount: AssetPerAccount, verbosity: Int = 1, a
                 }
             }
 
+            IconButton({ openUrl(asset.groupId.blockchain.explorer("/token/${asset.groupId}")) },
+              modifier = Modifier.align(Alignment.CenterVertically).testTag("AssetExplorerButton")) {
+                Icon(Icons.AutoMirrored.Outlined.OpenInNew, tint = wallyPurple, contentDescription = i18n(S.openInBrowser))
+            }
         }
     }
 }
