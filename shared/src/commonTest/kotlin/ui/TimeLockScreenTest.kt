@@ -1079,11 +1079,13 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
             // Collapsed: the full address is already readable; the QR/copy reveal is not open.
             onNodeWithText(vault.snapshot.address!!.toString()).assertIsDisplayed()
             onNodeWithText(i18n(S.CopyAddress)).assertDoesNotExist()
-            onNodeWithContentDescription(i18n(S.tlvQr)).performClick()
+            // Tap the icon itself: a tap at the merged node's centre lands on the selectable address text, where Android
+            // reads the second tap as a word-selection double-tap and the toggle never fires.
+            onNodeWithContentDescription(i18n(S.tlvQr), useUnmergedTree = true).performClick()
             settle()
             // Revealed: the copy affordance appears; the toggle flips to close.
             onNodeWithText(i18n(S.CopyAddress)).assertIsDisplayed()
-            onNodeWithContentDescription(i18n(S.tlvCloseQr)).performClick()
+            onNodeWithContentDescription(i18n(S.tlvCloseQr), useUnmergedTree = true).performClick()
             settle()
             onNodeWithText(i18n(S.CopyAddress)).assertDoesNotExist()
             onNodeWithText(vault.snapshot.address!!.toString()).assertIsDisplayed()
