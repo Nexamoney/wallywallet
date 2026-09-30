@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">账户币种为 %walletCrypto，地址币种为 %addressCrypto。请用下拉框将发送账户改为与该地址区块链匹配的账户。</string>
     <string name="incoming" formatted="false">含 %delta %unit 待确认</string>
     <string name="approximatelyT" formatted="false">约 %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR 价值基于全球 NEXA/USDT 价格和 \"Exchange Rate API\" 的 USDT/INR 汇率。由于本地 USDT/INR 汇率和市场流动性，印度的实际 NEXA OTC/P2P 价格通常高出 20–30%。</string>
     <string name="fastForward" formatted="false">快进</string>
     <string name="fastforwardStatus" formatted="false">快进分析：%info</string>
     <string name="fastforwardStart" formatted="false">已开始</string>
@@ -403,6 +404,7 @@
     <string name="accountLimitReached">账户数已达上限</string>
     <string name="accountUnavailableDetails">没有与该区块链匹配的账户，或该账户尚未解锁。</string>
     <string name="accountUnavailable">无已解锁的兼容账户</string>
+    <string name="accountCouldNotBeOpened">无法打开账户</string>
     <string name="sendMoreThanBalance">您尝试发送的币超过了当前可用数量。\n\n如果您认为并未超出余额，可能是忘记了交易还要付一小笔手续费；如果余额全部显示为未确认，则可能是连续发起的交易过多。\n\n您“领先”区块链的程度是有限的。请等未确认余额确认后再试。</string>
     <string name="sendMoreTokensThanBalance">您尝试发送的代币超过了当前可用数量。</string>
     <string name="deductedFeeLargerThanSendAmount">扣除的手续费大于发送金额</string>
@@ -502,6 +504,7 @@
     <string name="TpSendingTokens" formatted="false">并发送 %tokSnd 种代币。</string>
     <string name="TpReceivingTokens" formatted="false">并接收 %tokRcv 种代币。</string>
     <string name="TpHasNoPurpose">此请求对该账户没有影响。</string>
+    <string name="TpProposalMissingSignature">此交易缺少请求方网站本应提供的签名，因此无法完成。您的钱包没有任何支出。</string>
     <string name="TpSendToTitle">付款请求来自</string>
     <string name="TpSpends">支出</string>
     <string name="TpSendRequestDenied">付款已拒绝</string>
@@ -634,4 +637,118 @@
     <string name="CamouflageDescriptionAndroid">启用伪装后，应用将关闭并伪装成名为 Meditate 的应用。要关闭 Meditate 应用伪装，打开应用菜单并点击版本号五次。</string>
     <string name="CamouflageDescriptionOther">要关闭 Meditate 应用伪装，打开应用菜单并点击版本号五次。</string>
     <string name="CamouflageAsMeditateAppAndroid">伪装成 Meditate 应用</string>
+    <string name="tlvTitle">时间锁保险库</string>
+    <string name="tlvExplainer">锁定币，让任何人（包括您自己）在所选日期之前都无法花费。</string>
+    <string name="tlvNewVault">新建保险库</string>
+    <string name="tlvContractLineLabel">时间锁保险库：</string>
+    <string name="tlvMyVaultsCount" formatted="false">我的保险库 · %count</string>
+    <string name="tlvTotalLocked" formatted="false">已锁定 %amt %unit</string>
+    <string name="tlvLoadingVaults">正在加载保险库…</string>
+    <string name="tlvNoVaultsYet">还没有保险库 — 点击上方的“新建保险库”来创建一个。</string>
+    <string name="tlvContractCounts" formatted="false">%claimable 可领取 · %locked 已锁定 · %claimed 已领取</string>
+    <string name="tlvLoadFailed">无法加载时间锁保险库</string>
+    <string name="tlvCreateFailed">无法创建保险库</string>
+    <string name="tlvClaimFailed">无法领取保险库</string>
+    <string name="tlvBalanceLoading">正在加载余额</string>
+    <string name="tlvClaimed">已领取</string>
+    <string name="tlvClaimedOn" formatted="false">已于 %date 领取</string>
+    <string name="tlvLocked">已锁定</string>
+    <string name="tlvLockedOn" formatted="false">已于 %date 锁定</string>
+    <string name="tlvUnlocked">已解锁</string>
+    <string name="tlvUnlockedOn" formatted="false">已于 %date 解锁</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">锁定 %locked · 解锁 %unlocked</string>
+    <string name="tlvLockedUnlockedFields">锁定 · 解锁</string>
+    <string name="tlvLockedUnlockedClaimedFields">锁定 · 解锁 · 领取</string>
+    <string name="tlvUnlocksBlock" formatted="false">在区块 %num 解锁</string>
+    <string name="tlvBlockNum" formatted="false">区块 %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">区块 %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">已解锁 · 等待存入</string>
+    <string name="tlvUnlockedNeedsFeeCoin">已解锁 · 需要币支付手续费</string>
+    <string name="tlvUnlockedReadyToClaim">已解锁 · 可以领取</string>
+    <string name="tlvClaimedFundsArrivedSince">已领取 · 之后又有资金到账</string>
+    <string name="tlvClaim">领取</string>
+    <string name="tlvReclaim">再次领取</string>
+    <string name="tlvVaultEmptied">此保险库已清空</string>
+    <string name="tlvPercentElapsed" formatted="false">已过 %pct%</string>
+    <string name="tlvDaysLeft" formatted="false">剩余 %num 天</string>
+    <string name="tlvOneDayLeft">剩余 1 天</string>
+    <string name="tlvHoursLeft" formatted="false">剩余 %num 小时</string>
+    <string name="tlvOneHourLeft">剩余 1 小时</string>
+    <string name="tlvMinutesLeft" formatted="false">剩余 %num 分钟</string>
+    <string name="tlvOneMinuteLeft">剩余 1 分钟</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count 个权限令牌 · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count 个权限令牌 · %syms</string>
+    <string name="tlvTransactions">保险库交易</string>
+    <string name="tlvNoTransactions">此保险库还没有交易。</string>
+    <string name="tlvVaultCreated">保险库已创建</string>
+    <string name="tlvClaimSent">领取已发送</string>
+    <string name="tlvPendingDeposit">待确认存入</string>
+    <string name="tlvTopUp">追加存入</string>
+    <string name="tlvTxCreated">创建</string>
+    <string name="tlvTxDeposit">存入</string>
+    <string name="tlvTxReceived">接收</string>
+    <string name="tlvPending">待确认</string>
+    <string name="tlvNetworkFee" formatted="false">网络手续费 %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps 权限 · %token</string>
+    <string name="tlvAuthority">权限</string>
+    <string name="tlvCapMint">铸造</string>
+    <string name="tlvCapMelt">销毁</string>
+    <string name="tlvCapBaton">令牌</string>
+    <string name="tlvCapRescript">重写脚本</string>
+    <string name="tlvCapSubgroup">子组</string>
+    <string name="tlvCreateTitle">创建时间锁保险库</string>
+    <string name="tlvCreateVault">创建保险库</string>
+    <string name="tlvCreateExplainer">资金加上少量手续费将转入一个时间锁定的地址。您可以在保险库中看到它们，但在指定日期之前无法花费。</string>
+    <string name="tlvMinimumAmount" formatted="false">最低 %amt %unit</string>
+    <string name="tlvLockUntil">锁定至</string>
+    <string name="tlvBlockHeight">区块高度</string>
+    <string name="tlvFutureDate">未来日期</string>
+    <string name="tlvMaxBlockHeight" formatted="false">最大区块高度为 %num</string>
+    <string name="tlvFeeSatB">手续费</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">合计</string>
+    <string name="tlvReview">核对</string>
+    <string name="tlvDone">完成</string>
+    <string name="tlvOk">确定</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">确认保险库</string>
+    <string name="tlvPayTo">支付至</string>
+    <string name="tlvNewTimeLockVault">新建时间锁保险库</string>
+    <string name="tlvLockedUntil">锁定至</string>
+    <string name="tlvLock">锁定</string>
+    <string name="tlvLockExplainer" formatted="false">签名后，%amt %unit 将在 %name 中锁定至 %date。在此之前无法领取。</string>
+    <string name="tlvConfirmAndSign">确认 &amp; 签名</string>
+    <string name="tlvWorking">处理中…</string>
+    <string name="tlvClaimVault">领取保险库</string>
+    <string name="tlvClaimExplainerSingle">此保险库已解锁。确认后将其余额转回您的钱包。</string>
+    <string name="tlvClaimTo">领取至</string>
+    <string name="tlvClaimedTo">已领取至</string>
+    <string name="tlvYourWallet">（您的钱包）</string>
+    <string name="tlvAsset">资产</string>
+    <string name="tlvYouReceive">您将收到</string>
+    <string name="tlvNothingToClaim">没有可领取的资产 — 此保险库是空的。</string>
+    <string name="tlvConfirmAndClaim">确认 &amp; 领取</string>
+    <string name="tlvVaultClaimed">保险库已领取</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit 正在转回您的钱包。</string>
+    <string name="tlvTxId">交易 ID</string>
+    <string name="tlvFundsOnTheirWay">资金正在转账中。</string>
+    <string name="tlvLockedUntilBlock">锁定至区块</string>
+    <string name="tlvName">名称</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">权限令牌 · %count</string>
+    <string name="tlvTokens">代币</string>
+    <string name="tlvBatons">权限令牌</string>
+    <string name="tlvMovable">可转移</string>
+    <string name="tlvBatonExplainer">权限令牌是一种许可，而不是余额。它与币一起冻结，并在同一次领取中一起取出。</string>
+    <string name="tlvDepositAddress">存入地址</string>
+    <string name="tlvNoAddress">（无地址）</string>
+    <string name="tlvVaultSuccess">保险库创建成功</string>
+    <string name="tlvQr">二维码</string>
+    <string name="tlvCloseQr">关闭二维码</string>
+    <string name="tlvDepositWarning">发送到此地址的任何资产都会锁定到保险库开启为止 — 包括误发到这里的币。</string>
+    <string name="tlvTokenFeeWarning" formatted="false">向此处发送代币时务必附带一些 %unit。保险库开启时会自行支付手续费，且只从其持有的 %unit 中支付。</string>
+    <string name="tlvHistory">历史</string>
+    <string name="tlvView">查看</string>
+    <string name="tlvNoEarlyOpen">没有任何办法提前打开此保险库。这正是时间锁保险库的用途。</string>
+    <string name="tlvPublicOnChain">从此保险库注资的那一刻起，解锁高度和金额就在链上公开 — 任何持有该地址的人都能读取。</string>
 </resources>

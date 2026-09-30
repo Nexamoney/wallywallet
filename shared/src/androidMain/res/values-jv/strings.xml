@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Arta akun yaiku %walletCrypto, alamat %addressCrypto.  Mangga gunakake kothak pilihan kanggo ngganti akun asal kirim dadi akun sing cocog karo blockchain alamat kasebut.</string>
     <string name="incoming" formatted="false">kalebu %delta %unit durung dikonfirmasi</string>
     <string name="approximatelyT" formatted="false">kira-kira %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Nilai INR adhedhasar rega global NEXA/USDT lan USDT/INR saka \"Exchange Rate API\". Rega NEXA OTC/P2P sing nyata ing India biasane 20–30% luwih dhuwur amarga kurs USDT/INR lokal lan likuiditas pasar.</string>
     <string name="fastForward" formatted="false">Maju cepet</string>
     <string name="fastforwardStatus" formatted="false">analisis maju cepet: %info</string>
     <string name="fastforwardStart" formatted="false">wis diwiwiti</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">akun maksimum</string>
     <string name="accountUnavailableDetails">Ora ana akun sing cocog karo blockchain iki, utawa akune durung dibukak kunci.</string>
     <string name="accountUnavailable">Ora ana akun cocog sing kebukak kunci</string>
+    <string name="accountCouldNotBeOpened">Akun ora bisa dibukak</string>
     <string name="sendMoreThanBalance">Panjenengan nyoba ngirim koin luwih akeh tinimbang sing saiki kasedhiya.\n\nYen panjenengan rumangsa ora mbayar ngluwihi saldo, bisa uga kelalen yen saben transaksi ana biaya tambahan sethithik, utawa yen kabeh saldo katon durung dikonfirmasi, bisa uga panjenengan gawe transaksi kakehan runtut.\n\nAna watesane sepira adoh panjenengan bisa “ndhisiki” blockchain. Mangga ngentosi saldo sing durung dikonfirmasi nganti dikonfirmasi, banjur coba maneh.</string>
     <string name="sendMoreTokensThanBalance">Panjenengan nyoba ngirim token luwih akeh tinimbang sing saiki kasedhiya.</string>
     <string name="deductedFeeLargerThanSendAmount">Biaya sing dipotong luwih gedhe tinimbang jumlah sing dikirim</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">lan ngirim %tokSnd jinis token.</string>
     <string name="TpReceivingTokens" formatted="false">lan nampi %tokRcv jinis token.</string>
     <string name="TpHasNoPurpose">Panjaluk iki ora ana pengaruhe marang akun iki.</string>
+    <string name="TpProposalMissingSignature">Transaksi iki kurang tapak asma sing kudune diwenehake situs sing njaluk, dadi ora bisa dirampungake. Ora ana sing dientekake saka dompet sampeyan.</string>
     <string name="TpSendToTitle">Panjaluk Bayaran Saka</string>
     <string name="TpSpends">Mbayar</string>
     <string name="TpSendRequestDenied">Bayaran ditolak</string>
@@ -637,4 +640,118 @@ Matur nuwun lan sugeng nganggo dompet anyar panjenengan!</string>
     <string name="CamouflageDescriptionAndroid">Nguripake panyamaran bakal nutup aplikasi lan nyamarake dadi aplikasi kanthi jeneng Meditate. Kanggo mateni panyamaran aplikasi Meditate, bukak menu aplikasi banjur klik nomer versi kaping lima.</string>
     <string name="CamouflageDescriptionOther">Kanggo mateni panyamaran aplikasi Meditate, bukak menu aplikasi banjur klik nomer versi kaping lima.</string>
     <string name="CamouflageAsMeditateAppAndroid">Nyamar dadi aplikasi Meditate</string>
+    <string name="tlvTitle">Brankas Kunci Wektu</string>
+    <string name="tlvExplainer">Kunci koin supaya ora ana sing (kalebu sampeyan dhewe) bisa mbelanjakake nganti sawise tanggal sing dipilih.</string>
+    <string name="tlvNewVault">Brankas anyar</string>
+    <string name="tlvContractLineLabel">Brankas Kunci Wektu:</string>
+    <string name="tlvMyVaultsCount" formatted="false">BRANKASKU · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit dikunci</string>
+    <string name="tlvLoadingVaults">Ngemot brankas…</string>
+    <string name="tlvNoVaultsYet">Durung ana brankas — tutul Brankas anyar ing ndhuwur kanggo nggawe.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable bisa diklaim · %locked dikunci · %claimed wis diklaim</string>
+    <string name="tlvLoadFailed">Ora bisa ngemot brankas kunci wektu</string>
+    <string name="tlvCreateFailed">Ora bisa nggawe brankas</string>
+    <string name="tlvClaimFailed">Ora bisa ngeklaim brankas</string>
+    <string name="tlvBalanceLoading">Ngemot saldo</string>
+    <string name="tlvClaimed">Wis diklaim</string>
+    <string name="tlvClaimedOn" formatted="false">Diklaim %date</string>
+    <string name="tlvLocked">Dikunci</string>
+    <string name="tlvLockedOn" formatted="false">Dikunci %date</string>
+    <string name="tlvUnlocked">Wis dibukak</string>
+    <string name="tlvUnlockedOn" formatted="false">Dibukak %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Dikunci %locked · Dibukak %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Dikunci · Dibukak</string>
+    <string name="tlvLockedUnlockedClaimedFields">Dikunci · Dibukak · Diklaim</string>
+    <string name="tlvUnlocksBlock" formatted="false">Dibukak ing blok %num</string>
+    <string name="tlvBlockNum" formatted="false">Blok %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blok %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Wis dibukak · ngenteni setoran</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Wis dibukak · butuh koin kanggo biaya</string>
+    <string name="tlvUnlockedReadyToClaim">Wis dibukak · siap diklaim</string>
+    <string name="tlvClaimedFundsArrivedSince">Wis diklaim · ana dana teka sawise iku</string>
+    <string name="tlvClaim">Klaim</string>
+    <string name="tlvReclaim">Klaim maneh</string>
+    <string name="tlvVaultEmptied">Brankas iki wis dikosongake</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% wis liwat</string>
+    <string name="tlvDaysLeft" formatted="false">Kari %num dina</string>
+    <string name="tlvOneDayLeft">Kari 1 dina</string>
+    <string name="tlvHoursLeft" formatted="false">Kari %num jam</string>
+    <string name="tlvOneHourLeft">Kari 1 jam</string>
+    <string name="tlvMinutesLeft" formatted="false">Kari %num menit</string>
+    <string name="tlvOneMinuteLeft">Kari 1 menit</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count tongkat wewenang · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count tongkat wewenang · %syms</string>
+    <string name="tlvTransactions">Transaksi brankas</string>
+    <string name="tlvNoTransactions">Durung ana transaksi kanggo brankas iki.</string>
+    <string name="tlvVaultCreated">Brankas digawe</string>
+    <string name="tlvClaimSent">Klaim dikirim</string>
+    <string name="tlvPendingDeposit">Setoran durung rampung</string>
+    <string name="tlvTopUp">Isi ulang</string>
+    <string name="tlvTxCreated">Digawe</string>
+    <string name="tlvTxDeposit">Setoran</string>
+    <string name="tlvTxReceived">Ditampa</string>
+    <string name="tlvPending">Durung rampung</string>
+    <string name="tlvNetworkFee" formatted="false">Biaya jaringan %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Wewenang %caps · %token</string>
+    <string name="tlvAuthority">Wewenang</string>
+    <string name="tlvCapMint">Cetak</string>
+    <string name="tlvCapMelt">Lebur</string>
+    <string name="tlvCapBaton">Tongkat</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Subgrup</string>
+    <string name="tlvCreateTitle">Gawe brankas kunci wektu</string>
+    <string name="tlvCreateVault">Gawe brankas</string>
+    <string name="tlvCreateExplainer">Dana ditambah biaya cilik bakal pindhah menyang alamat sing dikunci wektu. Sampeyan bakal ndeleng ing brankas, nanging ora bisa mbelanjakake sadurunge tanggal sing ditemtokake.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimal %amt %unit</string>
+    <string name="tlvLockUntil">Kunci nganti</string>
+    <string name="tlvBlockHeight">Dhuwur blok</string>
+    <string name="tlvFutureDate">Tanggal mbesuk</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Dhuwur blok maksimal yaiku %num</string>
+    <string name="tlvFeeSatB">Biaya</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Gunggung</string>
+    <string name="tlvReview">Priksa</string>
+    <string name="tlvDone">Rampung</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Konfirmasi brankas</string>
+    <string name="tlvPayTo">Bayar menyang</string>
+    <string name="tlvNewTimeLockVault">Brankas kunci wektu anyar</string>
+    <string name="tlvLockedUntil">Dikunci nganti</string>
+    <string name="tlvLock">Kunci</string>
+    <string name="tlvLockExplainer" formatted="false">Tapak asma ngunci %amt %unit ing %name nganti %date. Ora bisa diklaim sadurunge iku.</string>
+    <string name="tlvConfirmAndSign">Konfirmasi &amp; tapak asma</string>
+    <string name="tlvWorking">Lagi diproses…</string>
+    <string name="tlvClaimVault">Klaim brankas</string>
+    <string name="tlvClaimExplainerSingle">Brankas iki wis dibukak. Konfirmasi kanggo mbalekake saldone menyang dompet sampeyan.</string>
+    <string name="tlvClaimTo">Klaim menyang</string>
+    <string name="tlvClaimedTo">Diklaim menyang</string>
+    <string name="tlvYourWallet">(dompet sampeyan)</string>
+    <string name="tlvAsset">Aset</string>
+    <string name="tlvYouReceive">Sampeyan nampa</string>
+    <string name="tlvNothingToClaim">Ora ana sing bisa diklaim — brankas iki kosong.</string>
+    <string name="tlvConfirmAndClaim">Konfirmasi &amp; klaim</string>
+    <string name="tlvVaultClaimed">Brankas wis diklaim</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit lagi bali menyang dompet sampeyan.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Dana lagi ing dalan.</string>
+    <string name="tlvLockedUntilBlock">Dikunci nganti blok</string>
+    <string name="tlvName">Jeneng</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Tongkat wewenang · %count</string>
+    <string name="tlvTokens">Token</string>
+    <string name="tlvBatons">Tongkat</string>
+    <string name="tlvMovable">Bisa dipindhah</string>
+    <string name="tlvBatonExplainer">Tongkat iku ijin, dudu saldo. Dibekokake bareng koin lan metu bareng ing klaim sing padha.</string>
+    <string name="tlvDepositAddress">Alamat setoran</string>
+    <string name="tlvNoAddress">(ora ana alamat)</string>
+    <string name="tlvVaultSuccess">Brankas sukses</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Tutup QR</string>
+    <string name="tlvDepositWarning">Apa wae sing dikirim menyang alamat iki dikunci nganti brankas mbukak — kalebu koin sing kliru dikirim mrene.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Kirim token mrene mung bareng karo sethithik %unit. Brankas mbayar biayane dhewe nalika mbukak, lan mung saka %unit sing diduweni.</string>
+    <string name="tlvHistory">Riwayat</string>
+    <string name="tlvView">Deleng</string>
+    <string name="tlvNoEarlyOpen">Ora ana cara mbukak brankas iki luwih awal. Iku tujuane brankas kunci wektu.</string>
+    <string name="tlvPublicOnChain">Dhuwur bukak lan jumlahe umum ing rantai wiwit brankas iki diisi dana — sapa wae sing duwe alamat bisa maca.</string>
 </resources>

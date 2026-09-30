@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">അക്കൗണ്ട് കറൻസി %walletCrypto ആണ്, വിലാസം %addressCrypto ആണ്.  വിലാസത്തിന്റെ ബ്ലോക്ക്ചെയിനുമായി യോജിക്കുന്ന ഒന്നിലേക്ക് അയയ്ക്കുന്ന അക്കൗണ്ട് മാറ്റാൻ കോംബോ ബോക്സ് ഉപയോഗിക്കുക.</string>
     <string name="incoming" formatted="false">%delta %unit സ്ഥിരീകരിക്കാത്തത് ഉൾപ്പെടുന്നു</string>
     <string name="approximatelyT" formatted="false">ഏകദേശം %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR മൂല്യം ആഗോള NEXA/USDT വിലയും \"Exchange Rate API\" യിൽ നിന്നുള്ള USDT/INR ഉം അടിസ്ഥാനമാക്കിയുള്ളതാണ്. പ്രാദേശിക USDT/INR നിരക്കുകളും വിപണി ലിക്വിഡിറ്റിയും കാരണം ഇന്ത്യയിലെ യഥാർത്ഥ NEXA OTC/P2P വിലകൾ സാധാരണയായി 20–30% കൂടുതലാണ്.</string>
     <string name="fastForward" formatted="false">ഫാസ്റ്റ് ഫോർവേഡ്</string>
     <string name="fastforwardStatus" formatted="false">ഫാസ്റ്റ് ഫോർവേഡ് വിശകലനം: %info</string>
     <string name="fastforwardStart" formatted="false">തുടങ്ങി</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">പരമാവധി അക്കൗണ്ടുകൾ</string>
     <string name="accountUnavailableDetails">ഈ ബ്ലോക്ക്ചെയിനുമായി ചേരുന്ന അക്കൗണ്ട് ഇല്ല, അല്ലെങ്കിൽ അക്കൗണ്ട് അൺലോക്ക് ചെയ്തിട്ടില്ല.</string>
     <string name="accountUnavailable">അൺലോക്ക് ചെയ്ത അനുയോജ്യ അക്കൗണ്ട് ഇല്ല</string>
+    <string name="accountCouldNotBeOpened">അക്കൗണ്ട് തുറക്കാനായില്ല</string>
     <string name="sendMoreThanBalance">ഇപ്പോൾ ലഭ്യമായതിനെക്കാൾ കൂടുതൽ പണം അയയ്ക്കാനാണ് നിങ്ങൾ ശ്രമിക്കുന്നത്.\n\nബാലൻസിനെക്കാൾ കൂടുതൽ ചെലവഴിക്കുന്നില്ല എന്നാണ് നിങ്ങൾ കരുതുന്നതെങ്കിൽ, ഓരോ ഇടപാടിനും ചെറിയൊരു ഫീസ് കൂടി വേണമെന്ന കാര്യം മറന്നിരിക്കാം; അല്ലെങ്കിൽ ബാലൻസ് മുഴുവൻ സ്ഥിരീകരിക്കാത്തതായി കാണുന്നുവെങ്കിൽ തുടർച്ചയായി വളരെയധികം ഇടപാടുകൾ നടത്തിയിരിക്കാം.\n\nബ്ലോക്ക്ചെയിനിനെക്കാൾ എത്ര “മുന്നോട്ട് പോകാം” എന്നതിന് ഒരു പരിധിയുണ്ട്. സ്ഥിരീകരിക്കാത്ത ബാലൻസ് സ്ഥിരീകരിക്കപ്പെടാൻ കാത്തിരുന്ന ശേഷം വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="sendMoreTokensThanBalance">ഇപ്പോൾ ലഭ്യമായതിനെക്കാൾ കൂടുതൽ ടോക്കണുകൾ അയയ്ക്കാനാണ് നിങ്ങൾ ശ്രമിക്കുന്നത്.</string>
     <string name="deductedFeeLargerThanSendAmount">കുറയ്ക്കുന്ന ഫീസ് അയയ്ക്കുന്ന തുകയെക്കാൾ വലുതാണ്</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">കൂടാതെ %tokSnd തരം ടോക്കണുകൾ അയയ്ക്കുന്നു.</string>
     <string name="TpReceivingTokens" formatted="false">കൂടാതെ %tokRcv തരം ടോക്കണുകൾ സ്വീകരിക്കുന്നു.</string>
     <string name="TpHasNoPurpose">ഈ അഭ്യർത്ഥന ഈ അക്കൗണ്ടിനെ ബാധിക്കില്ല.</string>
+    <string name="TpProposalMissingSignature">അഭ്യർത്ഥിക്കുന്ന സൈറ്റ് നൽകേണ്ടിയിരുന്ന ഒരു ഒപ്പ് ഈ ഇടപാടിൽ ഇല്ല, അതിനാൽ ഇത് പൂർത്തിയാക്കാനാവില്ല. നിങ്ങളുടെ വാലറ്റിൽ നിന്ന് ഒന്നും ചെലവായിട്ടില്ല.</string>
     <string name="TpSendToTitle">പേയ്മെന്റ് അഭ്യർത്ഥിച്ചത്</string>
     <string name="TpSpends">ചെലവഴിക്കുന്നത്</string>
     <string name="TpSendRequestDenied">പേയ്മെന്റ് നിഷേധിച്ചു</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">വേഷംമാറ്റം ഓണാക്കിയാൽ ആപ്പ് അടയുകയും Meditate എന്ന പേരിലുള്ള ആപ്പായി വേഷം മാറുകയും ചെയ്യും. Meditate ആപ്പിന്റെ വേഷംമാറ്റം ഒഴിവാക്കാൻ ആപ്പ് മെനു തുറന്ന് പതിപ്പ് നമ്പറിൽ അഞ്ച് തവണ ക്ലിക്ക് ചെയ്യുക.</string>
     <string name="CamouflageDescriptionOther">Meditate ആപ്പിന്റെ വേഷംമാറ്റം ഒഴിവാക്കാൻ ആപ്പ് മെനു തുറന്ന് പതിപ്പ് നമ്പറിൽ അഞ്ച് തവണ ക്ലിക്ക് ചെയ്യുക.</string>
     <string name="CamouflageAsMeditateAppAndroid">Meditate ആപ്പായി വേഷം മാറ്റുക</string>
+    <string name="tlvTitle">ടൈം ലോക്ക് വോൾട്ട്</string>
+    <string name="tlvExplainer">നിങ്ങൾ തിരഞ്ഞെടുത്ത തീയതിക്ക് ശേഷം വരെ ആർക്കും (നിങ്ങൾക്ക് പോലും) ചെലവഴിക്കാനാകാത്ത വിധം കോയിനുകൾ ലോക്ക് ചെയ്യുക.</string>
+    <string name="tlvNewVault">പുതിയ വോൾട്ട്</string>
+    <string name="tlvContractLineLabel">ടൈം ലോക്ക് വോൾട്ട്:</string>
+    <string name="tlvMyVaultsCount" formatted="false">എന്റെ വോൾട്ടുകൾ · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit ലോക്ക് ചെയ്തു</string>
+    <string name="tlvLoadingVaults">വോൾട്ടുകൾ ലോഡ് ചെയ്യുന്നു…</string>
+    <string name="tlvNoVaultsYet">ഇതുവരെ വോൾട്ടുകളില്ല — ഒന്ന് ഉണ്ടാക്കാൻ മുകളിലെ പുതിയ വോൾട്ട് ടാപ്പ് ചെയ്യുക.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable ക്ലെയിം ചെയ്യാവുന്നവ · %locked ലോക്ക് ചെയ്തവ · %claimed ക്ലെയിം ചെയ്തവ</string>
+    <string name="tlvLoadFailed">ടൈം ലോക്ക് വോൾട്ടുകൾ ലോഡ് ചെയ്യാനായില്ല</string>
+    <string name="tlvCreateFailed">വോൾട്ട് സൃഷ്ടിക്കാനായില്ല</string>
+    <string name="tlvClaimFailed">വോൾട്ട് ക്ലെയിം ചെയ്യാനായില്ല</string>
+    <string name="tlvBalanceLoading">ബാലൻസ് ലോഡ് ചെയ്യുന്നു</string>
+    <string name="tlvClaimed">ക്ലെയിം ചെയ്തു</string>
+    <string name="tlvClaimedOn" formatted="false">%date ന് ക്ലെയിം ചെയ്തു</string>
+    <string name="tlvLocked">ലോക്ക് ചെയ്തു</string>
+    <string name="tlvLockedOn" formatted="false">%date ന് ലോക്ക് ചെയ്തു</string>
+    <string name="tlvUnlocked">അൺലോക്ക് ചെയ്തു</string>
+    <string name="tlvUnlockedOn" formatted="false">%date ന് അൺലോക്ക് ചെയ്തു</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">ലോക്ക് %locked · അൺലോക്ക് %unlocked</string>
+    <string name="tlvLockedUnlockedFields">ലോക്ക് · അൺലോക്ക്</string>
+    <string name="tlvLockedUnlockedClaimedFields">ലോക്ക് · അൺലോക്ക് · ക്ലെയിം</string>
+    <string name="tlvUnlocksBlock" formatted="false">ബ്ലോക്ക് %num ൽ അൺലോക്ക് ആകും</string>
+    <string name="tlvBlockNum" formatted="false">ബ്ലോക്ക് %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">ബ്ലോക്ക് %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">അൺലോക്ക് ചെയ്തു · നിക്ഷേപത്തിനായി കാത്തിരിക്കുന്നു</string>
+    <string name="tlvUnlockedNeedsFeeCoin">അൺലോക്ക് ചെയ്തു · ഫീസിന് കോയിൻ വേണം</string>
+    <string name="tlvUnlockedReadyToClaim">അൺലോക്ക് ചെയ്തു · ക്ലെയിം ചെയ്യാൻ തയ്യാർ</string>
+    <string name="tlvClaimedFundsArrivedSince">ക്ലെയിം ചെയ്തു · അതിനുശേഷം ഫണ്ട് എത്തി</string>
+    <string name="tlvClaim">ക്ലെയിം ചെയ്യുക</string>
+    <string name="tlvReclaim">വീണ്ടും ക്ലെയിം ചെയ്യുക</string>
+    <string name="tlvVaultEmptied">ഈ വോൾട്ട് ശൂന്യമാക്കി</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% കഴിഞ്ഞു</string>
+    <string name="tlvDaysLeft" formatted="false">%num ദിവസം ബാക്കി</string>
+    <string name="tlvOneDayLeft">1 ദിവസം ബാക്കി</string>
+    <string name="tlvHoursLeft" formatted="false">%num മണിക്കൂർ ബാക്കി</string>
+    <string name="tlvOneHourLeft">1 മണിക്കൂർ ബാക്കി</string>
+    <string name="tlvMinutesLeft" formatted="false">%num മിനിറ്റ് ബാക്കി</string>
+    <string name="tlvOneMinuteLeft">1 മിനിറ്റ് ബാക്കി</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count അതോറിറ്റി ബാറ്റൺ · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count അതോറിറ്റി ബാറ്റണുകൾ · %syms</string>
+    <string name="tlvTransactions">വോൾട്ട് ഇടപാടുകൾ</string>
+    <string name="tlvNoTransactions">ഈ വോൾട്ടിന് ഇതുവരെ ഇടപാടുകളില്ല.</string>
+    <string name="tlvVaultCreated">വോൾട്ട് സൃഷ്ടിച്ചു</string>
+    <string name="tlvClaimSent">ക്ലെയിം അയച്ചു</string>
+    <string name="tlvPendingDeposit">തീർപ്പാകാത്ത നിക്ഷേപം</string>
+    <string name="tlvTopUp">ടോപ്പ്-അപ്പ്</string>
+    <string name="tlvTxCreated">സൃഷ്ടിച്ചു</string>
+    <string name="tlvTxDeposit">നിക്ഷേപം</string>
+    <string name="tlvTxReceived">ലഭിച്ചു</string>
+    <string name="tlvPending">തീർപ്പാകാത്തത്</string>
+    <string name="tlvNetworkFee" formatted="false">നെറ്റ്‌വർക്ക് ഫീസ് %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps അതോറിറ്റി · %token</string>
+    <string name="tlvAuthority">അതോറിറ്റി</string>
+    <string name="tlvCapMint">മിന്റ്</string>
+    <string name="tlvCapMelt">മെൽറ്റ്</string>
+    <string name="tlvCapBaton">ബാറ്റൺ</string>
+    <string name="tlvCapRescript">റീസ്ക്രിപ്റ്റ്</string>
+    <string name="tlvCapSubgroup">സബ്ഗ്രൂപ്പ്</string>
+    <string name="tlvCreateTitle">ടൈം ലോക്ക് വോൾട്ട് സൃഷ്ടിക്കുക</string>
+    <string name="tlvCreateVault">വോൾട്ട് സൃഷ്ടിക്കുക</string>
+    <string name="tlvCreateExplainer">ഫണ്ടും ചെറിയൊരു ഫീസും ടൈം-ലോക്ക് വിലാസത്തിലേക്ക് മാറും. വോൾട്ടിൽ അവ കാണാം, പക്ഷേ നിശ്ചിത തീയതിക്ക് മുമ്പ് ചെലവഴിക്കാനാവില്ല.</string>
+    <string name="tlvMinimumAmount" formatted="false">കുറഞ്ഞത് %amt %unit</string>
+    <string name="tlvLockUntil">ഇതുവരെ ലോക്ക് ചെയ്യുക</string>
+    <string name="tlvBlockHeight">ബ്ലോക്ക് ഉയരം</string>
+    <string name="tlvFutureDate">ഭാവി തീയതി</string>
+    <string name="tlvMaxBlockHeight" formatted="false">പരമാവധി ബ്ലോക്ക് ഉയരം %num ആണ്</string>
+    <string name="tlvFeeSatB">ഫീസ്</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">ആകെ</string>
+    <string name="tlvReview">പരിശോധിക്കുക</string>
+    <string name="tlvDone">പൂർത്തിയായി</string>
+    <string name="tlvOk">ശരി</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">വോൾട്ട് സ്ഥിരീകരിക്കുക</string>
+    <string name="tlvPayTo">പണം നൽകേണ്ടത്</string>
+    <string name="tlvNewTimeLockVault">പുതിയ ടൈം ലോക്ക് വോൾട്ട്</string>
+    <string name="tlvLockedUntil">ഇതുവരെ ലോക്ക് ചെയ്തു</string>
+    <string name="tlvLock">ലോക്ക് ചെയ്യുക</string>
+    <string name="tlvLockExplainer" formatted="false">ഒപ്പിടുന്നത് %amt %unit നെ %name ൽ %date വരെ ലോക്ക് ചെയ്യും. അതിന് മുമ്പ് ക്ലെയിം ചെയ്യാനാവില്ല.</string>
+    <string name="tlvConfirmAndSign">സ്ഥിരീകരിച്ച് &amp; ഒപ്പിടുക</string>
+    <string name="tlvWorking">പ്രവർത്തിക്കുന്നു…</string>
+    <string name="tlvClaimVault">വോൾട്ട് ക്ലെയിം ചെയ്യുക</string>
+    <string name="tlvClaimExplainerSingle">ഈ വോൾട്ട് അൺലോക്ക് ആയി. അതിന്റെ ബാലൻസ് നിങ്ങളുടെ വാലറ്റിലേക്ക് തിരികെ കൊണ്ടുവരാൻ സ്ഥിരീകരിക്കുക.</string>
+    <string name="tlvClaimTo">ക്ലെയിം ചെയ്യേണ്ടത്</string>
+    <string name="tlvClaimedTo">ക്ലെയിം ചെയ്തത്</string>
+    <string name="tlvYourWallet">(നിങ്ങളുടെ വാലറ്റ്)</string>
+    <string name="tlvAsset">ആസ്തി</string>
+    <string name="tlvYouReceive">നിങ്ങൾക്ക് ലഭിക്കുന്നത്</string>
+    <string name="tlvNothingToClaim">ക്ലെയിം ചെയ്യാൻ ഒന്നുമില്ല — ഈ വോൾട്ട് ശൂന്യമാണ്.</string>
+    <string name="tlvConfirmAndClaim">സ്ഥിരീകരിച്ച് &amp; ക്ലെയിം ചെയ്യുക</string>
+    <string name="tlvVaultClaimed">വോൾട്ട് ക്ലെയിം ചെയ്തു</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit നിങ്ങളുടെ വാലറ്റിലേക്ക് തിരികെ വരുന്നു.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">ഫണ്ട് വഴിയിലാണ്.</string>
+    <string name="tlvLockedUntilBlock">ഈ ബ്ലോക്ക് വരെ ലോക്ക് ചെയ്തു</string>
+    <string name="tlvName">പേര്</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">അതോറിറ്റി ബാറ്റണുകൾ · %count</string>
+    <string name="tlvTokens">ടോക്കണുകൾ</string>
+    <string name="tlvBatons">ബാറ്റണുകൾ</string>
+    <string name="tlvMovable">മാറ്റാവുന്നത്</string>
+    <string name="tlvBatonExplainer">ബാറ്റൺ ഒരു അനുമതിയാണ്, ബാലൻസ് അല്ല. അത് കോയിനുകൾക്കൊപ്പം മരവിപ്പിക്കപ്പെടുകയും അതേ ക്ലെയിമിൽ അവയ്‌ക്കൊപ്പം പുറത്തുവരികയും ചെയ്യുന്നു.</string>
+    <string name="tlvDepositAddress">നിക്ഷേപ വിലാസം</string>
+    <string name="tlvNoAddress">(വിലാസമില്ല)</string>
+    <string name="tlvVaultSuccess">വോൾട്ട് വിജയകരം</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR അടയ്ക്കുക</string>
+    <string name="tlvDepositWarning">ഈ വിലാസത്തിലേക്ക് അയയ്ക്കുന്നതെന്തും വോൾട്ട് തുറക്കുന്നത് വരെ ലോക്ക് ആയിരിക്കും — അബദ്ധത്തിൽ അയച്ച കോയിനുകൾ ഉൾപ്പെടെ.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">ടോക്കണുകൾ ഇവിടേക്ക് അൽപ്പം %unit നൊപ്പം മാത്രം അയയ്ക്കുക. വോൾട്ട് തുറക്കുമ്പോൾ സ്വന്തം ഫീസ് സ്വയം അടയ്ക്കുന്നു, അതും കൈവശമുള്ള %unit ൽ നിന്ന് മാത്രം.</string>
+    <string name="tlvHistory">ചരിത്രം</string>
+    <string name="tlvView">കാണുക</string>
+    <string name="tlvNoEarlyOpen">ഈ വോൾട്ട് നേരത്തെ തുറക്കാൻ ഒരു വഴിയുമില്ല. അതാണ് ടൈം ലോക്ക് വോൾട്ടിന്റെ ഉദ്ദേശ്യം.</string>
+    <string name="tlvPublicOnChain">ഈ വോൾട്ടിലേക്ക് ഫണ്ട് എത്തിയ നിമിഷം മുതൽ അൺലോക്ക് ഉയരവും തുകയും ചെയിനിൽ പരസ്യമാണ് — വിലാസമുള്ള ആർക്കും അവ വായിക്കാം.</string>
 </resources>

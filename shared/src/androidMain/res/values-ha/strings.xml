@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Kuɗin asusu %walletCrypto ne, adireshi kuwa %addressCrypto ne.  Ku yi amfani da akwatin zaɓi don zaɓar asusun aikawa da ya dace da blockchain ɗin adireshin.</string>
     <string name="incoming" formatted="false">ya haɗa da %delta %unit da ake jira</string>
     <string name="approximatelyT" formatted="false">kusan %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Darajar INR ta dogara ne kan farashin NEXA/USDT na duniya da USDT/INR daga \"Exchange Rate API\". Ainihin farashin NEXA na OTC/P2P a Indiya yawanci ya fi da 20–30% saboda farashin USDT/INR na gida da yawan kasuwa.</string>
     <string name="fastForward" formatted="false">Tsallake gaba</string>
     <string name="fastforwardStatus" formatted="false">nazarin tsallake gaba: %info</string>
     <string name="fastforwardStart" formatted="false">an fara</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">iyakar asusuna</string>
     <string name="accountUnavailableDetails">Ko dai babu asusun da ya dace da wannan blockchain, ko kuma ba a buɗe asusun ba.</string>
     <string name="accountUnavailable">Babu asusun da aka buɗe da ya dace</string>
+    <string name="accountCouldNotBeOpened">Ba a iya buɗe asusu ba</string>
     <string name="sendMoreThanBalance">Kuna ƙoƙarin aika kuɗi fiye da yadda kuke da shi a yanzu.\n\nIdan kuna tsammanin ba kwa kashe kuɗi fiye da sauran kuɗinku, wataƙila kun manta cewa maʼamaloli suna da ƙaramin ƙarin caji, ko kuma idan kuna ganin dukan sauran kuɗinku a matsayin waɗanda ba a tabbatar ba, wataƙila kun yi maʼamaloli da yawa a jere.\n\nAkwai iyaka ga yadda za ku iya gaba da blockchain. Ku bar sauran kuɗinku da ba a tabbatar ba su tabbata sannan ku sake gwadawa.</string>
     <string name="sendMoreTokensThanBalance">Kuna ƙoƙarin aika token fiye da yadda kuke da shi a yanzu.</string>
     <string name="deductedFeeLargerThanSendAmount">Cajin da aka cire ya fi adadin da ake aikawa</string>
@@ -638,4 +640,118 @@ Na gode, ku ji daɗin sabon walat ɗinku!</string>
     <string name="CamouflageDescriptionAndroid">Kunna ɓoyewa yana rufe manhajar sannan ya ɓoye ta a matsayin manhaja mai suna Meditate. Don kashe ɓoyewar manhajar Meditate, ku buɗe menu ɗin manhaja sannan ku danna lambar sigar sau biyar.</string>
     <string name="CamouflageDescriptionOther">Don kashe ɓoyewar manhajar Meditate, ku buɗe menu ɗin manhaja sannan ku danna lambar sigar sau biyar.</string>
     <string name="CamouflageAsMeditateAppAndroid">Ɓoye a matsayin manhajar Meditate</string>
+    <string name="tlvTitle">Taskar Kulle Lokaci</string>
+    <string name="tlvExplainer">Kulle kuɗi domin kada kowa (har da kai) ya iya kashe su har sai bayan ranar da ka zaɓa.</string>
+    <string name="tlvNewVault">Sabuwar taska</string>
+    <string name="tlvContractLineLabel">Taskar Kulle Lokaci:</string>
+    <string name="tlvMyVaultsCount" formatted="false">TASKOKINA · %count</string>
+    <string name="tlvTotalLocked" formatted="false">An kulle %amt %unit</string>
+    <string name="tlvLoadingVaults">Ana loda taskoki…</string>
+    <string name="tlvNoVaultsYet">Babu taska tukuna — matsa Sabuwar taska a sama don ƙirƙirar ɗaya.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable ana iya karɓa · %locked a kulle · %claimed an karɓa</string>
+    <string name="tlvLoadFailed">Ba a iya loda taskokin kulle lokaci ba</string>
+    <string name="tlvCreateFailed">Ba a iya ƙirƙirar taskar ba</string>
+    <string name="tlvClaimFailed">Ba a iya karɓar taskar ba</string>
+    <string name="tlvBalanceLoading">Ana loda ma\'auni</string>
+    <string name="tlvClaimed">An karɓa</string>
+    <string name="tlvClaimedOn" formatted="false">An karɓa %date</string>
+    <string name="tlvLocked">A kulle</string>
+    <string name="tlvLockedOn" formatted="false">An kulle %date</string>
+    <string name="tlvUnlocked">A buɗe</string>
+    <string name="tlvUnlockedOn" formatted="false">An buɗe %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">An kulle %locked · An buɗe %unlocked</string>
+    <string name="tlvLockedUnlockedFields">A kulle · A buɗe</string>
+    <string name="tlvLockedUnlockedClaimedFields">A kulle · A buɗe · An karɓa</string>
+    <string name="tlvUnlocksBlock" formatted="false">Zai buɗe a block %num</string>
+    <string name="tlvBlockNum" formatted="false">Block %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Block %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">A buɗe · ana jiran ajiya</string>
+    <string name="tlvUnlockedNeedsFeeCoin">A buɗe · ana buƙatar kuɗi don caji</string>
+    <string name="tlvUnlockedReadyToClaim">A buɗe · a shirye don karɓa</string>
+    <string name="tlvClaimedFundsArrivedSince">An karɓa · kuɗi sun shigo bayan haka</string>
+    <string name="tlvClaim">Karɓa</string>
+    <string name="tlvReclaim">Sake karɓa</string>
+    <string name="tlvVaultEmptied">An zubar da wannan taskar</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% ya wuce</string>
+    <string name="tlvDaysLeft" formatted="false">Sauran kwana %num</string>
+    <string name="tlvOneDayLeft">Sauran kwana 1</string>
+    <string name="tlvHoursLeft" formatted="false">Sauran awa %num</string>
+    <string name="tlvOneHourLeft">Sauran awa 1</string>
+    <string name="tlvMinutesLeft" formatted="false">Sauran minti %num</string>
+    <string name="tlvOneMinuteLeft">Sauran minti 1</string>
+    <string name="tlvAuthorityBaton" formatted="false">Sandar iko %count · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">Sandunan iko %count · %syms</string>
+    <string name="tlvTransactions">Maʼamalolin taska</string>
+    <string name="tlvNoTransactions">Babu maʼamala tukuna a wannan taskar.</string>
+    <string name="tlvVaultCreated">An ƙirƙiri taska</string>
+    <string name="tlvClaimSent">An aika karɓa</string>
+    <string name="tlvPendingDeposit">Ajiya da ake jira</string>
+    <string name="tlvTopUp">Ƙarawa</string>
+    <string name="tlvTxCreated">An ƙirƙira</string>
+    <string name="tlvTxDeposit">Ajiya</string>
+    <string name="tlvTxReceived">An karɓa</string>
+    <string name="tlvPending">Ana jira</string>
+    <string name="tlvNetworkFee" formatted="false">Cajin hanyar sadarwa %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Ikon %caps · %token</string>
+    <string name="tlvAuthority">Iko</string>
+    <string name="tlvCapMint">Ƙirƙira</string>
+    <string name="tlvCapMelt">Narkewa</string>
+    <string name="tlvCapBaton">Sanda</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Ƙaramin rukuni</string>
+    <string name="tlvCreateTitle">Ƙirƙiri taskar kulle lokaci</string>
+    <string name="tlvCreateVault">Ƙirƙiri taska</string>
+    <string name="tlvCreateExplainer">Kuɗin da ƙaramin caji za su koma adireshin da aka kulle da lokaci. Za ka gan su a taskar, amma ba za ka iya kashe su ba kafin ranar da aka ƙayyade.</string>
+    <string name="tlvMinimumAmount" formatted="false">Mafi ƙanƙanta %amt %unit</string>
+    <string name="tlvLockUntil">Kulle har zuwa</string>
+    <string name="tlvBlockHeight">Tsayin block</string>
+    <string name="tlvFutureDate">Rana mai zuwa</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Mafi girman tsayin block shine %num</string>
+    <string name="tlvFeeSatB">Caji</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Jimla</string>
+    <string name="tlvReview">Duba</string>
+    <string name="tlvDone">An gama</string>
+    <string name="tlvOk">To</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Tabbatar da taska</string>
+    <string name="tlvPayTo">Biya zuwa</string>
+    <string name="tlvNewTimeLockVault">Sabuwar taskar kulle lokaci</string>
+    <string name="tlvLockedUntil">A kulle har zuwa</string>
+    <string name="tlvLock">Kulle</string>
+    <string name="tlvLockExplainer" formatted="false">Sa hannu zai kulle %amt %unit a cikin %name har zuwa %date. Ba za a iya karɓa ba kafin lokacin.</string>
+    <string name="tlvConfirmAndSign">Tabbatar &amp; sa hannu</string>
+    <string name="tlvWorking">Ana aiki…</string>
+    <string name="tlvClaimVault">Karɓi taska</string>
+    <string name="tlvClaimExplainerSingle">Wannan taskar ta buɗe. Tabbatar don mayar da maʼauninta zuwa walat ɗinka.</string>
+    <string name="tlvClaimTo">Karɓa zuwa</string>
+    <string name="tlvClaimedTo">An karɓa zuwa</string>
+    <string name="tlvYourWallet">(walat ɗinka)</string>
+    <string name="tlvAsset">Kadara</string>
+    <string name="tlvYouReceive">Za ka karɓa</string>
+    <string name="tlvNothingToClaim">Babu abin karɓa — wannan taskar babu komai.</string>
+    <string name="tlvConfirmAndClaim">Tabbatar &amp; karɓa</string>
+    <string name="tlvVaultClaimed">An karɓi taska</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit na kan hanyar komawa walat ɗinka.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">Kuɗi na kan hanya.</string>
+    <string name="tlvLockedUntilBlock">A kulle har zuwa block</string>
+    <string name="tlvName">Suna</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Sandunan iko · %count</string>
+    <string name="tlvTokens">Token</string>
+    <string name="tlvBatons">Sanduna</string>
+    <string name="tlvMovable">Ana iya motsawa</string>
+    <string name="tlvBatonExplainer">Sanda izini ne, ba maʼauni ba. Ana daskarar da ita tare da kuɗin kuma tana fita tare da su a karɓa ɗaya.</string>
+    <string name="tlvDepositAddress">Adireshin ajiya</string>
+    <string name="tlvNoAddress">(babu adireshi)</string>
+    <string name="tlvVaultSuccess">Taska ta yi nasara</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Rufe QR</string>
+    <string name="tlvDepositWarning">Duk abin da aka aika zuwa wannan adireshin a kulle yake har sai taskar ta buɗe — har da kuɗin da aka aika bisa kuskure.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Aika token nan sai tare da ɗan %unit kawai. Taska tana biyan cajinta da kanta idan ta buɗe, kuma daga %unit da take da shi kawai.</string>
+    <string name="tlvHistory">Tarihi</string>
+    <string name="tlvView">Duba</string>
+    <string name="tlvNoEarlyOpen">Babu hanyar buɗe wannan taskar da wuri. Wannan shine manufar taskar kulle lokaci.</string>
+    <string name="tlvPublicOnChain">Tsayin buɗewa da adadin a bayyane suke a kan chain tun lokacin da aka saka kuɗi a wannan taskar — duk mai adireshin zai iya karanta su.</string>
 </resources>

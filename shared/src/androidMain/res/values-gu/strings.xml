@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">ખાતાનું ચલણ %walletCrypto છે, સરનામું %addressCrypto છે.  સરનામાના બ્લોકચેન સાથે મેળ ખાય તેવું ખાતું મોકલવા માટે પસંદ કરવા કૉમ્બો બૉક્સ વાપરો.</string>
     <string name="incoming" formatted="false">%delta %unit પેન્ડિંગ સામેલ છે</string>
     <string name="approximatelyT" formatted="false">આશરે %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR મૂલ્ય વૈશ્વિક NEXA/USDT કિંમત અને \"Exchange Rate API\" ના USDT/INR પર આધારિત છે. સ્થાનિક USDT/INR દરો અને બજારની તરલતાને કારણે ભારતમાં વાસ્તવિક NEXA OTC/P2P કિંમતો સામાન્ય રીતે 20–30% વધુ હોય છે.</string>
     <string name="fastForward" formatted="false">ફાસ્ટ ફોરવર્ડ</string>
     <string name="fastforwardStatus" formatted="false">ફાસ્ટ ફોરવર્ડ વિશ્લેષણ: %info</string>
     <string name="fastforwardStart" formatted="false">શરૂ થયું</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">મહત્તમ ખાતાં</string>
     <string name="accountUnavailableDetails">કાં તો આ બ્લોકચેન સાથે મેળ ખાતું કોઈ ખાતું નથી, અથવા ખાતું અનલૉક કરાયું નથી.</string>
     <string name="accountUnavailable">કોઈ અનલૉક કરેલું સુસંગત ખાતું નથી</string>
+    <string name="accountCouldNotBeOpened">ખાતું ખોલી શકાયું નહીં</string>
     <string name="sendMoreThanBalance">તમારી પાસે અત્યારે ઉપલબ્ધ છે તેના કરતાં વધુ સિક્કા મોકલવાનો પ્રયાસ કરી રહ્યા છો.\n\nજો તમને લાગતું હોય કે તમે તમારા બેલેન્સ કરતાં વધુ ખર્ચ કરી રહ્યા નથી, તો કદાચ તમે ભૂલી ગયા હશો કે વ્યવહારો પર થોડી વધારાની ફી લાગે છે, અથવા જો તમારું આખું બેલેન્સ અપુષ્ટ દેખાતું હોય તો તમે સળંગ ઘણા બધા વ્યવહારો કર્યા હશે.\n\nતમે બ્લોકચેનથી કેટલા “આગળ નીકળી” શકો તેની મર્યાદા છે. તમારું અપુષ્ટ બેલેન્સ પુષ્ટ થવા દો અને ફરી પ્રયાસ કરો.</string>
     <string name="sendMoreTokensThanBalance">તમારી પાસે અત્યારે ઉપલબ્ધ છે તેના કરતાં વધુ ટોકન મોકલવાનો પ્રયાસ કરી રહ્યા છો.</string>
     <string name="deductedFeeLargerThanSendAmount">કાપવામાં આવતી ફી મોકલવાની રકમ કરતાં વધુ છે</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">અને %tokSnd પ્રકારના ટોકન મોકલાય છે.</string>
     <string name="TpReceivingTokens" formatted="false">અને %tokRcv પ્રકારના ટોકન મળે છે.</string>
     <string name="TpHasNoPurpose">આ વિનંતીની આ ખાતા પર કોઈ અસર નથી.</string>
+    <string name="TpProposalMissingSignature">આ વ્યવહારમાં વિનંતી કરનાર સાઇટે આપવાની હતી તે સહી નથી, તેથી તે પૂર્ણ થઈ શકતો નથી. તમારા વૉલેટમાંથી કંઈ ખર્ચાયું નથી.</string>
     <string name="TpSendToTitle">ચુકવણીની વિનંતી કરનાર</string>
     <string name="TpSpends">ખર્ચે છે</string>
     <string name="TpSendRequestDenied">ચુકવણી નકારી</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">છદ્મવેશ ચાલુ કરવાથી ઍપ બંધ થાય છે અને તે Meditate નામની ઍપ તરીકે છુપાઈ જાય છે. Meditate ઍપનો છદ્મવેશ બંધ કરવા માટે ઍપ મેનૂ ખોલો અને વર્ઝન નંબર પર પાંચ વાર ક્લિક કરો.</string>
     <string name="CamouflageDescriptionOther">Meditate ઍપનો છદ્મવેશ બંધ કરવા માટે ઍપ મેનૂ ખોલો અને વર્ઝન નંબર પર પાંચ વાર ક્લિક કરો.</string>
     <string name="CamouflageAsMeditateAppAndroid">Meditate ઍપ તરીકે છદ્મવેશ</string>
+    <string name="tlvTitle">ટાઇમ લૉક વૉલ્ટ</string>
+    <string name="tlvExplainer">સિક્કા લૉક કરો જેથી તમે પસંદ કરેલી તારીખ પછી સુધી કોઈ (તમે પણ) તેને ખર્ચી ન શકે.</string>
+    <string name="tlvNewVault">નવું વૉલ્ટ</string>
+    <string name="tlvContractLineLabel">ટાઇમ લૉક વૉલ્ટ:</string>
+    <string name="tlvMyVaultsCount" formatted="false">મારા વૉલ્ટ · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit લૉક કરેલ</string>
+    <string name="tlvLoadingVaults">વૉલ્ટ લોડ થઈ રહ્યા છે…</string>
+    <string name="tlvNoVaultsYet">હજી કોઈ વૉલ્ટ નથી — એક બનાવવા ઉપર નવું વૉલ્ટ ટૅપ કરો.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable ક્લેમ કરી શકાય · %locked લૉક · %claimed ક્લેમ થયેલ</string>
+    <string name="tlvLoadFailed">ટાઇમ લૉક વૉલ્ટ લોડ કરી શકાયા નહીં</string>
+    <string name="tlvCreateFailed">વૉલ્ટ બનાવી શકાયું નહીં</string>
+    <string name="tlvClaimFailed">વૉલ્ટ ક્લેમ કરી શકાયું નહીં</string>
+    <string name="tlvBalanceLoading">બેલેન્સ લોડ થઈ રહ્યું છે</string>
+    <string name="tlvClaimed">ક્લેમ થયેલ</string>
+    <string name="tlvClaimedOn" formatted="false">%date ના રોજ ક્લેમ થયેલ</string>
+    <string name="tlvLocked">લૉક</string>
+    <string name="tlvLockedOn" formatted="false">%date ના રોજ લૉક</string>
+    <string name="tlvUnlocked">અનલૉક</string>
+    <string name="tlvUnlockedOn" formatted="false">%date ના રોજ અનલૉક</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">લૉક %locked · અનલૉક %unlocked</string>
+    <string name="tlvLockedUnlockedFields">લૉક · અનલૉક</string>
+    <string name="tlvLockedUnlockedClaimedFields">લૉક · અનલૉક · ક્લેમ</string>
+    <string name="tlvUnlocksBlock" formatted="false">બ્લોક %num પર અનલૉક થશે</string>
+    <string name="tlvBlockNum" formatted="false">બ્લોક %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">બ્લોક %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">અનલૉક · જમાની રાહ</string>
+    <string name="tlvUnlockedNeedsFeeCoin">અનલૉક · ફી માટે સિક્કા જોઈએ</string>
+    <string name="tlvUnlockedReadyToClaim">અનલૉક · ક્લેમ માટે તૈયાર</string>
+    <string name="tlvClaimedFundsArrivedSince">ક્લેમ થયેલ · પછી ભંડોળ આવ્યું</string>
+    <string name="tlvClaim">ક્લેમ કરો</string>
+    <string name="tlvReclaim">ફરી ક્લેમ કરો</string>
+    <string name="tlvVaultEmptied">આ વૉલ્ટ ખાલી કરાયું છે</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% વીત્યું</string>
+    <string name="tlvDaysLeft" formatted="false">%num દિવસ બાકી</string>
+    <string name="tlvOneDayLeft">1 દિવસ બાકી</string>
+    <string name="tlvHoursLeft" formatted="false">%num કલાક બાકી</string>
+    <string name="tlvOneHourLeft">1 કલાક બાકી</string>
+    <string name="tlvMinutesLeft" formatted="false">%num મિનિટ બાકી</string>
+    <string name="tlvOneMinuteLeft">1 મિનિટ બાકી</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count ઑથોરિટી બૅટન · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count ઑથોરિટી બૅટન · %syms</string>
+    <string name="tlvTransactions">વૉલ્ટ વ્યવહારો</string>
+    <string name="tlvNoTransactions">આ વૉલ્ટ માટે હજી કોઈ વ્યવહાર નથી.</string>
+    <string name="tlvVaultCreated">વૉલ્ટ બન્યું</string>
+    <string name="tlvClaimSent">ક્લેમ મોકલ્યો</string>
+    <string name="tlvPendingDeposit">બાકી જમા</string>
+    <string name="tlvTopUp">ટૉપ-અપ</string>
+    <string name="tlvTxCreated">બનાવેલ</string>
+    <string name="tlvTxDeposit">જમા</string>
+    <string name="tlvTxReceived">મળેલ</string>
+    <string name="tlvPending">બાકી</string>
+    <string name="tlvNetworkFee" formatted="false">નેટવર્ક ફી %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps ઑથોરિટી · %token</string>
+    <string name="tlvAuthority">ઑથોરિટી</string>
+    <string name="tlvCapMint">મિન્ટ</string>
+    <string name="tlvCapMelt">મેલ્ટ</string>
+    <string name="tlvCapBaton">બૅટન</string>
+    <string name="tlvCapRescript">રીસ્ક્રિપ્ટ</string>
+    <string name="tlvCapSubgroup">સબગ્રુપ</string>
+    <string name="tlvCreateTitle">ટાઇમ લૉક વૉલ્ટ બનાવો</string>
+    <string name="tlvCreateVault">વૉલ્ટ બનાવો</string>
+    <string name="tlvCreateExplainer">ભંડોળ અને થોડી ફી ટાઇમ-લૉક સરનામે જશે. તમે તેને વૉલ્ટમાં જોઈ શકશો, પણ નિર્દિષ્ટ તારીખ પહેલાં ખર્ચી નહીં શકો.</string>
+    <string name="tlvMinimumAmount" formatted="false">ઓછામાં ઓછું %amt %unit</string>
+    <string name="tlvLockUntil">આ સુધી લૉક કરો</string>
+    <string name="tlvBlockHeight">બ્લોક ઊંચાઈ</string>
+    <string name="tlvFutureDate">ભવિષ્યની તારીખ</string>
+    <string name="tlvMaxBlockHeight" formatted="false">મહત્તમ બ્લોક ઊંચાઈ %num છે</string>
+    <string name="tlvFeeSatB">ફી</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">કુલ</string>
+    <string name="tlvReview">તપાસો</string>
+    <string name="tlvDone">થઈ ગયું</string>
+    <string name="tlvOk">બરાબર</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">વૉલ્ટની પુષ્ટિ કરો</string>
+    <string name="tlvPayTo">ચૂકવો</string>
+    <string name="tlvNewTimeLockVault">નવું ટાઇમ લૉક વૉલ્ટ</string>
+    <string name="tlvLockedUntil">આ સુધી લૉક</string>
+    <string name="tlvLock">લૉક કરો</string>
+    <string name="tlvLockExplainer" formatted="false">સહી કરવાથી %amt %unit %name માં %date સુધી લૉક થશે. તે પહેલાં ક્લેમ કરી શકાશે નહીં.</string>
+    <string name="tlvConfirmAndSign">પુષ્ટિ &amp; સહી</string>
+    <string name="tlvWorking">કામ ચાલુ છે…</string>
+    <string name="tlvClaimVault">વૉલ્ટ ક્લેમ કરો</string>
+    <string name="tlvClaimExplainerSingle">આ વૉલ્ટ અનલૉક થયું છે. તેનું બેલેન્સ તમારા વૉલેટમાં પાછું લાવવા પુષ્ટિ કરો.</string>
+    <string name="tlvClaimTo">અહીં ક્લેમ કરો</string>
+    <string name="tlvClaimedTo">અહીં ક્લેમ થયેલ</string>
+    <string name="tlvYourWallet">(તમારું વૉલેટ)</string>
+    <string name="tlvAsset">સંપત્તિ</string>
+    <string name="tlvYouReceive">તમને મળશે</string>
+    <string name="tlvNothingToClaim">ક્લેમ કરવા કંઈ નથી — આ વૉલ્ટ ખાલી છે.</string>
+    <string name="tlvConfirmAndClaim">પુષ્ટિ &amp; ક્લેમ</string>
+    <string name="tlvVaultClaimed">વૉલ્ટ ક્લેમ થયું</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit તમારા વૉલેટમાં પાછા આવી રહ્યા છે.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">ભંડોળ રસ્તામાં છે.</string>
+    <string name="tlvLockedUntilBlock">આ બ્લોક સુધી લૉક</string>
+    <string name="tlvName">નામ</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">ઑથોરિટી બૅટન · %count</string>
+    <string name="tlvTokens">ટોકન</string>
+    <string name="tlvBatons">બૅટન</string>
+    <string name="tlvMovable">ખસેડી શકાય તેવું</string>
+    <string name="tlvBatonExplainer">બૅટન એક પરવાનગી છે, બેલેન્સ નહીં. તે સિક્કા સાથે થીજી જાય છે અને એ જ ક્લેમમાં તેમની સાથે બહાર આવે છે.</string>
+    <string name="tlvDepositAddress">જમા સરનામું</string>
+    <string name="tlvNoAddress">(કોઈ સરનામું નથી)</string>
+    <string name="tlvVaultSuccess">વૉલ્ટ સફળ</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR બંધ કરો</string>
+    <string name="tlvDepositWarning">આ સરનામે મોકલેલું બધું વૉલ્ટ ખૂલે ત્યાં સુધી લૉક રહે છે — ભૂલથી અહીં મોકલેલા સિક્કા પણ.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">અહીં ટોકન ફક્ત થોડા %unit સાથે જ મોકલો. વૉલ્ટ ખૂલતી વખતે પોતાની ફી પોતે ચૂકવે છે, અને તે પણ ફક્ત તેની પાસેના %unit માંથી.</string>
+    <string name="tlvHistory">ઇતિહાસ</string>
+    <string name="tlvView">જુઓ</string>
+    <string name="tlvNoEarlyOpen">આ વૉલ્ટ વહેલું ખોલવાનો કોઈ રસ્તો નથી. ટાઇમ લૉક વૉલ્ટનો હેતુ જ એ છે.</string>
+    <string name="tlvPublicOnChain">આ વૉલ્ટમાં ભંડોળ આવ્યું તે ક્ષણથી અનલૉક ઊંચાઈ અને રકમ ચેઇન પર જાહેર છે — સરનામું ધરાવનાર કોઈપણ તે વાંચી શકે છે.</string>
 </resources>

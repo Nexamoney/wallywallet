@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Die Währung des Accounts ist %walletCrypto, die Adresse ist %addressCrypto. Wählen Sie im Auswahlfeld einen Absende-Account, der zur Blockchain der Adresse passt.</string>
     <string name="incoming" formatted="false">davon %delta %unit ausstehend</string>
     <string name="approximatelyT" formatted="false">ungefähr %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Der INR-Wert basiert auf dem globalen NEXA/USDT-Preis und dem USDT/INR-Kurs von \"Exchange Rate API\". Tatsächliche NEXA-OTC/P2P-Preise in Indien liegen wegen lokaler USDT/INR-Kurse und der Marktliquidität meist 20–30% höher.</string>
     <string name="fastForward" formatted="false">Vorspulen</string>
     <string name="fastforwardStatus" formatted="false">Vorspul-Analyse: %info</string>
     <string name="fastforwardStart" formatted="false">gestartet</string>
@@ -639,6 +640,7 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="tlvTitle">Zeitschloss-Tresor</string>
     <string name="tlvExplainer">Sperre Coins, sodass niemand (auch du selbst nicht) sie vor deinem gewählten Datum ausgeben kann.</string>
     <string name="tlvNewVault">Neuer Tresor</string>
+    <string name="tlvContractLineLabel">Zeitschloss-Tresor:</string>
     <string name="tlvMyVaultsCount" formatted="false">MEINE TRESORE · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit gesperrt</string>
     <string name="tlvLoadingVaults">Tresore werden geladen…</string>
@@ -649,9 +651,18 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="tlvClaimFailed">Der Tresor konnte nicht eingelöst werden</string>
     <string name="tlvBalanceLoading">Guthaben wird geladen</string>
     <string name="tlvClaimed">Eingelöst</string>
+    <string name="tlvClaimedOn" formatted="false">Eingelöst am %date</string>
     <string name="tlvLocked">Gesperrt</string>
+    <string name="tlvLockedOn" formatted="false">Gesperrt am %date</string>
+    <string name="tlvUnlocked">Entsperrt</string>
+    <string name="tlvUnlockedOn" formatted="false">Entsperrt am %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Gesperrt %locked · Entsperrt %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Gesperrt · Entsperrt</string>
+    <string name="tlvLockedUnlockedClaimedFields">Gesperrt · Entsperrt · Eingelöst</string>
     <string name="tlvUnlocksBlock" formatted="false">Entsperrt bei Block %num</string>
     <string name="tlvBlockNum" formatted="false">Block %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Block %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Entsperrt · wartet auf eine Einzahlung</string>
     <string name="tlvUnlockedNeedsFeeCoin">Entsperrt · Coins für die Gebühr nötig</string>
     <string name="tlvUnlockedReadyToClaim">Entsperrt · bereit zum Einlösen</string>
@@ -674,6 +685,9 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="tlvClaimSent">Einlösung gesendet</string>
     <string name="tlvPendingDeposit">Ausstehende Einzahlung</string>
     <string name="tlvTopUp">Aufstockung</string>
+    <string name="tlvTxCreated">Erstellt</string>
+    <string name="tlvTxDeposit">Einzahlung</string>
+    <string name="tlvTxReceived">Empfangen</string>
     <string name="tlvPending">Ausstehend</string>
     <string name="tlvNetworkFee" formatted="false">Netzwerkgebühr %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">%caps-Autorität · %token</string>
@@ -683,6 +697,7 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="tlvCapBaton">Baton</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Untergruppe</string>
+    <string name="tlvCreateTitle">Zeitschloss-Tresor erstellen</string>
     <string name="tlvCreateVault">Tresor erstellen</string>
     <string name="tlvCreateExplainer">Die Gelder plus eine kleine Gebühr wandern an eine zeitgesperrte Adresse. Du siehst sie im Tresor, kannst sie aber nicht vor dem festgelegten Datum ausgeben.</string>
     <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
@@ -701,10 +716,14 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="tlvPayTo">Zahlen an</string>
     <string name="tlvNewTimeLockVault">Neuer Zeitschloss-Tresor</string>
     <string name="tlvLockedUntil">Gesperrt bis</string>
+    <string name="tlvLock">Sperren</string>
+    <string name="tlvLockExplainer" formatted="false">Mit der Signatur werden %amt %unit in %name bis %date gesperrt. Vorher kann nichts eingelöst werden.</string>
     <string name="tlvConfirmAndSign">Bestätigen &amp; signieren</string>
     <string name="tlvWorking">In Arbeit…</string>
     <string name="tlvClaimVault">Tresor einlösen</string>
     <string name="tlvClaimExplainerSingle">Dieser Tresor ist entsperrt. Bestätige, um sein Guthaben in deine Wallet zurückzuholen.</string>
+    <string name="tlvClaimTo">Einlösen an</string>
+    <string name="tlvClaimedTo">Eingelöst an</string>
     <string name="tlvYourWallet">(deine Wallet)</string>
     <string name="tlvAsset">Asset</string>
     <string name="tlvYouReceive">Du erhältst</string>
@@ -717,6 +736,8 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="tlvLockedUntilBlock">Gesperrt bis Block</string>
     <string name="tlvName">Name</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Autoritäts-Batons · %count</string>
+    <string name="tlvTokens">Tokens</string>
+    <string name="tlvBatons">Batons</string>
     <string name="tlvMovable">Beweglich</string>
     <string name="tlvBatonExplainer">Ein Baton ist eine Berechtigung, kein Guthaben. Er ist mit den Coins eingefroren und kommt mit ihnen in derselben Einlösung heraus.</string>
     <string name="tlvDepositAddress">Einzahlungsadresse</string>

@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">La devise du compte est %walletCrypto, celle de l\'adresse est %addressCrypto.  Utilisez la liste déroulante pour choisir un compte d\'envoi correspondant à la blockchain de l\'adresse.</string>
     <string name="incoming" formatted="false">dont %delta %unit en attente</string>
     <string name="approximatelyT" formatted="false">environ %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">La valeur en INR repose sur le prix mondial NEXA/USDT et le taux USDT/INR de \"Exchange Rate API\". Les prix réels NEXA OTC/P2P en Inde sont généralement 20–30% plus élevés en raison des taux USDT/INR locaux et de la liquidité du marché.</string>
     <string name="fastForward" formatted="false">Avance rapide</string>
     <string name="fastforwardStatus" formatted="false">analyse de l\'avance rapide : %info</string>
     <string name="fastforwardStart" formatted="false">démarrée</string>
@@ -639,4 +640,118 @@ Merci et profitez bien de votre nouveau portefeuille !</string>
     <string name="CamouflageDescriptionAndroid">Activer le camouflage ferme l\'application et la camoufle en une application nommée Meditate. Pour désactiver le camouflage Meditate, ouvrez le menu de l\'application et appuyez cinq fois sur le numéro de version.</string>
     <string name="CamouflageDescriptionOther">Pour désactiver le camouflage Meditate, ouvrez le menu de l\'application et appuyez cinq fois sur le numéro de version.</string>
     <string name="CamouflageAsMeditateAppAndroid">Camoufler en application Meditate</string>
+    <string name="tlvTitle">Coffre à verrouillage temporel</string>
+    <string name="tlvExplainer">Verrouillez des pièces pour que personne (vous compris) ne puisse les dépenser avant la date choisie.</string>
+    <string name="tlvNewVault">Nouveau coffre</string>
+    <string name="tlvContractLineLabel">Coffre à verrouillage temporel :</string>
+    <string name="tlvMyVaultsCount" formatted="false">MES COFFRES · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit verrouillés</string>
+    <string name="tlvLoadingVaults">Chargement des coffres…</string>
+    <string name="tlvNoVaultsYet">Aucun coffre pour l\'instant — touchez Nouveau coffre ci-dessus pour en créer un.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable récupérables · %locked verrouillés · %claimed récupérés</string>
+    <string name="tlvLoadFailed">Impossible de charger les coffres à verrouillage temporel</string>
+    <string name="tlvCreateFailed">Impossible de créer le coffre</string>
+    <string name="tlvClaimFailed">Impossible de récupérer le coffre</string>
+    <string name="tlvBalanceLoading">Chargement du solde</string>
+    <string name="tlvClaimed">Récupéré</string>
+    <string name="tlvClaimedOn" formatted="false">Récupéré le %date</string>
+    <string name="tlvLocked">Verrouillé</string>
+    <string name="tlvLockedOn" formatted="false">Verrouillé le %date</string>
+    <string name="tlvUnlocked">Déverrouillé</string>
+    <string name="tlvUnlockedOn" formatted="false">Déverrouillé le %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Verrouillé %locked · Déverrouillé %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Verrouillé · Déverrouillé</string>
+    <string name="tlvLockedUnlockedClaimedFields">Verrouillé · Déverrouillé · Récupéré</string>
+    <string name="tlvUnlocksBlock" formatted="false">Se déverrouille au bloc %num</string>
+    <string name="tlvBlockNum" formatted="false">Bloc %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Bloc %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Déverrouillé · en attente d\'un dépôt</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Déverrouillé · il manque des pièces pour les frais</string>
+    <string name="tlvUnlockedReadyToClaim">Déverrouillé · prêt à récupérer</string>
+    <string name="tlvClaimedFundsArrivedSince">Récupéré · des fonds sont arrivés depuis</string>
+    <string name="tlvClaim">Récupérer</string>
+    <string name="tlvReclaim">Récupérer à nouveau</string>
+    <string name="tlvVaultEmptied">Ce coffre a été vidé</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% écoulés</string>
+    <string name="tlvDaysLeft" formatted="false">%num jours restants</string>
+    <string name="tlvOneDayLeft">1 jour restant</string>
+    <string name="tlvHoursLeft" formatted="false">%num heures restantes</string>
+    <string name="tlvOneHourLeft">1 heure restante</string>
+    <string name="tlvMinutesLeft" formatted="false">%num minutes restantes</string>
+    <string name="tlvOneMinuteLeft">1 minute restante</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count bâton d\'autorité · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count bâtons d\'autorité · %syms</string>
+    <string name="tlvTransactions">Transactions du coffre</string>
+    <string name="tlvNoTransactions">Aucune transaction pour ce coffre pour l\'instant.</string>
+    <string name="tlvVaultCreated">Coffre créé</string>
+    <string name="tlvClaimSent">Récupération envoyée</string>
+    <string name="tlvPendingDeposit">Dépôt en attente</string>
+    <string name="tlvTopUp">Recharge</string>
+    <string name="tlvTxCreated">Créé</string>
+    <string name="tlvTxDeposit">Dépôt</string>
+    <string name="tlvTxReceived">Reçu</string>
+    <string name="tlvPending">En attente</string>
+    <string name="tlvNetworkFee" formatted="false">Frais de réseau %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Autorité %caps · %token</string>
+    <string name="tlvAuthority">Autorité</string>
+    <string name="tlvCapMint">Émission</string>
+    <string name="tlvCapMelt">Destruction</string>
+    <string name="tlvCapBaton">Bâton</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Sous-groupe</string>
+    <string name="tlvCreateTitle">Créer un coffre à verrouillage temporel</string>
+    <string name="tlvCreateVault">Créer le coffre</string>
+    <string name="tlvCreateExplainer">Les fonds plus de petits frais seront déplacés vers une adresse verrouillée dans le temps. Vous les verrez dans le coffre, mais ne pourrez pas les dépenser avant la date indiquée.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
+    <string name="tlvLockUntil">Verrouiller jusqu\'au</string>
+    <string name="tlvBlockHeight">Hauteur de bloc</string>
+    <string name="tlvFutureDate">Date future</string>
+    <string name="tlvMaxBlockHeight" formatted="false">La hauteur de bloc maximale est %num</string>
+    <string name="tlvFeeSatB">Frais</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Total</string>
+    <string name="tlvReview">Vérifier</string>
+    <string name="tlvDone">Terminé</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Confirmer le coffre</string>
+    <string name="tlvPayTo">Payer à</string>
+    <string name="tlvNewTimeLockVault">Nouveau coffre à verrouillage temporel</string>
+    <string name="tlvLockedUntil">Verrouillé jusqu\'au</string>
+    <string name="tlvLock">Verrouiller</string>
+    <string name="tlvLockExplainer" formatted="false">La signature verrouille %amt %unit dans %name jusqu\'au %date. Impossible de les récupérer avant.</string>
+    <string name="tlvConfirmAndSign">Confirmer &amp; signer</string>
+    <string name="tlvWorking">En cours…</string>
+    <string name="tlvClaimVault">Récupérer le coffre</string>
+    <string name="tlvClaimExplainerSingle">Ce coffre est déverrouillé. Confirmez pour ramener son solde dans votre portefeuille.</string>
+    <string name="tlvClaimTo">Récupérer vers</string>
+    <string name="tlvClaimedTo">Récupéré vers</string>
+    <string name="tlvYourWallet">(votre portefeuille)</string>
+    <string name="tlvAsset">Actif</string>
+    <string name="tlvYouReceive">Vous recevez</string>
+    <string name="tlvNothingToClaim">Rien à récupérer — ce coffre est vide.</string>
+    <string name="tlvConfirmAndClaim">Confirmer &amp; récupérer</string>
+    <string name="tlvVaultClaimed">Coffre récupéré</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit reviennent vers votre portefeuille.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Les fonds sont en route.</string>
+    <string name="tlvLockedUntilBlock">Verrouillé jusqu\'au bloc</string>
+    <string name="tlvName">Nom</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Bâtons d\'autorité · %count</string>
+    <string name="tlvTokens">Jetons</string>
+    <string name="tlvBatons">Bâtons</string>
+    <string name="tlvMovable">Transférable</string>
+    <string name="tlvBatonExplainer">Un bâton est une permission, pas un solde. Il est gelé avec les pièces et ressort avec elles lors de la même récupération.</string>
+    <string name="tlvDepositAddress">Adresse de dépôt</string>
+    <string name="tlvNoAddress">(aucune adresse)</string>
+    <string name="tlvVaultSuccess">Coffre réussi</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Fermer le QR</string>
+    <string name="tlvDepositWarning">Tout ce qui est envoyé à cette adresse reste verrouillé jusqu\'à l\'ouverture du coffre — y compris les pièces envoyées ici par erreur.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">N\'envoyez des jetons ici qu\'accompagnés d\'un peu de %unit. Un coffre paie ses propres frais à l\'ouverture, et uniquement avec les %unit qu\'il contient.</string>
+    <string name="tlvHistory">Historique</string>
+    <string name="tlvView">Voir</string>
+    <string name="tlvNoEarlyOpen">Il n\'existe aucun moyen d\'ouvrir ce coffre plus tôt. C\'est justement le but d\'un coffre à verrouillage temporel.</string>
+    <string name="tlvPublicOnChain">La hauteur de déverrouillage et le montant sont publics sur la chaîne dès que ce coffre est approvisionné — quiconque possède l\'adresse peut les lire.</string>
 </resources>

@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Owó àkáǹtì ni %walletCrypto, àdírẹ́sì sì jẹ́ %addressCrypto.  Ẹ lo àpótí àṣàyàn láti yí àkáǹtì tí ẹ ó fi ránṣẹ́ padà sí èyí tí ó bá blockchain àdírẹ́sì náà mu.</string>
     <string name="incoming" formatted="false">ó ní %delta %unit tí ń dúró</string>
     <string name="approximatelyT" formatted="false">ó tó %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Iye INR dá lórí iye owó NEXA/USDT àgbáyé àti USDT/INR láti \"Exchange Rate API\". Iye owó NEXA OTC/P2P gidi ní Íńdíà sábà máa ń ga ju 20–30% lọ nítorí ìwọ̀n USDT/INR ìbílẹ̀ àti ìṣàn ọjà.</string>
     <string name="fastForward" formatted="false">Tì síwájú</string>
     <string name="fastforwardStatus" formatted="false">ìtúpalẹ̀ tì síwájú: %info</string>
     <string name="fastforwardStart" formatted="false">ti bẹ̀rẹ̀</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">àkáǹtì ti kún</string>
     <string name="accountUnavailableDetails">Bóyá kò sí àkáǹtì tí ó bá blockchain yìí mu, tàbí a kò tíì ṣí àkáǹtì náà.</string>
     <string name="accountUnavailable">Kò sí àkáǹtì tó ṣí tó bá mu</string>
+    <string name="accountCouldNotBeOpened">A kò lè ṣí àkáǹtì</string>
     <string name="sendMoreThanBalance">Ẹ ń gbìyànjú láti fi owó tí ó ju èyí tí ẹ ní lọ́wọ́ ránṣẹ́.\n\nTí ẹ bá rò pé ẹ kò ná ju báláǹsì yín lọ, ó ṣeé ṣe kí ẹ gbàgbé pé ìdúnàdúrà ní owó iṣẹ́ kékeré kan lórí; tàbí tí ẹ bá rí gbogbo báláǹsì yín bí èyí tí kò tíì fìdí múlẹ̀, ó ṣeé ṣe kí ẹ ti ṣe ìdúnàdúrà púpọ̀ lẹ́sẹẹsẹ.\n\nÀàlà wà fún bí ẹ ṣe lè “sáré ju” blockchain lọ. Ẹ jẹ́ kí báláǹsì tí kò tíì fìdí múlẹ̀ fìdí múlẹ̀, kí ẹ sì tún gbìyànjú.</string>
     <string name="sendMoreTokensThanBalance">Ẹ ń gbìyànjú láti fi tọ́kìnì tí ó ju èyí tí ẹ ní lọ́wọ́ ránṣẹ́.</string>
     <string name="deductedFeeLargerThanSendAmount">Owó iṣẹ́ tí a yọ pọ̀ ju iye tí à ń fi ránṣẹ́ lọ</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">àti fífi oríṣi tọ́kìnì %tokSnd ránṣẹ́.</string>
     <string name="TpReceivingTokens" formatted="false">àti gbígba oríṣi tọ́kìnì %tokRcv.</string>
     <string name="TpHasNoPurpose">Ìbéèrè yìí kò ní ipa lórí àkáǹtì yìí.</string>
+    <string name="TpProposalMissingSignature">Ìdúnàdúrà yìí kò ní ìbuwọ́lù tí ojú-ìwé tó béèrè yẹ kó pèsè, nítorí náà kò lè parí. Kò sí ohun tó jáde nínú wọ́lẹ́ẹ̀tì rẹ.</string>
     <string name="TpSendToTitle">Ẹni tó béèrè ìsanwó</string>
     <string name="TpSpends">Ó ná</string>
     <string name="TpSendRequestDenied">A kọ̀ ìsanwó</string>
@@ -637,4 +640,118 @@ Nígbà tí ẹ bá parí, ẹ tẹ ọfà ẹ̀yìn (òkè òsì).</string>
     <string name="CamouflageDescriptionAndroid">Ṣíṣí ìpàrádà yóò pa ohun-èlò náà, yóò sì fi ìpàrádà bò ó gẹ́gẹ́ bí ohun-èlò tí orúkọ rẹ̀ ń jẹ́ Meditate. Láti yọ ìpàrádà ohun-èlò Meditate kúrò, ẹ ṣí àkójọ àṣàyàn ohun-èlò náà, kí ẹ sì tẹ nọ́ḿbà ẹ̀yà náà ní ìgbà márùn-ún.</string>
     <string name="CamouflageDescriptionOther">Láti yọ ìpàrádà ohun-èlò Meditate kúrò, ẹ ṣí àkójọ àṣàyàn ohun-èlò náà, kí ẹ sì tẹ nọ́ḿbà ẹ̀yà náà ní ìgbà márùn-ún.</string>
     <string name="CamouflageAsMeditateAppAndroid">Ìpàrádà bí ohun-èlò Meditate</string>
+    <string name="tlvTitle">Àpótí Ìtìpa Àkókò</string>
+    <string name="tlvExplainer">Ti owó pa kí ẹnikẹ́ni (títí kan ìwọ fúnra rẹ) má lè ná wọn títí di lẹ́yìn ọjọ́ tí o yàn.</string>
+    <string name="tlvNewVault">Àpótí tuntun</string>
+    <string name="tlvContractLineLabel">Àpótí Ìtìpa Àkókò:</string>
+    <string name="tlvMyVaultsCount" formatted="false">ÀWỌN ÀPÓTÍ MI · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit tí a tì pa</string>
+    <string name="tlvLoadingVaults">Ń gbé àwọn àpótí wọlé…</string>
+    <string name="tlvNoVaultsYet">Kò tíì sí àpótí — tẹ Àpótí tuntun lókè láti ṣe ọ̀kan.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable tí a lè gbà · %locked tí a tì pa · %claimed tí a ti gbà</string>
+    <string name="tlvLoadFailed">A kò lè gbé àwọn àpótí ìtìpa àkókò wọlé</string>
+    <string name="tlvCreateFailed">A kò lè ṣẹ̀dá àpótí náà</string>
+    <string name="tlvClaimFailed">A kò lè gba àpótí náà</string>
+    <string name="tlvBalanceLoading">Ń gbé báláǹsì wọlé</string>
+    <string name="tlvClaimed">A ti gbà</string>
+    <string name="tlvClaimedOn" formatted="false">A gbà ní %date</string>
+    <string name="tlvLocked">A ti tì pa</string>
+    <string name="tlvLockedOn" formatted="false">A tì pa ní %date</string>
+    <string name="tlvUnlocked">A ti ṣí</string>
+    <string name="tlvUnlockedOn" formatted="false">A ṣí ní %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">A tì pa %locked · A ṣí %unlocked</string>
+    <string name="tlvLockedUnlockedFields">A tì pa · A ṣí</string>
+    <string name="tlvLockedUnlockedClaimedFields">A tì pa · A ṣí · A gbà</string>
+    <string name="tlvUnlocksBlock" formatted="false">Yóò ṣí ní blọ́ọ̀kù %num</string>
+    <string name="tlvBlockNum" formatted="false">Blọ́ọ̀kù %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blọ́ọ̀kù %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">A ti ṣí · ń dúró de ìfipamọ́</string>
+    <string name="tlvUnlockedNeedsFeeCoin">A ti ṣí · nílò owó fún owó iṣẹ́</string>
+    <string name="tlvUnlockedReadyToClaim">A ti ṣí · ṣetán láti gbà</string>
+    <string name="tlvClaimedFundsArrivedSince">A ti gbà · owó dé lẹ́yìn náà</string>
+    <string name="tlvClaim">Gbà</string>
+    <string name="tlvReclaim">Tún gbà</string>
+    <string name="tlvVaultEmptied">A ti sọ àpótí yìí di òfo</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% ti kọjá</string>
+    <string name="tlvDaysLeft" formatted="false">Ọjọ́ %num ló kù</string>
+    <string name="tlvOneDayLeft">Ọjọ́ 1 ló kù</string>
+    <string name="tlvHoursLeft" formatted="false">Wákàtí %num ló kù</string>
+    <string name="tlvOneHourLeft">Wákàtí 1 ló kù</string>
+    <string name="tlvMinutesLeft" formatted="false">Ìṣẹ́jú %num ló kù</string>
+    <string name="tlvOneMinuteLeft">Ìṣẹ́jú 1 ló kù</string>
+    <string name="tlvAuthorityBaton" formatted="false">Ọ̀pá àṣẹ %count · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">Àwọn ọ̀pá àṣẹ %count · %syms</string>
+    <string name="tlvTransactions">Àwọn ìdúnàdúrà àpótí</string>
+    <string name="tlvNoTransactions">Kò tíì sí ìdúnàdúrà fún àpótí yìí.</string>
+    <string name="tlvVaultCreated">A ti ṣẹ̀dá àpótí</string>
+    <string name="tlvClaimSent">A ti fi ìgbà ránṣẹ́</string>
+    <string name="tlvPendingDeposit">Ìfipamọ́ tó ń dúró</string>
+    <string name="tlvTopUp">Àfikún</string>
+    <string name="tlvTxCreated">A ṣẹ̀dá</string>
+    <string name="tlvTxDeposit">Ìfipamọ́</string>
+    <string name="tlvTxReceived">A gbà</string>
+    <string name="tlvPending">Ń dúró</string>
+    <string name="tlvNetworkFee" formatted="false">Owó iṣẹ́ nẹ́tíwọ̀kì %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Àṣẹ %caps · %token</string>
+    <string name="tlvAuthority">Àṣẹ</string>
+    <string name="tlvCapMint">Ìṣẹ̀dá</string>
+    <string name="tlvCapMelt">Ìyọ́</string>
+    <string name="tlvCapBaton">Ọ̀pá</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Ẹ̀ka kékeré</string>
+    <string name="tlvCreateTitle">Ṣẹ̀dá àpótí ìtìpa àkókò</string>
+    <string name="tlvCreateVault">Ṣẹ̀dá àpótí</string>
+    <string name="tlvCreateExplainer">Owó pẹ̀lú owó iṣẹ́ kékeré yóò lọ sí àdírẹ́sì tí a tì pa pẹ̀lú àkókò. Wàá rí wọn nínú àpótí, ṣùgbọ́n o kò lè ná wọn ṣáájú ọjọ́ tí a sọ.</string>
+    <string name="tlvMinimumAmount" formatted="false">Ó kéré jù %amt %unit</string>
+    <string name="tlvLockUntil">Ti pa títí di</string>
+    <string name="tlvBlockHeight">Gíga blọ́ọ̀kù</string>
+    <string name="tlvFutureDate">Ọjọ́ ọjọ́ iwájú</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Gíga blọ́ọ̀kù tó pọ̀ jù ni %num</string>
+    <string name="tlvFeeSatB">Owó iṣẹ́</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Àpapọ̀</string>
+    <string name="tlvReview">Ṣàyẹ̀wò</string>
+    <string name="tlvDone">Ó parí</string>
+    <string name="tlvOk">Ó dára</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Fọwọ́ sí àpótí</string>
+    <string name="tlvPayTo">San fún</string>
+    <string name="tlvNewTimeLockVault">Àpótí ìtìpa àkókò tuntun</string>
+    <string name="tlvLockedUntil">A tì pa títí di</string>
+    <string name="tlvLock">Ti pa</string>
+    <string name="tlvLockExplainer" formatted="false">Ìbuwọ́lù yóò ti %amt %unit pa nínú %name títí di %date. A kò lè gbà á ṣáájú ìgbà náà.</string>
+    <string name="tlvConfirmAndSign">Fọwọ́ sí &amp; buwọ́lù</string>
+    <string name="tlvWorking">Ń ṣiṣẹ́…</string>
+    <string name="tlvClaimVault">Gba àpótí</string>
+    <string name="tlvClaimExplainerSingle">Àpótí yìí ti ṣí. Fọwọ́ sí i láti dá báláǹsì rẹ̀ padà sí wọ́lẹ́ẹ̀tì rẹ.</string>
+    <string name="tlvClaimTo">Gbà sí</string>
+    <string name="tlvClaimedTo">A gbà sí</string>
+    <string name="tlvYourWallet">(wọ́lẹ́ẹ̀tì rẹ)</string>
+    <string name="tlvAsset">Ohun ìní</string>
+    <string name="tlvYouReceive">Wàá gbà</string>
+    <string name="tlvNothingToClaim">Kò sí ohun tí a lè gbà — àpótí yìí ṣófo.</string>
+    <string name="tlvConfirmAndClaim">Fọwọ́ sí &amp; gbà</string>
+    <string name="tlvVaultClaimed">A ti gba àpótí</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit ń bọ̀ padà sí wọ́lẹ́ẹ̀tì rẹ.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">Owó ń bọ̀ lọ́nà.</string>
+    <string name="tlvLockedUntilBlock">A tì pa títí di blọ́ọ̀kù</string>
+    <string name="tlvName">Orúkọ</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Àwọn ọ̀pá àṣẹ · %count</string>
+    <string name="tlvTokens">Àwọn tọ́kìnì</string>
+    <string name="tlvBatons">Àwọn ọ̀pá</string>
+    <string name="tlvMovable">A lè gbé e</string>
+    <string name="tlvBatonExplainer">Ọ̀pá jẹ́ ìyọ̀ǹda, kì í ṣe báláǹsì. A dì í pẹ̀lú àwọn owó, ó sì ń jáde pẹ̀lú wọn nínú ìgbà kan náà.</string>
+    <string name="tlvDepositAddress">Àdírẹ́sì ìfipamọ́</string>
+    <string name="tlvNoAddress">(kò sí àdírẹ́sì)</string>
+    <string name="tlvVaultSuccess">Àpótí ti yọrí sí rere</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Pa QR dé</string>
+    <string name="tlvDepositWarning">Ohunkóhun tí a fi ránṣẹ́ sí àdírẹ́sì yìí wà ní títìpa títí àpótí yóò fi ṣí — títí kan owó tí a fi ránṣẹ́ síbí ní àṣìṣe.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Fi tọ́kìnì ránṣẹ́ síbí pẹ̀lú %unit díẹ̀ nìkan. Àpótí ń san owó iṣẹ́ rẹ̀ fúnra rẹ̀ nígbà tó bá ṣí, láti inú %unit tó ní nìkan.</string>
+    <string name="tlvHistory">Ìtàn</string>
+    <string name="tlvView">Wo</string>
+    <string name="tlvNoEarlyOpen">Kò sí ọ̀nà láti ṣí àpótí yìí ní kùtùkùtù. Ìyẹn ni ète àpótí ìtìpa àkókò.</string>
+    <string name="tlvPublicOnChain">Gíga ìṣí àti iye owó wà ní gbangba lórí ẹ̀wọ̀n láti ìgbà tí a ti fi owó sí àpótí yìí — ẹnikẹ́ni tó ní àdírẹ́sì lè kà wọ́n.</string>
 </resources>

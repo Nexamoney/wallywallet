@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">계정 화폐는 %walletCrypto이고 주소는 %addressCrypto입니다. 드롭다운 목록에서 보내는 계정을 주소의 블록체인과 일치하는 계정으로 바꾸세요.</string>
     <string name="incoming" formatted="false">대기 중인 %delta %unit 포함</string>
     <string name="approximatelyT" formatted="false">대략 %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR 가치는 글로벌 NEXA/USDT 가격과 \"Exchange Rate API\"의 USDT/INR 환율을 기준으로 합니다. 인도의 실제 NEXA OTC/P2P 가격은 현지 USDT/INR 환율과 시장 유동성 때문에 보통 20–30% 더 높습니다.</string>
     <string name="fastForward" formatted="false">빠른 진행</string>
     <string name="fastforwardStatus" formatted="false">빠른 진행 분석: %info</string>
     <string name="fastforwardStart" formatted="false">시작됨</string>
@@ -642,6 +643,7 @@
     <string name="tlvTitle">타임락 금고</string>
     <string name="tlvExplainer">선택한 날짜가 지나기 전까지는 아무도 (본인 포함) 코인을 쓸 수 없도록 잠급니다.</string>
     <string name="tlvNewVault">새 금고</string>
+    <string name="tlvContractLineLabel">타임락 금고:</string>
     <string name="tlvMyVaultsCount" formatted="false">내 금고 · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit 잠김</string>
     <string name="tlvLoadingVaults">금고 불러오는 중…</string>
@@ -652,9 +654,18 @@
     <string name="tlvClaimFailed">금고를 수령하지 못했습니다</string>
     <string name="tlvBalanceLoading">잔액 불러오는 중</string>
     <string name="tlvClaimed">수령됨</string>
+    <string name="tlvClaimedOn" formatted="false">%date 수령됨</string>
     <string name="tlvLocked">잠김</string>
+    <string name="tlvLockedOn" formatted="false">%date 잠김</string>
+    <string name="tlvUnlocked">잠금 해제됨</string>
+    <string name="tlvUnlockedOn" formatted="false">%date 잠금 해제됨</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">잠김 %locked · 잠금 해제 %unlocked</string>
+    <string name="tlvLockedUnlockedFields">잠김 · 잠금 해제</string>
+    <string name="tlvLockedUnlockedClaimedFields">잠김 · 잠금 해제 · 수령됨</string>
     <string name="tlvUnlocksBlock" formatted="false">블록 %num에서 잠금 해제</string>
     <string name="tlvBlockNum" formatted="false">블록 %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">블록 %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">잠금 해제됨 · 입금 대기 중</string>
     <string name="tlvUnlockedNeedsFeeCoin">잠금 해제됨 · 수수료용 코인 필요</string>
     <string name="tlvUnlockedReadyToClaim">잠금 해제됨 · 수령 준비 완료</string>
@@ -677,6 +688,9 @@
     <string name="tlvClaimSent">수령 전송됨</string>
     <string name="tlvPendingDeposit">입금 대기 중</string>
     <string name="tlvTopUp">추가 입금</string>
+    <string name="tlvTxCreated">생성됨</string>
+    <string name="tlvTxDeposit">입금</string>
+    <string name="tlvTxReceived">수신됨</string>
     <string name="tlvPending">대기 중</string>
     <string name="tlvNetworkFee" formatted="false">네트워크 수수료 %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">%caps 권한 · %token</string>
@@ -686,6 +700,7 @@
     <string name="tlvCapBaton">바통</string>
     <string name="tlvCapRescript">리스크립트</string>
     <string name="tlvCapSubgroup">하위 그룹</string>
+    <string name="tlvCreateTitle">타임락 금고 만들기</string>
     <string name="tlvCreateVault">금고 만들기</string>
     <string name="tlvCreateExplainer">자금과 소액의 수수료가 타임락 주소로 이동합니다. 금고에서 볼 수는 있지만 지정한 날짜 이전에는 쓸 수 없습니다.</string>
     <string name="tlvMinimumAmount" formatted="false">최소 %amt %unit</string>
@@ -704,10 +719,14 @@
     <string name="tlvPayTo">받는 곳</string>
     <string name="tlvNewTimeLockVault">새 타임락 금고</string>
     <string name="tlvLockedUntil">잠금 기한</string>
+    <string name="tlvLock">잠금</string>
+    <string name="tlvLockExplainer" formatted="false">서명하면 %amt %unit이(가) %name 금고에 %date까지 잠깁니다. 그 전에는 수령할 수 없습니다.</string>
     <string name="tlvConfirmAndSign">확인 후 서명</string>
     <string name="tlvWorking">처리 중…</string>
     <string name="tlvClaimVault">금고 수령</string>
     <string name="tlvClaimExplainerSingle">이 금고의 잠금이 해제되었습니다. 확인하면 잔액이 지갑으로 돌아옵니다.</string>
+    <string name="tlvClaimTo">수령 주소</string>
+    <string name="tlvClaimedTo">수령된 주소</string>
     <string name="tlvYourWallet">(내 지갑)</string>
     <string name="tlvAsset">자산</string>
     <string name="tlvYouReceive">받는 금액</string>
@@ -720,6 +739,8 @@
     <string name="tlvLockedUntilBlock">잠금 해제 블록</string>
     <string name="tlvName">이름</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">권한 바통 · %count</string>
+    <string name="tlvTokens">토큰</string>
+    <string name="tlvBatons">바통</string>
     <string name="tlvMovable">이동 가능</string>
     <string name="tlvBatonExplainer">바통은 잔액이 아니라 권한입니다. 코인과 함께 동결되며 같은 수령에서 함께 나옵니다.</string>
     <string name="tlvDepositAddress">입금 주소</string>

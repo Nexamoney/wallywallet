@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">የሂሳቡ ገንዘብ %walletCrypto ነው፣ አድራሻው ደግሞ %addressCrypto ነው። ከአድራሻው ብሎክቼይን ጋር የሚጣጣም ሂሳብ ለመምረጥ የመላኪያ ሂሳቡን ከዝርዝሩ ይቀይሩ።</string>
     <string name="incoming" formatted="false">%delta %unit በመጠባበቅ ላይ ያለውን ያካትታል</string>
     <string name="approximatelyT" formatted="false">በግምት %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">የ INR ዋጋ በዓለም አቀፍ NEXA/USDT ዋጋ እና ከ \"Exchange Rate API\" በሚገኘው USDT/INR ላይ የተመሠረተ ነው። በሕንድ ያሉ ትክክለኛ የ NEXA OTC/P2P ዋጋዎች በአካባቢያዊ USDT/INR ምንዛሪ እና በገበያ ፈሳሽነት ምክንያት በተለምዶ 20–30% ከፍ ያሉ ናቸው።</string>
     <string name="fastForward" formatted="false">ፈጣን ዝላይ</string>
     <string name="fastforwardStatus" formatted="false">የፈጣን ዝላይ ትንተና: %info</string>
     <string name="fastforwardStart" formatted="false">ተጀምሯል</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">የሂሳብ ገደብ</string>
     <string name="accountUnavailableDetails">ከዚህ ብሎክቼይን ጋር የሚዛመድ ሂሳብ የለም፣ ወይም ሂሳቡ አልተከፈተም።</string>
     <string name="accountUnavailable">የተከፈተ ተስማሚ ሂሳብ የለም</string>
+    <string name="accountCouldNotBeOpened">ሂሳቡን መክፈት አልተቻለም</string>
     <string name="sendMoreThanBalance">አሁን ካለዎት በላይ ገንዘብ ለመላክ እየሞከሩ ነው።\n\nከቀሪ ሂሳብዎ በላይ ወጪ እያደረጉ አይደለም ብለው የሚያስቡ ከሆነ፣ ግብይቶች ትንሽ ተጨማሪ ክፍያ እንዳላቸው ረስተው ይሆናል፤ ወይም ቀሪ ሂሳብዎ በሙሉ ያልተረጋገጠ ሆኖ የሚታይ ከሆነ በተከታታይ ብዙ ግብይቶች አድርገው ይሆናል።\n\nከብሎክቼይኑ ምን ያህል «ቀድመው መሄድ» እንደሚችሉ ገደብ አለ። ያልተረጋገጠው ቀሪ ሂሳብዎ እስኪረጋገጥ ይጠብቁና እንደገና ይሞክሩ።</string>
     <string name="sendMoreTokensThanBalance">አሁን ካለዎት በላይ ቶከኖችን ለመላክ እየሞከሩ ነው።</string>
     <string name="deductedFeeLargerThanSendAmount">የተቀነሰው ክፍያ ከሚላከው መጠን ይበልጣል</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">እና %tokSnd የቶከን ዓይነቶችን መላክ።</string>
     <string name="TpReceivingTokens" formatted="false">እና %tokRcv የቶከን ዓይነቶችን መቀበል።</string>
     <string name="TpHasNoPurpose">ይህ ጥያቄ በዚህ ሂሳብ ላይ ምንም ተጽዕኖ የለውም።</string>
+    <string name="TpProposalMissingSignature">ይህ ግብይት ጠያቂው ድረ-ገጽ ማቅረብ የነበረበት ፊርማ ይጎድለዋል፣ ስለዚህ ሊጠናቀቅ አይችልም። ከቦርሳዎ ምንም አልወጣም።</string>
     <string name="TpSendToTitle">ክፍያ የጠየቀው</string>
     <string name="TpSpends">ወጪ</string>
     <string name="TpSendRequestDenied">ክፍያ ተከልክሏል</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">ሽፋኑን ማንቃት መተግበሪያውን ዘግቶ «ማሰላሰል» በሚል ስም እንደ መተግበሪያ ያስመስለዋል። የ«ማሰላሰል» መተግበሪያ ሽፋንን ለማጥፋት የመተግበሪያውን ምናሌ ከፍተው የስሪት ቁጥሩን አምስት ጊዜ ይጫኑ።</string>
     <string name="CamouflageDescriptionOther">የ«ማሰላሰል» መተግበሪያ ሽፋንን ለማጥፋት የመተግበሪያውን ምናሌ ከፍተው የስሪት ቁጥሩን አምስት ጊዜ ይጫኑ።</string>
     <string name="CamouflageAsMeditateAppAndroid">እንደ «ማሰላሰል» መተግበሪያ ማስመሰል</string>
+    <string name="tlvTitle">የጊዜ ቁልፍ ካዝና</string>
+    <string name="tlvExplainer">ማንም (እርስዎን ጨምሮ) እስከመረጡት ቀን ድረስ እንዳያወጣቸው ሳንቲሞችን ይቆልፉ።</string>
+    <string name="tlvNewVault">አዲስ ካዝና</string>
+    <string name="tlvContractLineLabel">የጊዜ ቁልፍ ካዝና:</string>
+    <string name="tlvMyVaultsCount" formatted="false">የእኔ ካዝናዎች · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit ተቆልፏል</string>
+    <string name="tlvLoadingVaults">ካዝናዎች እየተጫኑ ነው…</string>
+    <string name="tlvNoVaultsYet">እስካሁን ካዝና የለም — አንዱን ለመፍጠር ከላይ አዲስ ካዝናን ይንኩ።</string>
+    <string name="tlvContractCounts" formatted="false">%claimable ሊወሰዱ የሚችሉ · %locked የተቆለፉ · %claimed የተወሰዱ</string>
+    <string name="tlvLoadFailed">የጊዜ ቁልፍ ካዝናዎችን መጫን አልተቻለም</string>
+    <string name="tlvCreateFailed">ካዝናውን መፍጠር አልተቻለም</string>
+    <string name="tlvClaimFailed">ካዝናውን መውሰድ አልተቻለም</string>
+    <string name="tlvBalanceLoading">ቀሪ ሂሳብ እየተጫነ ነው</string>
+    <string name="tlvClaimed">ተወስዷል</string>
+    <string name="tlvClaimedOn" formatted="false">%date ተወስዷል</string>
+    <string name="tlvLocked">ተቆልፏል</string>
+    <string name="tlvLockedOn" formatted="false">%date ተቆልፏል</string>
+    <string name="tlvUnlocked">ተከፍቷል</string>
+    <string name="tlvUnlockedOn" formatted="false">%date ተከፍቷል</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">ተቆልፏል %locked · ተከፍቷል %unlocked</string>
+    <string name="tlvLockedUnlockedFields">ተቆልፏል · ተከፍቷል</string>
+    <string name="tlvLockedUnlockedClaimedFields">ተቆልፏል · ተከፍቷል · ተወስዷል</string>
+    <string name="tlvUnlocksBlock" formatted="false">በብሎክ %num ይከፈታል</string>
+    <string name="tlvBlockNum" formatted="false">ብሎክ %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">ብሎክ %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">ተከፍቷል · ተቀማጭ በመጠባበቅ ላይ</string>
+    <string name="tlvUnlockedNeedsFeeCoin">ተከፍቷል · ለክፍያ ሳንቲም ያስፈልጋል</string>
+    <string name="tlvUnlockedReadyToClaim">ተከፍቷል · ለመውሰድ ዝግጁ</string>
+    <string name="tlvClaimedFundsArrivedSince">ተወስዷል · ከዚያ በኋላ ገንዘብ ገብቷል</string>
+    <string name="tlvClaim">ውሰድ</string>
+    <string name="tlvReclaim">እንደገና ውሰድ</string>
+    <string name="tlvVaultEmptied">ይህ ካዝና ባዶ ተደርጓል</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% አልፏል</string>
+    <string name="tlvDaysLeft" formatted="false">%num ቀናት ቀርተዋል</string>
+    <string name="tlvOneDayLeft">1 ቀን ቀርቷል</string>
+    <string name="tlvHoursLeft" formatted="false">%num ሰዓታት ቀርተዋል</string>
+    <string name="tlvOneHourLeft">1 ሰዓት ቀርቷል</string>
+    <string name="tlvMinutesLeft" formatted="false">%num ደቂቃዎች ቀርተዋል</string>
+    <string name="tlvOneMinuteLeft">1 ደቂቃ ቀርቷል</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count የስልጣን በትር · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count የስልጣን በትሮች · %syms</string>
+    <string name="tlvTransactions">የካዝና ግብይቶች</string>
+    <string name="tlvNoTransactions">ለዚህ ካዝና እስካሁን ግብይቶች የሉም።</string>
+    <string name="tlvVaultCreated">ካዝና ተፈጥሯል</string>
+    <string name="tlvClaimSent">መውሰድ ተልኳል</string>
+    <string name="tlvPendingDeposit">በመጠባበቅ ላይ ያለ ተቀማጭ</string>
+    <string name="tlvTopUp">መሙላት</string>
+    <string name="tlvTxCreated">ተፈጥሯል</string>
+    <string name="tlvTxDeposit">ተቀማጭ</string>
+    <string name="tlvTxReceived">ተቀብሏል</string>
+    <string name="tlvPending">በመጠባበቅ ላይ</string>
+    <string name="tlvNetworkFee" formatted="false">የአውታረ መረብ ክፍያ %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps ስልጣን · %token</string>
+    <string name="tlvAuthority">ስልጣን</string>
+    <string name="tlvCapMint">ማምረት</string>
+    <string name="tlvCapMelt">ማቅለጥ</string>
+    <string name="tlvCapBaton">በትር</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">ንዑስ ቡድን</string>
+    <string name="tlvCreateTitle">የጊዜ ቁልፍ ካዝና ፍጠር</string>
+    <string name="tlvCreateVault">ካዝና ፍጠር</string>
+    <string name="tlvCreateExplainer">ገንዘቡ እና ትንሽ ክፍያ በጊዜ ወደተቆለፈ አድራሻ ይዛወራሉ። በካዝናው ውስጥ ያዩዋቸዋል፣ ግን ከተወሰነው ቀን በፊት ማውጣት አይችሉም።</string>
+    <string name="tlvMinimumAmount" formatted="false">ዝቅተኛ %amt %unit</string>
+    <string name="tlvLockUntil">እስከ ድረስ ቆልፍ</string>
+    <string name="tlvBlockHeight">የብሎክ ቁመት</string>
+    <string name="tlvFutureDate">የወደፊት ቀን</string>
+    <string name="tlvMaxBlockHeight" formatted="false">ከፍተኛው የብሎክ ቁመት %num ነው</string>
+    <string name="tlvFeeSatB">ክፍያ</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">ጠቅላላ</string>
+    <string name="tlvReview">ገምግም</string>
+    <string name="tlvDone">ተጠናቋል</string>
+    <string name="tlvOk">እሺ</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">ካዝናውን አረጋግጥ</string>
+    <string name="tlvPayTo">ክፈል ለ</string>
+    <string name="tlvNewTimeLockVault">አዲስ የጊዜ ቁልፍ ካዝና</string>
+    <string name="tlvLockedUntil">እስከ ድረስ ተቆልፏል</string>
+    <string name="tlvLock">ቆልፍ</string>
+    <string name="tlvLockExplainer" formatted="false">መፈረም %amt %unit በ %name ውስጥ እስከ %date ድረስ ይቆልፋል። ከዚያ በፊት ሊወሰድ አይችልም።</string>
+    <string name="tlvConfirmAndSign">አረጋግጥ &amp; ፈርም</string>
+    <string name="tlvWorking">እየሠራ ነው…</string>
+    <string name="tlvClaimVault">ካዝናውን ውሰድ</string>
+    <string name="tlvClaimExplainerSingle">ይህ ካዝና ተከፍቷል። ቀሪ ሂሳቡን ወደ ቦርሳዎ ለመመለስ ያረጋግጡ።</string>
+    <string name="tlvClaimTo">ወደ ውሰድ</string>
+    <string name="tlvClaimedTo">ወደ ተወስዷል</string>
+    <string name="tlvYourWallet">(የእርስዎ ቦርሳ)</string>
+    <string name="tlvAsset">ንብረት</string>
+    <string name="tlvYouReceive">የሚቀበሉት</string>
+    <string name="tlvNothingToClaim">የሚወሰድ ነገር የለም — ይህ ካዝና ባዶ ነው።</string>
+    <string name="tlvConfirmAndClaim">አረጋግጥ &amp; ውሰድ</string>
+    <string name="tlvVaultClaimed">ካዝና ተወስዷል</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit ወደ ቦርሳዎ በመመለስ ላይ ነው።</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">ገንዘቡ በመንገድ ላይ ነው።</string>
+    <string name="tlvLockedUntilBlock">እስከ ብሎክ ድረስ ተቆልፏል</string>
+    <string name="tlvName">ስም</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">የስልጣን በትሮች · %count</string>
+    <string name="tlvTokens">ቶከኖች</string>
+    <string name="tlvBatons">በትሮች</string>
+    <string name="tlvMovable">ሊዛወር የሚችል</string>
+    <string name="tlvBatonExplainer">በትር ፈቃድ ነው፣ ቀሪ ሂሳብ አይደለም። ከሳንቲሞቹ ጋር ይቀዘቅዛል እና በዚያው መውሰድ ከእነሱ ጋር ይወጣል።</string>
+    <string name="tlvDepositAddress">የተቀማጭ አድራሻ</string>
+    <string name="tlvNoAddress">(አድራሻ የለም)</string>
+    <string name="tlvVaultSuccess">ካዝና ተሳክቷል</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR ዝጋ</string>
+    <string name="tlvDepositWarning">ወደዚህ አድራሻ የተላከ ማንኛውም ነገር ካዝናው እስኪከፈት ድረስ ተቆልፎ ይቆያል — በስህተት ወደዚህ የተላኩ ሳንቲሞችን ጨምሮ።</string>
+    <string name="tlvTokenFeeWarning" formatted="false">ቶከኖችን ወደዚህ የሚልኩት ከትንሽ %unit ጋር ብቻ ነው። ካዝና ሲከፈት የራሱን ክፍያ ራሱ ይከፍላል፣ ያውም ካለው %unit ብቻ።</string>
+    <string name="tlvHistory">ታሪክ</string>
+    <string name="tlvView">ተመልከት</string>
+    <string name="tlvNoEarlyOpen">ይህን ካዝና ቀድሞ ለመክፈት ምንም መንገድ የለም። የጊዜ ቁልፍ ካዝና ዓላማ ያ ነው።</string>
+    <string name="tlvPublicOnChain">የመክፈቻ ቁመቱ እና መጠኑ ይህ ካዝና ገንዘብ ከገባበት ቅጽበት ጀምሮ በሰንሰለቱ ላይ ይፋ ናቸው — አድራሻው ያለው ማንኛውም ሰው ሊያነባቸው ይችላል።</string>
 </resources>

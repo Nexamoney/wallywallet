@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">La moneda del compte és %walletCrypto, l\'adreça és %addressCrypto. Utilitzeu el quadre combinat per canviar el compte d\'enviament a un que coincideixi amb la cadena de blocs de l\'adreça.</string>
     <string name="incoming" formatted="false">inclou %delta %unit pendent</string>
     <string name="approximatelyT" formatted="false">aproximadament %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">El valor en INR es basa en el preu global NEXA/USDT i en l\'USDT/INR d\'\"Exchange Rate API\". Els preus reals NEXA OTC/P2P a l\'Índia solen ser un 20–30% més alts per les taxes USDT/INR locals i la liquiditat del mercat.</string>
     <string name="fastForward" formatted="false">Avanç ràpid</string>
     <string name="fastforwardStatus" formatted="false">anàlisi de l\'avanç ràpid: %info</string>
     <string name="fastforwardStart" formatted="false">iniciat</string>
@@ -641,6 +642,7 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="tlvTitle">Caixa forta amb bloqueig temporal</string>
     <string name="tlvExplainer">Bloqueja monedes perquè ningú (ni tu mateix) les pugui gastar fins després de la data que triïs.</string>
     <string name="tlvNewVault">Nova caixa forta</string>
+    <string name="tlvContractLineLabel">Caixa forta amb bloqueig temporal:</string>
     <string name="tlvMyVaultsCount" formatted="false">LES MEVES CAIXES · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit bloquejats</string>
     <string name="tlvLoadingVaults">Carregant caixes fortes…</string>
@@ -651,9 +653,18 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="tlvClaimFailed">No s\'ha pogut reclamar la caixa forta</string>
     <string name="tlvBalanceLoading">Carregant el saldo</string>
     <string name="tlvClaimed">Reclamada</string>
+    <string name="tlvClaimedOn" formatted="false">Reclamada el %date</string>
     <string name="tlvLocked">Bloquejada</string>
+    <string name="tlvLockedOn" formatted="false">Bloquejada el %date</string>
+    <string name="tlvUnlocked">Desbloquejada</string>
+    <string name="tlvUnlockedOn" formatted="false">Desbloquejada el %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Bloquejada %locked · Desbloquejada %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Bloquejada · Desbloquejada</string>
+    <string name="tlvLockedUnlockedClaimedFields">Bloquejada · Desbloquejada · Reclamada</string>
     <string name="tlvUnlocksBlock" formatted="false">Es desbloqueja al bloc %num</string>
     <string name="tlvBlockNum" formatted="false">Bloc %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Bloc %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Desbloquejada · esperant un dipòsit</string>
     <string name="tlvUnlockedNeedsFeeCoin">Desbloquejada · calen monedes per a la comissió</string>
     <string name="tlvUnlockedReadyToClaim">Desbloquejada · a punt per reclamar</string>
@@ -676,6 +687,9 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="tlvClaimSent">Reclamació enviada</string>
     <string name="tlvPendingDeposit">Dipòsit pendent</string>
     <string name="tlvTopUp">Recàrrega</string>
+    <string name="tlvTxCreated">Creada</string>
+    <string name="tlvTxDeposit">Dipòsit</string>
+    <string name="tlvTxReceived">Rebut</string>
     <string name="tlvPending">Pendent</string>
     <string name="tlvNetworkFee" formatted="false">Comissió de xarxa %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">Autoritat %caps · %token</string>
@@ -685,6 +699,7 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="tlvCapBaton">Bastó</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Subgrup</string>
+    <string name="tlvCreateTitle">Crear caixa forta amb bloqueig temporal</string>
     <string name="tlvCreateVault">Crear caixa forta</string>
     <string name="tlvCreateExplainer">Els fons més una petita comissió es mouran a una adreça bloquejada temporalment. Els veuràs a la caixa forta, però no els podràs gastar abans de la data especificada.</string>
     <string name="tlvMinimumAmount" formatted="false">Mínim %amt %unit</string>
@@ -703,10 +718,14 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="tlvPayTo">Pagar a</string>
     <string name="tlvNewTimeLockVault">Nova caixa forta amb bloqueig temporal</string>
     <string name="tlvLockedUntil">Bloquejada fins</string>
+    <string name="tlvLock">Bloquejar</string>
+    <string name="tlvLockExplainer" formatted="false">En signar es bloquegen %amt %unit a %name fins al %date. No es podrà reclamar abans.</string>
     <string name="tlvConfirmAndSign">Confirmar i signar</string>
     <string name="tlvWorking">Treballant…</string>
     <string name="tlvClaimVault">Reclamar caixa forta</string>
     <string name="tlvClaimExplainerSingle">Aquesta caixa forta s\'ha desbloquejat. Confirma per retornar el seu saldo al teu moneder.</string>
+    <string name="tlvClaimTo">Reclamar a</string>
+    <string name="tlvClaimedTo">Reclamada a</string>
     <string name="tlvYourWallet">(el teu moneder)</string>
     <string name="tlvAsset">Actiu</string>
     <string name="tlvYouReceive">Reps</string>
@@ -719,6 +738,8 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="tlvLockedUntilBlock">Bloquejada fins al bloc</string>
     <string name="tlvName">Nom</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Bastons d\'autoritat · %count</string>
+    <string name="tlvTokens">Tokens</string>
+    <string name="tlvBatons">Bastons</string>
     <string name="tlvMovable">Movible</string>
     <string name="tlvBatonExplainer">Un bastó és un permís, no un saldo. Es congela amb les monedes i surt amb elles en la mateixa reclamació.</string>
     <string name="tlvDepositAddress">Adreça de dipòsit</string>

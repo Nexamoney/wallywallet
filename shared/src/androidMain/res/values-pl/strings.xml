@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Waluta konta: %walletCrypto, waluta adresu: %addressCrypto. Za pomocą listy wyboru należy zmienić konto wysyłki na zgodne z blockchainem adresu.</string>
     <string name="incoming" formatted="false">w tym oczekujące: %delta %unit</string>
     <string name="approximatelyT" formatted="false">około %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Wartość w INR opiera się na globalnej cenie NEXA/USDT i kursie USDT/INR z \"Exchange Rate API\". Rzeczywiste ceny NEXA OTC/P2P w Indiach są zwykle o 20–30% wyższe z powodu lokalnych kursów USDT/INR i płynności rynku.</string>
     <string name="fastForward" formatted="false">Przyspiesz</string>
     <string name="fastforwardStatus" formatted="false">analiza przyspieszenia: %info</string>
     <string name="fastforwardStart" formatted="false">rozpoczęto</string>
@@ -403,6 +404,7 @@
     <string name="accountLimitReached">limit kont</string>
     <string name="accountUnavailableDetails">Żadne konto nie pasuje do tego blockchaina albo konto nie zostało odblokowane.</string>
     <string name="accountUnavailable">Brak odblokowanego zgodnego konta</string>
+    <string name="accountCouldNotBeOpened">Nie udało się otworzyć konta</string>
     <string name="sendMoreThanBalance">Próba wysłania większej ilości środków, niż jest obecnie dostępna.\n\nJeśli wydaje się, że kwota nie przekracza salda, warto pamiętać, że każda transakcja ma niewielką dodatkową opłatę; a jeśli całe saldo jest niepotwierdzone, wykonano zbyt wiele transakcji pod rząd.\n\nIstnieje granica tego, jak bardzo można „wyprzedzić” blockchain. Należy poczekać na potwierdzenie salda i spróbować ponownie.</string>
     <string name="sendMoreTokensThanBalance">Próba wysłania większej liczby tokenów, niż jest obecnie dostępna.</string>
     <string name="deductedFeeLargerThanSendAmount">Potrącana opłata jest większa niż wysyłana kwota</string>
@@ -502,6 +504,7 @@
     <string name="TpSendingTokens" formatted="false">oraz wysyłkę tokenów (typy: %tokSnd).</string>
     <string name="TpReceivingTokens" formatted="false">oraz odbiór tokenów (typy: %tokRcv).</string>
     <string name="TpHasNoPurpose">Ta prośba nie ma wpływu na to konto.</string>
+    <string name="TpProposalMissingSignature">W tej transakcji brakuje podpisu, który powinna dostarczyć strona żądająca, więc nie można jej dokończyć. Z Twojego portfela nic nie wydano.</string>
     <string name="TpSendToTitle">Prośba o płatność od</string>
     <string name="TpSpends">Wydatek</string>
     <string name="TpSendRequestDenied">Płatność odrzucona</string>
@@ -634,4 +637,118 @@ Dziękujemy i życzymy udanego korzystania z nowego portfela!</string>
     <string name="CamouflageDescriptionAndroid">Włączenie kamuflażu zamyka aplikację i ukrywa ją pod nazwą Meditate. Aby wyłączyć kamuflaż aplikacji Meditate, należy otworzyć menu aplikacji i pięciokrotnie kliknąć numer wersji.</string>
     <string name="CamouflageDescriptionOther">Aby wyłączyć kamuflaż aplikacji Meditate, należy otworzyć menu aplikacji i pięciokrotnie kliknąć numer wersji.</string>
     <string name="CamouflageAsMeditateAppAndroid">Kamuflaż jako aplikacja Meditate</string>
+    <string name="tlvTitle">Skarbiec z blokadą czasową</string>
+    <string name="tlvExplainer">Zablokuj monety, aby nikt (łącznie z Tobą) nie mógł ich wydać przed wybraną datą.</string>
+    <string name="tlvNewVault">Nowy skarbiec</string>
+    <string name="tlvContractLineLabel">Skarbiec z blokadą czasową:</string>
+    <string name="tlvMyVaultsCount" formatted="false">MOJE SKARBCE · %count</string>
+    <string name="tlvTotalLocked" formatted="false">Zablokowano %amt %unit</string>
+    <string name="tlvLoadingVaults">Wczytywanie skarbców…</string>
+    <string name="tlvNoVaultsYet">Brak skarbców — dotknij Nowy skarbiec powyżej, aby utworzyć pierwszy.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable do odbioru · %locked zablokowane · %claimed odebrane</string>
+    <string name="tlvLoadFailed">Nie udało się wczytać skarbców z blokadą czasową</string>
+    <string name="tlvCreateFailed">Nie udało się utworzyć skarbca</string>
+    <string name="tlvClaimFailed">Nie udało się odebrać skarbca</string>
+    <string name="tlvBalanceLoading">Wczytywanie salda</string>
+    <string name="tlvClaimed">Odebrany</string>
+    <string name="tlvClaimedOn" formatted="false">Odebrany %date</string>
+    <string name="tlvLocked">Zablokowany</string>
+    <string name="tlvLockedOn" formatted="false">Zablokowany %date</string>
+    <string name="tlvUnlocked">Odblokowany</string>
+    <string name="tlvUnlockedOn" formatted="false">Odblokowany %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Zablokowany %locked · Odblokowany %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Zablokowany · Odblokowany</string>
+    <string name="tlvLockedUnlockedClaimedFields">Zablokowany · Odblokowany · Odebrany</string>
+    <string name="tlvUnlocksBlock" formatted="false">Odblokowanie w bloku %num</string>
+    <string name="tlvBlockNum" formatted="false">Blok %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blok %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Odblokowany · oczekuje na wpłatę</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Odblokowany · brakuje monet na opłatę</string>
+    <string name="tlvUnlockedReadyToClaim">Odblokowany · gotowy do odbioru</string>
+    <string name="tlvClaimedFundsArrivedSince">Odebrany · od tego czasu wpłynęły środki</string>
+    <string name="tlvClaim">Odbierz</string>
+    <string name="tlvReclaim">Odbierz ponownie</string>
+    <string name="tlvVaultEmptied">Ten skarbiec został opróżniony</string>
+    <string name="tlvPercentElapsed" formatted="false">Upłynęło %pct%</string>
+    <string name="tlvDaysLeft" formatted="false">Pozostało dni: %num</string>
+    <string name="tlvOneDayLeft">Pozostał 1 dzień</string>
+    <string name="tlvHoursLeft" formatted="false">Pozostało godzin: %num</string>
+    <string name="tlvOneHourLeft">Pozostała 1 godzina</string>
+    <string name="tlvMinutesLeft" formatted="false">Pozostało minut: %num</string>
+    <string name="tlvOneMinuteLeft">Pozostała 1 minuta</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count pałeczka uprawnień · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">Pałeczki uprawnień: %count · %syms</string>
+    <string name="tlvTransactions">Transakcje skarbca</string>
+    <string name="tlvNoTransactions">Ten skarbiec nie ma jeszcze transakcji.</string>
+    <string name="tlvVaultCreated">Skarbiec utworzony</string>
+    <string name="tlvClaimSent">Odbiór wysłany</string>
+    <string name="tlvPendingDeposit">Oczekująca wpłata</string>
+    <string name="tlvTopUp">Doładowanie</string>
+    <string name="tlvTxCreated">Utworzono</string>
+    <string name="tlvTxDeposit">Wpłata</string>
+    <string name="tlvTxReceived">Odebrano</string>
+    <string name="tlvPending">Oczekuje</string>
+    <string name="tlvNetworkFee" formatted="false">Opłata sieciowa %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Uprawnienie %caps · %token</string>
+    <string name="tlvAuthority">Uprawnienie</string>
+    <string name="tlvCapMint">Emisja</string>
+    <string name="tlvCapMelt">Spalanie</string>
+    <string name="tlvCapBaton">Pałeczka</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Podgrupa</string>
+    <string name="tlvCreateTitle">Utwórz skarbiec z blokadą czasową</string>
+    <string name="tlvCreateVault">Utwórz skarbiec</string>
+    <string name="tlvCreateExplainer">Środki plus niewielka opłata trafią na adres z blokadą czasową. Zobaczysz je w skarbcu, ale nie wydasz ich przed wskazaną datą.</string>
+    <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
+    <string name="tlvLockUntil">Zablokuj do</string>
+    <string name="tlvBlockHeight">Wysokość bloku</string>
+    <string name="tlvFutureDate">Przyszła data</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Maksymalna wysokość bloku to %num</string>
+    <string name="tlvFeeSatB">Opłata</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Razem</string>
+    <string name="tlvReview">Sprawdź</string>
+    <string name="tlvDone">Gotowe</string>
+    <string name="tlvOk">OK</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Potwierdź skarbiec</string>
+    <string name="tlvPayTo">Zapłać do</string>
+    <string name="tlvNewTimeLockVault">Nowy skarbiec z blokadą czasową</string>
+    <string name="tlvLockedUntil">Zablokowany do</string>
+    <string name="tlvLock">Zablokuj</string>
+    <string name="tlvLockExplainer" formatted="false">Podpisanie blokuje %amt %unit w skarbcu %name do %date. Wcześniej nie można ich odebrać.</string>
+    <string name="tlvConfirmAndSign">Potwierdź &amp; podpisz</string>
+    <string name="tlvWorking">Przetwarzanie…</string>
+    <string name="tlvClaimVault">Odbierz skarbiec</string>
+    <string name="tlvClaimExplainerSingle">Ten skarbiec został odblokowany. Potwierdź, aby przenieść jego saldo z powrotem do portfela.</string>
+    <string name="tlvClaimTo">Odbierz na</string>
+    <string name="tlvClaimedTo">Odebrano na</string>
+    <string name="tlvYourWallet">(Twój portfel)</string>
+    <string name="tlvAsset">Aktywo</string>
+    <string name="tlvYouReceive">Otrzymasz</string>
+    <string name="tlvNothingToClaim">Nie ma nic do odbioru — ten skarbiec jest pusty.</string>
+    <string name="tlvConfirmAndClaim">Potwierdź &amp; odbierz</string>
+    <string name="tlvVaultClaimed">Skarbiec odebrany</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit wraca do Twojego portfela.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Środki są w drodze.</string>
+    <string name="tlvLockedUntilBlock">Zablokowany do bloku</string>
+    <string name="tlvName">Nazwa</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Pałeczki uprawnień · %count</string>
+    <string name="tlvTokens">Tokeny</string>
+    <string name="tlvBatons">Pałeczki</string>
+    <string name="tlvMovable">Przenośne</string>
+    <string name="tlvBatonExplainer">Pałeczka to uprawnienie, nie saldo. Jest zamrożona razem z monetami i wychodzi z nimi w tym samym odbiorze.</string>
+    <string name="tlvDepositAddress">Adres wpłaty</string>
+    <string name="tlvNoAddress">(brak adresu)</string>
+    <string name="tlvVaultSuccess">Skarbiec gotowy</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Zamknij QR</string>
+    <string name="tlvDepositWarning">Wszystko, co trafi na ten adres, pozostaje zablokowane do otwarcia skarbca — także monety wysłane tu przez pomyłkę.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Wysyłaj tu tokeny tylko razem z odrobiną %unit. Skarbiec sam płaci swoją opłatę przy otwarciu, i to wyłącznie z %unit, które zawiera.</string>
+    <string name="tlvHistory">Historia</string>
+    <string name="tlvView">Pokaż</string>
+    <string name="tlvNoEarlyOpen">Nie da się otworzyć tego skarbca wcześniej. Na tym właśnie polega skarbiec z blokadą czasową.</string>
+    <string name="tlvPublicOnChain">Wysokość odblokowania i kwota są publiczne w łańcuchu od chwili zasilenia tego skarbca — każdy, kto zna adres, może je odczytać.</string>
 </resources>

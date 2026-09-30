@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">கணக்கின் நாணயம் %walletCrypto, முகவரி %addressCrypto. முகவரியின் பிளாக்செயினுடன் பொருந்தும் கணக்கை அனுப்பும் கணக்காக மாற்ற காம்போ பாக்ஸைப் பயன்படுத்தவும்.</string>
     <string name="incoming" formatted="false">%delta %unit நிலுவையில் உள்ளது</string>
     <string name="approximatelyT" formatted="false">தோராயமாக %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR மதிப்பு உலகளாவிய NEXA/USDT விலை மற்றும் \"Exchange Rate API\" இன் USDT/INR ஐ அடிப்படையாகக் கொண்டது. உள்ளூர் USDT/INR விகிதங்கள் மற்றும் சந்தை பணப்புழக்கம் காரணமாக இந்தியாவில் உண்மையான NEXA OTC/P2P விலைகள் பொதுவாக 20–30% அதிகமாக இருக்கும்.</string>
     <string name="fastForward" formatted="false">விரைவாக்கு</string>
     <string name="fastforwardStatus" formatted="false">விரைவாக்குப் பகுப்பாய்வு: %info</string>
     <string name="fastforwardStart" formatted="false">தொடங்கியது</string>
@@ -403,6 +404,7 @@
     <string name="accountLimitReached">அதிகபட்சக் கணக்குகள்</string>
     <string name="accountUnavailableDetails">இந்தப் பிளாக்செயினுக்குப் பொருந்தும் கணக்கு எதுவும் இல்லை, அல்லது கணக்கு திறக்கப்படவில்லை.</string>
     <string name="accountUnavailable">திறந்த பொருத்தமான கணக்கு இல்லை</string>
+    <string name="accountCouldNotBeOpened">கணக்கைத் திறக்க முடியவில்லை</string>
     <string name="sendMoreThanBalance">தற்போது உங்களிடம் உள்ளதைவிட அதிக நாணயங்களை அனுப்ப முயற்சிக்கிறீர்கள்.\n\nஉங்கள் இருப்பைவிட அதிகமாகச் செலவழிக்கவில்லை என்று நீங்கள் நினைத்தால், பரிவர்த்தனைகளுக்குச் சிறிய கூடுதல் கட்டணம் உண்டு என்பதை மறந்திருக்கலாம்; அல்லது உங்கள் இருப்பு முழுவதும் உறுதியாகாததாகக் காட்டப்பட்டால், அடுத்தடுத்து அதிகப் பரிவர்த்தனைகளைச் செய்திருக்கலாம்.\n\nபிளாக்செயினைவிட எவ்வளவு முன்னே செல்ல முடியும் என்பதற்கு ஒரு வரம்பு உள்ளது. உங்கள் உறுதியாகாத இருப்பு உறுதியாகும் வரை காத்திருந்து மீண்டும் முயற்சிக்கவும்.</string>
     <string name="sendMoreTokensThanBalance">தற்போது உங்களிடம் உள்ளதைவிட அதிக டோக்கன்களை அனுப்ப முயற்சிக்கிறீர்கள்.</string>
     <string name="deductedFeeLargerThanSendAmount">கழிக்கப்படும் கட்டணம் அனுப்பப்படும் தொகையைவிட அதிகம்</string>
@@ -502,6 +504,7 @@
     <string name="TpSendingTokens" formatted="false">மேலும் %tokSnd வகை டோக்கன்களை அனுப்புகிறது.</string>
     <string name="TpReceivingTokens" formatted="false">மேலும் %tokRcv வகை டோக்கன்களைப் பெறுகிறது.</string>
     <string name="TpHasNoPurpose">இந்தக் கோரிக்கை இந்தக் கணக்கில் எந்த மாற்றத்தையும் ஏற்படுத்தாது.</string>
+    <string name="TpProposalMissingSignature">இந்தப் பரிவர்த்தனையில் கோரிக்கை தளம் வழங்கியிருக்க வேண்டிய கையொப்பம் இல்லை, எனவே இதை முடிக்க முடியாது. உங்கள் வாலட்டிலிருந்து எதுவும் செலவழிக்கப்படவில்லை.</string>
     <string name="TpSendToTitle">பணம் கோரியவர்</string>
     <string name="TpSpends">செலவழிப்பது</string>
     <string name="TpSendRequestDenied">பணம் மறுக்கப்பட்டது</string>
@@ -634,4 +637,118 @@
     <string name="CamouflageDescriptionAndroid">உருமறைப்பை இயக்கினால் ஆப் மூடப்பட்டு, Meditate என்ற பெயருடைய ஆப்பாக மறைக்கப்படும். Meditate ஆப் உருமறைப்பை நீக்க, ஆப் மெனுவைத் திறந்து பதிப்பு எண்ணை ஐந்து முறை தட்டவும்.</string>
     <string name="CamouflageDescriptionOther">Meditate ஆப் உருமறைப்பை நீக்க, ஆப் மெனுவைத் திறந்து பதிப்பு எண்ணை ஐந்து முறை தட்டவும்.</string>
     <string name="CamouflageAsMeditateAppAndroid">Meditate ஆப்பாக உருமறை</string>
+    <string name="tlvTitle">டைம் லாக் வால்ட்</string>
+    <string name="tlvExplainer">நீங்கள் தேர்ந்தெடுத்த தேதிக்குப் பிறகு வரை யாரும் (நீங்கள் உட்பட) செலவழிக்க முடியாதபடி காயின்களைப் பூட்டுங்கள்.</string>
+    <string name="tlvNewVault">புதிய வால்ட்</string>
+    <string name="tlvContractLineLabel">டைம் லாக் வால்ட்:</string>
+    <string name="tlvMyVaultsCount" formatted="false">என் வால்ட்கள் · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit பூட்டப்பட்டது</string>
+    <string name="tlvLoadingVaults">வால்ட்கள் ஏற்றப்படுகின்றன…</string>
+    <string name="tlvNoVaultsYet">இன்னும் வால்ட்கள் இல்லை — ஒன்றை உருவாக்க மேலே புதிய வால்ட் என்பதைத் தட்டவும்.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable பெறத்தக்கவை · %locked பூட்டப்பட்டவை · %claimed பெறப்பட்டவை</string>
+    <string name="tlvLoadFailed">டைம் லாக் வால்ட்களை ஏற்ற முடியவில்லை</string>
+    <string name="tlvCreateFailed">வால்ட்டை உருவாக்க முடியவில்லை</string>
+    <string name="tlvClaimFailed">வால்ட்டைப் பெற முடியவில்லை</string>
+    <string name="tlvBalanceLoading">இருப்பு ஏற்றப்படுகிறது</string>
+    <string name="tlvClaimed">பெறப்பட்டது</string>
+    <string name="tlvClaimedOn" formatted="false">%date அன்று பெறப்பட்டது</string>
+    <string name="tlvLocked">பூட்டப்பட்டது</string>
+    <string name="tlvLockedOn" formatted="false">%date அன்று பூட்டப்பட்டது</string>
+    <string name="tlvUnlocked">திறக்கப்பட்டது</string>
+    <string name="tlvUnlockedOn" formatted="false">%date அன்று திறக்கப்பட்டது</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">பூட்டு %locked · திறப்பு %unlocked</string>
+    <string name="tlvLockedUnlockedFields">பூட்டு · திறப்பு</string>
+    <string name="tlvLockedUnlockedClaimedFields">பூட்டு · திறப்பு · பெறல்</string>
+    <string name="tlvUnlocksBlock" formatted="false">பிளாக் %num இல் திறக்கும்</string>
+    <string name="tlvBlockNum" formatted="false">பிளாக் %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">பிளாக் %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">திறக்கப்பட்டது · டெபாசிட்டுக்காகக் காத்திருக்கிறது</string>
+    <string name="tlvUnlockedNeedsFeeCoin">திறக்கப்பட்டது · கட்டணத்திற்கு காயின் தேவை</string>
+    <string name="tlvUnlockedReadyToClaim">திறக்கப்பட்டது · பெறத் தயார்</string>
+    <string name="tlvClaimedFundsArrivedSince">பெறப்பட்டது · பின்னர் நிதி வந்தது</string>
+    <string name="tlvClaim">பெறு</string>
+    <string name="tlvReclaim">மீண்டும் பெறு</string>
+    <string name="tlvVaultEmptied">இந்த வால்ட் காலியாக்கப்பட்டது</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% கடந்தது</string>
+    <string name="tlvDaysLeft" formatted="false">%num நாட்கள் மீதம்</string>
+    <string name="tlvOneDayLeft">1 நாள் மீதம்</string>
+    <string name="tlvHoursLeft" formatted="false">%num மணிநேரம் மீதம்</string>
+    <string name="tlvOneHourLeft">1 மணிநேரம் மீதம்</string>
+    <string name="tlvMinutesLeft" formatted="false">%num நிமிடங்கள் மீதம்</string>
+    <string name="tlvOneMinuteLeft">1 நிமிடம் மீதம்</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count அதிகார பேட்டன் · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count அதிகார பேட்டன்கள் · %syms</string>
+    <string name="tlvTransactions">வால்ட் பரிவர்த்தனைகள்</string>
+    <string name="tlvNoTransactions">இந்த வால்ட்டிற்கு இன்னும் பரிவர்த்தனைகள் இல்லை.</string>
+    <string name="tlvVaultCreated">வால்ட் உருவாக்கப்பட்டது</string>
+    <string name="tlvClaimSent">பெறல் அனுப்பப்பட்டது</string>
+    <string name="tlvPendingDeposit">நிலுவையில் உள்ள டெபாசிட்</string>
+    <string name="tlvTopUp">டாப்-அப்</string>
+    <string name="tlvTxCreated">உருவாக்கம்</string>
+    <string name="tlvTxDeposit">டெபாசிட்</string>
+    <string name="tlvTxReceived">பெறப்பட்டது</string>
+    <string name="tlvPending">நிலுவையில்</string>
+    <string name="tlvNetworkFee" formatted="false">நெட்வொர்க் கட்டணம் %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps அதிகாரம் · %token</string>
+    <string name="tlvAuthority">அதிகாரம்</string>
+    <string name="tlvCapMint">மின்ட்</string>
+    <string name="tlvCapMelt">மெல்ட்</string>
+    <string name="tlvCapBaton">பேட்டன்</string>
+    <string name="tlvCapRescript">ரீஸ்கிரிப்ட்</string>
+    <string name="tlvCapSubgroup">துணைக்குழு</string>
+    <string name="tlvCreateTitle">டைம் லாக் வால்ட்டை உருவாக்கு</string>
+    <string name="tlvCreateVault">வால்ட்டை உருவாக்கு</string>
+    <string name="tlvCreateExplainer">நிதியும் சிறிய கட்டணமும் டைம்-லாக் முகவரிக்கு நகரும். வால்ட்டில் அவற்றைப் பார்க்கலாம், ஆனால் குறிப்பிட்ட தேதிக்கு முன் செலவழிக்க முடியாது.</string>
+    <string name="tlvMinimumAmount" formatted="false">குறைந்தபட்சம் %amt %unit</string>
+    <string name="tlvLockUntil">இதுவரை பூட்டு</string>
+    <string name="tlvBlockHeight">பிளாக் உயரம்</string>
+    <string name="tlvFutureDate">எதிர்காலத் தேதி</string>
+    <string name="tlvMaxBlockHeight" formatted="false">அதிகபட்ச பிளாக் உயரம் %num</string>
+    <string name="tlvFeeSatB">கட்டணம்</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">மொத்தம்</string>
+    <string name="tlvReview">சரிபார்</string>
+    <string name="tlvDone">முடிந்தது</string>
+    <string name="tlvOk">சரி</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">வால்ட்டை உறுதிசெய்</string>
+    <string name="tlvPayTo">பணம் செலுத்து</string>
+    <string name="tlvNewTimeLockVault">புதிய டைம் லாக் வால்ட்</string>
+    <string name="tlvLockedUntil">இதுவரை பூட்டப்பட்டது</string>
+    <string name="tlvLock">பூட்டு</string>
+    <string name="tlvLockExplainer" formatted="false">கையொப்பமிடுவது %amt %unit ஐ %name இல் %date வரை பூட்டும். அதற்கு முன் பெற முடியாது.</string>
+    <string name="tlvConfirmAndSign">உறுதிசெய் &amp; கையொப்பமிடு</string>
+    <string name="tlvWorking">செயல்படுகிறது…</string>
+    <string name="tlvClaimVault">வால்ட்டைப் பெறு</string>
+    <string name="tlvClaimExplainerSingle">இந்த வால்ட் திறக்கப்பட்டது. அதன் இருப்பை உங்கள் வாலட்டிற்குத் திரும்பப் பெற உறுதிசெய்யவும்.</string>
+    <string name="tlvClaimTo">பெறும் இடம்</string>
+    <string name="tlvClaimedTo">பெறப்பட்ட இடம்</string>
+    <string name="tlvYourWallet">(உங்கள் வாலட்)</string>
+    <string name="tlvAsset">சொத்து</string>
+    <string name="tlvYouReceive">நீங்கள் பெறுவது</string>
+    <string name="tlvNothingToClaim">பெற எதுவும் இல்லை — இந்த வால்ட் காலியாக உள்ளது.</string>
+    <string name="tlvConfirmAndClaim">உறுதிசெய் &amp; பெறு</string>
+    <string name="tlvVaultClaimed">வால்ட் பெறப்பட்டது</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit உங்கள் வாலட்டிற்குத் திரும்பி வருகிறது.</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">நிதி வழியில் உள்ளது.</string>
+    <string name="tlvLockedUntilBlock">இந்த பிளாக் வரை பூட்டப்பட்டது</string>
+    <string name="tlvName">பெயர்</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">அதிகார பேட்டன்கள் · %count</string>
+    <string name="tlvTokens">டோக்கன்கள்</string>
+    <string name="tlvBatons">பேட்டன்கள்</string>
+    <string name="tlvMovable">நகர்த்தத்தக்கது</string>
+    <string name="tlvBatonExplainer">பேட்டன் என்பது ஒரு அனுமதி, இருப்பு அல்ல. அது காயின்களுடன் உறைந்திருக்கும், அதே பெறலில் அவற்றுடன் வெளியே வரும்.</string>
+    <string name="tlvDepositAddress">டெபாசிட் முகவரி</string>
+    <string name="tlvNoAddress">(முகவரி இல்லை)</string>
+    <string name="tlvVaultSuccess">வால்ட் வெற்றி</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR ஐ மூடு</string>
+    <string name="tlvDepositWarning">இந்த முகவரிக்கு அனுப்பப்படும் எதுவும் வால்ட் திறக்கும் வரை பூட்டப்பட்டிருக்கும் — தவறுதலாக அனுப்பப்பட்ட காயின்கள் உட்பட.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">டோக்கன்களை இங்கு சிறிது %unit உடன் மட்டுமே அனுப்பவும். வால்ட் திறக்கும்போது தன் கட்டணத்தைத் தானே செலுத்தும், அதுவும் தன்னிடம் உள்ள %unit இலிருந்து மட்டுமே.</string>
+    <string name="tlvHistory">வரலாறு</string>
+    <string name="tlvView">காண்க</string>
+    <string name="tlvNoEarlyOpen">இந்த வால்ட்டை முன்கூட்டியே திறக்க வழியில்லை. அதுவே டைம் லாக் வால்ட்டின் நோக்கம்.</string>
+    <string name="tlvPublicOnChain">இந்த வால்ட்டிற்கு நிதி வந்த கணத்திலிருந்து திறப்பு உயரமும் தொகையும் செயினில் பொதுவானவை — முகவரி உள்ள எவரும் அவற்றைப் படிக்கலாம்.</string>
 </resources>

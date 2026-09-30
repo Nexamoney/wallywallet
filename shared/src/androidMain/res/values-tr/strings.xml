@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Hesap para birimi %walletCrypto, adres ise %addressCrypto. Açılır listeden, adresin blok zinciriyle eşleşen bir gönderim hesabı seçin.</string>
     <string name="incoming" formatted="false">%delta %unit beklemede</string>
     <string name="approximatelyT" formatted="false">yaklaşık %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR değeri, küresel NEXA/USDT fiyatına ve \"Exchange Rate API\" USDT/INR kuruna dayanır. Hindistan\'daki gerçek NEXA OTC/P2P fiyatları, yerel USDT/INR kurları ve piyasa likiditesi nedeniyle genellikle 20–30% daha yüksektir.</string>
     <string name="fastForward" formatted="false">İleri sar</string>
     <string name="fastforwardStatus" formatted="false">ileri sarma analizi: %info</string>
     <string name="fastforwardStart" formatted="false">başladı</string>
@@ -643,6 +644,7 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="tlvTitle">Zaman Kilitli Kasa</string>
     <string name="tlvExplainer">Koinleri, seçtiğin tarihten önce kimsenin (sen dahil) harcayamayacağı şekilde kilitle.</string>
     <string name="tlvNewVault">Yeni kasa</string>
+    <string name="tlvContractLineLabel">Zaman Kilitli Kasa:</string>
     <string name="tlvMyVaultsCount" formatted="false">KASALARIM · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit kilitli</string>
     <string name="tlvLoadingVaults">Kasalar yükleniyor…</string>
@@ -653,9 +655,18 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="tlvClaimFailed">Kasa talep edilemedi</string>
     <string name="tlvBalanceLoading">Bakiye yükleniyor</string>
     <string name="tlvClaimed">Talep edildi</string>
+    <string name="tlvClaimedOn" formatted="false">%date tarihinde talep edildi</string>
     <string name="tlvLocked">Kilitli</string>
+    <string name="tlvLockedOn" formatted="false">%date tarihinde kilitlendi</string>
+    <string name="tlvUnlocked">Kilit açıldı</string>
+    <string name="tlvUnlockedOn" formatted="false">%date tarihinde kilit açıldı</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Kilitli %locked · Açık %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Kilitli · Açık</string>
+    <string name="tlvLockedUnlockedClaimedFields">Kilitli · Açık · Talep edildi</string>
     <string name="tlvUnlocksBlock" formatted="false">%num bloğunda açılır</string>
     <string name="tlvBlockNum" formatted="false">Blok %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blok %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Kilit açıldı · yatırma bekleniyor</string>
     <string name="tlvUnlockedNeedsFeeCoin">Kilit açıldı · ücret için koin gerekli</string>
     <string name="tlvUnlockedReadyToClaim">Kilit açıldı · talep edilmeye hazır</string>
@@ -678,6 +689,9 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="tlvClaimSent">Talep gönderildi</string>
     <string name="tlvPendingDeposit">Bekleyen yatırma</string>
     <string name="tlvTopUp">Ek yükleme</string>
+    <string name="tlvTxCreated">Oluşturuldu</string>
+    <string name="tlvTxDeposit">Yatırma</string>
+    <string name="tlvTxReceived">Alındı</string>
     <string name="tlvPending">Bekliyor</string>
     <string name="tlvNetworkFee" formatted="false">Ağ ücreti %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">%caps yetkisi · %token</string>
@@ -687,6 +701,7 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="tlvCapBaton">Baton</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Alt grup</string>
+    <string name="tlvCreateTitle">Zaman kilitli kasa oluştur</string>
     <string name="tlvCreateVault">Kasa oluştur</string>
     <string name="tlvCreateExplainer">Fonlar artı küçük bir ücret, zaman kilitli bir adrese taşınacak. Onları kasada görürsün ama belirtilen tarihten önce harcayamazsın.</string>
     <string name="tlvMinimumAmount" formatted="false">En az %amt %unit</string>
@@ -705,10 +720,14 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="tlvPayTo">Alıcı</string>
     <string name="tlvNewTimeLockVault">Yeni zaman kilitli kasa</string>
     <string name="tlvLockedUntil">Şu zamana kadar kilitli</string>
+    <string name="tlvLock">Kilitle</string>
+    <string name="tlvLockExplainer" formatted="false">İmzalamak %amt %unit tutarını %name içinde %date tarihine kadar kilitler. O tarihten önce talep edilemez.</string>
     <string name="tlvConfirmAndSign">Onayla ve imzala</string>
     <string name="tlvWorking">Çalışıyor…</string>
     <string name="tlvClaimVault">Kasayı talep et</string>
     <string name="tlvClaimExplainerSingle">Bu kasanın kilidi açıldı. Bakiyesini cüzdanına geri almak için onayla.</string>
+    <string name="tlvClaimTo">Talep hedefi</string>
+    <string name="tlvClaimedTo">Talep edildiği adres</string>
     <string name="tlvYourWallet">(cüzdanın)</string>
     <string name="tlvAsset">Varlık</string>
     <string name="tlvYouReceive">Alacağın</string>
@@ -721,6 +740,8 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="tlvLockedUntilBlock">Şu bloğa kadar kilitli</string>
     <string name="tlvName">Ad</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Yetki batonları · %count</string>
+    <string name="tlvTokens">Tokenlar</string>
+    <string name="tlvBatons">Batonlar</string>
     <string name="tlvMovable">Taşınabilir</string>
     <string name="tlvBatonExplainer">Baton bir izindir, bakiye değil. Koinlerle birlikte donar ve aynı taleple onlarla birlikte çıkar.</string>
     <string name="tlvDepositAddress">Yatırma adresi</string>

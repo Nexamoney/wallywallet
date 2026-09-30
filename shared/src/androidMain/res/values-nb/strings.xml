@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Kontoens valuta er %walletCrypto, adressen er %addressCrypto. Bruk nedtrekksmenyen til å endre avsenderkontoen til en som passer adressens blockchain.</string>
     <string name="incoming" formatted="false">inkluderer %delta %unit ventende</string>
     <string name="approximatelyT" formatted="false">omtrent %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR-verdien er basert på den globale NEXA/USDT-prisen og USDT/INR fra \"Exchange Rate API\". Faktiske NEXA OTC/P2P-priser i India er vanligvis 20–30% høyere på grunn av lokale USDT/INR-kurser og markedslikviditet.</string>
     <string name="fastForward" formatted="false">Spol fremover</string>
     <string name="fastforwardStatus" formatted="false">fremspolingsanalyse: %info</string>
     <string name="fastforwardStart" formatted="false">startet</string>
@@ -636,6 +637,7 @@
     <string name="tlvTitle">Tidslåst hvelv</string>
     <string name="tlvExplainer">Lås mynter slik at ingen (heller ikke du selv) kan bruke dem før etter datoen du velger.</string>
     <string name="tlvNewVault">Nytt hvelv</string>
+    <string name="tlvContractLineLabel">Tidslåst hvelv:</string>
     <string name="tlvMyVaultsCount" formatted="false">MINE HVELV · %count</string>
     <string name="tlvTotalLocked" formatted="false">%amt %unit låst</string>
     <string name="tlvLoadingVaults">Laster hvelv…</string>
@@ -646,9 +648,18 @@
     <string name="tlvClaimFailed">Kunne ikke innløse hvelvet</string>
     <string name="tlvBalanceLoading">Laster saldo</string>
     <string name="tlvClaimed">Innløst</string>
+    <string name="tlvClaimedOn" formatted="false">Innløst %date</string>
     <string name="tlvLocked">Låst</string>
+    <string name="tlvLockedOn" formatted="false">Låst %date</string>
+    <string name="tlvUnlocked">Låst opp</string>
+    <string name="tlvUnlockedOn" formatted="false">Låst opp %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Låst %locked · Låst opp %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Låst · Låst opp</string>
+    <string name="tlvLockedUnlockedClaimedFields">Låst · Låst opp · Innløst</string>
     <string name="tlvUnlocksBlock" formatted="false">Låses opp ved blokk %num</string>
     <string name="tlvBlockNum" formatted="false">Blokk %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Blokk %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
     <string name="tlvUnlockedWaitingDeposit">Låst opp · venter på et innskudd</string>
     <string name="tlvUnlockedNeedsFeeCoin">Låst opp · trenger mynter til gebyret</string>
     <string name="tlvUnlockedReadyToClaim">Låst opp · klart til innløsing</string>
@@ -671,6 +682,9 @@
     <string name="tlvClaimSent">Innløsing sendt</string>
     <string name="tlvPendingDeposit">Ventende innskudd</string>
     <string name="tlvTopUp">Påfyll</string>
+    <string name="tlvTxCreated">Opprettet</string>
+    <string name="tlvTxDeposit">Innskudd</string>
+    <string name="tlvTxReceived">Mottatt</string>
     <string name="tlvPending">Venter</string>
     <string name="tlvNetworkFee" formatted="false">Nettverksgebyr %amt %unit</string>
     <string name="tlvAuthorityMovement" formatted="false">%caps-autoritet · %token</string>
@@ -680,6 +694,7 @@
     <string name="tlvCapBaton">Stafettpinne</string>
     <string name="tlvCapRescript">Rescript</string>
     <string name="tlvCapSubgroup">Undergruppe</string>
+    <string name="tlvCreateTitle">Opprett tidslåst hvelv</string>
     <string name="tlvCreateVault">Opprett hvelv</string>
     <string name="tlvCreateExplainer">Midlene pluss et lite gebyr flyttes til en tidslåst adresse. Du ser dem i hvelvet, men kan ikke bruke dem før den angitte datoen.</string>
     <string name="tlvMinimumAmount" formatted="false">Minimum %amt %unit</string>
@@ -698,10 +713,14 @@
     <string name="tlvPayTo">Betal til</string>
     <string name="tlvNewTimeLockVault">Nytt tidslåst hvelv</string>
     <string name="tlvLockedUntil">Låst til</string>
+    <string name="tlvLock">Lås</string>
+    <string name="tlvLockExplainer" formatted="false">Signering låser %amt %unit i %name til %date. Det kan ikke innløses før da.</string>
     <string name="tlvConfirmAndSign">Bekreft og signer</string>
     <string name="tlvWorking">Arbeider…</string>
     <string name="tlvClaimVault">Innløs hvelv</string>
     <string name="tlvClaimExplainerSingle">Dette hvelvet er låst opp. Bekreft for å føre saldoen tilbake til lommeboken din.</string>
+    <string name="tlvClaimTo">Innløs til</string>
+    <string name="tlvClaimedTo">Innløst til</string>
     <string name="tlvYourWallet">(lommeboken din)</string>
     <string name="tlvAsset">Eiendel</string>
     <string name="tlvYouReceive">Du mottar</string>
@@ -714,6 +733,8 @@
     <string name="tlvLockedUntilBlock">Låst til blokk</string>
     <string name="tlvName">Navn</string>
     <string name="tlvAuthorityBatonsTitle" formatted="false">Autoritetsstafettpinner · %count</string>
+    <string name="tlvTokens">Tokens</string>
+    <string name="tlvBatons">Stafettpinner</string>
     <string name="tlvMovable">Flyttbar</string>
     <string name="tlvBatonExplainer">En stafettpinne er en tillatelse, ikke en saldo. Den fryses sammen med myntene og kommer ut med dem i samme innløsing.</string>
     <string name="tlvDepositAddress">Innskuddsadresse</string>

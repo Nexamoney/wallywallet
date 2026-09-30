@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">اکاؤنٹ کی کرنسی %walletCrypto ہے، پتہ %addressCrypto کا ہے۔  کومبو باکس سے بھیجنے والا اکاؤنٹ بدل کر ایسا اکاؤنٹ منتخب کریں جو پتے کی بلاک چین سے مطابقت رکھتا ہو۔</string>
     <string name="incoming" formatted="false">اس میں %delta %unit زیرِ التوا شامل ہیں</string>
     <string name="approximatelyT" formatted="false">تقریباً %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">INR قدر عالمی NEXA/USDT قیمت اور \"Exchange Rate API\" کے USDT/INR ریٹ پر مبنی ہے۔ بھارت میں اصل NEXA OTC/P2P قیمتیں مقامی USDT/INR ریٹ اور مارکیٹ لیکویڈیٹی کی وجہ سے عموماً 20–30% زیادہ ہوتی ہیں۔</string>
     <string name="fastForward" formatted="false">فاسٹ فارورڈ</string>
     <string name="fastforwardStatus" formatted="false">فاسٹ فارورڈ تجزیہ: %info</string>
     <string name="fastforwardStart" formatted="false">شروع ہو گیا</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">اکاؤنٹس کی حد</string>
     <string name="accountUnavailableDetails">یا تو کوئی موجودہ اکاؤنٹ اس بلاک چین سے میل نہیں کھاتا، یا اکاؤنٹ ان لاک نہیں کیا گیا۔</string>
     <string name="accountUnavailable">کوئی ان لاک شدہ موزوں اکاؤنٹ نہیں</string>
+    <string name="accountCouldNotBeOpened">اکاؤنٹ نہیں کھل سکا</string>
     <string name="sendMoreThanBalance">آپ اس وقت دستیاب کوائنز سے زیادہ بھیجنے کی کوشش کر رہے ہیں۔\n\nاگر آپ کے خیال میں آپ اپنے بیلنس سے زیادہ خرچ نہیں کر رہے، تو ہو سکتا ہے آپ بھول گئے ہوں کہ ٹرانزیکشنز پر ایک چھوٹی اضافی فیس لگتی ہے، یا اگر آپ کا سارا بیلنس غیر تصدیق شدہ دکھ رہا ہے تو آپ نے یکے بعد دیگرے بہت زیادہ ٹرانزیکشنز کر دی ہیں۔\n\nآپ بلاک چین سے کتنا “آگے” نکل سکتے ہیں، اس کی ایک حد ہے۔ اپنے غیر تصدیق شدہ بیلنس کی تصدیق ہونے دیں اور دوبارہ کوشش کریں۔</string>
     <string name="sendMoreTokensThanBalance">آپ اس وقت دستیاب ٹوکنز سے زیادہ بھیجنے کی کوشش کر رہے ہیں۔</string>
     <string name="deductedFeeLargerThanSendAmount">کاٹی جانے والی فیس بھیجی جانے والی رقم سے زیادہ ہے</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">اور %tokSnd اقسام کے ٹوکنز بھیجنا۔</string>
     <string name="TpReceivingTokens" formatted="false">اور %tokRcv اقسام کے ٹوکنز وصول کرنا۔</string>
     <string name="TpHasNoPurpose">اس درخواست کا اس اکاؤنٹ پر کوئی اثر نہیں۔</string>
+    <string name="TpProposalMissingSignature">اس ٹرانزیکشن میں وہ دستخط موجود نہیں جو درخواست کرنے والی سائٹ کو فراہم کرنا چاہیے تھا، اس لیے یہ مکمل نہیں ہو سکتی۔ آپ کے والٹ سے کچھ خرچ نہیں ہوا۔</string>
     <string name="TpSendToTitle">ادائیگی کی درخواست از</string>
     <string name="TpSpends">خرچ</string>
     <string name="TpSendRequestDenied">ادائیگی مسترد</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">بھیس فعال کرنے پر ایپ بند ہو جائے گی اور Meditate نام کی ایپ کے بھیس میں آ جائے گی۔ Meditate ایپ کا بھیس ختم کرنے کے لیے ایپ کا مینو کھولیں اور ورژن نمبر پر پانچ بار کلک کریں۔</string>
     <string name="CamouflageDescriptionOther">Meditate ایپ کا بھیس ختم کرنے کے لیے ایپ کا مینو کھولیں اور ورژن نمبر پر پانچ بار کلک کریں۔</string>
     <string name="CamouflageAsMeditateAppAndroid">Meditate ایپ کا بھیس</string>
+    <string name="tlvTitle">ٹائم لاک والٹ</string>
+    <string name="tlvExplainer">سکے لاک کریں تاکہ کوئی بھی (آپ سمیت) منتخب تاریخ گزرنے تک انہیں خرچ نہ کر سکے۔</string>
+    <string name="tlvNewVault">نیا والٹ</string>
+    <string name="tlvContractLineLabel">ٹائم لاک والٹ:</string>
+    <string name="tlvMyVaultsCount" formatted="false">میرے والٹس · %count</string>
+    <string name="tlvTotalLocked" formatted="false">%amt %unit لاک شدہ</string>
+    <string name="tlvLoadingVaults">والٹس لوڈ ہو رہے ہیں…</string>
+    <string name="tlvNoVaultsYet">ابھی کوئی والٹ نہیں — بنانے کے لیے اوپر «نیا والٹ» پر ٹیپ کریں۔</string>
+    <string name="tlvContractCounts" formatted="false">%claimable قابلِ وصولی · %locked لاک شدہ · %claimed وصول شدہ</string>
+    <string name="tlvLoadFailed">ٹائم لاک والٹس لوڈ نہیں ہو سکے</string>
+    <string name="tlvCreateFailed">والٹ نہیں بن سکا</string>
+    <string name="tlvClaimFailed">والٹ سے وصولی نہیں ہو سکی</string>
+    <string name="tlvBalanceLoading">بیلنس لوڈ ہو رہا ہے</string>
+    <string name="tlvClaimed">وصول شدہ</string>
+    <string name="tlvClaimedOn" formatted="false">%date کو وصول</string>
+    <string name="tlvLocked">لاک شدہ</string>
+    <string name="tlvLockedOn" formatted="false">%date کو لاک</string>
+    <string name="tlvUnlocked">ان لاک</string>
+    <string name="tlvUnlockedOn" formatted="false">%date کو ان لاک</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">لاک %locked · ان لاک %unlocked</string>
+    <string name="tlvLockedUnlockedFields">لاک · ان لاک</string>
+    <string name="tlvLockedUnlockedClaimedFields">لاک · ان لاک · وصول شدہ</string>
+    <string name="tlvUnlocksBlock" formatted="false">بلاک %num پر ان لاک ہوگا</string>
+    <string name="tlvBlockNum" formatted="false">بلاک %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">بلاک %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">ان لاک · ڈپازٹ کا انتظار</string>
+    <string name="tlvUnlockedNeedsFeeCoin">ان لاک · فیس کے لیے سکے درکار</string>
+    <string name="tlvUnlockedReadyToClaim">ان لاک · وصولی کے لیے تیار</string>
+    <string name="tlvClaimedFundsArrivedSince">وصول شدہ · بعد میں رقم آئی</string>
+    <string name="tlvClaim">وصول کریں</string>
+    <string name="tlvReclaim">دوبارہ وصول کریں</string>
+    <string name="tlvVaultEmptied">یہ والٹ خالی کر دیا گیا ہے</string>
+    <string name="tlvPercentElapsed" formatted="false">%pct% گزر چکا</string>
+    <string name="tlvDaysLeft" formatted="false">%num دن باقی</string>
+    <string name="tlvOneDayLeft">1 دن باقی</string>
+    <string name="tlvHoursLeft" formatted="false">%num گھنٹے باقی</string>
+    <string name="tlvOneHourLeft">1 گھنٹہ باقی</string>
+    <string name="tlvMinutesLeft" formatted="false">%num منٹ باقی</string>
+    <string name="tlvOneMinuteLeft">1 منٹ باقی</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count اتھارٹی بیٹن · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">%count اتھارٹی بیٹن · %syms</string>
+    <string name="tlvTransactions">والٹ کی ٹرانزیکشنز</string>
+    <string name="tlvNoTransactions">اس والٹ کی ابھی کوئی ٹرانزیکشن نہیں۔</string>
+    <string name="tlvVaultCreated">والٹ بن گیا</string>
+    <string name="tlvClaimSent">وصولی بھیج دی گئی</string>
+    <string name="tlvPendingDeposit">زیرِ التوا ڈپازٹ</string>
+    <string name="tlvTopUp">ٹاپ اپ</string>
+    <string name="tlvTxCreated">بنایا گیا</string>
+    <string name="tlvTxDeposit">ڈپازٹ</string>
+    <string name="tlvTxReceived">موصول</string>
+    <string name="tlvPending">زیرِ التوا</string>
+    <string name="tlvNetworkFee" formatted="false">نیٹ ورک فیس %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">%caps اتھارٹی · %token</string>
+    <string name="tlvAuthority">اتھارٹی</string>
+    <string name="tlvCapMint">منٹ</string>
+    <string name="tlvCapMelt">میلٹ</string>
+    <string name="tlvCapBaton">بیٹن</string>
+    <string name="tlvCapRescript">ری اسکرپٹ</string>
+    <string name="tlvCapSubgroup">سب گروپ</string>
+    <string name="tlvCreateTitle">ٹائم لاک والٹ بنائیں</string>
+    <string name="tlvCreateVault">والٹ بنائیں</string>
+    <string name="tlvCreateExplainer">رقم اور ایک چھوٹی سی فیس ٹائم لاک ایڈریس میں منتقل ہو جائے گی۔ آپ اسے والٹ میں دیکھ سکیں گے، مگر مقررہ تاریخ سے پہلے خرچ نہیں کر سکیں گے۔</string>
+    <string name="tlvMinimumAmount" formatted="false">کم از کم %amt %unit</string>
+    <string name="tlvLockUntil">اس وقت تک لاک کریں</string>
+    <string name="tlvBlockHeight">بلاک ہائٹ</string>
+    <string name="tlvFutureDate">مستقبل کی تاریخ</string>
+    <string name="tlvMaxBlockHeight" formatted="false">زیادہ سے زیادہ بلاک ہائٹ %num ہے</string>
+    <string name="tlvFeeSatB">فیس</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">کل</string>
+    <string name="tlvReview">جائزہ</string>
+    <string name="tlvDone">مکمل</string>
+    <string name="tlvOk">ٹھیک ہے</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">والٹ کی تصدیق کریں</string>
+    <string name="tlvPayTo">ادائیگی بنام</string>
+    <string name="tlvNewTimeLockVault">نیا ٹائم لاک والٹ</string>
+    <string name="tlvLockedUntil">اس وقت تک لاک</string>
+    <string name="tlvLock">لاک کریں</string>
+    <string name="tlvLockExplainer" formatted="false">دستخط کرنے سے %amt %unit %name میں %date تک لاک ہو جائیں گے۔ اس سے پہلے وصولی ممکن نہیں۔</string>
+    <string name="tlvConfirmAndSign">تصدیق &amp; دستخط</string>
+    <string name="tlvWorking">کام جاری ہے…</string>
+    <string name="tlvClaimVault">والٹ سے وصول کریں</string>
+    <string name="tlvClaimExplainerSingle">یہ والٹ ان لاک ہو چکا ہے۔ اس کا بیلنس اپنے والٹ میں واپس لانے کے لیے تصدیق کریں۔</string>
+    <string name="tlvClaimTo">وصولی بنام</string>
+    <string name="tlvClaimedTo">وصول شدہ بنام</string>
+    <string name="tlvYourWallet">(آپ کا والٹ)</string>
+    <string name="tlvAsset">اثاثہ</string>
+    <string name="tlvYouReceive">آپ کو ملے گا</string>
+    <string name="tlvNothingToClaim">وصول کرنے کو کچھ نہیں — یہ والٹ خالی ہے۔</string>
+    <string name="tlvConfirmAndClaim">تصدیق &amp; وصولی</string>
+    <string name="tlvVaultClaimed">والٹ وصول ہو گیا</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit آپ کے والٹ میں واپس آ رہے ہیں۔</string>
+    <string name="tlvTxId">TX ID</string>
+    <string name="tlvFundsOnTheirWay">رقم راستے میں ہے۔</string>
+    <string name="tlvLockedUntilBlock">اس بلاک تک لاک</string>
+    <string name="tlvName">نام</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">اتھارٹی بیٹن · %count</string>
+    <string name="tlvTokens">ٹوکن</string>
+    <string name="tlvBatons">بیٹن</string>
+    <string name="tlvMovable">قابلِ منتقلی</string>
+    <string name="tlvBatonExplainer">بیٹن ایک اجازت ہے، بیلنس نہیں۔ یہ سکوں کے ساتھ منجمد ہوتا ہے اور اسی وصولی میں ان کے ساتھ باہر آتا ہے۔</string>
+    <string name="tlvDepositAddress">ڈپازٹ ایڈریس</string>
+    <string name="tlvNoAddress">(کوئی ایڈریس نہیں)</string>
+    <string name="tlvVaultSuccess">والٹ کامیاب</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">QR بند کریں</string>
+    <string name="tlvDepositWarning">اس ایڈریس پر بھیجی گئی ہر چیز والٹ کھلنے تک لاک رہے گی — غلطی سے یہاں بھیجے گئے سکے بھی۔</string>
+    <string name="tlvTokenFeeWarning" formatted="false">یہاں ٹوکن صرف کچھ %unit کے ساتھ بھیجیں۔ والٹ کھلتے وقت اپنی فیس خود ادا کرتا ہے، اور صرف اپنے پاس موجود %unit سے۔</string>
+    <string name="tlvHistory">ہسٹری</string>
+    <string name="tlvView">دیکھیں</string>
+    <string name="tlvNoEarlyOpen">اس والٹ کو وقت سے پہلے کھولنے کا کوئی طریقہ نہیں۔ ٹائم لاک والٹ کا مقصد یہی ہے۔</string>
+    <string name="tlvPublicOnChain">ان لاک ہائٹ اور رقم اس والٹ میں رقم آنے کے لمحے سے چین پر عوامی ہیں — ایڈریس رکھنے والا کوئی بھی انہیں پڑھ سکتا ہے۔</string>
 </resources>

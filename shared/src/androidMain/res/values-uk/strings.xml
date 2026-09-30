@@ -221,6 +221,7 @@
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Валюта рахунку — %walletCrypto, а адреса — %addressCrypto. У списку виберіть для надсилання інший рахунок, який відповідає блокчейну адреси.</string>
     <string name="incoming" formatted="false">включно з %delta %unit в очікуванні</string>
     <string name="approximatelyT" formatted="false">приблизно %qty %fiat</string>
+    <string name="inrPriceNote" formatted="false">Вартість в INR базується на світовій ціні NEXA/USDT та курсі USDT/INR від \"Exchange Rate API\". Реальні ціни NEXA OTC/P2P в Індії зазвичай на 20–30% вищі через місцеві курси USDT/INR і ліквідність ринку.</string>
     <string name="fastForward" formatted="false">Прискорити</string>
     <string name="fastforwardStatus" formatted="false">аналіз прискорення: %info</string>
     <string name="fastforwardStart" formatted="false">розпочато</string>
@@ -406,6 +407,7 @@
     <string name="accountLimitReached">максимум рахунків</string>
     <string name="accountUnavailableDetails">Або жоден наявний рахунок не відповідає цьому блокчейну, або рахунок не розблоковано.</string>
     <string name="accountUnavailable">Немає розблокованого сумісного рахунку</string>
+    <string name="accountCouldNotBeOpened">Не вдалося відкрити рахунок</string>
     <string name="sendMoreThanBalance">Ви намагаєтеся надіслати більше монет, ніж у вас зараз доступно.\n\nЯкщо вам здається, що ви витрачаєте не більше за свій баланс, ви могли забути, що транзакції мають невелику додаткову комісію; а якщо весь ваш баланс показано як непідтверджений, ви могли зробити забагато транзакцій поспіль.\n\nІснує межа того, наскільки далеко ви можете «випередити» блокчейн. Дочекайтеся підтвердження балансу і спробуйте ще раз.</string>
     <string name="sendMoreTokensThanBalance">Ви намагаєтеся надіслати більше токенів, ніж у вас зараз доступно.</string>
     <string name="deductedFeeLargerThanSendAmount">Утримана комісія більша за суму надсилання</string>
@@ -505,6 +507,7 @@
     <string name="TpSendingTokens" formatted="false">та надсилання %tokSnd типів токенів.</string>
     <string name="TpReceivingTokens" formatted="false">та отримання %tokRcv типів токенів.</string>
     <string name="TpHasNoPurpose">Цей запит не впливає на цей рахунок.</string>
+    <string name="TpProposalMissingSignature">У цій транзакції бракує підпису, який мав надати сайт-запитувач, тому її неможливо завершити. З вашого гаманця нічого не витрачено.</string>
     <string name="TpSendToTitle">Платіж запитує</string>
     <string name="TpSpends">Витрати</string>
     <string name="TpSendRequestDenied">Платіж відхилено</string>
@@ -637,4 +640,118 @@
     <string name="CamouflageDescriptionAndroid">Після ввімкнення маскування застосунок закриється і буде замаскований під застосунок Meditate. Щоб вимкнути маскування, відкрийте меню застосунку Meditate і п’ять разів торкніться номера версії.</string>
     <string name="CamouflageDescriptionOther">Щоб вимкнути маскування під застосунок Meditate, відкрийте меню застосунку і п’ять разів торкніться номера версії.</string>
     <string name="CamouflageAsMeditateAppAndroid">Замаскувати під застосунок Meditate</string>
+    <string name="tlvTitle">Сховище з часовим замком</string>
+    <string name="tlvExplainer">Заблокуйте монети, щоб ніхто (зокрема й ви) не міг витратити їх до обраної дати.</string>
+    <string name="tlvNewVault">Нове сховище</string>
+    <string name="tlvContractLineLabel">Сховище з часовим замком:</string>
+    <string name="tlvMyVaultsCount" formatted="false">МОЇ СХОВИЩА · %count</string>
+    <string name="tlvTotalLocked" formatted="false">Заблоковано %amt %unit</string>
+    <string name="tlvLoadingVaults">Завантаження сховищ…</string>
+    <string name="tlvNoVaultsYet">Сховищ поки немає — торкніться «Нове сховище» вище, щоб створити.</string>
+    <string name="tlvContractCounts" formatted="false">%claimable до отримання · %locked заблоковано · %claimed отримано</string>
+    <string name="tlvLoadFailed">Не вдалося завантажити сховища з часовим замком</string>
+    <string name="tlvCreateFailed">Не вдалося створити сховище</string>
+    <string name="tlvClaimFailed">Не вдалося забрати кошти зі сховища</string>
+    <string name="tlvBalanceLoading">Завантаження балансу</string>
+    <string name="tlvClaimed">Отримано</string>
+    <string name="tlvClaimedOn" formatted="false">Отримано %date</string>
+    <string name="tlvLocked">Заблоковано</string>
+    <string name="tlvLockedOn" formatted="false">Заблоковано %date</string>
+    <string name="tlvUnlocked">Розблоковано</string>
+    <string name="tlvUnlockedOn" formatted="false">Розблоковано %date</string>
+    <string name="tlvLockedUnlockedOn" formatted="false">Заблоковано %locked · Розблоковано %unlocked</string>
+    <string name="tlvLockedUnlockedFields">Заблоковано · Розблоковано</string>
+    <string name="tlvLockedUnlockedClaimedFields">Заблоковано · Розблоковано · Отримано</string>
+    <string name="tlvUnlocksBlock" formatted="false">Розблокується в блоці %num</string>
+    <string name="tlvBlockNum" formatted="false">Блок %num</string>
+    <string name="tlvBlockNumApproxDate" formatted="false">Блок %num · ≈ %date</string>
+    <string name="tlvHeightApproxDate" formatted="false">%num · ≈ %date</string>
+    <string name="tlvUnlockedWaitingDeposit">Розблоковано · очікує на поповнення</string>
+    <string name="tlvUnlockedNeedsFeeCoin">Розблоковано · потрібні монети на комісію</string>
+    <string name="tlvUnlockedReadyToClaim">Розблоковано · можна забрати</string>
+    <string name="tlvClaimedFundsArrivedSince">Отримано · відтоді надійшли кошти</string>
+    <string name="tlvClaim">Забрати</string>
+    <string name="tlvReclaim">Забрати знову</string>
+    <string name="tlvVaultEmptied">Це сховище спорожнено</string>
+    <string name="tlvPercentElapsed" formatted="false">Минуло %pct%</string>
+    <string name="tlvDaysLeft" formatted="false">Залишилося днів: %num</string>
+    <string name="tlvOneDayLeft">Залишився 1 день</string>
+    <string name="tlvHoursLeft" formatted="false">Залишилося годин: %num</string>
+    <string name="tlvOneHourLeft">Залишилася 1 година</string>
+    <string name="tlvMinutesLeft" formatted="false">Залишилося хвилин: %num</string>
+    <string name="tlvOneMinuteLeft">Залишилася 1 хвилина</string>
+    <string name="tlvAuthorityBaton" formatted="false">%count жезл повноважень · %syms</string>
+    <string name="tlvAuthorityBatons" formatted="false">Жезлів повноважень: %count · %syms</string>
+    <string name="tlvTransactions">Транзакції сховища</string>
+    <string name="tlvNoTransactions">У цього сховища ще немає транзакцій.</string>
+    <string name="tlvVaultCreated">Сховище створено</string>
+    <string name="tlvClaimSent">Запит на отримання надіслано</string>
+    <string name="tlvPendingDeposit">Очікуване поповнення</string>
+    <string name="tlvTopUp">Поповнення</string>
+    <string name="tlvTxCreated">Створено</string>
+    <string name="tlvTxDeposit">Поповнення</string>
+    <string name="tlvTxReceived">Отримано</string>
+    <string name="tlvPending">В очікуванні</string>
+    <string name="tlvNetworkFee" formatted="false">Комісія мережі %amt %unit</string>
+    <string name="tlvAuthorityMovement" formatted="false">Повноваження %caps · %token</string>
+    <string name="tlvAuthority">Повноваження</string>
+    <string name="tlvCapMint">Випуск</string>
+    <string name="tlvCapMelt">Спалення</string>
+    <string name="tlvCapBaton">Жезл</string>
+    <string name="tlvCapRescript">Rescript</string>
+    <string name="tlvCapSubgroup">Підгрупа</string>
+    <string name="tlvCreateTitle">Створити сховище з часовим замком</string>
+    <string name="tlvCreateVault">Створити сховище</string>
+    <string name="tlvCreateExplainer">Кошти плюс невелика комісія перейдуть на адресу з часовим замком. Ви бачитимете їх у сховищі, але не зможете витратити до вказаної дати.</string>
+    <string name="tlvMinimumAmount" formatted="false">Мінімум %amt %unit</string>
+    <string name="tlvLockUntil">Заблокувати до</string>
+    <string name="tlvBlockHeight">Висота блоку</string>
+    <string name="tlvFutureDate">Майбутня дата</string>
+    <string name="tlvMaxBlockHeight" formatted="false">Максимальна висота блоку — %num</string>
+    <string name="tlvFeeSatB">Комісія</string>
+    <string name="tlvAmountAtRate" formatted="false">%amt %unit</string>
+    <string name="tlvTotal">Разом</string>
+    <string name="tlvReview">Перевірити</string>
+    <string name="tlvDone">Готово</string>
+    <string name="tlvOk">ОК</string>
+    <string name="tlvApproxDate" formatted="false">≈ %date</string>
+    <string name="tlvConfirmVault">Підтвердити сховище</string>
+    <string name="tlvPayTo">Сплатити на</string>
+    <string name="tlvNewTimeLockVault">Нове сховище з часовим замком</string>
+    <string name="tlvLockedUntil">Заблоковано до</string>
+    <string name="tlvLock">Заблокувати</string>
+    <string name="tlvLockExplainer" formatted="false">Підпис блокує %amt %unit у сховищі %name до %date. Раніше забрати їх неможливо.</string>
+    <string name="tlvConfirmAndSign">Підтвердити &amp; підписати</string>
+    <string name="tlvWorking">Виконується…</string>
+    <string name="tlvClaimVault">Забрати зі сховища</string>
+    <string name="tlvClaimExplainerSingle">Це сховище розблоковано. Підтвердьте, щоб повернути його баланс у ваш гаманець.</string>
+    <string name="tlvClaimTo">Забрати на</string>
+    <string name="tlvClaimedTo">Отримано на</string>
+    <string name="tlvYourWallet">(ваш гаманець)</string>
+    <string name="tlvAsset">Актив</string>
+    <string name="tlvYouReceive">Ви отримаєте</string>
+    <string name="tlvNothingToClaim">Забирати нічого — це сховище порожнє.</string>
+    <string name="tlvConfirmAndClaim">Підтвердити &amp; забрати</string>
+    <string name="tlvVaultClaimed">Кошти зі сховища отримано</string>
+    <string name="tlvOnItsWayBack" formatted="false">%amt %unit повертаються у ваш гаманець.</string>
+    <string name="tlvTxId">ID TX</string>
+    <string name="tlvFundsOnTheirWay">Кошти в дорозі.</string>
+    <string name="tlvLockedUntilBlock">Заблоковано до блоку</string>
+    <string name="tlvName">Назва</string>
+    <string name="tlvAuthorityBatonsTitle" formatted="false">Жезли повноважень · %count</string>
+    <string name="tlvTokens">Токени</string>
+    <string name="tlvBatons">Жезли</string>
+    <string name="tlvMovable">Переказуваний</string>
+    <string name="tlvBatonExplainer">Жезл — це дозвіл, а не баланс. Він заморожується разом із монетами й виходить разом із ними під час того самого отримання.</string>
+    <string name="tlvDepositAddress">Адреса для поповнення</string>
+    <string name="tlvNoAddress">(немає адреси)</string>
+    <string name="tlvVaultSuccess">Сховище готове</string>
+    <string name="tlvQr">QR</string>
+    <string name="tlvCloseQr">Закрити QR</string>
+    <string name="tlvDepositWarning">Усе, що надіслано на цю адресу, заблоковано до відкриття сховища — зокрема й монети, надіслані сюди помилково.</string>
+    <string name="tlvTokenFeeWarning" formatted="false">Надсилайте сюди токени лише разом із невеликою кількістю %unit. Сховище саме сплачує комісію при відкритті, і лише з %unit, які в ньому є.</string>
+    <string name="tlvHistory">Історія</string>
+    <string name="tlvView">Переглянути</string>
+    <string name="tlvNoEarlyOpen">Відкрити це сховище раніше неможливо. У цьому й полягає сенс часового замка.</string>
+    <string name="tlvPublicOnChain">Висота розблокування та сума публічні в ланцюжку з моменту поповнення сховища — їх може прочитати будь-хто, хто має адресу.</string>
 </resources>
