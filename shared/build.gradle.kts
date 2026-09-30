@@ -153,6 +153,9 @@ kotlin {
                 // the analysis when this argument is "true". CI's androidPixel5TestLeakDetection job sets
                 // LEAK_DETECTION=true; the plain androidPixel5Test job leaves it off for a fast run.
                 instrumentationRunnerArguments["leakDetection"] = System.getenv("LEAK_DETECTION") ?: "false"
+                // The on-device vault runs wait for a host funder to pay the address they print; without
+                // VAULT_HARNESS=true they skip instead of waiting for money that never comes.
+                instrumentationRunnerArguments["vaultHarness"] = System.getenv("VAULT_HARNESS") ?: "false"
                 managedDevices {
                     localDevices.create("pixel5") {
                         device = "Pixel 5"

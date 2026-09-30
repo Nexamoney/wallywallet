@@ -50,6 +50,7 @@ class VaultRegtestCoinTest : WallyUiTestBase()
     @Test
     fun thirtyCoinVaultScenarios()
     {
+        assumeVaultHarness()
         wallyApp!!.openAllAccounts()
         account = wallyApp!!.accounts.values.firstOrNull { it.name == ACCT }
             ?: wallyApp!!.newAccount(ACCT, 0U, "", ChainSelector.NEXAREGTEST)!!
