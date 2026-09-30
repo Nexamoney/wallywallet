@@ -49,6 +49,7 @@ import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
@@ -611,7 +612,7 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
                         {
                             displayNotice(S.sendSuccess, "$atomAmt -> $sendAddress: ${tx.idem}")
                             requestInAppReview()
-                            sendSuccessAnimationIsPlaying.value = true
+                            sendSuccessAnimationIsPlaying.update { it + 1 }
                             viewModelScope.launch(Dispatchers.Main) {
                                 audioPlayer.playSound(0)
                             }

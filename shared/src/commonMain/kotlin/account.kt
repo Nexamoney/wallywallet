@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.Transient
 import org.nexa.threads.millinow
 import org.nexa.assets.AssetInfo
@@ -506,7 +507,7 @@ class AccountImpl(
                   {
                       if (txh.incomingAmt - txh.outgoingAmt > 0)
                       {
-                          receivedNexaIsPlaying.value = true
+                          receivedNexaIsPlaying.update { it + 1 }
                       }
                   }
                   else
