@@ -37,15 +37,34 @@ import androidx.compose.ui.graphics.TileMode
 import io.github.alexzhirkevich.compottie.LottieAnimatable
 import io.github.alexzhirkevich.compottie.LottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottieAnimatable
-import kotlin.coroutines.cancellation.CancellationException
 
-/** Trigger the Send Success animation by setting this to true.  It will set itself to false when the animation is finished.  This effectively debounces multiple sets. */
-val sendSuccessAnimationIsPlaying = MutableStateFlow(false)
-/** Trigger the Special Tx Success animation by setting this to true.  It will set itself to false when the animation is finished.  This effectively debounces multiple sets. */
-val specialTxSuccessAnimationIsPlaying = MutableStateFlow(false)
+/* Request counters, not flags: a Boolean true set while the previous play is finishing gets conflated
+ * away and leaves the last frame frozen over the app (#688). */
 
-/** Trigger the Special Tx Success animation by setting this to true.  It will set itself to false when the animation is finished.  This effectively debounces multiple sets. */
-val receivedNexaIsPlaying = MutableStateFlow(false)
+/** Trigger the Send Success animation with `update { it + 1 }`. */
+val sendSuccessAnimationIsPlaying = MutableStateFlow(0)
+/** Trigger the Special Tx Success animation with `update { it + 1 }`. */
+val specialTxSuccessAnimationIsPlaying = MutableStateFlow(0)
+/** Trigger the Received Nexa animation with `update { it + 1 }`. */
+val receivedNexaIsPlaying = MutableStateFlow(0)
+
+/** Play [anim] once for request [gen], then mark it played so the overlay comes down.  Keyed on
+ * [composition] too because it starts null before the JSON has parsed. */
+@Composable
+private fun PlayOnceThenMark(gen: Int, played: MutableState<Int>, composition: LottieComposition?, anim: LottieAnimatable)
+{
+    LaunchedEffect(composition, gen) {
+        if (composition == null) return@LaunchedEffect
+        try
+        {
+            anim.animate(composition = composition, iterations = 1, reverseOnRepeat = false)
+        }
+        finally
+        {
+            played.value = gen
+        }
+    }
+}
 
 /** Trigger the Time Lock Vault success animation with `update { it + 1 }`: a request counter, not a flag, so a request
  *  landing while the previous play finishes cannot be conflated away and leave the overlay frozen (#688). */
@@ -55,28 +74,17 @@ val vaultSuccessAnimationIsPlaying = MutableStateFlow(0)
 @Composable
 fun SpecialTxSuccessAnimation()
 {
-    val isPlaying by specialTxSuccessAnimationIsPlaying.collectAsState()
+    val gen by specialTxSuccessAnimationIsPlaying.collectAsState()
+    val played = remember { mutableStateOf(gen) }
     // Don't compose/parse the Lottie until it's triggered (avoids parsing it on every app open)
-    if (!isPlaying) return
+    if (gen == played.value) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(successAnimation)  // TODO: different success animation for a special transaction completion
     }
 
     val anim = rememberLottieAnimatable()
-    LaunchedEffect(composition) {
-        try
-        {
-            anim.animate(composition = composition, iterations = 1, reverseOnRepeat = false) {
-                specialTxSuccessAnimationIsPlaying.value = false
-            }
-        }
-        catch (e: CancellationException)
-        {
-            specialTxSuccessAnimationIsPlaying.value = false // cancelled / removed / key changed
-            throw e
-        }
-    }
+    PlayOnceThenMark(gen, played, composition, anim)
 
     //Display the animation
     Image(
@@ -90,27 +98,16 @@ fun SpecialTxSuccessAnimation()
 @Composable
 fun SendSuccessAnimation()
 {
-    val isPlaying by sendSuccessAnimationIsPlaying.collectAsState()
+    val gen by sendSuccessAnimationIsPlaying.collectAsState()
+    val played = remember { mutableStateOf(gen) }
     // Don't compose/parse the Lottie until it's triggered (avoids parsing it on every app open)
-    if (!isPlaying) return
+    if (gen == played.value) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(successAnimation)
     }
     val anim = rememberLottieAnimatable()
-    LaunchedEffect(composition) {
-        try
-        {
-            anim.animate(composition = composition, iterations = 1, reverseOnRepeat = false) {
-                sendSuccessAnimationIsPlaying.value = false
-            }
-        }
-        catch (e: CancellationException)
-        {
-            sendSuccessAnimationIsPlaying.value = false // cancelled / removed / key changed
-            throw e
-        }
-    }
+    PlayOnceThenMark(gen, played, composition, anim)
 
     //Display the animation
     Image(
@@ -127,30 +124,20 @@ fun SendSuccessAnimation()
 @Composable
 fun ReceivedNexaAnimation()
 {
-    val isPlaying by receivedNexaIsPlaying.collectAsState()
-    if (!isPlaying) return
+    val gen by receivedNexaIsPlaying.collectAsState()
+    val played = remember { mutableStateOf(gen) }
+    if (gen == played.value) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(receiveAnimation)
     }
     val anim = rememberLottieAnimatable()
-    LaunchedEffect(composition) {
-        try
-        {
-            anim.animate(composition = composition, iterations = 1) {
-                receivedNexaIsPlaying.value = false
-            }
-        }
-        catch (e: CancellationException)
-        {
-            receivedNexaIsPlaying.value = false // cancelled / removed / key changed
-            throw e
-        }
-    }
+    PlayOnceThenMark(gen, played, composition, anim)
 
     val focusBrush = Brush.radialGradient(Pair(0f, Color(0xFF523E83)), Pair(0.7f, Color(0x70523E83)), Pair(1.0f, Color.Transparent), tileMode = TileMode.Clamp)
 
-    AnimatedVisibility(isPlaying, modifier = Modifier.zIndex(100f).fillMaxSize(), enter = fadeIn(animationSpec = tween(durationMillis = 250)), exit = fadeOut(animationSpec = tween(durationMillis = 500)))
+    // Always visible while composed, so the fades below don't run.
+    AnimatedVisibility(true, modifier = Modifier.zIndex(100f).fillMaxSize(), enter = fadeIn(animationSpec = tween(durationMillis = 250)), exit = fadeOut(animationSpec = tween(durationMillis = 500)))
     {
         Box(modifier = Modifier.zIndex(100f).fillMaxSize().background(focusBrush), contentAlignment = Alignment.Center) {
             Image(
@@ -159,27 +146,6 @@ fun ReceivedNexaAnimation()
               contentScale = ContentScale.Fit,
               contentDescription = "Received Nexa"
             )
-        }
-    }
-}
-
-/**
- * Run [anim] once for request [gen], then mark that request played so the overlay comes down. [played] is
- * composition-local, so the mark cannot be lost the way clearing a shared conflated flag could; a newer request
- * re-keys the effect. The composition starts null (JSON still parsing), so the effect keys on it too.
- */
-@Composable
-private fun PlayOnceThenMark(gen: Int, played: MutableState<Int>, composition: LottieComposition?, anim: LottieAnimatable)
-{
-    LaunchedEffect(composition, gen) {
-        if (composition == null) return@LaunchedEffect
-        try
-        {
-            anim.animate(composition = composition, iterations = 1, reverseOnRepeat = false)
-        }
-        finally
-        {
-            played.value = gen
         }
     }
 }

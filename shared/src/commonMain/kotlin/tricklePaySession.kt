@@ -19,6 +19,7 @@ import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import io.ktor.http.Url
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.io.IOException
 import kotlinx.serialization.Serializable
 import org.nexa.assets.AssetInfo
@@ -1610,7 +1611,7 @@ fun submitTdppCompletion(
                 LogIt.info(sourceLoc() + " TDPP accepted: idem=${idem.toHex()} height=$height")
                 txh.relatedTo["TDPP"] = byteArrayOf(1)
                 laterJob {
-                    specialTxSuccessAnimationIsPlaying.value = true
+                    specialTxSuccessAnimationIsPlaying.update { it + 1 }
                     // nav.back() runs clearScreenAlerts() right after acceptSpecialTx returns
                     // (ActionPermissionScreens.kt:379-382). If the wallet observer fires before that
                     // happens, the alert gets cleared. Delay so clearScreenAlerts runs first.
