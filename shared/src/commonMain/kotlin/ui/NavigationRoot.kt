@@ -782,7 +782,7 @@ fun BottomNavMenu(lastClicked: MutableState<String>)
                 )
                 Spacer(Modifier.height(4.dp))
                 WallyButtonRow {
-                    OutlinedButton({
+                    Button({
                         if (nav.currentScreen.value == ScreenId.AccountDetails)
                             nav.back()
                         nav.go(screen = ScreenId.AccountDetails, data = AccountAction.RecoveryPhrase)
