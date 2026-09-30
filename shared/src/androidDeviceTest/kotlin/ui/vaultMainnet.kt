@@ -34,6 +34,7 @@ class VaultMainnetTest : WallyUiTestBase()
     @Test
     fun fiftyMainnetVaultScenarios()
     {
+        assumeVaultHarness()
         wallyApp!!.openAllAccounts()
         // Instrumentation runs under its own uid, so the wallet here is the test's own - the phone's
         // real accounts are untouched. Fund this one once and the scenarios below run against it.

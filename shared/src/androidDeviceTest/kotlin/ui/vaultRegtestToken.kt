@@ -47,6 +47,7 @@ class VaultRegtestTokenTest : WallyUiTestBase()
     @Test
     fun tokenBatonAndEdgeScenarios()
     {
+        assumeVaultHarness()
         wallyApp!!.openAllAccounts()
         account = wallyApp!!.accounts.values.firstOrNull { it.name == ACCT }
             ?: wallyApp!!.newAccount(ACCT, 0U, "", ChainSelector.NEXAREGTEST)!!
