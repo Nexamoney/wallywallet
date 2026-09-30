@@ -6,9 +6,12 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.Account
+import info.bitcoinunlimited.www.wally.AlertLevel
 import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.alerts
 import info.bitcoinunlimited.www.wally.devMode
 import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui.ReceiveScreenContent
 import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
@@ -17,6 +20,7 @@ import org.nexa.libnexakotlin.*
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 private val LogIt = GetLog("wally.test")
 
 @OptIn(ExperimentalTestApi::class)
@@ -59,6 +63,16 @@ class ReceiveScreenTest:WallyUiTestBase(false)
             }
         }
         compose.settle()
+    }
+
+    // Platforms with a native title bar route notices to the OS chrome instead of the alerts list.
+    private fun assertCopiedNoticeShown(before: Int)
+    {
+        if (platform().hasNativeTitleBar) return
+        assertEquals(before + 1, alerts.size)
+        val a = alerts[before]
+        assertEquals(i18n(S.copiedToClipboard), a.msg)
+        assertEquals(AlertLevel.NOTICE, a.level)
     }
 
     @Test
@@ -256,6 +270,44 @@ class ReceiveScreenTest:WallyUiTestBase(false)
             // And that it doesn't also render a stale/other index.
             onNodeWithText("Providing address 0").assertDoesNotExist()
             onNodeWithText("Providing address 1234").assertDoesNotExist()
+        }
+
+        account.delete()
+    }
+
+    @Test
+    fun receiveScreenContentAddressClickShowsCopiedNotice()
+    {
+        val account = mockAccount(chainSelector = cs)
+        val address = seededAddress(seed = 10)
+        setSelectedAccount(account)
+
+        runComposeUiTest {
+            renderReceiveScreenContent(account, address, this)
+
+            val before = alerts.size
+            onNodeWithTag("receiveScreen:receiveAddress").performClick()
+            settle()
+            assertCopiedNoticeShown(before)
+        }
+
+        account.delete()
+    }
+
+    @Test
+    fun receiveScreenContentQrCodeClickShowsCopiedNotice()
+    {
+        val account = mockAccount(chainSelector = cs)
+        val address = seededAddress(seed = 11)
+        setSelectedAccount(account)
+
+        runComposeUiTest {
+            renderReceiveScreenContent(account, address, this)
+
+            val before = alerts.size
+            onNodeWithTag("qrcode").performClick()
+            settle()
+            assertCopiedNoticeShown(before)
         }
 
         account.delete()

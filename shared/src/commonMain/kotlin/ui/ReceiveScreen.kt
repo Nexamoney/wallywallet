@@ -21,9 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.displayNotice
 import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.setTextClipboard
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
@@ -87,8 +85,7 @@ fun ReceiveScreen(
             Row(modifier = Modifier.fillMaxWidth().wrapContentHeight().background(Color.White).padding(2.dp),
               horizontalArrangement = Arrangement.Center) {
                 IconTextButton(icon = Icons.Outlined.ContentCopy, modifier = Modifier.weight(1f), description = i18n(S.CopyAddress), color = wallyPurple) {
-                    setTextClipboard(payAddress.toString())
-                    displayNotice(i18n(S.copiedToClipboard))
+                    onCopyToClipBoardText(payAddress.toString())
                 }
                 // We want to allow QR code scanning in this screen because its common for web apps to offer a QR code to request an address from the wallet
                 IconTextButton(icon = Icons.Outlined.QrCodeScanner, modifier = Modifier.weight(1f), description = i18n(S.scanQr), color = wallyPurple) {
@@ -139,7 +136,7 @@ fun ReceiveScreenContent(pill: AccountPillViewModel, account: Account, address: 
                 .aspectRatio(1f) // Keeps the image square
                 .background(Color.White)  // QR codes MUST have a white background and darker pixels, NOT the opposite (and yes this is to the spec)
                 .testTag("qrcode")
-                .clickable { setTextClipboard(addrStr) }
+                .clickable { onCopyToClipBoardText(addrStr) }
             )
             Spacer(modifier = Modifier.weight(0.1f))
             Text(
@@ -150,7 +147,7 @@ fun ReceiveScreenContent(pill: AccountPillViewModel, account: Account, address: 
               text = addrStr,
               style = MaterialTheme.typography.bodyLarge,
               textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth(0.8f).clickable { setTextClipboard(addrStr) }.testTag("receiveScreen:receiveAddress")
+              modifier = Modifier.fillMaxWidth(0.8f).clickable { onCopyToClipBoardText(addrStr) }.testTag("receiveScreen:receiveAddress")
             )
             if (devMode)
             {
