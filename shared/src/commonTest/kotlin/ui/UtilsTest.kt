@@ -478,8 +478,12 @@ fun mockAccount(
         every { fastforward } returns null
         every { fastforwardStatus } returns null
         every { fastForwardStatusState } returns fastForwardStatusFlow
-        every { autoFastForwardAttempted } returns false
-        every { autoFastForwardSuppressed } returns false
+        var autoFastForwardAttemptedBacking = true
+        every { autoFastForwardAttempted } calls { autoFastForwardAttemptedBacking }
+        every { autoFastForwardAttempted = any() } calls { (v: Boolean) -> autoFastForwardAttemptedBacking = v }
+        var autoFastForwardSuppressedBacking = false
+        every { autoFastForwardSuppressed } calls { autoFastForwardSuppressedBacking }
+        every { autoFastForwardSuppressed = any() } calls { (v: Boolean) -> autoFastForwardSuppressedBacking = v }
 
         // Assets
         every { assets } calls { assetsFlow.value }
