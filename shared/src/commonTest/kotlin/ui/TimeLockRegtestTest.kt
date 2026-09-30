@@ -435,6 +435,9 @@ class TimeLockRegtestTest : WallyUiTestBase(openAllAccounts = false)
         val tip = h.repo.currentBlockHeight() ?: error("wallet unsynced")
         val unlock = tip + 3L
         val created = h.repo.addVault(unlock, amountSat = 5_000L)
+        // The wallet's funding tx must reach the node before we mine, or it can
+        // miss the blocks below and the vault never reaches 10 000 sat.
+        waitForNodeToSee(h, created.fundingTxIdem)
         // A second deposit straight to the vault address spreads the balance
         // across two UTXOs.
         h.rpc.sendtoaddress(created.address.toString(), BigDecimal.fromInt(50))   // 50 NEXA = 5000 sat
