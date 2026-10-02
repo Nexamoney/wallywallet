@@ -74,8 +74,7 @@ object IosAssetManagerStorage:AssetManagerStorage
 {
     override fun storeAssetFile(filename: String, data: ByteArray): String
     {
-        val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
-        var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
+        var path = iosAssetDir()
         if (!FileSystem.SYSTEM.exists(path)) FileSystem.SYSTEM.createDirectories(path)
         path = path / filename
 
@@ -83,14 +82,14 @@ object IosAssetManagerStorage:AssetManagerStorage
             this.write(data)
         }
         LogIt.info("Wrote ai file $path")
+        if (filename.endsWith(".zip")) signalNftFileProvider()
         return path.toString()
     }
     override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
     {
         if (DBG_NO_ASSET_CACHE) throw Exception()
 
-        val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
-        var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
+        var path = iosAssetDir()
         //if (!FileSystem.SYSTEM.exists(path)) FileSystem.SYSTEM.createDirectories(path)
         path = path / filename
         if (!FileSystem.SYSTEM.exists(path))
@@ -108,20 +107,22 @@ object IosAssetManagerStorage:AssetManagerStorage
 
     override fun deleteAssetFile(filename: String)
     {
-        val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
-        var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
+        var path = iosAssetDir()
         if (!FileSystem.SYSTEM.exists(path)) return
         path = path / filename
         FileSystem.SYSTEM.delete(path)
+        if (filename.endsWith(".zip")) signalNftFileProvider()
     }
 
     override fun deleteAssetFiles()
     {
-        val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
-        var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
+        var path = iosAssetDir()
         if (!FileSystem.SYSTEM.exists(path)) return
         FileSystem.SYSTEM.deleteRecursively(path)
+        signalNftFileProvider()
     }
+
+    override fun setExportedAssetFiles(files: Map<String, NftExport>) = writeNftExports(files)
 
     override fun storeCardFile(filename: String, data: ByteArray): String
     {

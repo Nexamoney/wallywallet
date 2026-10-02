@@ -67,6 +67,8 @@
 		B4EA0C7FB05C7B822B479C98 /* AppearanceLocalizationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04C24443470ED83C1E10842 /* AppearanceLocalizationUITests.swift */; };
 		B8379143F078B0D54DC5F889 /* WallyUITestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B1795C882B4E46C9C2554E /* WallyUITestHelpers.swift */; };
 		F5AD8D3AA917B4A70E9B53F4 /* LifecycleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D5881B8D776A04066B3407 /* LifecycleUITests.swift */; };
+		F1A0000000000000000000A1 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0000000000000000000A6 /* FileProviderExtension.swift */; };
+		F1A0000000000000000000A2 /* NftFileProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F1A0000000000000000000A5 /* NftFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +78,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7555FF7A242A565900829871;
 			remoteInfo = iosApp;
+		};
+		F1A0000000000000000000A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7555FF73242A565900829871 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F1A0000000000000000000AD;
+			remoteInfo = NftFileProvider;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -88,6 +97,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F1A0000000000000000000A4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F1A0000000000000000000A2 /* NftFileProvider.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -158,6 +178,10 @@
 		AD3A61A24BBC9362EED504F7 /* ClipboardUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClipboardUITests.swift; sourceTree = "<group>"; };
 		EA4667B52DB9654A0001F96E /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		F2E53262A70D444D1AA99737 /* DeepLinkUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeepLinkUITests.swift; sourceTree = "<group>"; };
+		F1A0000000000000000000A5 /* NftFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NftFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A0000000000000000000A6 /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
+		F1A0000000000000000000A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F1A0000000000000000000A8 /* NftFileProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NftFileProvider.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +193,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		7555FF78242A565900829871 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F1A0000000000000000000A9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -254,6 +285,7 @@
 				8E1ECA702AAA001F00759B4F /* strings_tr.bin */,
 				8E1ECA652AA957D200759B4F /* strings_en.bin */,
 				7555FF7D242A565900829871 /* iosApp */,
+				F1A0000000000000000000AC /* NftFileProvider */,
 				0B53DA142BA282B300EFA082 /* iosAppUITests */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
@@ -264,6 +296,7 @@
 			isa = PBXGroup;
 			children = (
 				7555FF7B242A565900829871 /* iosApp.app */,
+				F1A0000000000000000000A5 /* NftFileProvider.appex */,
 				0B53DA132BA282B300EFA082 /* iosAppUITests.xctest */,
 			);
 			name = Products;
@@ -287,6 +320,16 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F1A0000000000000000000AC /* NftFileProvider */ = {
+			isa = PBXGroup;
+			children = (
+				F1A0000000000000000000A6 /* FileProviderExtension.swift */,
+				F1A0000000000000000000A7 /* Info.plist */,
+				F1A0000000000000000000A8 /* NftFileProvider.entitlements */,
+			);
+			path = NftFileProvider;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -320,15 +363,34 @@
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
+				F1A0000000000000000000A4 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F1A0000000000000000000AE /* PBXTargetDependency */,
 			);
 			name = iosApp;
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
+		};
+		F1A0000000000000000000AD /* NftFileProvider */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F1A0000000000000000000B1 /* Build configuration list for PBXNativeTarget "NftFileProvider" */;
+			buildPhases = (
+				F1A0000000000000000000AB /* Sources */,
+				F1A0000000000000000000A9 /* Frameworks */,
+				F1A0000000000000000000AA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NftFileProvider;
+			productName = NftFileProvider;
+			productReference = F1A0000000000000000000A5 /* NftFileProvider.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -347,6 +409,9 @@
 					7555FF7A242A565900829871 = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
+					F1A0000000000000000000AD = {
+						CreatedOnToolsVersion = 16.0;
+					};
 				};
 			};
 			buildConfigurationList = 7555FF76242A565900829871 /* Build configuration list for PBXProject "iosApp" */;
@@ -364,6 +429,7 @@
 			targets = (
 				7555FF7A242A565900829871 /* iosApp */,
 				0B53DA122BA282B300EFA082 /* iosAppUITests */,
+				F1A0000000000000000000AD /* NftFileProvider */,
 			);
 		};
 /* End PBXProject section */
@@ -426,6 +492,13 @@
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */,
 				8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F1A0000000000000000000AA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -558,6 +631,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F1A0000000000000000000AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F1A0000000000000000000A1 /* FileProviderExtension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -565,6 +646,11 @@
 			isa = PBXTargetDependency;
 			target = 7555FF7A242A565900829871 /* iosApp */;
 			targetProxy = 0B53DA192BA282B300EFA082 /* PBXContainerItemProxy */;
+		};
+		F1A0000000000000000000AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F1A0000000000000000000AD /* NftFileProvider */;
+			targetProxy = F1A0000000000000000000A3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -809,6 +895,49 @@
 			};
 			name = Release;
 		};
+		F1A0000000000000000000AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NftFileProvider/NftFileProvider.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8A87667ULD;
+				INFOPLIST_FILE = NftFileProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = info.bitcoinunlimited.www.wally.NftFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F1A0000000000000000000B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NftFileProvider/NftFileProvider.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8A87667ULD;
+				INFOPLIST_FILE = NftFileProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = info.bitcoinunlimited.www.wally.NftFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -835,6 +964,15 @@
 			buildConfigurations = (
 				7555FFA6242A565B00829871 /* Debug */,
 				7555FFA7242A565B00829871 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F1A0000000000000000000B1 /* Build configuration list for PBXNativeTarget "NftFileProvider" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F1A0000000000000000000AF /* Debug */,
+				F1A0000000000000000000B0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

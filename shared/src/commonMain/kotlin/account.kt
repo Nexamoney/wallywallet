@@ -275,6 +275,13 @@ class AccountImpl(
     override var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
     //? Was the PIN entered properly since the last 15 second sleep?
     override var pinEntered = false
+        set(value)
+        {
+            val changed = field != value
+            field = value
+            // Locking or unlocking can hide or reveal this account's NFTs, so refresh the files exported to other apps
+            if (changed) triggerAssetCheck()
+        }
     override var encodedPin: ByteArray? = loadEncodedPin()
 
     override var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins

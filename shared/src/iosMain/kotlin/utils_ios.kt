@@ -539,4 +539,6 @@ actual fun requestInAppReview()
 actual fun toggleMeditationCamouflage(enable: Boolean)
 {
     // Changing the app name and icon programmatically is not supported for iOS
+    // but the NFT location in the Files app would give the wallet away, so hide it
+    org.nexa.assets.updateNftFileProviderDomain(enable)
 }
