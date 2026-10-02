@@ -5,6 +5,12 @@
      module's namespace. Permissions and features are declared in :shared's manifest. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <permission
+        android:name="info.bitcoinunlimited.www.wally.READ_ASSET_FILES"
+        android:label="Access Asset Files"
+        android:description="@string/nftFilesPerm"
+        android:protectionLevel="normal" />
+
     <application
         android:requestLegacyExternalStorage="true"
         android:name="info.bitcoinunlimited.www.wally.WallyApp"
@@ -37,6 +43,15 @@
         android:name="android.support.FILE_PROVIDER_PATHS"
         android:resource="@xml/file_paths" />
     </provider>
+
+        <!-- Read-only NFT files for apps holding READ_ASSET_FILES or an explicit URI grant. -->
+        <provider
+            android:name="info.bitcoinunlimited.www.wally.NftDocumentsProvider"
+            android:authorities="${applicationId}.nfts"
+            android:grantUriPermissions="true"
+            android:exported="true"
+            android:readPermission="info.bitcoinunlimited.www.wally.READ_ASSET_FILES">
+        </provider>
 
 
         <activity

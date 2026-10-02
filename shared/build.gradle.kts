@@ -683,11 +683,12 @@ tasks.matching { it.name == "compileAndroidMain" }.configureEach {
 }
 
 // Task to update the iOS version based on versionNumber
+// The app extensions' versions must match the app's, so they are set too
 tasks.register<Exec>("updateCFBundleShortVersionString") {
-    val plistFile = file("../iosApp/iosApp/Info.plist")
+    val plistFiles = listOf(file("../iosApp/iosApp/Info.plist"), file("../iosApp/NftFileProvider/Info.plist"))
 
     // Use PlistBuddy to set the CFBundleShortVersionString
-    commandLine("/usr/libexec/PlistBuddy", plistFile.absolutePath, "-c", "Set :CFBundleShortVersionString $versionNumber")
+    commandLine("sh", "-c", plistFiles.joinToString(" && ") { "/usr/libexec/PlistBuddy '${it.absolutePath}' -c 'Set :CFBundleShortVersionString $versionNumber'" })
 }
 
 tasks.named("compileKotlinMetadata").configure {

@@ -989,4 +989,5 @@ Thank you and enjoy your new wallet!</string>
     <string name="tlvView">View</string>
     <string name="tlvNoEarlyOpen">There is no way to open this vault early. That is the purpose of a time lock vault.</string>
     <string name="tlvPublicOnChain">The unlock height and the amount are public on the chain from the moment this vault was funded — anyone with the address can read them.</string>
+    <string name="nftFilesPerm">Access asset files</string>
 </resources>

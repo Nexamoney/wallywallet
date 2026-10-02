@@ -146,6 +146,42 @@ fun triggerAssetCheckOnBlock(height: Long)
         triggerAssetCheck()
     }
 }
+/** The name of the file an NFT's zip is stored under (see [AssetManagerStorage.storeAssetFile]) */
+fun nftFileName(groupId: GroupId): String = groupId.toHex() + ".zip"
+
+/** Name of the extended attribute (iOS; Android uses NFT_GROUP_ID_COLUMN) giving a shared NFT file's group id, for
+ * Nexa-aware apps that want to find NFTs by group id rather than by their "author - title" names. */
+const val NFT_GROUP_ID_ATTRIBUTE = "org.nexa.groupid"
+
+/** Android's name for the same group id document column.  It has no dots so it is safe as a SQL-style projection column name. */
+const val NFT_GROUP_ID_COLUMN = "nexa_group_id"
+
+/** How an NFT file is shown to other apps: its name, and its group id (e.g. "nexa:tq...") as NFT_GROUP_ID_ATTRIBUTE */
+data class NftExport(val name: String, val groupId: String)
+
+/** How other apps see these NFT files (file name -> its asset).  Names are "author - title.nft", with " (2)" etc.
+ * added where NFTs would otherwise share a name.  An NFT whose info is not loaded yet is named by its token name or id
+ * until the next asset check. */
+fun nftExports(files: Map<String, AssetInfo>): Map<String, NftExport>
+{
+    val ret = mutableMapOf<String, NftExport>()
+    val used = mutableSetOf<String>()
+    for ((file, ai) in files.entries.sortedBy { it.key })  // sorted, so the same NFT keeps the same suffix
+    {
+        val nft = ai.nft
+        val title = nft?.title?.trim()?.ifEmpty { null } ?: ai.name?.trim()?.ifEmpty { null } ?: ai.groupId.toStringNoPrefix()
+        val author = nft?.author?.trim()
+        // Other apps may save the file under this name, so leave out characters file systems reject
+        val base = (if (author.isNullOrEmpty()) title else "$author - $title").replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_").take(200)
+        var name = "$base.nft"
+        var n = 2
+        while (name.lowercase() in used) name = "$base (${n++}).nft"
+        used.add(name.lowercase())
+        ret[file] = NftExport(name, ai.groupId.toString())
+    }
+    return ret
+}
+
 fun triggerAssetCheck()
 {
     currentAssetCheckTriggerCount+=1
@@ -161,6 +197,8 @@ fun AssetLoaderThread(ready:()->Boolean, getAccounts:()->List<Account> ): iThrea
         // Constructing the asset list can use a lot of disk which interferes with startup
         // This will wait until all the accounts are loaded
         while (!ready()) millisleep(5000UL)
+        // The NFT files each account owned when its assets were last fully checked, by account name
+        val exportsByAccount = mutableMapOf<String, Map<String, AssetInfo>>()
         val ecCnxns = mutableMapOf<ChainSelector, ElectrumClient?>()
 
         fun getEc(chain:Blockchain): ElectrumClient
@@ -194,12 +232,34 @@ fun AssetLoaderThread(ready:()->Boolean, getAccounts:()->List<Account> ): iThrea
                         try
                         {
                             a.constructAssetMap({ getEc(a.chain) })
+                            exportsByAccount[a.name] = a.assets.values.associate { nftFileName(it.groupInfo.groupId) to it.assetInfo }
                         }
                         catch (e: ElectrumRequestTimeout)
                         {
                             // ec.close()
                         }
                     }
+                    else
+                    {
+                        // Still syncing (which can take a long time), so share the NFTs the wallet holds so far.
+                        // Build its asset map once from what the wallet already holds (no network use), since it may not have been built yet;
+                        // after that, the wallet keeps it up to date as it syncs.
+                        if (a.name !in exportsByAccount) a.constructAssetMap()
+                        exportsByAccount[a.name] = a.assets.values.associate { nftFileName(it.groupInfo.groupId) to it.assetInfo }
+                    }
+                }
+
+                // Only publish once every account has been looked at, or the NFTs of an account not yet looked at would
+                // vanish from what other apps can see.
+                val names = accounts.map { it.name }.toSet()
+                exportsByAccount.keys.retainAll(names)
+                if (exportsByAccount.keys == names)
+                {
+                    // Do not share NFTs held by hidden accounts that are currently locked
+                    val visibleNames = accounts.filter { it.visible }.map { it.name }.toSet()
+                    val files = mutableMapOf<String, AssetInfo>()
+                    for ((acctName, e) in exportsByAccount) if (acctName in visibleNames) files.putAll(e)
+                    assetManagerStorage().setExportedAssetFiles(nftExports(files))
                 }
             }
             catch(e: Exception)
@@ -803,6 +863,11 @@ interface AssetManagerStorage
      *  If cached, must return a string Url that points to the local cached file in a path format appropriate for this platform, and null for bytearray
      *  If not cached, returns the global Uri location, most importantly including the filename (for media type determination), and data in the bytearray */
     fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
+
+    /** Replace the list of asset files that other apps on this device may read: each file's name (as passed to
+     * @storeAssetFile) maps to how other apps see it.  A file not in this list is never shown to other apps,
+     * even while it is still stored here.  Platforms that cannot share files with other apps ignore this. */
+    fun setExportedAssetFiles(files: Map<String, NftExport>) {}
 }
 
 
@@ -991,7 +1056,7 @@ class AssetManager(): AssetManagerStorage
     {
         try
         {
-            return assetManagerStorage().loadAssetFile(groupId.toHex() + ".zip")
+            return assetManagerStorage().loadAssetFile(nftFileName(groupId))
         }
         catch(e: Exception) // file not found
         {
@@ -1044,7 +1109,7 @@ class AssetManager(): AssetManagerStorage
                     // If the hash matches, but the zip file is bad, we will never get a good one from another source, so give up
                     return null
                 }
-                storeAssetFile(groupId.toHex() + ".zip", zipBytes)
+                storeAssetFile(nftFileName(groupId), zipBytes)
                 return Pair(url, ef)
             }
         }
@@ -1128,7 +1193,11 @@ class AssetManager(): AssetManagerStorage
     }
 
     override fun storeAssetFile(filename: String, data: ByteArray): String
-        = assetManagerStorage().storeAssetFile(filename, data)
+    {
+        val ret = assetManagerStorage().storeAssetFile(filename, data)
+        triggerAssetCheck()  // a newly received asset file should be exported to other apps
+        return ret
+    }
 
     override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
         = assetManagerStorage().loadAssetFile(filename)
@@ -1146,5 +1215,7 @@ class AssetManager(): AssetManagerStorage
 
     override fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
         = assetManagerStorage().cacheNftMedia(groupId, media)
+
+    override fun setExportedAssetFiles(files: Map<String, NftExport>) = assetManagerStorage().setExportedAssetFiles(files)
 }
 

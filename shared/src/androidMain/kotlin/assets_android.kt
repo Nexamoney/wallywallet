@@ -1,6 +1,7 @@
 package org.nexa.assets
 
 import android.content.Context
+import info.bitcoinunlimited.www.wally.NftDocumentsProvider
 import info.bitcoinunlimited.www.wally.wallyAndroidApp
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -35,6 +36,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         FileOutputStream(file).use {
             it.write(data)
         }
+        if (filename.endsWith(".zip")) NftDocumentsProvider.notifyChanged(context)
         return file.absolutePath
     }
     override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
@@ -55,6 +57,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         file.delete()
+        if (filename.endsWith(".zip")) NftDocumentsProvider.notifyChanged(context)
     }
 
     /** delete all asset files */
@@ -65,6 +68,17 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         val files = dir.listFiles()
         for (f in files)
             f.delete()
+        NftDocumentsProvider.notifyChanged(context)
+    }
+
+    override fun setExportedAssetFiles(files: Map<String, NftExport>)
+    {
+        val context = androidContext!!
+        if (NftDocumentsProvider.writeExports(context.getDir("asset", Context.MODE_PRIVATE), files))
+        {
+            NftDocumentsProvider.pruneThumbnails(context, files.keys.map { it.substringBeforeLast('.') }.toSet())
+            NftDocumentsProvider.notifyChanged(context)
+        }
     }
 
     override fun storeCardFile(filename: String, data: ByteArray): String

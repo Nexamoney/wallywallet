@@ -416,6 +416,7 @@ actual fun toggleMeditationCamouflage(enable: Boolean) {
         pm.setComponentEnabledSetting(targetComp, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
 
         pm.setComponentEnabledSetting(otherComp, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        NftDocumentsProvider.notifyRootsChanged(context)  // the NFT folder is hidden while camouflaged
 
         // App restart is required when changing icon
         val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
