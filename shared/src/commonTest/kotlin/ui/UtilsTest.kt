@@ -440,6 +440,7 @@ fun mockAccount(
         val fastForwardStatusFlow = MutableStateFlow<String?>(null)
         val fiatPerCoinFlow = MutableStateFlow(BigDecimal.ZERO)
         val assetsFlow = MutableStateFlow(initialAssets)
+        val hasAssetsFlow = MutableStateFlow<Boolean?>(initialAssets.isNotEmpty())
 
         val nexaFormat = DecimalFormat("##,###,###,###,##0.00")
 
@@ -486,6 +487,7 @@ fun mockAccount(
         every { assetsObservable } returns assetsFlow
         every { assetTransferList } returns mutableListOf()
         every { hasAssets() } calls { assetsFlow.value.isNotEmpty() }
+        every { hasAssetsState } returns hasAssetsFlow
         every { assetList() } calls { assetsFlow.value.values.toMutableList() }
         every { clearAssetTransferList() } returns 0
         every { addAssetToTransferList(any(), any()) } returns false

@@ -4,6 +4,7 @@ import info.bitcoinunlimited.www.wally.ACCOUNT_FLAG_HIDE_UNTIL_PIN
 import info.bitcoinunlimited.www.wally.ACCOUNT_FLAG_NONE
 import info.bitcoinunlimited.www.wally.ACCOUNT_FLAG_REUSE_ADDRESSES
 import info.bitcoinunlimited.www.wally.Account
+import info.bitcoinunlimited.www.wally.AccountImpl
 import info.bitcoinunlimited.www.wally.EncodePIN
 import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.containsAccountWithName
@@ -417,6 +418,32 @@ class AccountTest : WallyUiTestBase()
     {
         withRealAccount("assetEmpty") { acc ->
             assertFalse(acc.hasAssets())
+        }
+    }
+
+    @Test
+    fun hasAssetsState_startsUnknown()
+    {
+        // autoInit = false so no asset walk is scheduled behind our back.
+        val acc = AccountImpl("assetStateNew", chainSelector = ChainSelector.NEXA, autoInit = false)
+        try
+        {
+            assertNull(acc.hasAssetsState.value)
+        }
+        finally
+        {
+            acc.delete()
+        }
+    }
+
+    @Test
+    fun hasAssetsState_emptyPublishesFalse()
+    {
+        withRealAccount("assetState") { acc ->
+            // Asserting false rather than !true pins the publish: without it the value stays null.
+            acc.constructAssetMap()
+            assertEquals(false, acc.hasAssetsState.value)
+            assertEquals(acc.hasAssets(), acc.hasAssetsState.value)
         }
     }
 

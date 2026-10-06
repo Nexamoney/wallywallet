@@ -538,7 +538,7 @@ fun displayErrorAndGoBack(errNo: Int)
 fun updateNavMenuContents()
 {
     // Check every 10 seconds to see if there are assets in this wallet & enable the menu item if there are
-    if (!showAssetsPref.value && (wallyApp?.hasAssets() == true))
+    if (!showAssetsPref.value && (wallyApp?.hasAssetsState?.value == true))
     {
         enableNavMenuItem(ScreenId.Assets)
     }

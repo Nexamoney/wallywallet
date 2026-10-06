@@ -171,6 +171,8 @@ interface Account
     // ----- Assets -----
     var assets: Map<GroupId, AssetPerAccount>
     val assetsObservable: StateFlow<Map<GroupId, AssetPerAccount>>
+    /** True when this account holds assets, null until the first asset walk has run. */
+    val hasAssetsState: StateFlow<Boolean?>
     val assetTransferList: MutableList<GroupId>
 
     // ----- Fastforward -----
@@ -213,6 +215,7 @@ interface Account
     fun setBlockchainAccessModeFromPrefs()
 
     // ----- Assets -----
+    /** Blocking: takes the wallet lock.  From the UI read [hasAssetsState] instead. */
     fun hasAssets(): Boolean
     fun addAssetToTransferList(a: GroupId, amt: BigDecimal): Boolean
     fun clearAssetTransferList(): Int
@@ -387,6 +390,8 @@ class AccountImpl(
     init { LogIt.info(sourceLoc() + ": Flows") }
     @Transient private val _assetsState = MutableStateFlow<Map<GroupId, AssetPerAccount>>(mapOf<GroupId, AssetPerAccount>())
     @Transient override val assetsObservable = _assetsState.asStateFlow()
+    @Transient private val _hasAssetsState = MutableStateFlow<Boolean?>(null)
+    @Transient override val hasAssetsState = _hasAssetsState.asStateFlow()
     override val assetTransferList = mutableListOf<GroupId>()
 
     // How to abort a fastforward (and its happening if non-null)
@@ -836,6 +841,10 @@ class AccountImpl(
             }
             false
         }
+
+        // Publish here: `ast` is complete, forEachUtxo released the wallet lock, and am.track() below may block.
+        _hasAssetsState.value = ast.isNotEmpty()
+        wallyApp?.updateHasAssets()
 
         // Update the asset map in place rather than clearing and rebuilding: this keeps any
         // per-asset UI state (e.g. send quantity) on entries that survive, and means the asset
