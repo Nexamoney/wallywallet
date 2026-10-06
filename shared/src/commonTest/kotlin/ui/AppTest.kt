@@ -1,11 +1,14 @@
 package ui
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import dev.mokkery.answering.returns
+import dev.mokkery.every
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.IdentitySession
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.SendScreenNavParams
 import info.bitcoinunlimited.www.wally.ui.nav
+import kotlinx.coroutines.flow.MutableStateFlow
 import io.ktor.network.selector.SelectorManager
 import io.ktor.network.sockets.InetSocketAddress
 import io.ktor.network.sockets.ServerSocket
@@ -161,6 +164,57 @@ class AppTest : WallyUiTestBase()
         val app = wallyApp!!
         val result = app.accountsFor(ChainSelector.BCHREGTEST)
         assertTrue(result.isEmpty())
+    }
+
+    // --- hasAssetsState tests ---
+
+    @Test
+    fun updateHasAssetsReflectsAnAccountHoldingAssets()
+    {
+        val app = wallyApp!!
+        val asset = assetPerAccountFaker()
+        val account = mockAccount(initialAssets = mapOf(asset.groupInfo.groupId to asset))
+        app.accounts[account.name] = account
+        try
+        {
+            app.updateHasAssets()
+            assertEquals(true, app.hasAssetsState.value)
+        }
+        finally
+        {
+            // An asset-holding mock left in place would keep hasAssetsState true for later tests.
+            app.accounts.remove(account.name)
+            app.updateHasAssets()
+        }
+    }
+
+    @Test
+    fun updateHasAssetsStaysUnknownWhileAnAccountHasNotWalked()
+    {
+        val app = wallyApp!!
+        // A leftover real account has not walked either, and would mask the transition to false below.
+        for (a in app.accounts.values.toList()) app.deleteAccount(a)
+        val answered = mockAccount()
+        val unwalked = mockAccount()
+        every { unwalked.name } returns "mockUnwalked"
+        every { unwalked.hasAssetsState } returns MutableStateFlow<Boolean?>(null)
+        app.accounts[answered.name] = answered
+        app.accounts[unwalked.name] = unwalked
+        try
+        {
+            app.updateHasAssets()
+            assertNull(app.hasAssetsState.value)
+
+            every { unwalked.hasAssetsState } returns MutableStateFlow<Boolean?>(false)
+            app.updateHasAssets()
+            assertEquals(false, app.hasAssetsState.value)
+        }
+        finally
+        {
+            app.accounts.remove(unwalked.name)
+            app.accounts.remove(answered.name)
+            app.updateHasAssets()
+        }
     }
 
     // --- preferredVisibleAccountOrNull tests ---

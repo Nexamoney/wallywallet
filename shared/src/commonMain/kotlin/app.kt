@@ -18,6 +18,8 @@ import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -574,15 +576,19 @@ open class CommonApp(val runningTests: Boolean)
         return false
     }
 
-    /** Returns true if any account has any assets */
-    fun hasAssets():Boolean
+    private val _hasAssetsState = MutableStateFlow<Boolean?>(null)
+    /** True when any account holds assets, false when none do, null until counted -- null is not false. */
+    val hasAssetsState: StateFlow<Boolean?> = _hasAssetsState.asStateFlow()
+
+    /** Recompute [hasAssetsState] under [accountLock]: true beats null, null beats false. */
+    fun updateHasAssets()
     {
-        for (a in accounts)
-        {
-            if (a.value.hasAssets())
-                return true
+        _hasAssetsState.value = accountLock.lock {
+            val known = accounts.values.map { it.hasAssetsState.value }
+            if (known.any { it == true }) true
+            else if (known.any { it == null }) null
+            else false
         }
-        return false
     }
 
     /** Do whatever you pass but not within the user interface context, asynchronously.
@@ -1209,6 +1215,7 @@ open class CommonApp(val runningTests: Boolean)
             accounts.remove(name)
             if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
         }
+        updateHasAssets()
         saveActiveAccountList()
         // laterOneJob name-dedupes against a rapid double-tap.
         laterOneJob("deleteAccount-$name") { finalizeAccountDeletion(name, act) }
