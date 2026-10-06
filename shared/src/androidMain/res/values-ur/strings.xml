@@ -152,6 +152,7 @@
     <string name="AccountActions">اکاؤنٹ کے اقدامات</string>
     <string name="GeneralSettings">عمومی ترتیبات</string>
     <string name="BlockchainSettings">بلاک چین کے ذرائع</string>
+    <string name="CurrencySettings">کرنسی کی ترتیبات</string>
     <string name="AccessPriceData">قیمت کے ڈیٹا تک رسائی</string>
     <string name="oldUi">پرانا انٹرفیس</string>
     <string name="SplitBillDescription">بل آپ (فیاٹ میں) ادا کریں، پھر آپ کے دوست نیچے دیے گئے QR کوڈ کے ذریعے اپنا حصہ آپ کو ادا کریں۔ حصوں کی گنتی میں اپنے آپ کو بھی شامل کریں، الا یہ کہ آپ کے دوست ہی بل دے رہے ہوں!</string>

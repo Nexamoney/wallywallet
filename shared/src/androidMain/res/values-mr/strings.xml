@@ -152,6 +152,7 @@
     <string name="AccountActions">खाते क्रिया</string>
     <string name="GeneralSettings">सामान्य सेटिंग्ज</string>
     <string name="BlockchainSettings">ब्लॉकचेन स्रोत</string>
+    <string name="CurrencySettings">चलन सेटिंग्ज</string>
     <string name="AccessPriceData">किंमत डेटा ॲक्सेस</string>
     <string name="oldUi">जुना इंटरफेस</string>
     <string name="SplitBillDescription">तुम्ही बिल भरा (फिॲट चलनात), मग तुमचे मित्र खालील QR कोडद्वारे त्यांचा वाटा तुम्हाला देतील. वाटे मोजताना स्वतःलाही धरा, तुमचे मित्र ट्रीट देत नसतील तर!</string>

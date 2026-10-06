@@ -152,6 +152,7 @@
     <string name="AccountActions">অ্যাকাউন্টের কাজ</string>
     <string name="GeneralSettings">সাধারণ সেটিংস</string>
     <string name="BlockchainSettings">ব্লকচেইন সোর্স</string>
+    <string name="CurrencySettings">মুদ্রা সেটিংস</string>
     <string name="AccessPriceData">দামের ডেটা অ্যাক্সেস</string>
     <string name="oldUi">পুরোনো ইন্টারফেস</string>
     <string name="SplitBillDescription">আপনি বিলটি ফিয়াটে দেবেন, তারপর আপনার বন্ধুরা নিচের QR কোডের মাধ্যমে তাদের ভাগ আপনাকে দেবে। কত ভাগ হবে তার সংখ্যায় নিজেকেও ধরুন, যদি না বন্ধুরাই পুরোটা দেয়!</string>

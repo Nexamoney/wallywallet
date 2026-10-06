@@ -152,6 +152,7 @@
     <string name="AccountActions">Tindakan Akun</string>
     <string name="GeneralSettings">Pengaturan Umum</string>
     <string name="BlockchainSettings">Sumber Blockchain</string>
+    <string name="CurrencySettings">Pengaturan Mata Uang</string>
     <string name="AccessPriceData">Akses Data Harga</string>
     <string name="oldUi">Antarmuka lama</string>
     <string name="SplitBillDescription">Anda membayar tagihan (dalam bentuk fiat), lalu teman-teman Anda membayar bagian mereka kepada Anda melalui kode QR di bawah. Sertakan diri Anda dalam jumlah pembagian, kecuali teman-teman Anda yang mentraktir!</string>

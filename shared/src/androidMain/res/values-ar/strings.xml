@@ -152,6 +152,7 @@
     <string name="AccountActions">إجراءات الحساب</string>
     <string name="GeneralSettings">الإعدادات العامة</string>
     <string name="BlockchainSettings">مصادر البلوكشين</string>
+    <string name="CurrencySettings">إعدادات العملة</string>
     <string name="AccessPriceData">جلب بيانات الأسعار</string>
     <string name="oldUi">الواجهة القديمة</string>
     <string name="SplitBillDescription">أنت تدفع الفاتورة (بالعملة الورقية)، ثم يدفع لك أصدقاؤك حصتهم عبر رمز QR أدناه. احسب نفسك ضمن عدد الحصص، إلا إذا كان أصدقاؤك هم من يدفعون!</string>

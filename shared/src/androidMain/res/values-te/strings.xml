@@ -152,6 +152,7 @@
     <string name="AccountActions">ఖాతా చర్యలు</string>
     <string name="GeneralSettings">సాధారణ సెట్టింగ్‌లు</string>
     <string name="BlockchainSettings">బ్లాక్‌చెయిన్ మూలాలు</string>
+    <string name="CurrencySettings">కరెన్సీ సెట్టింగ్‌లు</string>
     <string name="AccessPriceData">ధర డేటా యాక్సెస్</string>
     <string name="oldUi">పాత యూజర్ ఇంటర్‌ఫేస్</string>
     <string name="SplitBillDescription">మీరు బిల్లు (ఫియట్ కరెన్సీలో) చెల్లించండి, తర్వాత మీ స్నేహితులు కింది QR కోడ్ ద్వారా వారి వాటాను మీకు చెల్లిస్తారు.  మీ స్నేహితులే కొంటుంటే తప్ప, ఎన్ని వాటాలుగా విభజించాలో లెక్కించేటప్పుడు మిమ్మల్ని కూడా కలుపుకోండి!</string>

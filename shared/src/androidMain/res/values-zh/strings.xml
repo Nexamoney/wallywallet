@@ -152,6 +152,7 @@
     <string name="AccountActions">账户操作</string>
     <string name="GeneralSettings">通用设置</string>
     <string name="BlockchainSettings">区块链来源</string>
+    <string name="CurrencySettings">货币设置</string>
     <string name="AccessPriceData">获取价格数据</string>
     <string name="oldUi">旧版界面</string>
     <string name="SplitBillDescription">您先用法币付账，朋友再通过下方二维码把各自的份额付给您。除非由朋友请客，否则分摊人数要把您自己算在内。</string>

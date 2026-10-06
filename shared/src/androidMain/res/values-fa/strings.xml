@@ -152,6 +152,7 @@
     <string name="AccountActions">عملیات حساب</string>
     <string name="GeneralSettings">تنظیمات عمومی</string>
     <string name="BlockchainSettings">منابع بلاک‌چین</string>
+    <string name="CurrencySettings">تنظیمات ارز</string>
     <string name="AccessPriceData">دسترسی به داده‌های قیمت</string>
     <string name="oldUi">رابط کاربری قدیمی</string>
     <string name="SplitBillDescription">شما صورت‌حساب را (به فیات) پرداخت می‌کنید، سپس دوستانتان سهم خود را با کد QR زیر به شما می‌پردازند. خودتان را هم در تعداد سهم‌ها حساب کنید، مگر اینکه مهمان دوستانتان باشید!</string>

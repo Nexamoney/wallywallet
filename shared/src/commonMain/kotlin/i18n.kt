@@ -13,3 +13,6 @@ expect fun setLocale(language: String, country: String, context: Any? = null): B
 /** Abbreviated month names in the current locale, January first, twelve entries.
  * Android and iOS answer from the platform; desktop has no such source and answers in English. */
 expect fun abbreviatedMonthNames(): List<String>
+
+/** The language and country this device reports, or null if it has no API to tell us */
+expect fun deviceLocale(): Pair<String, String>?

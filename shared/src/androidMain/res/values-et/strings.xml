@@ -152,6 +152,7 @@
     <string name="AccountActions">Konto toimingud</string>
     <string name="GeneralSettings">Üldseaded</string>
     <string name="BlockchainSettings">Plokiahela allikad</string>
+    <string name="CurrencySettings">Valuuta seaded</string>
     <string name="AccessPriceData">Kuva hinnaandmed</string>
     <string name="oldUi">Vana kasutajaliides</string>
     <string name="SplitBillDescription">Teie maksate arve (fiat-valuutas) ja sõbrad maksavad teile oma osa alloleva QR-koodi kaudu. Arvestage jagajate hulka ka ennast, kui just sõbrad ei tee välja!</string>

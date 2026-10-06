@@ -152,6 +152,7 @@
     <string name="AccountActions">アカウント操作</string>
     <string name="GeneralSettings">一般設定</string>
     <string name="BlockchainSettings">ブロックチェーン接続先</string>
+    <string name="CurrencySettings">通貨設定</string>
     <string name="AccessPriceData">価格データを取得</string>
     <string name="oldUi">旧インターフェース</string>
     <string name="SplitBillDescription">法定通貨で会計を支払い、下のQRコードで友人から各自の分を受け取ります。友人のおごりでない限り、分割する人数には自分も含めてください。</string>

@@ -152,6 +152,7 @@
     <string name="AccountActions">ਖਾਤਾ ਕਾਰਵਾਈਆਂ</string>
     <string name="GeneralSettings">ਆਮ ਸੈਟਿੰਗਾਂ</string>
     <string name="BlockchainSettings">ਬਲਾਕਚੇਨ ਸਰੋਤ</string>
+    <string name="CurrencySettings">ਮੁਦਰਾ ਸੈਟਿੰਗਾਂ</string>
     <string name="AccessPriceData">ਕੀਮਤ ਡਾਟਾ ਵਰਤੋ</string>
     <string name="oldUi">ਪੁਰਾਣਾ ਇੰਟਰਫੇਸ</string>
     <string name="SplitBillDescription">ਤੁਸੀਂ ਬਿੱਲ (ਫ਼ਿਆਟ ਵਿੱਚ) ਭਰੋ, ਫਿਰ ਤੁਹਾਡੇ ਦੋਸਤ ਹੇਠਲੇ QR ਕੋਡ ਰਾਹੀਂ ਆਪਣਾ ਹਿੱਸਾ ਤੁਹਾਨੂੰ ਦੇਣ। ਹਿੱਸਿਆਂ ਦੀ ਗਿਣਤੀ ਵਿੱਚ ਆਪਣੇ ਆਪ ਨੂੰ ਵੀ ਸ਼ਾਮਲ ਕਰੋ, ਜੇ ਦੋਸਤ ਹੀ ਖੁਆ ਨਹੀਂ ਰਹੇ!</string>

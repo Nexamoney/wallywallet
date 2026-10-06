@@ -152,6 +152,7 @@
     <string name="AccountActions">Thao tác tài khoản</string>
     <string name="GeneralSettings">Cài đặt chung</string>
     <string name="BlockchainSettings">Nguồn blockchain</string>
+    <string name="CurrencySettings">Cài đặt tiền tệ</string>
     <string name="AccessPriceData">Truy cập dữ liệu giá</string>
     <string name="oldUi">Giao diện cũ</string>
     <string name="SplitBillDescription">Bạn thanh toán hóa đơn (bằng tiền pháp định), rồi bạn bè trả lại phần của họ qua mã QR bên dưới. Nhớ tính cả bạn vào số phần chia, trừ khi bạn bè mời!</string>

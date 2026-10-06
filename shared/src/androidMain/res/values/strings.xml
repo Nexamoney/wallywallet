@@ -267,6 +267,7 @@ Good luck!
     <string name="AccountActions">Account Actions</string>
     <string name="GeneralSettings">General Settings</string>
     <string name="BlockchainSettings">Blockchain Sources</string>
+    <string name="CurrencySettings">Currency Settings</string>
     <string name="AccessPriceData">Access Price Data</string>
     <string name="oldUi">Old user interface</string>
     <!-- not used right now string name="AccessPriceDataHint">This option allows the wallet to display the value of your cryptocurrency.  However, this data may not be accurate.  And the access uses more data and divulges your IP address to the service providing the data.</string -->

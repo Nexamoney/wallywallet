@@ -152,6 +152,7 @@
     <string name="AccountActions">Ayyukan asusu</string>
     <string name="GeneralSettings">Saiti na gaba ɗaya</string>
     <string name="BlockchainSettings">Tushen blockchain</string>
+    <string name="CurrencySettings">Saitunan kuɗi</string>
     <string name="AccessPriceData">Samun bayanan farashi</string>
     <string name="oldUi">Tsohuwar fuskar amfani</string>
     <string name="SplitBillDescription">Ku biya kuɗin (da kuɗin ƙasa), sannan abokanku su biya ku rabonsu ta QR code ɗin da ke ƙasa. Ku haɗa kanku a cikin adadin rabon, sai dai idan abokanku ne za su biya!</string>

@@ -152,6 +152,7 @@
     <string name="AccountActions">একাউণ্টৰ কাৰ্য</string>
     <string name="GeneralSettings">সাধাৰণ ছেটিংছ</string>
     <string name="BlockchainSettings">ব্লকচেইনৰ উৎস</string>
+    <string name="CurrencySettings">মুদ্ৰাৰ ছেটিংছ</string>
     <string name="AccessPriceData">মূল্যৰ তথ্যলৈ প্ৰৱেশ</string>
     <string name="oldUi">পুৰণি ইণ্টাৰফেচ</string>
     <string name="SplitBillDescription">আপুনি বিলখন (ফিয়াটত) পৰিশোধ কৰক, তাৰ পিছত আপোনাৰ বন্ধুৱে তলৰ QR কোডৰ জৰিয়তে নিজৰ ভাগ আপোনাক দিব।  বন্ধুৱে খুৱাব বুলি নহ\'লে, ভাগ কৰা সংখ্যাত নিজকো ধৰক!</string>

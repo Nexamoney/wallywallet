@@ -152,6 +152,7 @@
     <string name="AccountActions">የሂሳብ እርምጃዎች</string>
     <string name="GeneralSettings">አጠቃላይ ቅንብሮች</string>
     <string name="BlockchainSettings">የብሎክቼይን ምንጮች</string>
+    <string name="CurrencySettings">የገንዘብ ቅንብሮች</string>
     <string name="AccessPriceData">የዋጋ መረጃ ማግኘት</string>
     <string name="oldUi">የቀድሞ በይነገጽ</string>
     <string name="SplitBillDescription">እርስዎ ሂሳቡን (በመደበኛ ገንዘብ) ይከፍላሉ፣ ጓደኞችዎ ደግሞ ድርሻቸውን ከታች ባለው QR ኮድ በኩል ይከፍሉዎታል። ጓደኞችዎ የሚጋብዙዎት ካልሆነ በስተቀር በክፍፍሉ ብዛት ውስጥ እራስዎን ያካትቱ!</string>

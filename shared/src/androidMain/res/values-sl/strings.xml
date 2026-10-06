@@ -152,6 +152,7 @@
     <string name="AccountActions">Dejanja računa</string>
     <string name="GeneralSettings">Splošne nastavitve</string>
     <string name="BlockchainSettings">Viri verige blokov</string>
+    <string name="CurrencySettings">Nastavitve valute</string>
     <string name="AccessPriceData">Dostop do podatkov o cenah</string>
     <string name="oldUi">Stari vmesnik</string>
     <string name="SplitBillDescription">Vi plačate račun (v fiatu), nato vam prijatelji prek spodnje kode QR plačajo svoj delež. V število delov vštejte tudi sebe, razen če častijo prijatelji!</string>

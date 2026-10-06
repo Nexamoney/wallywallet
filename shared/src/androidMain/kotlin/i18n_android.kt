@@ -48,6 +48,22 @@ actual fun setLocale():Boolean
 }
 
 
+actual fun deviceLocale(): Pair<String, String>?
+{
+    val locales = try
+    {
+        (appContext() as android.content.Context).resources.configuration.locales
+    }
+    catch (e: Exception)
+    {
+        return null
+    }
+    if (locales.size() == 0) return null
+    val loc = locales[0]
+    if (loc.language.isEmpty()) return null
+    return Pair(loc.language, loc.country ?: "")
+}
+
 actual fun setLocale(language: String, country: String, context: Any?):Boolean
 {
     val androidContext = if (context != null)

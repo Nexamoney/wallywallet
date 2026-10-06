@@ -152,6 +152,7 @@
     <string name="AccountActions">Действия со счётом</string>
     <string name="GeneralSettings">Общие настройки</string>
     <string name="BlockchainSettings">Источники блокчейна</string>
+    <string name="CurrencySettings">Настройки валюты</string>
     <string name="AccessPriceData">Доступ к курсам</string>
     <string name="oldUi">Старый интерфейс</string>
     <string name="SplitBillDescription">Вы оплачиваете чек (в фиате), а друзья возвращают вам свою часть по QR-коду ниже. Не забудьте учесть и себя в числе тех, на кого делится чек, — если, конечно, друзья не угощают!</string>

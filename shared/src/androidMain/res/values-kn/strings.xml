@@ -152,6 +152,7 @@
     <string name="AccountActions">ಖಾತೆ ಕ್ರಿಯೆಗಳು</string>
     <string name="GeneralSettings">ಸಾಮಾನ್ಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
     <string name="BlockchainSettings">ಬ್ಲಾಕ್‌ಚೈನ್ ಮೂಲಗಳು</string>
+    <string name="CurrencySettings">ಕರೆನ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
     <string name="AccessPriceData">ಬೆಲೆ ಡೇಟಾ ಪ್ರವೇಶ</string>
     <string name="oldUi">ಹಳೆಯ ಬಳಕೆದಾರ ಇಂಟರ್ಫೇಸ್</string>
     <string name="SplitBillDescription">ನೀವು ಬಿಲ್ ಅನ್ನು (ಫಿಯೆಟ್ ಕರೆನ್ಸಿಯಲ್ಲಿ) ಪಾವತಿಸಿ, ನಂತರ ನಿಮ್ಮ ಸ್ನೇಹಿತರು ಕೆಳಗಿನ QR ಕೋಡ್ ಮೂಲಕ ತಮ್ಮ ಪಾಲನ್ನು ನಿಮಗೆ ಪಾವತಿಸುತ್ತಾರೆ. ಸ್ನೇಹಿತರೇ ಖರೀದಿಸದಿದ್ದರೆ, ಎಷ್ಟು ಭಾಗ ಮಾಡಬೇಕೆಂಬ ಎಣಿಕೆಯಲ್ಲಿ ನಿಮ್ಮನ್ನೂ ಸೇರಿಸಿಕೊಳ್ಳಿ!</string>

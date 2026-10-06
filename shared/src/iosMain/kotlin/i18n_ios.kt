@@ -37,6 +37,15 @@ actual fun setLocale():Boolean
     return setLocale(languageCode, locale.countryCode ?: "")
 }
 
+actual fun deviceLocale(): Pair<String, String>?
+{
+    val locale = NSLocale.autoupdatingCurrentLocale
+    val preferredLanguage = (NSLocale.preferredLanguages.firstOrNull() as? String)?.split("-")?.firstOrNull()
+    val language = preferredLanguage ?: locale.languageCode ?: return null
+    if (language.isEmpty()) return null
+    return Pair(language, locale.countryCode ?: "")
+}
+
 fun provideLocaleFilesData(data:ByteArray)
 {
     setLocaleStringsFrom(data)

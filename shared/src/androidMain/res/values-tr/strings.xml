@@ -152,6 +152,7 @@
     <string name="AccountActions">Hesap İşlemleri</string>
     <string name="GeneralSettings">Genel Ayarlar</string>
     <string name="BlockchainSettings">Blok Zinciri Kaynakları</string>
+    <string name="CurrencySettings">Para Birimi Ayarları</string>
     <string name="AccessPriceData">Fiyat Verilerine Erişim</string>
     <string name="oldUi">Eski kullanıcı arayüzü</string>
     <string name="SplitBillDescription">Faturayı siz (fiat para birimiyle) ödersiniz, arkadaşlarınız da aşağıdaki QR kodu aracılığıyla kendi paylarını size öder. Arkadaşlarınız ısmarlamıyorsa, bölüşen kişi sayısına kendinizi de dahil edin!</string>

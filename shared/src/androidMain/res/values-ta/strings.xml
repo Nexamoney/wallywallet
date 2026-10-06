@@ -152,6 +152,7 @@
     <string name="AccountActions">கணக்குச் செயல்கள்</string>
     <string name="GeneralSettings">பொது அமைப்புகள்</string>
     <string name="BlockchainSettings">பிளாக்செயின் மூலங்கள்</string>
+    <string name="CurrencySettings">நாணய அமைப்புகள்</string>
     <string name="AccessPriceData">விலைத் தரவை அணுகு</string>
     <string name="oldUi">பழைய பயனர் இடைமுகம்</string>
     <string name="SplitBillDescription">நீங்கள் பில்லை (உள்ளூர் நாணயத்தில்) செலுத்துங்கள், பிறகு உங்கள் நண்பர்கள் கீழே உள்ள QR குறியீடு மூலம் தங்கள் பங்கை உங்களுக்குச் செலுத்துவார்கள். நண்பர்களே செலவு செய்கிறார்கள் என்றால் தவிர, பிரிக்கும் எண்ணிக்கையில் உங்களையும் சேர்த்துக்கொள்ளவும்!</string>

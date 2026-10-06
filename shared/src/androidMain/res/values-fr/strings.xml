@@ -152,6 +152,7 @@
     <string name="AccountActions">Actions du compte</string>
     <string name="GeneralSettings">Paramètres généraux</string>
     <string name="BlockchainSettings">Sources blockchain</string>
+    <string name="CurrencySettings">Paramètres de devise</string>
     <string name="AccessPriceData">Accès aux données de prix</string>
     <string name="oldUi">Ancienne interface</string>
     <string name="SplitBillDescription">Vous réglez l\'addition (en fiat), puis vos amis vous remboursent leur part via le code QR ci-dessous. Comptez-vous dans le nombre de parts, sauf si ce sont vos amis qui invitent !</string>

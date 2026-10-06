@@ -152,6 +152,7 @@
     <string name="AccountActions">Дії з рахунком</string>
     <string name="GeneralSettings">Загальні налаштування</string>
     <string name="BlockchainSettings">Джерела блокчейну</string>
+    <string name="CurrencySettings">Налаштування валюти</string>
     <string name="AccessPriceData">Доступ до цін</string>
     <string name="oldUi">Старий інтерфейс</string>
     <string name="SplitBillDescription">Ви оплачуєте рахунок (у фіаті), а друзі повертають вам свою частку за QR-кодом нижче. Враховуйте й себе в кількості часток, якщо тільки друзі не пригощають!</string>

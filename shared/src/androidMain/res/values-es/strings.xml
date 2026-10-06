@@ -152,6 +152,7 @@
     <string name="AccountActions">Acciones de cuenta</string>
     <string name="GeneralSettings">Configuración general</string>
     <string name="BlockchainSettings">Fuentes de blockchain</string>
+    <string name="CurrencySettings">Ajustes de moneda</string>
     <string name="AccessPriceData">Acceder a datos de precios</string>
     <string name="oldUi">Interfaz anterior</string>
     <string name="SplitBillDescription">Usted paga la cuenta (en fiat) y luego sus amigos le pagan su parte mediante el código QR de abajo. ¡Inclúyase en el número de partes, a menos que inviten sus amigos!</string>

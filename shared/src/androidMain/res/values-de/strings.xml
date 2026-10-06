@@ -152,6 +152,7 @@
     <string name="AccountActions">Account-Aktionen</string>
     <string name="GeneralSettings">Allgemeine Einstellungen</string>
     <string name="BlockchainSettings">Blockchain-Quellen</string>
+    <string name="CurrencySettings">Währungseinstellungen</string>
     <string name="AccessPriceData">Zugriff auf Preisdaten</string>
     <string name="oldUi">Alte Oberfläche</string>
     <string name="SplitBillDescription">Sie bezahlen die Rechnung (in Fiat), Ihre Freunde zahlen Ihnen ihren Anteil über den QR-Code unten. Zählen Sie sich bei der Anzahl der Anteile selbst mit — außer Ihre Freunde laden Sie ein!</string>

@@ -152,6 +152,7 @@
     <string name="AccountActions">การจัดการบัญชี</string>
     <string name="GeneralSettings">การตั้งค่าทั่วไป</string>
     <string name="BlockchainSettings">แหล่งข้อมูลบล็อกเชน</string>
+    <string name="CurrencySettings">การตั้งค่าสกุลเงิน</string>
     <string name="AccessPriceData">เข้าถึงข้อมูลราคา</string>
     <string name="oldUi">อินเทอร์เฟซแบบเดิม</string>
     <string name="SplitBillDescription">คุณจ่ายบิล (เป็นเงินเฟียต) แล้วเพื่อนๆ จ่ายส่วนของเขาให้คุณผ่านรหัส QR ด้านล่าง อย่าลืมนับตัวคุณเองรวมในจำนวนคนที่หาร เว้นแต่เพื่อนจะเลี้ยง!</string>
