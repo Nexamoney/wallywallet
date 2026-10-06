@@ -15,9 +15,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -1391,34 +1391,43 @@ fun ConnectionWarning()
 
 /** Standard wally accept/deny button row */
 @Composable
-fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit, modifier: Modifier = Modifier, acceptText:Int=S.accept, denyText:Int=S.deny, acceptEnabled:Boolean = true, denyIcon: ImageVector = Icons.Outlined.Cancel)
+fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit, modifier: Modifier = Modifier, acceptText:Int=S.accept, denyText:Int=S.deny, acceptEnabled:Boolean = true, denyIcon: ImageVector = Icons.Outlined.Close, acceptIcon: ImageVector = Icons.Outlined.Check)
 {
+    @Composable fun ButtonContent(icon: ImageVector, text: Int)
+    {
+        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(8.dp))
+        Text(i18n(text), style = MaterialTheme.typography.labelLarge)
+    }
+
     Row(
-      modifier = modifier.fillMaxWidth().padding(0.dp),
-      horizontalArrangement = Arrangement.SpaceAround,
+      modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
       verticalAlignment = Alignment.CenterVertically
     ) {
         if (acceptEnabled)
         {
-            IconTextButton(
-              icon = Icons.AutoMirrored.Outlined.Send,
-              modifier = Modifier.weight(1f),
-              description = i18n(acceptText),
-              color = wallyPurple,
+            Button(
+              onClick = accept,
+              modifier = Modifier.weight(1f).height(48.dp),
+              shape = CircleShape,
+              colors = ButtonDefaults.buttonColors(containerColor = wallyPurple, contentColor = Color.White),
             ) {
-                accept()
+                ButtonContent(acceptIcon, acceptText)
             }
         }
-        IconTextButton(
-          icon = denyIcon,
-          modifier = Modifier.weight(1f),
-          description = i18n(denyText),
-          color = wallyPurple,
+        OutlinedButton(
+          onClick = deny,
+          modifier = Modifier.weight(1f).height(48.dp),
+          shape = CircleShape,
+          border = BorderStroke(1.dp, wallyPurple),
+          colors = ButtonDefaults.outlinedButtonColors(contentColor = wallyPurple),
         ) {
-            deny()
+            ButtonContent(denyIcon, denyText)
         }
     }
 }
+
 enum class AmountSelector
 {
     ALL,
