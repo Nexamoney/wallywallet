@@ -152,6 +152,7 @@
     <string name="AccountActions">ખાતાની ક્રિયાઓ</string>
     <string name="GeneralSettings">સામાન્ય સેટિંગ્સ</string>
     <string name="BlockchainSettings">બ્લોકચેન સ્રોત</string>
+    <string name="CurrencySettings">ચલણ સેટિંગ્સ</string>
     <string name="AccessPriceData">ભાવ ડેટા ઍક્સેસ</string>
     <string name="oldUi">જૂનું યુઝર ઇન્ટરફેસ</string>
     <string name="SplitBillDescription">તમે બિલ ચૂકવો (ફિયાટમાં), પછી તમારા મિત્રો નીચેના QR કોડ દ્વારા તમને તેમનો ભાગ ચૂકવે. જો તમારા મિત્રો ચૂકવવાના ન હોય, તો ભાગ પાડવાની સંખ્યામાં તમારી જાતને પણ ગણો!</string>

@@ -915,7 +915,7 @@ open class CommonApp(val runningTests: Boolean)
         // Set up all the preference globals
         devMode = preferenceDB.getBoolean(DEV_MODE_PREF, false)
         allowAccessPriceData = preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)
-        localCurrency = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
+        localCurrency = defaultFiatCurrency(preferenceDB)
         fiatCurrencyCode = localCurrency  // what every balance in the UI is labelled with
         showIdentityPref.value = preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)
         showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLE_PAY_PREF, false)

@@ -152,6 +152,7 @@
     <string name="AccountActions">Ações da conta</string>
     <string name="GeneralSettings">Definições gerais</string>
     <string name="BlockchainSettings">Fontes de blockchain</string>
+    <string name="CurrencySettings">Configurações de moeda</string>
     <string name="AccessPriceData">Aceder a dados de preços</string>
     <string name="oldUi">Interface antiga</string>
     <string name="SplitBillDescription">Pague a conta (em moeda fiduciária) e depois os seus amigos pagam-lhe a parte deles através do código QR abaixo. Inclua-se na contagem de divisões, a não ser que sejam os amigos a pagar!</string>

@@ -152,6 +152,7 @@
     <string name="AccountActions">계정 작업</string>
     <string name="GeneralSettings">일반 설정</string>
     <string name="BlockchainSettings">블록체인 소스</string>
+    <string name="CurrencySettings">통화 설정</string>
     <string name="AccessPriceData">시세 데이터 사용</string>
     <string name="oldUi">이전 인터페이스</string>
     <string name="SplitBillDescription">먼저 법정화폐로 계산하면, 친구들이 아래 QR코드로 각자의 몫을 보내 줍니다. 친구들이 사 주는 것이 아니라면 분할 인원에 본인도 포함하세요!</string>

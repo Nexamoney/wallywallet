@@ -152,6 +152,7 @@
     <string name="AccountActions">Accions del compte</string>
     <string name="GeneralSettings">Configuració general</string>
     <string name="BlockchainSettings">Fonts de la cadena de blocs</string>
+    <string name="CurrencySettings">Configuració de la moneda</string>
     <string name="AccessPriceData">Accés a dades de preus</string>
     <string name="oldUi">Interfície antiga</string>
     <string name="SplitBillDescription">Pagueu la factura (en fiat) i després els vostres amics us paguen la seva part mitjançant el codi QR de sota. Incloeu-vos en el nombre de parts, tret que us convidin els vostres amics!</string>

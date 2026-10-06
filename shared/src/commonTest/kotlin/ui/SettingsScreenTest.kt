@@ -118,7 +118,7 @@ class SettingsScreenTest: WallyUiTestBase()
         setContent { SettingsScreen(prefs) }
         settle()
 
-        onNodeWithText("Currency Settings").assertIsDisplayed()
+        onNodeWithText(i18n(S.CurrencySettings)).assertIsDisplayed()
         onNodeWithText(i18n(S.GeneralSettings)).assertIsDisplayed()
         onNodeWithText(i18n(S.BlockchainSettings)).assertIsDisplayed()
     }
@@ -311,7 +311,7 @@ class SettingsScreenTest: WallyUiTestBase()
         onNodeWithTag("FiatCurrencyDropdown").performClick()
         settle()
 
-        for (code in listOf("BRL", "CAD", "CNY", "EUR", "GBP", "INR", "JPY", "RUB", "USD", "XAU"))
+        for (code in FIAT_CURRENCIES)
         {
             onNodeWithTag("FiatCurrency_$code").assertIsDisplayed()
         }
@@ -343,6 +343,26 @@ class SettingsScreenTest: WallyUiTestBase()
     }
 
     @Test
+    fun localCurrency_showsTheDeviceDefaultWithoutSavingIt() = runComposeUiTest {
+        val prefs = FakeSharedPreferences()
+        setContent { LocalCurrency(prefs) }
+        settle()
+
+        onNodeWithTag("SelectedFiatCurrency").assertTextEquals(deviceFiatCurrency())
+        assertEquals(null, prefs.getString(LOCAL_CURRENCY_PREF, null))  // the startup read saves it, not the screen
+    }
+
+    @Test
+    fun localCurrency_showsTheSavedCurrency() = runComposeUiTest {
+        val prefs = FakeSharedPreferences()
+        prefs.edit().putString(LOCAL_CURRENCY_PREF, "JPY").commit()
+        setContent { LocalCurrency(prefs) }
+        settle()
+
+        onNodeWithTag("SelectedFiatCurrency").assertTextEquals("JPY")
+    }
+
+    @Test
     fun localCurrency_selectEurPersistsToPrefs() = runComposeUiTest {
         withoutTouchingTheNetwork {
             val prefs = FakeSharedPreferences()
@@ -355,6 +375,8 @@ class SettingsScreenTest: WallyUiTestBase()
             settle()
 
             assertEquals("EUR", prefs.getString(LOCAL_CURRENCY_PREF, ""))
+            assertEquals("EUR", localCurrency)
+            assertEquals("EUR", fiatCurrencyCode)
         }
     }
 
@@ -371,6 +393,8 @@ class SettingsScreenTest: WallyUiTestBase()
             settle()
 
             assertEquals("JPY", prefs.getString(LOCAL_CURRENCY_PREF, ""))
+            assertEquals("JPY", localCurrency)
+            assertEquals("JPY", fiatCurrencyCode)
         }
     }
 

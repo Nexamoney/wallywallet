@@ -50,8 +50,8 @@ fun onCopyToClipBoardText(a: String) {
 fun LocalCurrency(preferenceDB: SharedPreferences)
 {
     var expanded by remember { mutableStateOf(false) }
-    val fiatCurrencies = listOf("BRL", "CAD", "CNY", "EUR", "GBP", "INR", "JPY", "RUB", "USD", "XAU")
-    val selectedFiatCurrency = remember { mutableStateOf(preferenceDB.getString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, "USD")) }
+    val fiatCurrencies = FIAT_CURRENCIES
+    val selectedFiatCurrency = remember { mutableStateOf(chosenFiatCurrency(preferenceDB)) }
 
     Row(
       Modifier.fillMaxWidth(),
@@ -65,8 +65,8 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
               verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                  text = selectedFiatCurrency.value ?: "",
-                  modifier = Modifier.clickable(onClick = { expanded = true })
+                  text = selectedFiatCurrency.value,
+                  modifier = Modifier.testTag("SelectedFiatCurrency").clickable(onClick = { expanded = true })
                 )
                 IconButton(onClick = {expanded = true}, modifier = Modifier.testTag("FiatCurrencyDropdown")) {
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "Fiat currency dropdown")
@@ -222,7 +222,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
           modifier = Modifier.fillMaxWidth().padding(15.dp, 2.dp),
           horizontalAlignment = Alignment.Start
         ) {
-            CenteredSectionText("Currency Settings")
+            CenteredSectionText(i18n(S.CurrencySettings))
             WallyDivider()
         }
 

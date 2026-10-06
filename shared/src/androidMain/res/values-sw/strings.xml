@@ -152,6 +152,7 @@
     <string name="AccountActions">Vitendo vya akaunti</string>
     <string name="GeneralSettings">Mipangilio ya jumla</string>
     <string name="BlockchainSettings">Vyanzo vya blockchain</string>
+    <string name="CurrencySettings">Mipangilio ya sarafu</string>
     <string name="AccessPriceData">Fikia data ya bei</string>
     <string name="oldUi">Kiolesura cha zamani</string>
     <string name="SplitBillDescription">Unalipa bili (kwa fedha za kawaida), kisha marafiki zako wanakulipa sehemu yao kwa msimbo wa QR hapa chini. Jijumuishe katika idadi ya wagawanaji, isipokuwa kama marafiki zako ndio wanalipa!</string>

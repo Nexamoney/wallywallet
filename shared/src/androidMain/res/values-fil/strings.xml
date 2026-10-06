@@ -152,6 +152,7 @@
     <string name="AccountActions">Mga aksyon sa account</string>
     <string name="GeneralSettings">Pangkalahatang settings</string>
     <string name="BlockchainSettings">Mga source ng blockchain</string>
+    <string name="CurrencySettings">Mga setting ng pera</string>
     <string name="AccessPriceData">I-access ang price data</string>
     <string name="oldUi">Lumang interface</string>
     <string name="SplitBillDescription">Ikaw ang magbabayad ng bill (sa fiat), tapos babayaran ka ng mga kaibigan mo ng bahagi nila gamit ang QR code sa ibaba.  Isama ang sarili mo sa bilang ng paghahatian, maliban kung sila ang manlilibre!</string>

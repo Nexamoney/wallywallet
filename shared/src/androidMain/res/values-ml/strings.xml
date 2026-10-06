@@ -152,6 +152,7 @@
     <string name="AccountActions">അക്കൗണ്ട് പ്രവർത്തനങ്ങൾ</string>
     <string name="GeneralSettings">പൊതു ക്രമീകരണങ്ങൾ</string>
     <string name="BlockchainSettings">ബ്ലോക്ക്ചെയിൻ സ്രോതസ്സുകൾ</string>
+    <string name="CurrencySettings">കറൻസി ക്രമീകരണങ്ങൾ</string>
     <string name="AccessPriceData">വില ഡാറ്റ ആക്സസ് ചെയ്യുക</string>
     <string name="oldUi">പഴയ ഇന്റർഫേസ്</string>
     <string name="SplitBillDescription">നിങ്ങൾ ബിൽ (ഫിയറ്റിൽ) അടയ്ക്കുന്നു, പിന്നെ താഴെയുള്ള QR കോഡ് വഴി സുഹൃത്തുക്കൾ അവരുടെ വിഹിതം നിങ്ങൾക്ക് നൽകുന്നു. സുഹൃത്തുക്കൾ വാങ്ങിത്തരുന്നതല്ലെങ്കിൽ, എത്ര പേർക്ക് വീതിക്കണം എന്നതിൽ നിങ്ങളെയും ഉൾപ്പെടുത്തുക!</string>

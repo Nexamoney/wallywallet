@@ -152,6 +152,7 @@
     <string name="AccountActions">Ìṣe àkáǹtì</string>
     <string name="GeneralSettings">Ètò gbogbogbò</string>
     <string name="BlockchainSettings">Orísun blockchain</string>
+    <string name="CurrencySettings">Ètò owó</string>
     <string name="AccessPriceData">Àyè sí dátà ìdíyelé</string>
     <string name="oldUi">Ìrísí àtijọ́</string>
     <string name="SplitBillDescription">Ẹ san owó náà (ní owó orílẹ̀-èdè), lẹ́yìn náà àwọn ọ̀rẹ́ yín yóò san ìpín tiwọn fún yín nípasẹ̀ kóòdù QR tí ó wà nísàlẹ̀. Ẹ ka ara yín mọ́ iye ẹni tí ẹ máa pín ín sí, àyàfi bí àwọn ọ̀rẹ́ yín bá ń rà á!</string>

@@ -152,6 +152,7 @@
     <string name="AccountActions">खाता कार्रवाई</string>
     <string name="GeneralSettings">सामान्य सेटिंग्स</string>
     <string name="BlockchainSettings">ब्लॉकचेन स्रोत</string>
+    <string name="CurrencySettings">मुद्रा सेटिंग्स</string>
     <string name="AccessPriceData">मूल्य डेटा तक पहुँचें</string>
     <string name="oldUi">पुराना यूज़र इंटरफ़ेस</string>
     <string name="SplitBillDescription">आप बिल (फिएट में) भुगतान करें, फिर आपके दोस्त नीचे दिए गए QR कोड से अपना हिस्सा आपको भेजें। बांटने वालों की गिनती में खुद को भी शामिल करें, जब तक कि दोस्त ही पूरा बिल न दे रहे हों!</string>

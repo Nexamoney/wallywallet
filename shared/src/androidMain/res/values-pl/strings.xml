@@ -152,6 +152,7 @@
     <string name="AccountActions">Operacje na koncie</string>
     <string name="GeneralSettings">Ustawienia ogólne</string>
     <string name="BlockchainSettings">Źródła blockchaina</string>
+    <string name="CurrencySettings">Ustawienia waluty</string>
     <string name="AccessPriceData">Dostęp do danych o cenach</string>
     <string name="oldUi">Stary interfejs</string>
     <string name="SplitBillDescription">Rachunek zostaje opłacony w walucie lokalnej, a znajomi zwracają swoją część, skanując poniższy kod QR. W liczbie osób do podziału należy uwzględnić też siebie — chyba że to znajomi stawiają!</string>

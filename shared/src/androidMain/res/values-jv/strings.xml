@@ -152,6 +152,7 @@
     <string name="AccountActions">Tumindak Akun</string>
     <string name="GeneralSettings">Setelan Umum</string>
     <string name="BlockchainSettings">Sumber Blockchain</string>
+    <string name="CurrencySettings">Setelan Mata Uang</string>
     <string name="AccessPriceData">Akses Data Rega</string>
     <string name="oldUi">Antarmuka lawas</string>
     <string name="SplitBillDescription">Panjenengan mbayar tagihan (nganggo arta fiat), banjur kanca-kanca mbayar bagiane liwat kode QR ing ngisor iki. Lebokake panjenengan dhewe ing cacahe bagean, kajaba yen kanca-kanca sing nraktir!</string>

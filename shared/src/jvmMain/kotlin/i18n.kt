@@ -28,6 +28,13 @@ actual fun setLocale():Boolean
     val locale = Locale.getDefault()
     return setLocale(locale.language, locale.country)
 }
+
+actual fun deviceLocale(): Pair<String, String>?
+{
+    val locale = try { Locale.getDefault() } catch (e: Exception) { return null }
+    if (locale.language.isEmpty()) return null
+    return Pair(locale.language, locale.country ?: "")
+}
 actual fun setLocale(language: String, country: String, context: Any?):Boolean
 {
     val nothing = Objectify<Int>(0)

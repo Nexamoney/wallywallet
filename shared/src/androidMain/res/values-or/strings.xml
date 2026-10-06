@@ -152,6 +152,7 @@
     <string name="AccountActions">ଖାତା କାର୍ଯ୍ୟ</string>
     <string name="GeneralSettings">ସାଧାରଣ ସେଟିଂସ</string>
     <string name="BlockchainSettings">ବ୍ଲକଚେନ୍ ଉତ୍ସ</string>
+    <string name="CurrencySettings">ମୁଦ୍ରା ସେଟିଂସ</string>
     <string name="AccessPriceData">ମୂଲ୍ୟ ଡାଟା ଆକ୍ସେସ୍ କରନ୍ତୁ</string>
     <string name="oldUi">ପୁରୁଣା ୟୁଜର ଇଣ୍ଟରଫେସ୍</string>
     <string name="SplitBillDescription">ଆପଣ ବିଲ୍ ଦିଅନ୍ତୁ (ଫିଅଟ୍ ମୁଦ୍ରାରେ), ତା\'ପରେ ଆପଣଙ୍କ ସାଙ୍ଗମାନେ ତଳ QR କୋଡ୍ ମାଧ୍ୟମରେ ନିଜ ଭାଗ ଆପଣଙ୍କୁ ଦେବେ।  ସାଙ୍ଗମାନେ ହିଁ ଦେଉଥିଲେ ଅଲଗା କଥା, ନଚେତ୍ ଭାଗ ସଂଖ୍ୟାରେ ନିଜକୁ ମଧ୍ୟ ଗଣନ୍ତୁ!</string>

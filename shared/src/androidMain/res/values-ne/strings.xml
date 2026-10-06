@@ -152,6 +152,7 @@
     <string name="AccountActions">खाता कार्यहरू</string>
     <string name="GeneralSettings">सामान्य सेटिङ</string>
     <string name="BlockchainSettings">ब्लकचेन स्रोतहरू</string>
+    <string name="CurrencySettings">मुद्रा सेटिङहरू</string>
     <string name="AccessPriceData">मूल्य डेटा पहुँच</string>
     <string name="oldUi">पुरानो इन्टरफेस</string>
     <string name="SplitBillDescription">तपाईंले बिल तिर्नुहोस् (फिएट मुद्रामा), त्यसपछि साथीहरूले तलको QR कोडबाट आ-आफ्नो भाग तपाईंलाई तिर्छन्। साथीहरूले किनिदिने होइन भने भाग लगाउने सङ्ख्यामा आफूलाई पनि गन्नुहोस्!</string>

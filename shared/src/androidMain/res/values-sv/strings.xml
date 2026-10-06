@@ -152,6 +152,7 @@
     <string name="AccountActions">Kontoåtgärder</string>
     <string name="GeneralSettings">Allmänna inställningar</string>
     <string name="BlockchainSettings">Blockkedjekällor</string>
+    <string name="CurrencySettings">Valutainställningar</string>
     <string name="AccessPriceData">Hämta prisdata</string>
     <string name="oldUi">Gammalt gränssnitt</string>
     <string name="SplitBillDescription">Du betalar räkningen (i fiat), sedan betalar dina vänner sin del till dig via QR-koden nedan.  Räkna med dig själv i antalet delar, om inte dina vänner bjuder!</string>
