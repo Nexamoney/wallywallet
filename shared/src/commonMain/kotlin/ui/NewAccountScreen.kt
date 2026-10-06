@@ -129,13 +129,20 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
     later { newAccountDriver.send(NewAccountDriver(s, earliestActivity=earliestActivity, earliestActivityHeight=earliestActivityHeight)) }
 }
 
+fun selectIfNoAccountSelected(account: Account?)
+{
+    if (account == null) return
+    if (account.visible && (wallyApp?.focusedAccount?.value == null)) setSelectedAccount(account)
+}
+
 fun launchRecoverAccountThread(acState: NewAccountState, flags: ULong, secret: String, chainSelector: ChainSelector, suppressAutoFastForward: Boolean)
 {
     Thread("recoverAccount")
     {
         try
         {
-            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, secret, chainSelector, acState.earliestActivity, acState.earliestActivityHeight.toLong(), null, suppressAutoFastForward)
+            val account = wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, secret, chainSelector, acState.earliestActivity, acState.earliestActivityHeight.toLong(), null, suppressAutoFastForward)
+            selectIfNoAccountSelected(account)
             triggerAssignAccountsGuiSlots()
         }
         catch (e: Error)
@@ -163,7 +170,8 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         val words = bip39ListifyRecoverySecret(acState.recoveryPhrase.text)
         try
         {
-            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, words.joinToString(" "), chainSelector, acState.discoveredAccountHistory, acState.discoveredAddresses, acState.discoveredTip!!, acState.discoveredAddressIndex)
+            val account = wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, words.joinToString(" "), chainSelector, acState.discoveredAccountHistory, acState.discoveredAddresses, acState.discoveredTip!!, acState.discoveredAddressIndex)
+            selectIfNoAccountSelected(account)
             triggerAssignAccountsGuiSlots()
         }
         catch (e: Error)
@@ -342,6 +350,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                     }
                     else
                     {
+                        selectIfNoAccountSelected(account)
                         triggerAssignAccountsGuiSlots()
                     }
                 } // Can't happen in GUI thread
