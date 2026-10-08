@@ -62,6 +62,7 @@
     <string name="Processing">ਪ੍ਰੋਸੈਸ ਹੋ ਰਿਹਾ...</string>
     <string name="receiving">ਪ੍ਰਾਪਤੀ</string>
     <string name="sending">ਭੇਜਣਾ</string>
+    <string name="sharing">ਸਾਂਝਾ ਕਰਨਾ</string>
     <string name="noAdditionalDetails">ਕੋਈ ਵਾਧੂ ਵੇਰਵਾ ਨਹੀਂ</string>
     <string name="unspecified">ਨਿਰਧਾਰਿਤ ਨਹੀਂ</string>
     <string name="removed">ਹਟਾ ਦਿੱਤਾ</string>
@@ -510,6 +511,8 @@
     <string name="TpHandledByAccount">ਤੁਹਾਡਾ ਖਾਤਾ ਇਹ ਸੰਭਾਲ ਸਕਦਾ ਹੈ</string>
     <string name="TpAssetMatches" formatted="false">ਤੁਹਾਡੇ ਕੋਲ ਮੌਜੂਦ %num ਐਸੇਟਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਇਸ ਸੇਵਾ ਨੂੰ ਦਿੱਤੀ ਜਾਵੇਗੀ।</string>
     <string name="TpAssetInfoNotXfer">ਇਹ ਮੰਗ ਮੰਨਣ ਨਾਲ ਸੇਵਾ ਨੂੰ ਸਿਰਫ਼ ਤੁਹਾਡੀ ਮਾਲਕੀ ਬਾਰੇ ਜਾਣਕਾਰੀ ਮਿਲਦੀ ਹੈ। ਇਸ ਨਾਲ ਕਿਸੇ ਟਰਾਂਸਫਰ ਦੀ ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਮਿਲਦੀ।</string>
+    <string name="TpAssetInfoAsk">ਦੇਖਣਾ ਚਾਹੁੰਦੀ ਹੈ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਕਿਹੜੇ ਐਸੇਟ ਹਨ</string>
+    <string name="TpAssetsYouOwn">ਤੁਹਾਡੇ ਐਸੇਟ</string>
     <string name="ForAFeeOf" formatted="false">%fee %units ਦੀ ਫ਼ੀਸ ਸਮੇਤ</string>
     <string name="TpExchangingTokens" formatted="false">ਅਤੇ ਟੋਕਨਾਂ ਦੀ ਅਦਲਾ-ਬਦਲੀ (%tokSnd ਭੇਜਣਾ, %tokRcv ਪ੍ਰਾਪਤ ਕਰਨਾ)।</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal ਟੋਕਨ ਕਿਸਮਾਂ ਜ਼ਾਹਰ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ (ਆਪਣੇ ਆਪ ਨੂੰ ਹੀ ਖਰਚ ਕੀਤੀਆਂ, ਜਿਸ ਨਾਲ ਸਾਬਤ ਹੁੰਦਾ ਹੈ ਕਿ ਇਹ ਤੁਹਾਡੀਆਂ ਹਨ)।</string>

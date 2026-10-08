@@ -62,6 +62,7 @@
     <string name="Processing">töötlemine...</string>
     <string name="receiving">vastuvõtmine</string>
     <string name="sending">saatmine</string>
+    <string name="sharing">jagamine</string>
     <string name="noAdditionalDetails">puuduvad detailid</string>
     <string name="unspecified">täpsustamata</string>
     <string name="removed">eemaldatud</string>
@@ -507,6 +508,8 @@
     <string name="TpHandledByAccount">saab hallata teie kontoga</string>
     <string name="TpAssetMatches" formatted="false">Sellele teenusele edastatakse teave %num teile kuuluva vara kohta.</string>
     <string name="TpAssetInfoNotXfer">Selle taotluse vastuvõtmine annab teenusele lihtsalt teavet teie omandiõiguse kohta. See ei luba mingeid tehinguid teha.</string>
+    <string name="TpAssetInfoAsk">soovib näha, milliseid varasid sa omad</string>
+    <string name="TpAssetsYouOwn">Sinu varad</string>
     <string name="ForAFeeOf" formatted="false">sealhulgas tasu %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">ja tokenite vahetamine (saadate %tokSnd, võtate vastu %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">Avalikustatakse %tokReveal tokenitüüpi (kulutatakse iseendale, tõestades, et need kuuluvad teile).</string>

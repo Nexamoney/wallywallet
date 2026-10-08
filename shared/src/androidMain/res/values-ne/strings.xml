@@ -62,6 +62,7 @@
     <string name="Processing">प्रक्रियामा...</string>
     <string name="receiving">प्राप्त हुँदै</string>
     <string name="sending">पठाउँदै</string>
+    <string name="sharing">साझा गर्दै</string>
     <string name="noAdditionalDetails">थप विवरण छैन</string>
     <string name="unspecified">तोकिएको छैन</string>
     <string name="removed">हटाइयो</string>
@@ -510,6 +511,8 @@
     <string name="TpHandledByAccount">तपाईंको खाताले सम्हाल्न सक्छ</string>
     <string name="TpAssetMatches" formatted="false">तपाईंसँग भएका %num एसेटको जानकारी यो सेवालाई दिइनेछ।</string>
     <string name="TpAssetInfoNotXfer">यो अनुरोध स्वीकार गर्दा सेवालाई तपाईंको स्वामित्वबारे जानकारी मात्र जान्छ।  यसले कुनै ट्रान्सफरलाई स्वीकृति दिँदैन।</string>
+    <string name="TpAssetInfoAsk">तपाईंसँग कुन-कुन एसेट छन् भनी हेर्न चाहन्छ</string>
+    <string name="TpAssetsYouOwn">तपाईंका एसेट</string>
     <string name="ForAFeeOf" formatted="false">%fee %units शुल्कसहित</string>
     <string name="TpExchangingTokens" formatted="false">र टोकन साट्दै (%tokSnd पठाउँदै, %tokRcv प्राप्त गर्दै)।</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal टोकन प्रकार देखाइन्छ (आफैँलाई पठाएर, तपाईंको स्वामित्व प्रमाणित गर्दै)।</string>

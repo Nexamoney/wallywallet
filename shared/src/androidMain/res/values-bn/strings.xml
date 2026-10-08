@@ -62,6 +62,7 @@
     <string name="Processing">প্রক্রিয়া চলছে...</string>
     <string name="receiving">গ্রহণ করা হচ্ছে</string>
     <string name="sending">পাঠানো হচ্ছে</string>
+    <string name="sharing">শেয়ার করা হচ্ছে</string>
     <string name="noAdditionalDetails">আর কোনো বিবরণ নেই</string>
     <string name="unspecified">নির্দিষ্ট করা নেই</string>
     <string name="removed">সরানো হয়েছে</string>
@@ -507,6 +508,8 @@
     <string name="TpHandledByAccount">আপনার অ্যাকাউন্ট দিয়ে করা যাবে</string>
     <string name="TpAssetMatches" formatted="false">আপনার মালিকানার %num অ্যাসেট সম্পর্কে তথ্য এই পরিষেবাকে দেওয়া হবে।</string>
     <string name="TpAssetInfoNotXfer">এই অনুরোধ মঞ্জুর করলে পরিষেবাটি শুধু আপনার মালিকানার তথ্য পাবে।  এটি কোনো ট্রান্সফারের অনুমোদন দেয় না।</string>
+    <string name="TpAssetInfoAsk">আপনার কোন কোন অ্যাসেট আছে তা দেখতে চায়</string>
+    <string name="TpAssetsYouOwn">আপনার অ্যাসেটসমূহ</string>
     <string name="ForAFeeOf" formatted="false">%fee %units ফি সহ</string>
     <string name="TpExchangingTokens" formatted="false">এবং টোকেন বিনিময় (%tokSnd পাঠানো, %tokRcv গ্রহণ)।</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal ধরনের টোকেন দেখানো হচ্ছে (নিজের কাছেই পাঠিয়ে প্রমাণ করা হয় যে সেগুলি আপনার)।</string>

@@ -62,6 +62,7 @@
     <string name="Processing">pinoproseso...</string>
     <string name="receiving">tumatanggap</string>
     <string name="sending">nagpapadala</string>
+    <string name="sharing">nagbabahagi</string>
     <string name="noAdditionalDetails">walang karagdagang detalye</string>
     <string name="unspecified">hindi tinukoy</string>
     <string name="removed">inalis</string>
@@ -510,6 +511,8 @@
     <string name="TpHandledByAccount">kayang gawin ng account mo</string>
     <string name="TpAssetMatches" formatted="false">Ibibigay sa serbisyong ito ang impormasyon tungkol sa %num asset na pag-aari mo.</string>
     <string name="TpAssetInfoNotXfer">Ang pagtanggap sa request na ito ay nagbibigay lang sa serbisyo ng impormasyon tungkol sa pagmamay-ari mo. Hindi nito pinapahintulutan ang anumang transfer.</string>
+    <string name="TpAssetInfoAsk">gustong makita kung aling mga asset ang hawak mo</string>
+    <string name="TpAssetsYouOwn">Mga asset mo</string>
     <string name="ForAFeeOf" formatted="false">kasama ang fee na %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">at nagpapalitan ng token (nagpapadala ng %tokSnd, tumatanggap ng %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal uri ng token ang ipapakita (ipinadala sa sarili mo, patunay na pag-aari mo).</string>

@@ -62,6 +62,7 @@
     <string name="Processing">obdelovanje...</string>
     <string name="receiving">prejemanje</string>
     <string name="sending">pošiljanje</string>
+    <string name="sharing">deljenje</string>
     <string name="noAdditionalDetails">ni dodatnih podrobnosti</string>
     <string name="unspecified">nedoločeno</string>
     <string name="removed">odstranjeno</string>
@@ -507,6 +508,8 @@
     <string name="TpHandledByAccount">lahko upravlja vaš račun</string>
     <string name="TpAssetMatches" formatted="false">Informacije o %num sredstvih, ki jih imate, bodo posredovane tej storitvi.</string>
     <string name="TpAssetInfoNotXfer">Sprejem te zahteve preprosto posreduje storitvi informacije o vašem lastništvu. Ne dovoljuje nobenih prenosov.</string>
+    <string name="TpAssetInfoAsk">želi videti, katera sredstva imate</string>
+    <string name="TpAssetsYouOwn">Vaša sredstva</string>
     <string name="ForAFeeOf" formatted="false">vključno s provizijo %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">in izmenjava žetonov (pošiljanje %tokSnd, prejemanje %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">Razkritih je %tokReveal vrst žetonov (porabljenih sebi, kar dokazuje vaše lastništvo).</string>

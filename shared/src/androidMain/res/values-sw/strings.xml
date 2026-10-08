@@ -62,6 +62,7 @@
     <string name="Processing">inachakata...</string>
     <string name="receiving">inapokea</string>
     <string name="sending">inatuma</string>
+    <string name="sharing">inashiriki</string>
     <string name="noAdditionalDetails">hakuna maelezo zaidi</string>
     <string name="unspecified">haijabainishwa</string>
     <string name="removed">imeondolewa</string>
@@ -510,6 +511,8 @@
     <string name="TpHandledByAccount">inaweza kushughulikiwa na akaunti yako</string>
     <string name="TpAssetMatches" formatted="false">Taarifa kuhusu mali %num ulizonazo zitatolewa kwa huduma hii.</string>
     <string name="TpAssetInfoNotXfer">Kukubali ombi hili kunaipa huduma taarifa za umiliki wako tu. Hakuidhinishi uhamisho wowote.</string>
+    <string name="TpAssetInfoAsk">inataka kuona mali unazomiliki</string>
+    <string name="TpAssetsYouOwn">Mali unazomiliki</string>
     <string name="ForAFeeOf" formatted="false">ikijumuisha ada ya %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">na kubadilishana tokeni (kutuma %tokSnd, kupokea %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">Aina %tokReveal za tokeni zinaonyeshwa (zinatumwa kwako mwenyewe, kuthibitisha unazimiliki).</string>

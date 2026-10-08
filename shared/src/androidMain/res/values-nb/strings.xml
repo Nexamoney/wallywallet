@@ -62,6 +62,7 @@
     <string name="Processing">behandler...</string>
     <string name="receiving">mottar</string>
     <string name="sending">sender</string>
+    <string name="sharing">deler</string>
     <string name="noAdditionalDetails">ingen flere detaljer</string>
     <string name="unspecified">uspesifisert</string>
     <string name="removed">fjernet</string>
@@ -507,6 +508,8 @@
     <string name="TpHandledByAccount">kan håndteres av kontoen din</string>
     <string name="TpAssetMatches" formatted="false">Informasjon om %num eiendeler du eier vil bli gitt til denne tjenesten.</string>
     <string name="TpAssetInfoNotXfer">Å godta denne forespørselen gir bare tjenesten informasjon om ditt eierskap.  Det godkjenner ingen overføringer.</string>
+    <string name="TpAssetInfoAsk">vil se hvilke eiendeler du har</string>
+    <string name="TpAssetsYouOwn">Dine eiendeler</string>
     <string name="ForAFeeOf" formatted="false">inkludert en avgift på %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">og veksler tokener (sender %tokSnd, mottar %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal tokentyper avsløres (sendt til deg selv, noe som beviser at du eier dem).</string>

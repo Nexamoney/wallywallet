@@ -62,6 +62,7 @@
     <string name="Processing">กำลังประมวลผล...</string>
     <string name="receiving">กำลังรับ</string>
     <string name="sending">กำลังส่ง</string>
+    <string name="sharing">กำลังแชร์</string>
     <string name="noAdditionalDetails">ไม่มีรายละเอียดเพิ่มเติม</string>
     <string name="unspecified">ไม่ระบุ</string>
     <string name="removed">นำออกแล้ว</string>
@@ -507,6 +508,8 @@
     <string name="TpHandledByAccount">บัญชีของคุณรองรับได้</string>
     <string name="TpAssetMatches" formatted="false">ข้อมูลของสินทรัพย์ %num รายการที่คุณเป็นเจ้าของจะถูกส่งให้บริการนี้</string>
     <string name="TpAssetInfoNotXfer">การยอมรับคำขอนี้เป็นเพียงการให้ข้อมูลความเป็นเจ้าของแก่บริการ ไม่ได้อนุมัติการโอนใดๆ</string>
+    <string name="TpAssetInfoAsk">ต้องการดูว่าคุณถือสินทรัพย์ใดบ้าง</string>
+    <string name="TpAssetsYouOwn">สินทรัพย์ของคุณ</string>
     <string name="ForAFeeOf" formatted="false">รวมค่าธรรมเนียม %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">และแลกเปลี่ยนโทเคน (ส่ง %tokSnd รับ %tokRcv)</string>
     <string name="TpShowingTokens" formatted="false">เปิดเผยโทเคน %tokReveal ประเภท (ส่งกลับหาตัวเองเพื่อพิสูจน์ว่าคุณเป็นเจ้าของ)</string>

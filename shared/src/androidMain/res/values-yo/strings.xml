@@ -62,6 +62,7 @@
     <string name="Processing">ń ṣiṣẹ́...</string>
     <string name="receiving">ń gbà</string>
     <string name="sending">ń fi ránṣẹ́</string>
+    <string name="sharing">ń pín</string>
     <string name="noAdditionalDetails">kò sí àlàyé mìíràn</string>
     <string name="unspecified">aláìsọ pàtó</string>
     <string name="removed">ti yọ kúrò</string>
@@ -510,6 +511,8 @@
     <string name="TpHandledByAccount">àkáǹtì yín lè ṣe é</string>
     <string name="TpAssetMatches" formatted="false">A ó fún iṣẹ́ yìí ní ìsọfúnni nípa dúkìá %num tí ẹ ní.</string>
     <string name="TpAssetInfoNotXfer">Fífara mọ́ ìbéèrè yìí kàn fún iṣẹ́ náà ní ìsọfúnni nípa ohun ìní yín.  Kò fún ní àṣẹ fún ìfiránṣẹ́ owó kankan.</string>
+    <string name="TpAssetInfoAsk">fẹ́ rí àwọn dúkìá tí o ní</string>
+    <string name="TpAssetsYouOwn">Àwọn dúkìá rẹ</string>
     <string name="ForAFeeOf" formatted="false">pẹ̀lú owó iṣẹ́ %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">àti pípàṣípààrọ̀ tọ́kìnì (ń fi %tokSnd ránṣẹ́, ń gba %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">A ṣàfihàn oríṣi tọ́kìnì %tokReveal (a ná wọn sí ara yín, tí ó fi hàn pé ẹ ni wọ́n).</string>

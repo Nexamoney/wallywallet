@@ -62,6 +62,7 @@
     <string name="Processing">በሂደት ላይ...</string>
     <string name="receiving">በመቀበል ላይ</string>
     <string name="sending">በመላክ ላይ</string>
+    <string name="sharing">በማጋራት ላይ</string>
     <string name="noAdditionalDetails">ተጨማሪ ዝርዝር የለም</string>
     <string name="unspecified">ያልተገለጸ</string>
     <string name="removed">ተወግዷል</string>
@@ -510,6 +511,8 @@
     <string name="TpHandledByAccount">በሂሳብዎ ሊስተናገድ ይችላል</string>
     <string name="TpAssetMatches" formatted="false">ስለሚይዟቸው %num ንብረቶች መረጃ ለዚህ አገልግሎት ይሰጣል።</string>
     <string name="TpAssetInfoNotXfer">ይህን ጥያቄ ማጽደቅ ለአገልግሎቱ ስለ ባለቤትነትዎ መረጃ ብቻ ይሰጣል። ምንም ዝውውር አይፈቅድም።</string>
+    <string name="TpAssetInfoAsk">የትኞቹን ንብረቶች እንደያዙ ማየት ይፈልጋል</string>
+    <string name="TpAssetsYouOwn">የእርስዎ ንብረቶች</string>
     <string name="ForAFeeOf" formatted="false">የ%fee %units ክፍያን ጨምሮ</string>
     <string name="TpExchangingTokens" formatted="false">እና ቶከኖችን መለዋወጥ (%tokSnd መላክ፣ %tokRcv መቀበል)።</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal የቶከን ዓይነቶች ይገለጣሉ (ለራስዎ ወጪ ተደርገው፣ ባለቤትነትዎን በማረጋገጥ)።</string>

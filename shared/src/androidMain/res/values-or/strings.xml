@@ -62,6 +62,7 @@
     <string name="Processing">ପ୍ରକ୍ରିୟା ଚାଲିଛି...</string>
     <string name="receiving">ପାଉଛି</string>
     <string name="sending">ପଠାଉଛି</string>
+    <string name="sharing">ସେୟାର କରୁଛି</string>
     <string name="noAdditionalDetails">ଅତିରିକ୍ତ ବିବରଣୀ ନାହିଁ</string>
     <string name="unspecified">ନିର୍ଦ୍ଦିଷ୍ଟ ନୁହେଁ</string>
     <string name="removed">ହଟାଗଲା</string>
@@ -510,6 +511,8 @@
     <string name="TpHandledByAccount">ଆପଣଙ୍କ ଖାତା ଦ୍ୱାରା ପରିଚାଳିତ ହୋଇପାରିବ</string>
     <string name="TpAssetMatches" formatted="false">ଆପଣଙ୍କ ମାଲିକାନାର %num ଆସେଟ୍ ବିଷୟରେ ସୂଚନା ଏହି ସେବାକୁ ଦିଆଯିବ।</string>
     <string name="TpAssetInfoNotXfer">ଏହି ଅନୁରୋଧ ଗ୍ରହଣ କଲେ ସେବାକୁ କେବଳ ଆପଣଙ୍କ ମାଲିକାନା ବିଷୟରେ ସୂଚନା ମିଳିବ। ଏହା କୌଣସି ଟ୍ରାନ୍ସଫରକୁ ଅନୁମୋଦନ କରେ ନାହିଁ।</string>
+    <string name="TpAssetInfoAsk">ଆପଣଙ୍କ ପାଖରେ କେଉଁ ଆସେଟ୍ ଅଛି ଦେଖିବାକୁ ଚାହେଁ</string>
+    <string name="TpAssetsYouOwn">ଆପଣଙ୍କ ଆସେଟ୍</string>
     <string name="ForAFeeOf" formatted="false">%fee %units ଶୁଳ୍କ ସହିତ</string>
     <string name="TpExchangingTokens" formatted="false">ଏବଂ ଟୋକନ୍ ବିନିମୟ (%tokSnd ପଠାଉଛି, %tokRcv ପାଉଛି)।</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal ପ୍ରକାରର ଟୋକନ୍ ପ୍ରକାଶ ପାଉଛି (ନିଜ ପାଖକୁ ଖର୍ଚ୍ଚ କରାଯାଇ, ଆପଣ ସେଗୁଡ଼ିକର ମାଲିକ ବୋଲି ପ୍ରମାଣ କରି)।</string>

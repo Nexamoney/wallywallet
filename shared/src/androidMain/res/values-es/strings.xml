@@ -62,6 +62,7 @@
     <string name="Processing">procesando...</string>
     <string name="receiving">recibiendo</string>
     <string name="sending">enviando</string>
+    <string name="sharing">compartiendo</string>
     <string name="noAdditionalDetails">sin detalles adicionales</string>
     <string name="unspecified">no especificado</string>
     <string name="removed">quitado</string>
@@ -507,6 +508,8 @@
     <string name="TpHandledByAccount">puede ser manejado por su cuenta</string>
     <string name="TpAssetMatches" formatted="false">Se proporcionará información sobre %num activos que posee a este servicio.</string>
     <string name="TpAssetInfoNotXfer">Aceptar esta solicitud simplemente proporciona al servicio información sobre su propiedad. No autoriza ninguna transferencia.</string>
+    <string name="TpAssetInfoAsk">quiere ver qué activos tienes</string>
+    <string name="TpAssetsYouOwn">Activos que posees</string>
     <string name="ForAFeeOf" formatted="false">incluyendo una tarifa de %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">y intercambiando tokens (enviando %tokSnd, recibiendo %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">Se revelan %tokReveal tipos de tokens (gastados a usted mismo, demostrando que los posee).</string>
