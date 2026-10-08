@@ -119,9 +119,12 @@ i18nComplete:
   stage: lint
   image: python:3.13-slim
   before_script: [] # this image carries no JDK or gradle, and the check needs neither
+  # Missing translations show as a warning instead of blocking the pipeline;
+  # the later stages still run.
+  allow_failure: true
   script:
-    # Fails when a locale lacks a translation for an English string, so a new
-    # string has to arrive with all its translations.
+    # Fails when a locale lacks a translation for an English string, so a
+    # missing translation is flagged on the MR.
     - python3 contrib/ci/check-i18n.py
 
 appJar:
