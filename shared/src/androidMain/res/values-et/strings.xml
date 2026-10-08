@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Tehing vastuvõetud</string>
     <string name="TpNetworkTimeout">Tehingu ajalõpp</string>
     <string name="TpPartialSubmitted">Pakkumine esitatud</string>
+    <string name="TpInsufficientWillRetry">Teie rahakotis pole praegu selle päringu jaoks piisavalt vabu vahendeid. See kuva kontrollib seda rahakoti sünkroonimise ajal automaatselt uuesti.</string>
+    <string name="TpRecheckingFunds">Vahendite uuesti kontrollimine…</string>
+    <string name="TpProposalSuperseded">Selle saidi uuem päring asendas eelmise.</string>
+    <string name="TpUseReservedCoins">Kasuta reserveeritud münte</string>
+    <string name="TpUseReservedTokens">Kasuta reserveeritud tokeneid</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Osa teie müntidest on endiselt reserveeritud saidi %host varasema päringu poolt, mis ei jõudnud kunagi lõpule. Kasutage neid ainult siis, kui see varasem päring tühistati või hüljati; muidu üks kahest tehingust ebaõnnestub.</string>
+    <string name="TpUsingReservedCoins">Kasutatakse varasema päringu reserveeritud münte</string>
+    <string name="TpReservedCoinsUnverified">Võrgust ei õnnestunud kinnitada, et reserveeritud mündid on endiselt kulutamata. Oodake, kuni rahakott sünkroonitakse, ja proovige uuesti.</string>
     <string name="TpAssetRequestDenied">Vara teave jagamata</string>
     <string name="TpAssetRequestAccepted">Vara teave saatmisel</string>
     <string name="Actions">Toimingud</string>

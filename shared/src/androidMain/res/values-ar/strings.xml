@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">معاملة مقبولة</string>
     <string name="TpNetworkTimeout">انتهت مهلة المعاملة</string>
     <string name="TpPartialSubmitted">تم إرسال العرض</string>
+    <string name="TpInsufficientWillRetry">لا تتوفر في محفظتك أموال كافية لهذا الطلب حاليًا. تُعيد هذه الشاشة التحقق تلقائيًا أثناء مزامنة محفظتك.</string>
+    <string name="TpRecheckingFunds">جارٍ إعادة التحقق من الأموال…</string>
+    <string name="TpProposalSuperseded">حلّ طلب أحدث من هذا الموقع محل الطلب السابق.</string>
+    <string name="TpUseReservedCoins">استخدام العملات المحجوزة</string>
+    <string name="TpUseReservedTokens">استخدام الرموز المحجوزة</string>
+    <string name="TpReservedCoinsExplain" formatted="false">لا تزال بعض عملاتك محجوزة بواسطة طلب سابق من %host لم يكتمل أبدًا. لا تستخدمها إلا إذا كان ذلك الطلب السابق قد أُلغي أو تُرك؛ وإلا ستفشل إحدى المعاملتين.</string>
+    <string name="TpUsingReservedCoins">يجري استخدام عملات محجوزة بواسطة طلب سابق</string>
+    <string name="TpReservedCoinsUnverified">تعذّر التأكد من الشبكة أن العملات المحجوزة لم تُنفق بعد. انتظر حتى تتم مزامنة المحفظة ثم حاول مرة أخرى.</string>
     <string name="TpAssetRequestDenied">تم حجب معلومات الأصل</string>
     <string name="TpAssetRequestAccepted">جارٍ إرسال معلومات الأصل</string>
     <string name="Actions">الإجراءات</string>

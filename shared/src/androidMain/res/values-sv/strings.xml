@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Godkänd transaktion</string>
     <string name="TpNetworkTimeout">Tidsgräns för transaktion</string>
     <string name="TpPartialSubmitted">Erbjudande skickat</string>
+    <string name="TpInsufficientWillRetry">Din plånbok har inte tillräckligt med tillgängliga medel för den här begäran just nu. Den här skärmen kontrollerar automatiskt igen medan plånboken synkroniseras.</string>
+    <string name="TpRecheckingFunds">Kontrollerar medel igen…</string>
+    <string name="TpProposalSuperseded">En nyare begäran från den här webbplatsen ersatte den förra.</string>
+    <string name="TpUseReservedCoins">Använd reserverade mynt</string>
+    <string name="TpUseReservedTokens">Använd reserverade tokens</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Några av dina mynt är fortfarande reserverade av en tidigare begäran från %host som aldrig slutfördes. Använd dem bara om den tidigare begäran avbröts eller övergavs; annars kommer en av de två transaktionerna att misslyckas.</string>
+    <string name="TpUsingReservedCoins">Använder mynt som reserverats av en tidigare begäran</string>
+    <string name="TpReservedCoinsUnverified">Kunde inte bekräfta med nätverket att de reserverade mynten fortfarande är oanvända. Vänta tills plånboken har synkroniserats och försök igen.</string>
     <string name="TpAssetRequestDenied">Tillgångsinfo undanhålls</string>
     <string name="TpAssetRequestAccepted">Skickar tillgångsinfo</string>
     <string name="Actions">Åtgärder</string>

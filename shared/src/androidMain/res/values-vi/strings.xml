@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Đã chấp nhận giao dịch</string>
     <string name="TpNetworkTimeout">Giao dịch hết thời gian chờ</string>
     <string name="TpPartialSubmitted">Đã gửi lệnh bán</string>
+    <string name="TpInsufficientWillRetry">Ví của bạn hiện không có đủ số dư khả dụng cho yêu cầu này. Màn hình này sẽ tự động kiểm tra lại khi ví đồng bộ.</string>
+    <string name="TpRecheckingFunds">Đang kiểm tra lại số dư…</string>
+    <string name="TpProposalSuperseded">Một yêu cầu mới hơn từ trang này đã thay thế yêu cầu trước.</string>
+    <string name="TpUseReservedCoins">Dùng các coin đã được giữ chỗ</string>
+    <string name="TpUseReservedTokens">Dùng các token đã được giữ chỗ</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Một số coin của bạn vẫn đang được giữ chỗ bởi một yêu cầu trước đó từ %host chưa bao giờ hoàn tất. Chỉ dùng chúng nếu yêu cầu trước đó đã bị hủy hoặc bị bỏ dở; nếu không, một trong hai giao dịch sẽ thất bại.</string>
+    <string name="TpUsingReservedCoins">Đang dùng các coin được giữ chỗ bởi một yêu cầu trước đó</string>
+    <string name="TpReservedCoinsUnverified">Không thể xác nhận với mạng rằng các coin đã được giữ chỗ vẫn chưa được chi tiêu. Hãy đợi ví đồng bộ rồi thử lại.</string>
     <string name="TpAssetRequestDenied">Không chia sẻ thông tin tài sản</string>
     <string name="TpAssetRequestAccepted">Đang gửi thông tin tài sản</string>
     <string name="Actions">Thao tác</string>

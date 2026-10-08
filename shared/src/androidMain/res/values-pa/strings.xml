@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">ਲੈਣ-ਦੇਣ ਮਨਜ਼ੂਰ</string>
     <string name="TpNetworkTimeout">ਲੈਣ-ਦੇਣ ਦਾ ਸਮਾਂ ਖਤਮ</string>
     <string name="TpPartialSubmitted">ਪੇਸ਼ਕਸ਼ ਭੇਜ ਦਿੱਤੀ</string>
+    <string name="TpInsufficientWillRetry">ਇਸ ਬੇਨਤੀ ਲਈ ਤੁਹਾਡੇ ਵਾਲਿਟ ਵਿੱਚ ਇਸ ਵੇਲੇ ਕਾਫ਼ੀ ਉਪਲਬਧ ਰਕਮ ਨਹੀਂ ਹੈ। ਜਿਵੇਂ-ਜਿਵੇਂ ਤੁਹਾਡਾ ਵਾਲਿਟ ਸਿੰਕ ਹੁੰਦਾ ਹੈ, ਇਹ ਸਕ੍ਰੀਨ ਆਪਣੇ ਆਪ ਦੁਬਾਰਾ ਜਾਂਚ ਕਰਦੀ ਹੈ।</string>
+    <string name="TpRecheckingFunds">ਰਕਮ ਦੀ ਦੁਬਾਰਾ ਜਾਂਚ ਹੋ ਰਹੀ ਹੈ…</string>
+    <string name="TpProposalSuperseded">ਇਸ ਸਾਈਟ ਦੀ ਇੱਕ ਨਵੀਂ ਬੇਨਤੀ ਨੇ ਪਿਛਲੀ ਬੇਨਤੀ ਨੂੰ ਬਦਲ ਦਿੱਤਾ।</string>
+    <string name="TpUseReservedCoins">ਰਾਖਵੇਂ ਸਿੱਕੇ ਵਰਤੋ</string>
+    <string name="TpUseReservedTokens">ਰਾਖਵੇਂ ਟੋਕਨ ਵਰਤੋ</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host ਦੀ ਇੱਕ ਪਿਛਲੀ ਬੇਨਤੀ, ਜੋ ਕਦੇ ਪੂਰੀ ਨਹੀਂ ਹੋਈ, ਨੇ ਤੁਹਾਡੇ ਕੁਝ ਸਿੱਕੇ ਹਾਲੇ ਵੀ ਰਾਖਵੇਂ ਰੱਖੇ ਹੋਏ ਹਨ। ਇਨ੍ਹਾਂ ਨੂੰ ਤਾਂ ਹੀ ਵਰਤੋ ਜੇ ਉਹ ਪਿਛਲੀ ਬੇਨਤੀ ਰੱਦ ਜਾਂ ਛੱਡ ਦਿੱਤੀ ਗਈ ਹੋਵੇ; ਨਹੀਂ ਤਾਂ ਦੋਵਾਂ ਲੈਣ-ਦੇਣਾਂ ਵਿੱਚੋਂ ਇੱਕ ਅਸਫਲ ਹੋ ਜਾਵੇਗਾ।</string>
+    <string name="TpUsingReservedCoins">ਪਿਛਲੀ ਬੇਨਤੀ ਵੱਲੋਂ ਰਾਖਵੇਂ ਕੀਤੇ ਸਿੱਕੇ ਵਰਤੇ ਜਾ ਰਹੇ ਹਨ</string>
+    <string name="TpReservedCoinsUnverified">ਨੈੱਟਵਰਕ ਤੋਂ ਇਹ ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋ ਸਕੀ ਕਿ ਰਾਖਵੇਂ ਸਿੱਕੇ ਹਾਲੇ ਖਰਚ ਨਹੀਂ ਹੋਏ। ਵਾਲਿਟ ਦੇ ਸਿੰਕ ਹੋਣ ਦੀ ਉਡੀਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
     <string name="TpAssetRequestDenied">ਐਸੇਟ ਜਾਣਕਾਰੀ ਨਹੀਂ ਦਿੱਤੀ</string>
     <string name="TpAssetRequestAccepted">ਐਸੇਟ ਜਾਣਕਾਰੀ ਭੇਜੀ ਜਾ ਰਹੀ</string>
     <string name="Actions">ਕਾਰਵਾਈਆਂ</string>

@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Транзакцію прийнято</string>
     <string name="TpNetworkTimeout">Тайм-аут транзакції</string>
     <string name="TpPartialSubmitted">Пропозицію надіслано</string>
+    <string name="TpInsufficientWillRetry">У вашому гаманці зараз недостатньо доступних коштів для цього запиту. Цей екран автоматично перевіряє їх знову під час синхронізації гаманця.</string>
+    <string name="TpRecheckingFunds">Повторна перевірка коштів…</string>
+    <string name="TpProposalSuperseded">Новіший запит із цього сайту замінив попередній.</string>
+    <string name="TpUseReservedCoins">Використати зарезервовані монети</string>
+    <string name="TpUseReservedTokens">Використати зарезервовані токени</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Частина ваших монет досі зарезервована попереднім запитом із %host, який так і не було завершено. Використовуйте їх, лише якщо той запит було скасовано або покинуто; інакше одна з двох транзакцій не пройде.</string>
+    <string name="TpUsingReservedCoins">Використовуються монети, зарезервовані попереднім запитом</string>
+    <string name="TpReservedCoinsUnverified">Не вдалося підтвердити через мережу, що зарезервовані монети ще не витрачено. Дочекайтеся синхронізації гаманця та спробуйте ще раз.</string>
     <string name="TpAssetRequestDenied">Дані про активи не надано</string>
     <string name="TpAssetRequestAccepted">Надсилання даних про активи</string>
     <string name="Actions">Дії</string>

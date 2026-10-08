@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">ግብይት ጸድቋል</string>
     <string name="TpNetworkTimeout">የግብይት ጊዜ አልፏል</string>
     <string name="TpPartialSubmitted">አቅርቦት ቀርቧል</string>
+    <string name="TpInsufficientWillRetry">ለዚህ ጥያቄ አሁን በቂ የሚገኝ ገንዘብ በዋሌትዎ ውስጥ የለም። ዋሌትዎ በሚመሳሰልበት ጊዜ ይህ ገጽ በራስ-ሰር እንደገና ይፈትሻል።</string>
+    <string name="TpRecheckingFunds">ገንዘብ እንደገና በመፈተሽ ላይ…</string>
+    <string name="TpProposalSuperseded">ከዚህ ድረ-ገጽ የመጣ አዲስ ጥያቄ የቀደመውን ተክቷል።</string>
+    <string name="TpUseReservedCoins">የተያዙ ሳንቲሞችን ይጠቀሙ</string>
+    <string name="TpUseReservedTokens">የተያዙ ቶከኖችን ይጠቀሙ</string>
+    <string name="TpReservedCoinsExplain" formatted="false">ከ%host የመጣ እና ያልተጠናቀቀ የቀድሞ ጥያቄ አንዳንድ ሳንቲሞችዎን አሁንም ይዟቸዋል። ያ የቀድሞ ጥያቄ ከተሰረዘ ወይም ከተተወ ብቻ ይጠቀሙባቸው፤ አለበለዚያ ከሁለቱ ግብይቶች አንዱ ይወድቃል።</string>
+    <string name="TpUsingReservedCoins">በቀድሞ ጥያቄ የተያዙ ሳንቲሞችን በመጠቀም ላይ</string>
+    <string name="TpReservedCoinsUnverified">የተያዙት ሳንቲሞች አሁንም ያልወጡ መሆናቸውን ከአውታረ መረቡ ማረጋገጥ አልተቻለም። ዋሌቱ እስኪመሳሰል ይጠብቁና እንደገና ይሞክሩ።</string>
     <string name="TpAssetRequestDenied">የንብረት መረጃ ተከልክሏል</string>
     <string name="TpAssetRequestAccepted">የንብረት መረጃ በመላክ ላይ</string>
     <string name="Actions">እርምጃዎች</string>

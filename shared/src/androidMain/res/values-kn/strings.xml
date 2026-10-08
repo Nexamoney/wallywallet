@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">ವಹಿವಾಟು ಒಪ್ಪಿಕೊಳ್ಳಲಾಗಿದೆ</string>
     <string name="TpNetworkTimeout">ವಹಿವಾಟು ಸಮಯ ಮೀರಿದೆ</string>
     <string name="TpPartialSubmitted">ಪ್ರಸ್ತಾಪ ಸಲ್ಲಿಸಲಾಗಿದೆ</string>
+    <string name="TpInsufficientWillRetry">ಈ ವಿನಂತಿಗಾಗಿ ನಿಮ್ಮ ವಾಲೆಟ್‌ನಲ್ಲಿ ಈಗ ಸಾಕಷ್ಟು ಲಭ್ಯವಿರುವ ಹಣವಿಲ್ಲ. ನಿಮ್ಮ ವಾಲೆಟ್ ಸಿಂಕ್ ಆಗುತ್ತಿದ್ದಂತೆ ಈ ಪರದೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮರುಪರಿಶೀಲಿಸುತ್ತದೆ.</string>
+    <string name="TpRecheckingFunds">ಹಣವನ್ನು ಮರುಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</string>
+    <string name="TpProposalSuperseded">ಈ ಸೈಟ್‌ನ ಹೊಸ ವಿನಂತಿಯು ಹಿಂದಿನದನ್ನು ಬದಲಾಯಿಸಿದೆ.</string>
+    <string name="TpUseReservedCoins">ಕಾಯ್ದಿರಿಸಿದ ನಾಣ್ಯಗಳನ್ನು ಬಳಸಿ</string>
+    <string name="TpUseReservedTokens">ಕಾಯ್ದಿರಿಸಿದ ಟೋಕನ್‌ಗಳನ್ನು ಬಳಸಿ</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host ನಿಂದ ಬಂದ, ಎಂದಿಗೂ ಪೂರ್ಣಗೊಳ್ಳದ ಹಿಂದಿನ ವಿನಂತಿಯೊಂದು ನಿಮ್ಮ ಕೆಲವು ನಾಣ್ಯಗಳನ್ನು ಇನ್ನೂ ಕಾಯ್ದಿರಿಸಿದೆ. ಆ ಹಿಂದಿನ ವಿನಂತಿಯನ್ನು ರದ್ದುಗೊಳಿಸಿದ್ದರೆ ಅಥವಾ ಕೈಬಿಟ್ಟಿದ್ದರೆ ಮಾತ್ರ ಅವುಗಳನ್ನು ಬಳಸಿ; ಇಲ್ಲದಿದ್ದರೆ ಎರಡು ವಹಿವಾಟುಗಳಲ್ಲಿ ಒಂದು ವಿಫಲವಾಗುತ್ತದೆ.</string>
+    <string name="TpUsingReservedCoins">ಹಿಂದಿನ ವಿನಂತಿಯು ಕಾಯ್ದಿರಿಸಿದ ನಾಣ್ಯಗಳನ್ನು ಬಳಸಲಾಗುತ್ತಿದೆ</string>
+    <string name="TpReservedCoinsUnverified">ಕಾಯ್ದಿರಿಸಿದ ನಾಣ್ಯಗಳು ಇನ್ನೂ ಖರ್ಚಾಗಿಲ್ಲ ಎಂದು ನೆಟ್‌ವರ್ಕ್‌ನಿಂದ ದೃಢೀಕರಿಸಲಾಗಲಿಲ್ಲ. ವಾಲೆಟ್ ಸಿಂಕ್ ಆಗುವವರೆಗೆ ಕಾಯ್ದು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
     <string name="TpAssetRequestDenied">ಆಸ್ತಿ ಮಾಹಿತಿ ತಡೆಹಿಡಿಯಲಾಗಿದೆ</string>
     <string name="TpAssetRequestAccepted">ಆಸ್ತಿ ಮಾಹಿತಿ ಕಳುಹಿಸುತ್ತಿದೆ</string>
     <string name="Actions">ಕ್ರಿಯೆಗಳು</string>

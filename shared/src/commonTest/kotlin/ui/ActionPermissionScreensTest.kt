@@ -190,6 +190,150 @@ class ActionPermissionScreensTest : WallyUiTestBase()
         }
     }
 
+    /** A hand-built session (no originalTx, so nothing automatic runs) whose analysis failed with [exception] */
+    private fun failedSession(account: Account, exception: Exception?, reservedCoinsWouldHelp: Boolean = false, reservedCoinsIncludeTokens: Boolean = false): TricklePaySession
+    {
+        val tp = TricklePaySession(wallyApp!!.tpDomains)
+        tp.host = "game.example.com"
+        tp.topic = "new-game"
+        val mockTx = mock<iTransaction>()
+        every { mockTx.toHex() } returns "deadbeef"
+        every { mockTx.chainSelector } returns cs
+        tp.proposedTx = mockTx
+        tp.proposalAnalysis.value = TxAnalysisResults(
+            account = account,
+            receivingSats = 0L,
+            sendingSats = 250546L,
+            receivingTokenTypes = 0L,
+            sendingTokenTypes = 0L,
+            imSpendingTokenTypes = 0L,
+            otherInputSatoshis = 546L,
+            myInputSatoshis = 250000L,
+            myInputTokenInfo = emptyMap(),
+            sendingTokenInfo = emptyMap(),
+            receivingTokenInfo = emptyMap(),
+            myNetTokenInfo = emptyMap(),
+            assetViewModel = AssetViewModel(false),
+            completionException = exception,
+            reservedCoinsWouldHelp = reservedCoinsWouldHelp,
+            reservedCoinsIncludeTokens = reservedCoinsIncludeTokens
+        )
+        tp.pill.account.value = account
+        return tp
+    }
+
+    @Test
+    fun specialTxPermScreenInsufficientFundsShowsFriendlyTextAndRetryHint()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            // The library's message is the raw i18n text with the tx hex after a newline
+            val tp = failedSession(account, WalletNotEnoughBalanceException("send more than balance\n000200a52adeadbeef"))
+            setContent { SpecialTxPermScreen(tp, UnlockViewModel(MutableStateFlow(account))) }
+
+            onNodeWithText(i18n(S.CannotCompleteTransaction)).assertIsDisplayed()
+            onNodeWithText(i18n(S.insufficentBalance)).assertIsDisplayed()
+            onNodeWithText(i18n(S.TpInsufficientWillRetry)).performScrollTo().assertIsDisplayed()
+            require(onAllNodesWithText("000200a52adeadbeef", substring = true).fetchSemanticsNodes().isEmpty()) { "Raw tx hex leaked to the screen" }
+            // While the wallet keeps re-checking, the one button is honest about what it does: it denies the request (not an "Okay")
+            onNodeWithText(i18n(S.deny)).assertIsDisplayed()
+            require(onAllNodesWithText(i18n(S.Okay)).fetchSemanticsNodes().isEmpty()) { "an underfunded proposal is denied, not acknowledged" }
+            require(onAllNodesWithText(i18n(S.accept)).fetchSemanticsNodes().isEmpty()) { "Accept button should not render for an uncompletable proposal" }
+            // The trial did not pass, so no offer to use reserved coins
+            require(onAllNodesWithTag("SpecialTxUseReserved").fetchSemanticsNodes().isEmpty()) { "Use reserved coins must only be offered when it would help" }
+        }
+    }
+
+    @Test
+    fun specialTxPermScreenTokenShortfallShowsTokenText()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            val tp = failedSession(account, WalletNotEnoughTokenBalanceException("not enough tokens\n0002deadbeef"))
+            setContent { SpecialTxPermScreen(tp, UnlockViewModel(MutableStateFlow(account))) }
+            onNodeWithText(i18n(S.insufficentTokenBalance)).assertIsDisplayed()
+            onNodeWithText(i18n(S.TpInsufficientWillRetry)).performScrollTo().assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun specialTxPermScreenFlipsToAcceptWhenAnalysisSucceeds()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            val tp = failedSession(account, WalletNotEnoughBalanceException("send more than balance"))
+            setContent { SpecialTxPermScreen(tp, UnlockViewModel(MutableStateFlow(account))) }
+            onNodeWithText(i18n(S.CannotCompleteTransaction)).assertIsDisplayed()
+            require(onAllNodesWithText(i18n(S.accept)).fetchSemanticsNodes().isEmpty())
+
+            // Funds arrived and the re-analysis succeeded: the error must go away and Accept/Deny must appear
+            tp.proposalAnalysis.value = tp.proposalAnalysis.value!!.copy(completionException = null)
+            waitForIdle()
+            require(onAllNodesWithText(i18n(S.CannotCompleteTransaction)).fetchSemanticsNodes().isEmpty()) { "Error must clear once the proposal can be completed" }
+            onNodeWithText(i18n(S.accept)).assertIsDisplayed()
+            onNodeWithText(i18n(S.deny)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun specialTxPermScreenHidesAcceptWhileRechecking()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            val tp = failedSession(account, null)
+            setContent { SpecialTxPermScreen(tp, UnlockViewModel(MutableStateFlow(account))) }
+            onNodeWithText(i18n(S.accept)).assertIsDisplayed()
+            require(onAllNodesWithTag("SpecialTxAnalyzing").fetchSemanticsNodes().isEmpty())
+
+            tp.analyzing.value = true
+            waitForIdle()
+            onNodeWithTag("SpecialTxAnalyzing").assertIsDisplayed()
+            require(onAllNodesWithText(i18n(S.accept)).fetchSemanticsNodes().isEmpty()) { "Accept must be hidden while the proposal is being re-checked" }
+
+            tp.analyzing.value = false
+            waitForIdle()
+            onNodeWithText(i18n(S.accept)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun specialTxPermScreenOffersReservedCoinsWhenTheyWouldHelp()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            val tp = failedSession(account, WalletNotEnoughBalanceException("send more than balance"), reservedCoinsWouldHelp = true)
+            setContent { SpecialTxPermScreen(tp, UnlockViewModel(MutableStateFlow(account))) }
+            onNodeWithText(i18n(S.TpReservedCoinsExplain) % mapOf("host" to "game.example.com")).performScrollTo().assertIsDisplayed()
+            onNodeWithTag("SpecialTxUseReserved").performScrollTo().assertIsDisplayed()
+            onNodeWithText(i18n(S.TpUseReservedCoins)).assertIsDisplayed()
+            onNodeWithText(i18n(S.deny)).assertIsDisplayed()
+            require(onAllNodesWithText(i18n(S.accept)).fetchSemanticsNodes().isEmpty())
+            // Tapping it on a hand-built session (no request to retry) must be harmless
+            onNodeWithTag("SpecialTxUseReserved").performClick()
+            waitForIdle()
+            onNodeWithText(i18n(S.deny)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun specialTxPermScreenOffersReservedTokensWhenTheReservedCoinsCarryTokens()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            val tp = failedSession(account, WalletNotEnoughTokenBalanceException("not enough tokens"), reservedCoinsWouldHelp = true, reservedCoinsIncludeTokens = true)
+            setContent { SpecialTxPermScreen(tp, UnlockViewModel(MutableStateFlow(account))) }
+            onNodeWithTag("SpecialTxUseReserved").performScrollTo().assertIsDisplayed()
+            onNodeWithText(i18n(S.TpUseReservedTokens)).assertIsDisplayed()
+            require(onAllNodesWithText(i18n(S.TpUseReservedCoins)).fetchSemanticsNodes().isEmpty()) { "reserved tokens must not be offered as coins" }
+        }
+    }
+
     @Test
     fun specialTxPermScreenCompletionErrorDropsHexDump()
     {

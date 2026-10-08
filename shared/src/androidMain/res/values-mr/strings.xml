@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">स्वीकारलेला व्यवहार</string>
     <string name="TpNetworkTimeout">व्यवहार टाइमआउट</string>
     <string name="TpPartialSubmitted">ऑफर सादर केली</string>
+    <string name="TpInsufficientWillRetry">या विनंतीसाठी तुमच्या वॉलेटमध्ये सध्या पुरेसा उपलब्ध निधी नाही. तुमचे वॉलेट सिंक होत असताना ही स्क्रीन आपोआप पुन्हा तपासते.</string>
+    <string name="TpRecheckingFunds">निधी पुन्हा तपासत आहे…</string>
+    <string name="TpProposalSuperseded">या साइटवरील नवीन विनंतीने मागील विनंती बदलली.</string>
+    <string name="TpUseReservedCoins">राखीव कॉइन वापरा</string>
+    <string name="TpUseReservedTokens">राखीव टोकन वापरा</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host कडून आलेल्या, कधीही पूर्ण न झालेल्या पूर्वीच्या विनंतीमुळे तुमचे काही कॉइन अजूनही राखीव आहेत. ती पूर्वीची विनंती रद्द किंवा सोडून दिली असेल तरच ते वापरा; अन्यथा दोन व्यवहारांपैकी एक अयशस्वी होईल.</string>
+    <string name="TpUsingReservedCoins">पूर्वीच्या विनंतीने राखीव ठेवलेले कॉइन वापरत आहे</string>
+    <string name="TpReservedCoinsUnverified">राखीव कॉइन अजून खर्च झालेले नाहीत याची नेटवर्ककडून खात्री करता आली नाही. वॉलेट सिंक होईपर्यंत थांबा आणि पुन्हा प्रयत्न करा.</string>
     <string name="TpAssetRequestDenied">ॲसेट माहिती दिली नाही</string>
     <string name="TpAssetRequestAccepted">ॲसेट माहिती पाठवत आहे</string>
     <string name="Actions">क्रिया</string>

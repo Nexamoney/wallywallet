@@ -26,6 +26,7 @@ import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.threads.Mutex
 import org.nexa.threads.millisleep
+import kotlin.concurrent.Volatile
 
 private val LogIt = GetLog("BU.wally.tpsess")
 
@@ -62,8 +63,25 @@ data class TxAnalysisResults(
   val myNetTokenInfo: Map<GroupId, Long>,  // If < 0 this wallet is spending these tokens.  If > 0 this wallet is receiving tokens.  If == 0 (verses undefined) the wallet presented (sent to itself) the token type
   val assetViewModel: AssetViewModel,
   val completionException: Exception?,
-  val foreignUnsignedInputs: List<Int> = listOf()  // inputs that are not ours and lack signatures (when completion failed)
+  val foreignUnsignedInputs: List<Int> = listOf(),  // inputs that are not ours and lack signatures (when completion failed)
+  val reservedCoinsWouldHelp: Boolean = false,  // completion failed for lack of funds, but would succeed using coins reserved by an earlier, never completed request from the same site
+  val reservedCoinsIncludeTokens: Boolean = false  // some of those reserved coins carry tokens, so offering them is offering tokens
 )
+{
+    /** Completion failed only because the wallet cannot (currently) supply enough coins or tokens.  Such a failure may resolve itself
+     * as the wallet syncs, so the permission screen keeps re-checking it. */
+    val isInsufficientFunds: Boolean
+        get() = completionException is WalletNotEnoughBalanceException || completionException is WalletNotEnoughTokenBalanceException
+}
+
+/** How often the special transaction permission screen re-checks a proposal that could not be completed, when no wallet change event arrives */
+const val TDPP_RECHECK_INTERVAL_MS = 5_000L
+
+private val tdppSessionCounter = atomic(0)
+
+/** Summary of the coins a wallet could put into a transaction right now.  Used to skip pointless re-analysis of a proposal: if nothing
+ * that could be spent has changed since the last failed attempt, the attempt would fail the same way. */
+private data class SpendableFingerprint(val freeNative: Long, val freeTokens: Map<GroupId, Long>, val utxoCount: Int, val reservedByPartials: Int)
 
 
 /* Information about payment delegations that have been accepted by the user
@@ -454,11 +472,38 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     var tflags: Int = 0  // tx flags
     var inputSatoshis: Long = 0  // satoshis being supplied by inputs in this tx
     var originalTx: iTransaction? = null  // The original (unsigned) transaction coming from the TDPP request
-    var proposedTx: iTransaction? = null
+    @Volatile var proposedTx: iTransaction? = null
     var proposalAnalysis: MutableStateFlow<TxAnalysisResults?> = MutableStateFlow(null)
     var assetInfoList:TricklePayAssetList? = null
 
     var totalNexaSpent: Long = 0  // How much does this proposal spend in nexa satoshis
+
+    // ---- Re-analysis of a special transaction proposal that could not be completed (see reanalyze) ----
+    // Everything automatic is gated on originalTx != null, i.e. on the proposal having come from an actual TDPP request.
+    val sessionId: Int = tdppSessionCounter.incrementAndGet()
+    private val proposalLock = Mutex("tdppProposal")  // serialises analysis, accept, reject, supersede, release and retry
+    private val busy = atomic(0)  // > 0 while an analysis or retry owns the proposal
+    /** True while the proposal is being (re)analysed; the screen hides Accept and shows that a re-check is in progress */
+    val analyzing = MutableStateFlow(false)
+    /** The proposal has been decided (accepted, rejected, superseded) or cannot be completed any more: no more automatic work */
+    @Volatile var proposalClosed = false
+    /** Set when the screen goes away with the proposal undecided, so that coming back re-analyses instead of showing stale state */
+    @Volatile var needsReanalysis = false
+    /** The current proposal was completed with coins that an earlier partial transaction from the same site had reserved */
+    val usingReservedCoins = MutableStateFlow(false)
+    /** Bumped every time a new analysis is published (for tests) */
+    val proposalRevision = MutableStateFlow(0)
+    private val forceRequested = atomic(false)
+    @Volatile private var lastFingerprint: SpendableFingerprint? = null
+    // What the current (successful) attempt is holding on the user's behalf: the coins the completer reserved and the addresses it
+    // consumed, in which wallet.  Released exactly once by releaseHeld(); a failed attempt holds nothing.
+    @Volatile private var heldWallet: Wallet? = null
+    @Volatile private var heldOutpoints: Set<iTxOutpoint> = emptySet()
+    @Volatile private var boundAddresses: List<PayAddress> = emptyList()
+    private val watchLock = Mutex("tdppWatch")
+    @Volatile private var watching = false
+    private var watchedWallet: Wallet? = null
+    private var watchHandle = -1
 
     var uniqueAddress: Boolean = false
 
@@ -529,10 +574,478 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     {
         proposedTx?.let { tx->
             proposalAnalysis.value?.let { pa ->
-                pa.account.wallet.abortTransaction(tx)
+                // A proposal built from a request only ever holds what the session recorded as held (see releaseHeld); anything else
+                // in the tx is either not ours or was reserved by some other flow (an offer, say) and must stay reserved.
+                if (originalTx != null) releaseHeld()
+                else pa.account.wallet.abortTransaction(tx)
                 proposalAnalysis.value = null
             }
             proposedTx = null
+        }
+    }
+
+    // ---- Completion attempt bookkeeping ----
+
+    /** Translate the TDPP request flags into transaction completion flags */
+    private fun completionFlags(flags: Int?, sign: Boolean = true): Int
+    {
+        var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.BIND_OUTPUT_PARAMETERS
+        if (sign) cflags = cflags or TxCompletionFlags.SIGN
+        if (flags != null)
+        {
+            // If nofund flag is set turn off fund_native
+            if ((flags and TDPP_FLAG_NOFUND) > 0) cflags = cflags and (TxCompletionFlags.FUND_NATIVE.inv())
+            if ((flags and TDPP_FLAG_PARTIAL) > 0) cflags = cflags or TxCompletionFlags.PARTIAL
+            if ((flags and TDPP_FLAG_FUND_GROUPS) > 0) cflags = cflags or TxCompletionFlags.FUND_GROUPS
+        }
+        return cflags
+    }
+
+    /** Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign them */
+    private fun bindOwnInputs(tx: iTransaction, wal: Wallet)
+    {
+        for ((idx, inp) in tx.inputs.withIndex())
+        {
+            val utxo = wal.getTxo(inp.spendable.outpoint!!)
+            if (utxo != null)
+            {
+                tx.inputs[idx].spendable = utxo
+            }
+        }
+    }
+
+    /** A fresh copy of the transaction as the server sent it, ready for another completion attempt */
+    private fun cloneOriginalTx(): iTransaction?
+    {
+        val o = originalTx ?: return null
+        return txFor(o.chainSelector, BCHserialized(o.toByteArray(), SerializationType.NETWORK))
+    }
+
+    /** The address the domain asked all payments to go to, if any */
+    private fun payAddressOverride(): PayAddress? = domain?.lastPayAddress?.let { if (it == "") null else PayAddress(it) }
+
+    /** The outpoints the request itself named as inputs (ours or not); everything else in a completed tx was added by the completer */
+    private fun requestNamedOutpoints(): Set<iTxOutpoint> = originalTx?.inputs?.mapNotNull { it.spendable.outpoint }?.toSet() ?: emptySet()
+
+    /** The inputs the completer added to [tx] */
+    private fun completerAddedOutpoints(tx: iTransaction): Set<iTxOutpoint>
+    {
+        val named = requestNamedOutpoints()
+        return tx.inputs.mapNotNull { it.spendable.outpoint }.filter { it !in named }.toSet()
+    }
+
+    /** The wallet addresses that a completion attempt consumed (output binding and change), so they can be handed back if the attempt is discarded */
+    private fun boundAddressesOf(wal: Wallet, tx: iTransaction, override: PayAddress?): List<PayAddress>
+    {
+        val originalAddrs = originalTx?.outputs?.mapNotNull { it.script.address }?.toSet() ?: emptySet()
+        return tx.outputs.mapNotNull { it.script.address }.filter { wal.isWalletAddress(it) && it !in originalAddrs && it != override }.distinct()
+    }
+
+    /** Give the reservations on [outpoints] and the [addresses] back to [wal].
+     *
+     * This goes through [Wallet.abortTransaction] on a synthetic transaction holding only those inputs, so nothing else the wallet has
+     * reserved is touched and no transaction history entry can be matched and deleted.  Callers must only pass what they know to be
+     * reserved on their own behalf right now: the wallet does not record who reserved a coin, so releasing a coin twice would undo a
+     * reservation somebody else took on it in between. */
+    private fun giveBack(wal: Wallet, outpoints: Collection<iTxOutpoint>, addresses: List<PayAddress>)
+    {
+        val synthetic = txFor(wal.chainSelector)
+        for (op in outpoints) wal.getTxo(op)?.let { synthetic.add(txInputFor(it), SPENDABLE_UNRESERVED) }
+        if (synthetic.inputs.isEmpty() && addresses.isEmpty()) return
+        wal.abortTransaction(synthetic, returnUnusedAddresses = addresses.ifEmpty { null })
+    }
+
+    /** Record what a successful attempt is holding: the inputs the completer added to [tx] and the addresses it consumed */
+    private fun hold(wal: Wallet, tx: iTransaction, addresses: List<PayAddress>)
+    {
+        heldWallet = wal
+        heldOutpoints = completerAddedOutpoints(tx)
+        boundAddresses = addresses
+    }
+
+    /** Give back whatever the current attempt is holding.  Idempotent: after one call there is nothing left to release. */
+    private fun releaseHeld()
+    {
+        val wal = heldWallet ?: return
+        val ops = heldOutpoints
+        val addrs = boundAddresses
+        heldWallet = null
+        heldOutpoints = emptySet()
+        boundAddresses = emptyList()
+        giveBack(wal, ops, addrs)
+    }
+
+    /** What the wallet could spend right now.  One pass over the UTXOs, no completion. */
+    private fun spendableFingerprint(wal: Wallet): SpendableFingerprint
+    {
+        var native = 0L
+        var count = 0
+        val tokens = mutableMapOf<GroupId, Long>()
+        wal.forEachUtxo { sp ->
+            if (sp.isUnspent && sp.reserved == 0L)
+            {
+                count++
+                val gi = sp.groupInfo()
+                if (gi == null) native += sp.amount
+                else if (!gi.isAuthority()) tokens[gi.groupId] = (tokens[gi.groupId] ?: 0L) + gi.tokenAmount
+            }
+            false
+        }
+        return SpendableFingerprint(native, tokens, count, TdppPartialLedger.candidates(wal, host, topic).size)
+    }
+
+    /** Run a completion attempt on [tx] and settle what it holds: a failed attempt gives everything back right away (and finds out
+     * whether coins reserved by earlier partial transactions would have helped), a successful one is recorded as holding its
+     * reservations and the addresses it consumed, to be given back by [releaseHeld] if the proposal is discarded.
+     * Whatever the previous attempt held is released first. */
+    private fun attemptCompletion(tx: iTransaction): TxAnalysisResults
+    {
+        releaseHeld()
+        val res = analyzeCompleteAndSignTx(tx, inputSatoshis, tflags)
+        val override = payAddressOverride()
+        val addrs = boundAddressesOf(res.account.wallet, tx, override)
+        if (res.completionException == null)
+        {
+            hold(res.account.wallet, tx, addrs)
+            return res
+        }
+        // The completer leaves what it managed to pull in reserved (and in the tx) when it fails: hold nothing while waiting
+        giveBack(res.account.wallet, completerAddedOutpoints(tx), addrs)
+        if (!res.isInsufficientFunds) return res
+        val wal = res.account.wallet
+        val helps = reservedCoinsWouldHelp(wal, override)
+        val tokens = helps && usableReservedCoins(wal, TdppPartialLedger.candidates(wal, host, topic)).any { it.groupInfo()?.isAuthority() == false }
+        return res.copy(reservedCoinsWouldHelp = helps, reservedCoinsIncludeTokens = tokens)
+    }
+
+    /** Publish [result] as the current proposal */
+    private fun publish(tx: iTransaction, result: TxAnalysisResults, fingerprint: SpendableFingerprint?)
+    {
+        proposedTx = tx
+        proposalAnalysis.value = result
+        totalNexaSpent = result.myInputSatoshis - result.receivingSats
+        lastFingerprint = fingerprint
+        proposalRevision.value = proposalRevision.value + 1
+    }
+
+    /** No more automatic work on this proposal, and nothing stays held by it */
+    private fun closeProposal()
+    {
+        proposalClosed = true
+        stopWatching()
+        releaseHeld()
+    }
+
+    private fun beginBusy()
+    {
+        if (busy.incrementAndGet() == 1) analyzing.value = true
+    }
+
+    private fun endBusy()
+    {
+        if (busy.decrementAndGet() == 0) analyzing.value = false
+    }
+
+    /** Try again to complete the proposal from the request's original transaction.
+     *
+     * Only meaningful for a proposal that came from a request (originalTx != null) and has not been decided.  Unless [force]d, nothing
+     * happens if the current analysis succeeded, or if it failed for lack of funds and nothing spendable has changed since.  A failed
+     * attempt holds nothing afterwards, and the analysis flow is never set to null (the screen would go away), so the previous result
+     * stays on screen until the new one replaces it.  Once the screen has gone away undecided (see [screenHidden]) nothing runs until
+     * it comes back.
+     *
+     * Runs a transaction completion, so must not be called on the UI thread.
+     * @return true if this call ran a completion attempt and it succeeded (false when nothing was attempted)
+     */
+    fun reanalyze(force: Boolean = false): Boolean
+    {
+        return proposalLock.lock {
+            if (originalTx == null || accepted || proposalClosed) return@lock false
+            // The screen went away with the proposal undecided (see screenHidden): nothing to show a result to, and a successful attempt
+            // would hold coins nobody is looking at.  It is re-run when the screen comes back (startWatching).
+            if (needsReanalysis && !watching) return@lock false
+            val cur = proposalAnalysis.value
+            val wal = try { getRelevantAccount().wallet } catch (e: WalletInvalidException) { return@lock false }
+            var forced = force || needsReanalysis
+
+            // If a coin the current proposal depends on has since been spent: a coin the request itself named means the server's
+            // transaction can never be completed now (terminal), a coin the completer picked just means the funds moved (try again).
+            proposedTx?.let { tx ->
+                val named = requestNamedOutpoints()
+                val heldW = heldWallet ?: wal
+                for (inp in tx.inputs)
+                {
+                    val op = inp.spendable.outpoint ?: continue
+                    val isNamed = op in named
+                    if (!isNamed && op !in heldOutpoints) continue  // a failed attempt's pick: nothing of ours rides on it
+                    val txo = heldW.getTxo(op) ?: continue
+                    if (txo.isUnspent) continue
+                    if (isNamed)
+                    {
+                        LogIt.info(sourceLoc() + ": input ${op.toHex()} named by the TDPP request has been spent; proposal cannot be completed")
+                        closeProposal()
+                        if (cur != null) proposalAnalysis.value = cur.copy(completionException = TdppException(S.staleTransaction, "input ${op.toHex()} was spent"), reservedCoinsWouldHelp = false)
+                        return@lock false
+                    }
+                    forced = true
+                }
+            }
+            if (!forced && cur != null && !cur.isInsufficientFunds) return@lock false  // Nothing to fix
+
+            if (forced) releaseHeld()  // so that the fingerprint (and the attempt) see the coins the previous attempt was holding
+            val fp = spendableFingerprint(wal)
+            if (!forced && fp == lastFingerprint) return@lock false  // Same coins as the last failed attempt: it would fail the same way
+
+            beginBusy()
+            try
+            {
+                val tx = cloneOriginalTx() ?: return@lock false
+                val result = try
+                {
+                    attemptCompletion(tx)
+                }
+                catch (e: WalletInvalidException)
+                {
+                    return@lock false
+                }
+                publish(tx, result, fp)
+                LogIt.info(sourceLoc() + ": re-analysed TDPP proposal (revision ${proposalRevision.value}): " + (result.completionException?.let { "cannot complete: ${it.message?.substringBefore('\n')}" } ?: "can be completed"))
+                // If the screen went away while we were working, its queued releaseIfUndecided runs right after us (it needs this lock)
+                // and gives back what this attempt holds.
+                needsReanalysis = false
+                if (watching && watchedWallet !== result.account.wallet)  // The account changed under us: follow it
+                {
+                    stopWatching()
+                    startWatching()
+                }
+                result.completionException == null
+            }
+            finally
+            {
+                endBusy()
+            }
+        }
+    }
+
+    /** Ask for [reanalyze] to run on a worker thread.  Requests are coalesced into the one queued or running job; a force requested while a
+     * job is running makes it run once more before it finishes, so a forced request is never lost. */
+    fun requestReanalysis(force: Boolean)
+    {
+        if (originalTx == null || accepted || proposalClosed) return
+        if (force) forceRequested.value = true
+        if (busy.value > 0 && !force) return
+        onetlater("tdppReanalyze_$sessionId") {
+            do
+            {
+                try
+                {
+                    reanalyze(forceRequested.getAndSet(false))
+                }
+                catch (e: Exception)
+                {
+                    logThreadException(e, "re-analysing TDPP proposal")
+                }
+            } while (forceRequested.value)
+        }
+    }
+
+    /** While the permission screen is showing, re-check an uncompletable proposal whenever the wallet sees a transaction, and every
+     * [TDPP_RECHECK_INTERVAL_MS] regardless (the fingerprint check keeps the periodic re-check cheap when nothing changed). */
+    fun startWatching()
+    {
+        if (originalTx == null || proposalClosed) return
+        watchLock.lock {
+            if (watching) return@lock
+            val wal = proposalAnalysis.value?.account?.wallet ?: try { getRelevantAccount().wallet } catch (e: WalletInvalidException) { return@lock }
+            watching = true
+            watchedWallet = wal
+            // Only a real transaction event (non-null list) is worth an immediate re-check; header syncs, aborts and similar pass null
+            watchHandle = wal.setOnWalletChange { _, changed -> if (changed != null) requestReanalysis(false) }
+            wallyApp?.threadJobPool?.periodically("tdppRecheck_$sessionId", TDPP_RECHECK_INTERVAL_MS) { requestReanalysis(false) }
+        }
+        if (needsReanalysis) requestReanalysis(true)
+    }
+
+    fun stopWatching()
+    {
+        watchLock.lock {
+            if (!watching) return@lock
+            watching = false
+            wallyApp?.threadJobPool?.stopPeriodicJob("tdppRecheck_$sessionId")
+            watchedWallet?.let { if (watchHandle >= 0) it.removeOnWalletChange(watchHandle) }
+            watchHandle = -1
+            watchedWallet = null
+        }
+    }
+
+    /** The permission screen went away (back, another screen on top, activity gone) with the proposal still undecided: stop watching now,
+     * give back what the proposal is holding, and make sure coming back re-analyses instead of accepting stale state. */
+    fun screenHidden()
+    {
+        if (originalTx == null) return
+        stopWatching()
+        tlater("tdppRelease_$sessionId") { releaseIfUndecided() }
+    }
+
+    /** Give back what the current attempt is holding but keep the analysis on screen; an undecided proposal is marked for re-analysis */
+    fun releaseIfUndecided()
+    {
+        proposalLock.lock {
+            if (originalTx == null) return@lock
+            if (!accepted && !proposalClosed) needsReanalysis = true
+            releaseHeld()
+        }
+    }
+
+    /** A newer request from the same site replaced this proposal */
+    fun supersede()
+    {
+        proposalLock.lock { closeProposal() }
+    }
+
+    /** Accept the proposal unless it is closed, being re-analysed, waiting for a re-analysis, or could not be completed.
+     * Never blocks (safe on the UI thread).
+     * @return false if the proposal was not accepted
+     */
+    fun tryAccept(breakIt: Boolean = false): Boolean
+    {
+        return proposalLock.trylock {
+            if (busy.value > 0 || accepted || proposalClosed || (originalTx != null && needsReanalysis) || proposalAnalysis.value?.completionException != null) false
+            else
+            {
+                acceptSpecialTx(breakIt)
+                true
+            }
+        } ?: false
+    }
+
+    // ---- "Use reserved coins" ----
+
+    /** The coins that earlier, never completed partial transactions from this same site are still holding reserved, restricted to the
+     * kind the request could actually use: NEXA coins if the request lets the wallet fund NEXA, token coins only of the groups the
+     * request's outputs carry and only if it lets the wallet fund groups. */
+    private fun usableReservedCoins(wal: Wallet, entries: List<TdppPartialLedger.Entry>): List<Spendable>
+    {
+        val cflags = completionFlags(tflags)
+        val wantsNative = (cflags and TxCompletionFlags.FUND_NATIVE) != 0
+        val wantedGroups: Set<GroupId> = if ((cflags and TxCompletionFlags.FUND_GROUPS) != 0)
+            originalTx?.outputs?.mapNotNull { it.script.groupInfo(it.amount) }?.filter { !it.isAuthority() }?.map { it.groupId }?.toSet() ?: emptySet()
+        else emptySet()
+        return TdppPartialLedger.stillReserved(wal, entries).filter { sp ->
+            val gi = sp.groupInfo()
+            if (gi == null) wantsNative else (!gi.isAuthority() && gi.groupId in wantedGroups)
+        }
+    }
+
+    /** Would the request complete if the usable reserved coins were available?  Answered by a completion attempt that supplies those coins
+     * as explicit inputs (explicit inputs are used as given, so their reservations are neither checked nor changed) and gives back
+     * everything it selects afterwards.  The attempt only asks whether the transaction can be funded, so it neither signs nor runs the
+     * final sanity checks (which would abort the whole trial transaction, reserved coins included). */
+    private fun reservedCoinsWouldHelp(wal: Wallet, override: PayAddress?): Boolean
+    {
+        val cands = usableReservedCoins(wal, TdppPartialLedger.candidates(wal, host, topic))
+        if (cands.isEmpty()) return false
+        val trial = cloneOriginalTx() ?: return false
+        bindOwnInputs(trial, wal)
+        val keep = mutableSetOf<iTxOutpoint>()
+        var extra = 0L
+        for (sp in cands)
+        {
+            trial.add(txInputFor(sp), SPENDABLE_UNRESERVED)
+            keep.add(sp.outpoint!!)
+            if (sp.groupInfo() == null) extra += sp.amount  // a token coin's few native satoshis are not what the request is short of
+        }
+        val flags = completionFlags(tflags, sign = false) or TxCompletionFlags.PARTIAL
+        val ok = try
+        {
+            wal.txCompleter(trial, 0, flags, inputSatoshis + extra, destinationAddress = override)
+            true
+        }
+        catch (e: Exception)
+        {
+            LogIt.info(sourceLoc() + ": proposal would still not complete with ${cands.size} reserved coins: ${e.message?.substringBefore('\n')}")
+            false
+        }
+        finally
+        {
+            giveBack(wal, completerAddedOutpoints(trial) - keep, boundAddressesOf(wal, trial, override))
+        }
+        if (ok) LogIt.info(sourceLoc() + ": proposal would complete with ${cands.size} coins reserved by earlier partial transactions from $host")
+        return ok
+    }
+
+    /** Re-attempt the request, treating the usable coins that earlier partial transactions from this same site reserved as available.
+     *
+     * The coins are released only after the network confirms every one of them is still unspent: in the "wallet has not caught up
+     * yet" case the earlier transaction may already have spent them, and releasing them then would just produce a transaction the
+     * network rejects.  Nothing is sent to the server; a subsequent Accept replies to the request as usual.
+     *
+     * Does network I/O and a completion, so must not be called on the UI thread; see [requestRetryIgnoringReserved].
+     * @return true if the request was re-attempted with the reserved coins and can now be accepted
+     */
+    fun retryIgnoringReserved(): Boolean
+    {
+        if (originalTx == null || proposalClosed || accepted) return false
+        val wal = proposalAnalysis.value?.account?.wallet ?: return false
+        if (busy.incrementAndGet() != 1)  // one retry (or analysis) at a time
+        {
+            busy.decrementAndGet()
+            return false
+        }
+        analyzing.value = true
+        try
+        {
+            val entries = TdppPartialLedger.candidates(wal, host, topic)
+            val cands = usableReservedCoins(wal, entries)
+            if (cands.isEmpty()) return false
+            // 1. Ask the network while the coins are still reserved; every one of them needs an affirmative answer.  No connected node, or
+            //    a node that cannot answer (an old protocol version), is the same as no answer: nothing is released.
+            val nodes = wal.blockchain.net.getNodes()
+            val reply = if (nodes.isEmpty()) listOf() else try
+            {
+                wal.blockchain.req.getUtxo(cands.map { it.outpoint!!.toByteArray(SerializationType.NETWORK) })
+            }
+            catch (e: Exception)
+            {
+                LogIt.info(sourceLoc() + ": could not ask the network about reserved coins: $e")
+                listOf()
+            }
+            val ok = cands.filter { sp -> reply.firstOrNull { it.outpoint == sp.outpoint }?.let { it.exists && !it.spent } == true }
+            if (ok.size != cands.size)
+            {
+                LogIt.info(sourceLoc() + ": ${cands.size - ok.size} of ${cands.size} reserved coins could not be confirmed unspent by ${nodes.size} nodes; keeping them reserved")
+                displayNotice(S.TpReservedCoinsUnverified)
+                return false
+            }
+            // 2. Release and re-analyse under the one lock so nobody else can grab the coins in between
+            return proposalLock.lock {
+                if (proposalClosed || accepted) return@lock false
+                if (getRelevantAccount().wallet !== wal) return@lock false  // the account changed while we asked the network; the screen re-analyses
+                TdppPartialLedger.release(wal, entries, ok.map { it.outpoint!! }.toSet())
+                val completable = reanalyze(force = true)
+                if (completable) usingReservedCoins.value = true
+                completable
+            }
+        }
+        finally
+        {
+            endBusy()
+        }
+    }
+
+    /** Run [retryIgnoringReserved] on a worker thread (one at a time), reporting an unexpected failure instead of losing it */
+    fun requestRetryIgnoringReserved()
+    {
+        onetlater("tdppUseReserved_$sessionId") {
+            try
+            {
+                retryIgnoringReserved()
+            }
+            catch (e: Exception)
+            {
+                logThreadException(e, "retrying TDPP proposal with reserved coins")
+                displayError(S.unknownError, e.message)
+            }
         }
     }
 
@@ -791,7 +1304,12 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val rp = replyProtocol
         val hp = hostAndPort
         val cp = cookieParam
-        abortProposal()
+        // Close right away (a running re-analysis then publishes into a closed proposal and its holdings are released below), but never
+        // block the caller, which may be the UI thread, on a worker that is in the middle of a completion.
+        proposalClosed = true
+        stopWatching()
+        val aborted = proposalLock.trylock { abortProposal(); true } ?: false
+        if (!aborted) laterJob("tdppAbort_$sessionId") { proposalLock.lock { abortProposal() } }
         laterJob {
             val req = Url(rp + "://" + hp + "/tx?$cp&resultcode=300")  // 300 is user reject: https://spec.nexa.org/dpp/#pay-transaction-response
             LogIt.info("Sending special tx reject response: ${req}")
@@ -814,12 +1332,28 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     fun acceptSpecialTx(breakIt: Boolean = false)
     {
         LogIt.info(sourceLoc() + ": accept trickle pay special transaction")
-        accepted = true
+        proposalLock.lock {
+            if (originalTx != null && proposalClosed)
+            {
+                LogIt.warning(sourceLoc() + ": ignoring accept of a TDPP proposal that is already closed")
+                return@lock
+            }
+            accepted = true
+            proposalClosed = true
+            stopWatching()
+            acceptSpecialTxLocked(breakIt)
+        }
+    }
+
+    private fun acceptSpecialTxLocked(breakIt: Boolean)
+    {
         val pTx = proposedTx
         val panalysis = proposalAnalysis
 
         if ((pTx != null)&&(panalysis.value != null))
         {
+            // The wallet that funded and signed the proposal is the one that must submit it and that holds its reservations
+            val analysisWallet = panalysis.value!!.account.wallet
             if (breakIt)
             {
                 val choice = (0..2).random()
@@ -844,6 +1378,11 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
             proposedTx = null
             proposalUrl = null
+            // Consumed for real now: the reservations belong to the submitted transaction, the addresses are used
+            val added = if (originalTx != null) heldOutpoints else emptySet()
+            heldWallet = null
+            heldOutpoints = emptySet()
+            boundAddresses = emptyList()
             LogIt.info(sourceLoc() + ": sign trickle pay special transaction")
 
             // TODO: put a record of this transaction somewhere so when it is completed by the server we can annotate the history with a reason.
@@ -865,11 +1404,14 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                         completed = false
                     }
                 }
-                val wallet = getRelevantAccount(domain?.accountName).wallet
+                // A partial transaction (or one the server keeps to itself) leaves the coins the completer reserved for it held with nothing
+                // in the wallet to say by whom; remember them so a later request from the same site can offer to reuse them if the server
+                // abandons the transaction.
+                if ((!completed || noPost) && added.isNotEmpty()) TdppPartialLedger.record(analysisWallet, host, topic, pTx, added)
 
                 submitTdppCompletion(
                   pTx = pTx,
-                  wallet = wallet,
+                  wallet = analysisWallet,
                   completed = completed,
                   noPost = noPost,
                   replyProtocol = replyProtocol,
@@ -909,7 +1451,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
         if (askReasons.size == 0)
         {
-            return TdppAction.ACCEPT
+            // A proposal that could not be completed cannot be paid automatically; showing it lets the wallet keep re-checking it
+            // (the funds may arrive as the wallet syncs) instead of replying with an unfunded transaction.
+            return if (pa?.completionException != null) TdppAction.ASK else TdppAction.ACCEPT
         }
         return TdppAction.ASK
     }
@@ -950,11 +1494,12 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
 
         // Analyze and sign transaction
-        val analysis = analyzeCompleteAndSignTx(tx, inputSatoshis, tflags)
-        LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
-        proposedTx = tx  // save the final tx to be issued later if user agrees and no problems
-        proposalAnalysis.value = analysis
-        totalNexaSpent = analysis.myInputSatoshis - analysis.receivingSats
+        proposalLock.lock {
+            val fp = spendableFingerprint(getRelevantAccount().wallet)
+            val analysis = attemptCompletion(tx)
+            LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
+            publish(tx, analysis, fp)  // save the final tx to be issued later if user agrees and no problems
+        }
         var action = determineAction(domain)
         return action
     }
@@ -1205,34 +1750,16 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val sendingTokenInfo = mutableMapOf<GroupId, Long>()
         val myInputTokenInfo = mutableMapOf<GroupId, Long>()
 
-        var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS
-
-        if (flags != null)
-        {
-            // If nofund flag is set turn off fund_native
-            if ((flags and TDPP_FLAG_NOFUND) > 0) cflags = cflags and (TxCompletionFlags.FUND_NATIVE.inv())
-            if ((flags and TDPP_FLAG_PARTIAL) > 0) cflags = cflags or TxCompletionFlags.PARTIAL
-            if ((flags and TDPP_FLAG_FUND_GROUPS) > 0) cflags = cflags or TxCompletionFlags.FUND_GROUPS
-        }
+        val cflags = completionFlags(flags)
 
         // Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign this input
-        for ((idx, inp) in tx.inputs.withIndex())
-        {
-            val utxo = wal.getTxo(inp.spendable.outpoint!!)
-            if (utxo != null)
-            {
-                tx.inputs[idx].spendable = utxo
-            }
-        }
+        bindOwnInputs(tx, wal)
 
         // Complete and sign the transaction
         var completionException: Exception? = null
         try
         {
-            val oneAddr:PayAddress? = this.domain?.lastPayAddress?.let {
-                if (it == "") null else PayAddress(it) }
-
-            wal.txCompleter(tx, 0, cflags, inputSatoshis, destinationAddress = oneAddr)
+            wal.txCompleter(tx, 0, cflags, inputSatoshis, destinationAddress = payAddressOverride())
         }
         catch (e: Exception)  // Try to report on the tx even if we can't complete it.
         {
@@ -1326,19 +1853,30 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
 fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Boolean
 {
-    // For certain screens, just ignore duplicate requests
-    if (nav.currentScreen.value == ScreenId.SpecialTxPerm)
-    {
-        val ctp = nav.curData.value as? TricklePaySession
-        if ((ctp != null)&&(ctp.proposalUrl == iuri))
-        {
-            return false
-        }
-    }
-
     val bkg = wallyApp!!.amIbackground()  // if the app is backgrounded, we need to notify and not just change the GUI
     val scheme = iuri.scheme
     val path = iuri.path
+
+    // For certain screens, just ignore duplicate requests
+    var superseded = false
+    if (nav.currentScreen.value == ScreenId.SpecialTxPerm)
+    {
+        val ctp = nav.curData.value as? TricklePaySession
+        if (ctp != null)
+        {
+            if (ctp.proposalUrl == iuri) return false
+            // A different transaction request from the same site while its previous one is still being shown: the site has moved on
+            // (a new game, a re-issued offer), so drop the old proposal rather than stacking the two.
+            if (path == "/tx" && ctp.originalTx != null && ctp.host == iuri.host && (ctp.topic ?: "") == (iuri.getQueryParameter("topic") ?: ""))
+            {
+                LogIt.info(sourceLoc() + ": TDPP request from ${ctp.host} supersedes the proposal being shown")
+                ctp.supersede()
+                nav.back()
+                superseded = true
+            }
+        }
+    }
+
     if (scheme?.lowercase() == TDPP_URI_SCHEME)
     {
         val tp = TricklePaySession(wallyApp!!.tpDomains, then)
@@ -1491,12 +2029,22 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
         }
         else if (path == "/tx")
         {
-            val result = tp.attemptSpecialTx(iuri)
+            val result = try
+            {
+                tp.attemptSpecialTx(iuri)
+            }
+            catch (e: Exception)
+            {
+                if (superseded) displayNotice(S.TpProposalSuperseded)  // the proposal that was on screen is gone whatever became of the replacement
+                throw e
+            }
+            if (superseded && result != TdppAction.ASK) displayNotice(S.TpProposalSuperseded)  // for ASK it is shown after nav.go, which clears alerts
             when(result)
             {
                 TdppAction.ASK ->  // special tx
                 {
                     nav.go(ScreenId.SpecialTxPerm, data = tp)
+                    if (superseded) displayNotice(S.TpProposalSuperseded)
                     return false
                 }
                 TdppAction.ACCEPT ->  // special tx auto accepted
@@ -1704,6 +2252,8 @@ fun submitTdppCompletion(
                     {
                         LogIt.info(sourceLoc() + " TDPP originator response classified as unknown-session")
                         cleanup()
+                        // The server never stored the transaction, so nothing can ever complete it: free the coins it was holding
+                        if (!completed || noPost) TdppPartialLedger.releaseFor(wallet, pTx)
                         millisleep(1000U)
                         displayWarning(i18n(S.TpNoSession), i18n(S.TpNoSession))
                     }

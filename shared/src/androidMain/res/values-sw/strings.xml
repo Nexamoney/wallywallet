@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Muamala umekubaliwa</string>
     <string name="TpNetworkTimeout">Muda wa muamala umeisha</string>
     <string name="TpPartialSubmitted">Ofa imetumwa</string>
+    <string name="TpInsufficientWillRetry">Pochi yako haina fedha za kutosha zinazopatikana kwa ombi hili kwa sasa. Skrini hii hukagua upya kiotomatiki pochi yako inaposawazishwa.</string>
+    <string name="TpRecheckingFunds">Inakagua upya fedha…</string>
+    <string name="TpProposalSuperseded">Ombi jipya zaidi kutoka tovuti hii limechukua nafasi ya lile la awali.</string>
+    <string name="TpUseReservedCoins">Tumia sarafu zilizohifadhiwa</string>
+    <string name="TpUseReservedTokens">Tumia tokeni zilizohifadhiwa</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Baadhi ya sarafu zako bado zimehifadhiwa na ombi la awali kutoka %host ambalo halikukamilika kamwe. Zitumie tu ikiwa ombi hilo la awali lilighairiwa au kutelekezwa; vinginevyo mojawapo ya miamala hiyo miwili itashindwa.</string>
+    <string name="TpUsingReservedCoins">Inatumia sarafu zilizohifadhiwa na ombi la awali</string>
+    <string name="TpReservedCoinsUnverified">Haikuwezekana kuthibitisha kutoka kwa mtandao kwamba sarafu zilizohifadhiwa bado hazijatumika. Subiri pochi isawazishwe kisha ujaribu tena.</string>
     <string name="TpAssetRequestDenied">Taarifa za mali zimezuiwa</string>
     <string name="TpAssetRequestAccepted">Inatuma taarifa za mali</string>
     <string name="Actions">Vitendo</string>

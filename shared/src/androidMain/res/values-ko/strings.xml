@@ -489,6 +489,14 @@
     <string name="TpTxAccepted">거래 승인됨</string>
     <string name="TpNetworkTimeout">거래 시간 초과</string>
     <string name="TpPartialSubmitted">오퍼 제출됨</string>
+    <string name="TpInsufficientWillRetry">현재 지갑에 이 요청을 처리할 만큼 사용 가능한 자금이 없습니다. 지갑이 동기화되는 동안 이 화면이 자동으로 다시 확인합니다.</string>
+    <string name="TpRecheckingFunds">자금을 다시 확인하는 중…</string>
+    <string name="TpProposalSuperseded">이 사이트의 새 요청이 이전 요청을 대체했습니다.</string>
+    <string name="TpUseReservedCoins">예약된 코인 사용</string>
+    <string name="TpUseReservedTokens">예약된 토큰 사용</string>
+    <string name="TpReservedCoinsExplain" formatted="false">완료되지 않은 %host의 이전 요청이 일부 코인을 아직 예약 중입니다. 그 이전 요청이 취소되었거나 중단된 경우에만 사용하세요. 그렇지 않으면 두 거래 중 하나가 실패합니다.</string>
+    <string name="TpUsingReservedCoins">이전 요청이 예약한 코인을 사용 중</string>
+    <string name="TpReservedCoinsUnverified">예약된 코인이 아직 사용되지 않았는지 네트워크에서 확인할 수 없습니다. 지갑이 동기화될 때까지 기다린 후 다시 시도하세요.</string>
     <string name="TpAssetRequestDenied">자산 정보 미제공</string>
     <string name="TpAssetRequestAccepted">자산 정보 전송 중</string>
     <string name="Actions">작업</string>

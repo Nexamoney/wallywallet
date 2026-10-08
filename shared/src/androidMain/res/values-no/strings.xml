@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Transaksjon godtatt</string>
     <string name="TpNetworkTimeout">Tidsavbrudd for transaksjon</string>
     <string name="TpPartialSubmitted">Tilbud sendt inn</string>
+    <string name="TpInsufficientWillRetry">Lommeboken din har ikke nok tilgjengelige midler til denne forespørselen akkurat nå. Dette skjermbildet sjekker automatisk på nytt mens lommeboken synkroniserer.</string>
+    <string name="TpRecheckingFunds">Sjekker midler på nytt…</string>
+    <string name="TpProposalSuperseded">En nyere forespørsel fra dette nettstedet erstattet den forrige.</string>
+    <string name="TpUseReservedCoins">Bruk reserverte mynter</string>
+    <string name="TpUseReservedTokens">Bruk reserverte tokens</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Noen av myntene dine er fortsatt reservert av en tidligere forespørsel fra %host som aldri ble fullført. Bruk dem bare hvis den tidligere forespørselen ble avbrutt eller forlatt; ellers vil én av de to transaksjonene mislykkes.</string>
+    <string name="TpUsingReservedCoins">Bruker mynter reservert av en tidligere forespørsel</string>
+    <string name="TpReservedCoinsUnverified">Kunne ikke bekrefte med nettverket at de reserverte myntene fortsatt er ubrukte. Vent til lommeboken er synkronisert og prøv igjen.</string>
     <string name="TpAssetRequestDenied">Eiendelsinfo holdt tilbake</string>
     <string name="TpAssetRequestAccepted">Sender eiendelsinfo</string>
     <string name="Actions">Handlinger</string>

@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Transaction acceptée</string>
     <string name="TpNetworkTimeout">Délai de transaction dépassé</string>
     <string name="TpPartialSubmitted">Offre soumise</string>
+    <string name="TpInsufficientWillRetry">Votre portefeuille ne dispose pas de fonds suffisants pour cette demande pour le moment. Cet écran revérifie automatiquement pendant la synchronisation du portefeuille.</string>
+    <string name="TpRecheckingFunds">Revérification des fonds…</string>
+    <string name="TpProposalSuperseded">Une demande plus récente de ce site a remplacé la précédente.</string>
+    <string name="TpUseReservedCoins">Utiliser les pièces réservées</string>
+    <string name="TpUseReservedTokens">Utiliser les jetons réservés</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Certaines de vos pièces sont encore réservées par une demande antérieure de %host qui n\'a jamais abouti. Ne les utilisez que si cette demande antérieure a été annulée ou abandonnée ; sinon, l\'une des deux transactions échouera.</string>
+    <string name="TpUsingReservedCoins">Utilisation de pièces réservées par une demande antérieure</string>
+    <string name="TpReservedCoinsUnverified">Impossible de confirmer auprès du réseau que les pièces réservées n\'ont pas encore été dépensées. Attendez la synchronisation du portefeuille et réessayez.</string>
     <string name="TpAssetRequestDenied">Infos d\'actifs non transmises</string>
     <string name="TpAssetRequestAccepted">Envoi des infos d\'actifs</string>
     <string name="Actions">Actions</string>

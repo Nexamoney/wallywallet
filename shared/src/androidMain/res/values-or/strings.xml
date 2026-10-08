@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">ଲେଣଦେଣ ଗୃହୀତ</string>
     <string name="TpNetworkTimeout">ଲେଣଦେଣ ସମୟ ସମାପ୍ତ</string>
     <string name="TpPartialSubmitted">ପ୍ରସ୍ତାବ ଦାଖଲ ହେଲା</string>
+    <string name="TpInsufficientWillRetry">ଏହି ଅନୁରୋଧ ପାଇଁ ଆପଣଙ୍କ ୱାଲେଟ୍‌ରେ ବର୍ତ୍ତମାନ ଯଥେଷ୍ଟ ଉପଲବ୍ଧ ଅର୍ଥ ନାହିଁ। ଆପଣଙ୍କ ୱାଲେଟ୍ ସିଙ୍କ ହେଉଥିବା ସମୟରେ ଏହି ସ୍କ୍ରିନ୍ ସ୍ୱୟଂଚାଳିତ ଭାବେ ପୁନଃ ଯାଞ୍ଚ କରେ।</string>
+    <string name="TpRecheckingFunds">ଅର୍ଥ ପୁନଃ ଯାଞ୍ଚ କରାଯାଉଛି…</string>
+    <string name="TpProposalSuperseded">ଏହି ସାଇଟରୁ ଆସିଥିବା ଏକ ନୂଆ ଅନୁରୋଧ ପୂର୍ବଟିକୁ ବଦଳାଇଦେଲା।</string>
+    <string name="TpUseReservedCoins">ସଂରକ୍ଷିତ ମୁଦ୍ରା ବ୍ୟବହାର କରନ୍ତୁ</string>
+    <string name="TpUseReservedTokens">ସଂରକ୍ଷିତ ଟୋକେନ ବ୍ୟବହାର କରନ୍ତୁ</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host ରୁ ଆସିଥିବା, କେବେ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇନଥିବା ଏକ ପୂର୍ବ ଅନୁରୋଧ ଆପଣଙ୍କର କିଛି ମୁଦ୍ରା ଏବେ ବି ସଂରକ୍ଷିତ ରଖିଛି। ସେହି ପୂର୍ବ ଅନୁରୋଧ ବାତିଲ କିମ୍ବା ପରିତ୍ୟକ୍ତ ହୋଇଥିଲେ ହିଁ ସେଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ; ନଚେତ୍ ଦୁଇଟି କାରବାର ମଧ୍ୟରୁ ଗୋଟିଏ ବିଫଳ ହେବ।</string>
+    <string name="TpUsingReservedCoins">ଏକ ପୂର୍ବ ଅନୁରୋଧ ଦ୍ୱାରା ସଂରକ୍ଷିତ ମୁଦ୍ରା ବ୍ୟବହାର କରାଯାଉଛି</string>
+    <string name="TpReservedCoinsUnverified">ସଂରକ୍ଷିତ ମୁଦ୍ରାଗୁଡ଼ିକ ଏବେ ବି ଖର୍ଚ୍ଚ ହୋଇନାହିଁ ବୋଲି ନେଟୱର୍କରୁ ନିଶ୍ଚିତ କରାଯାଇପାରିଲା ନାହିଁ। ୱାଲେଟ୍ ସିଙ୍କ ହେବା ପର୍ଯ୍ୟନ୍ତ ଅପେକ୍ଷା କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
     <string name="TpAssetRequestDenied">ଆସେଟ୍ ସୂଚନା ଦିଆଗଲା ନାହିଁ</string>
     <string name="TpAssetRequestAccepted">ଆସେଟ୍ ସୂଚନା ପଠାଯାଉଛି</string>
     <string name="Actions">କାର୍ଯ୍ୟ</string>

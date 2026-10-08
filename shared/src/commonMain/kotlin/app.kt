@@ -1217,6 +1217,7 @@ open class CommonApp(val runningTests: Boolean)
         }
         updateHasAssets()
         saveActiveAccountList()
+        TdppPartialLedger.removeForWallet(act.wallet.name)
         // laterOneJob name-dedupes against a rapid double-tap.
         laterOneJob("deleteAccount-$name") { finalizeAccountDeletion(name, act) }
     }

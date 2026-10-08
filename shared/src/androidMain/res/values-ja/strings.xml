@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">取引を承諾</string>
     <string name="TpNetworkTimeout">取引がタイムアウト</string>
     <string name="TpPartialSubmitted">オファーを送信</string>
+    <string name="TpInsufficientWillRetry">このリクエストに対して、現在ウォレットの利用可能な残高が不足しています。ウォレットの同期が進むと、この画面は自動的に再確認します。</string>
+    <string name="TpRecheckingFunds">残高を再確認しています…</string>
+    <string name="TpProposalSuperseded">このサイトからの新しいリクエストが以前のリクエストに置き換わりました。</string>
+    <string name="TpUseReservedCoins">予約済みのコインを使用</string>
+    <string name="TpUseReservedTokens">予約済みのトークンを使用</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host からの以前のリクエスト（完了しなかったもの）により、一部のコインがまだ予約されたままです。その以前のリクエストがキャンセルまたは放棄された場合にのみ使用してください。そうでない場合、2 つの取引のうち一方が失敗します。</string>
+    <string name="TpUsingReservedCoins">以前のリクエストで予約されたコインを使用しています</string>
+    <string name="TpReservedCoinsUnverified">予約済みのコインが未使用であることをネットワークで確認できませんでした。ウォレットの同期を待ってからもう一度お試しください。</string>
     <string name="TpAssetRequestDenied">アセット情報の提供を拒否</string>
     <string name="TpAssetRequestAccepted">アセット情報を送信中</string>
     <string name="Actions">操作</string>

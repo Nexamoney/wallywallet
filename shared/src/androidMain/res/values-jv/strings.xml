@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Transaksi ditampi</string>
     <string name="TpNetworkTimeout">Transaksi kentekan wektu</string>
     <string name="TpPartialSubmitted">Tawaran wis dikirim</string>
+    <string name="TpInsufficientWillRetry">Dompet panjenengan saiki ora duwe dana sing cukup kanggo panjaluk iki. Layar iki mriksa maneh kanthi otomatis nalika dompet panjenengan nyinkronake.</string>
+    <string name="TpRecheckingFunds">Mriksa maneh dana…</string>
+    <string name="TpProposalSuperseded">Panjaluk sing luwih anyar saka situs iki ngganti sing sadurunge.</string>
+    <string name="TpUseReservedCoins">Gunakake koin sing dicadhangake</string>
+    <string name="TpUseReservedTokens">Gunakake token sing dicadhangake</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Sawetara koin panjenengan isih dicadhangake dening panjaluk sadurunge saka %host sing ora tau rampung. Gunakake mung yen panjaluk sadurunge iku dibatalake utawa ditinggalake; yen ora, salah siji saka rong transaksi bakal gagal.</string>
+    <string name="TpUsingReservedCoins">Nggunakake koin sing dicadhangake dening panjaluk sadurunge</string>
+    <string name="TpReservedCoinsUnverified">Ora bisa mesthekake saka jaringan yen koin sing dicadhangake durung dibelanjakake. Enteni nganti dompet sinkron banjur coba maneh.</string>
     <string name="TpAssetRequestDenied">Info aset ditahan</string>
     <string name="TpAssetRequestAccepted">Ngirim info aset</string>
     <string name="Actions">Tumindak</string>

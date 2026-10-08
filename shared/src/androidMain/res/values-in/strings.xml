@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Transaksi diterima</string>
     <string name="TpNetworkTimeout">Waktu transaksi habis</string>
     <string name="TpPartialSubmitted">Penawaran dikirim</string>
+    <string name="TpInsufficientWillRetry">Dompet Anda saat ini tidak memiliki cukup dana yang tersedia untuk permintaan ini. Layar ini memeriksa ulang secara otomatis saat dompet Anda menyinkronkan.</string>
+    <string name="TpRecheckingFunds">Memeriksa ulang dana…</string>
+    <string name="TpProposalSuperseded">Permintaan yang lebih baru dari situs ini menggantikan permintaan sebelumnya.</string>
+    <string name="TpUseReservedCoins">Gunakan koin yang dicadangkan</string>
+    <string name="TpUseReservedTokens">Gunakan token yang dicadangkan</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Sebagian koin Anda masih dicadangkan oleh permintaan sebelumnya dari %host yang tidak pernah selesai. Gunakan hanya jika permintaan sebelumnya itu dibatalkan atau ditinggalkan; jika tidak, salah satu dari kedua transaksi akan gagal.</string>
+    <string name="TpUsingReservedCoins">Menggunakan koin yang dicadangkan oleh permintaan sebelumnya</string>
+    <string name="TpReservedCoinsUnverified">Tidak dapat memastikan dari jaringan bahwa koin yang dicadangkan masih belum dibelanjakan. Tunggu hingga dompet tersinkronkan lalu coba lagi.</string>
     <string name="TpAssetRequestDenied">Info aset ditahan</string>
     <string name="TpAssetRequestAccepted">Mengirim info aset</string>
     <string name="Actions">Tindakan</string>

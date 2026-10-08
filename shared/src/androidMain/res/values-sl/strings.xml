@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Sprejeta transakcija</string>
     <string name="TpNetworkTimeout">Časovna omejitev transakcije</string>
     <string name="TpPartialSubmitted">Ponudba oddana</string>
+    <string name="TpInsufficientWillRetry">Vaša denarnica trenutno nima dovolj razpoložljivih sredstev za to zahtevo. Ta zaslon samodejno ponovno preveri, medtem ko se denarnica sinhronizira.</string>
+    <string name="TpRecheckingFunds">Ponovno preverjanje sredstev…</string>
+    <string name="TpProposalSuperseded">Novejša zahteva s tega spletnega mesta je nadomestila prejšnjo.</string>
+    <string name="TpUseReservedCoins">Uporabi rezervirane kovance</string>
+    <string name="TpUseReservedTokens">Uporabi rezervirane žetone</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Nekateri vaši kovanci so še vedno rezervirani zaradi prejšnje zahteve z %host, ki ni bila nikoli dokončana. Uporabite jih le, če je bila tista prejšnja zahteva preklicana ali opuščena; sicer bo ena od obeh transakcij spodletela.</string>
+    <string name="TpUsingReservedCoins">Uporabljajo se kovanci, rezervirani s prejšnjo zahtevo</string>
+    <string name="TpReservedCoinsUnverified">Z omrežjem ni bilo mogoče potrditi, da rezervirani kovanci še niso porabljeni. Počakajte, da se denarnica sinhronizira, in poskusite znova.</string>
     <string name="TpAssetRequestDenied">Informacije o sredstvih zadržane</string>
     <string name="TpAssetRequestAccepted">Pošiljanje informacij o sredstvih</string>
     <string name="Actions">Dejanja</string>

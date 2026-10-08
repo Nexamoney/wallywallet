@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">已接受交易</string>
     <string name="TpNetworkTimeout">交易超时</string>
     <string name="TpPartialSubmitted">报价已提交</string>
+    <string name="TpInsufficientWillRetry">您的钱包目前没有足够的可用资金来处理此请求。钱包同步时，此界面会自动重新检查。</string>
+    <string name="TpRecheckingFunds">正在重新检查资金…</string>
+    <string name="TpProposalSuperseded">来自此站点的较新请求已取代之前的请求。</string>
+    <string name="TpUseReservedCoins">使用已预留的币</string>
+    <string name="TpUseReservedTokens">使用已预留的代币</string>
+    <string name="TpReservedCoinsExplain" formatted="false">您的部分币仍被 %host 之前一个从未完成的请求预留着。仅当该请求已被取消或放弃时才使用它们；否则两笔交易中将有一笔失败。</string>
+    <string name="TpUsingReservedCoins">正在使用之前请求预留的币</string>
+    <string name="TpReservedCoinsUnverified">无法通过网络确认已预留的币仍未被花费。请等待钱包同步后再试。</string>
     <string name="TpAssetRequestDenied">已拒绝提供资产信息</string>
     <string name="TpAssetRequestAccepted">正在发送资产信息</string>
     <string name="Actions">操作</string>
