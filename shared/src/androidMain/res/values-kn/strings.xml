@@ -62,6 +62,7 @@
     <string name="Processing">ಪ್ರಕ್ರಿಯೆ ನಡೆಯುತ್ತಿದೆ...</string>
     <string name="receiving">ಸ್ವೀಕರಿಸುತ್ತಿದೆ</string>
     <string name="sending">ಕಳುಹಿಸುತ್ತಿದೆ</string>
+    <string name="sharing">ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</string>
     <string name="noAdditionalDetails">ಹೆಚ್ಚಿನ ವಿವರಗಳಿಲ್ಲ</string>
     <string name="unspecified">ನಿರ್ದಿಷ್ಟಪಡಿಸಿಲ್ಲ</string>
     <string name="removed">ತೆಗೆದುಹಾಕಲಾಗಿದೆ</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">ನಿಮ್ಮ ಖಾತೆಯಿಂದ ನಿರ್ವಹಿಸಬಹುದು</string>
     <string name="TpAssetMatches" formatted="false">ನೀವು ಹೊಂದಿರುವ %num ಆಸ್ತಿಗಳ ಮಾಹಿತಿಯನ್ನು ಈ ಸೇವೆಗೆ ಒದಗಿಸಲಾಗುತ್ತದೆ.</string>
     <string name="TpAssetInfoNotXfer">ಈ ವಿನಂತಿಯನ್ನು ಒಪ್ಪಿಕೊಂಡರೆ ನಿಮ್ಮ ಮಾಲೀಕತ್ವದ ಮಾಹಿತಿಯನ್ನಷ್ಟೇ ಸೇವೆಗೆ ನೀಡಲಾಗುತ್ತದೆ.  ಇದು ಯಾವುದೇ ವರ್ಗಾವಣೆಗೆ ಅನುಮೋದನೆ ನೀಡುವುದಿಲ್ಲ.</string>
+    <string name="TpAssetInfoAsk">ನೀವು ಯಾವ ಆಸ್ತಿಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ ಎಂದು ನೋಡಲು ಬಯಸುತ್ತದೆ</string>
+    <string name="TpAssetsYouOwn">ನಿಮ್ಮ ಆಸ್ತಿಗಳು</string>
     <string name="ForAFeeOf" formatted="false">%fee %units ಶುಲ್ಕ ಸೇರಿದಂತೆ</string>
     <string name="TpExchangingTokens" formatted="false">ಮತ್ತು ಟೋಕನ್‌ಗಳ ವಿನಿಮಯ (%tokSnd ಕಳುಹಿಸುವುದು, %tokRcv ಸ್ವೀಕರಿಸುವುದು).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal ಟೋಕನ್ ಪ್ರಕಾರಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸಲಾಗುತ್ತದೆ (ನಿಮಗೇ ಖರ್ಚು ಮಾಡಿ, ಅವು ನಿಮ್ಮವೆಂದು ಸಾಬೀತುಪಡಿಸಲಾಗುತ್ತದೆ).</string>

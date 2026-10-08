@@ -62,6 +62,7 @@
     <string name="Processing">đang xử lý...</string>
     <string name="receiving">đang nhận</string>
     <string name="sending">đang gửi</string>
+    <string name="sharing">đang chia sẻ</string>
     <string name="noAdditionalDetails">không có thêm chi tiết</string>
     <string name="unspecified">chưa xác định</string>
     <string name="removed">đã xóa</string>
@@ -496,6 +497,8 @@
     <string name="TpHandledByAccount">có thể xử lý bằng tài khoản của bạn</string>
     <string name="TpAssetMatches" formatted="false">Thông tin về %num tài sản bạn đang sở hữu sẽ được cung cấp cho dịch vụ này.</string>
     <string name="TpAssetInfoNotXfer">Chấp nhận yêu cầu này chỉ cho dịch vụ biết thông tin về quyền sở hữu của bạn.  Nó không ủy quyền chuyển bất kỳ tài sản nào.</string>
+    <string name="TpAssetInfoAsk">muốn xem bạn đang nắm giữ những tài sản nào</string>
+    <string name="TpAssetsYouOwn">Tài sản của bạn</string>
     <string name="ForAFeeOf" formatted="false">gồm phí %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">và quy đổi token (gửi %tokSnd, nhận %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal loại token được tiết lộ (chi cho chính bạn, chứng minh bạn sở hữu chúng).</string>

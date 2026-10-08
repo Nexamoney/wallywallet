@@ -271,8 +271,10 @@ class ActionPermissionScreensTest : WallyUiTestBase()
                 /**
                  * Assert text is displayed and click "deny"
                  */
-                onNodeWithText(i18n(S.TpAssetRequestFrom)).assertIsDisplayed()
-                onNodeWithText(i18n(S.TpHandledByAccount)).assertIsDisplayed()
+                onNodeWithText(i18n(S.TpAssetRequestFrom).uppercase()).assertIsDisplayed()
+                onNodeWithText(i18n(S.TpAssetInfoAsk)).assertIsDisplayed()
+                onNodeWithText(i18n(S.sharing)).assertIsDisplayed()
+                onNodeWithText(i18n(S.TpAssetsYouOwn)).assertIsDisplayed()
                 onNodeWithText(i18n(S.TpAssetInfoNotXfer)).assertIsDisplayed()
                 onNodeWithText(i18n(S.accept)).assertIsDisplayed()
                 onNodeWithText(i18n(S.deny)).assertIsDisplayed()

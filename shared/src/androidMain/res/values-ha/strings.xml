@@ -62,6 +62,7 @@
     <string name="Processing">ana aiki...</string>
     <string name="receiving">ana karɓa</string>
     <string name="sending">ana aikawa</string>
+    <string name="sharing">ana rabawa</string>
     <string name="noAdditionalDetails">babu ƙarin bayani</string>
     <string name="unspecified">ba a bayyana ba</string>
     <string name="removed">an cire</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">asusunku na iya ɗaukarsa</string>
     <string name="TpAssetMatches" formatted="false">Za a ba wannan sabis bayani game da kadarori %num da kuke da su.</string>
     <string name="TpAssetInfoNotXfer">Amincewa da wannan buƙata kawai yana ba sabis ɗin bayanin mallakarku.  Ba ya ba da izinin kowace turawa.</string>
+    <string name="TpAssetInfoAsk">yana so ya ga kadarorin da kake da su</string>
+    <string name="TpAssetsYouOwn">Kadarorinka</string>
     <string name="ForAFeeOf" formatted="false">haɗe da caji na %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">da canza token (ana aika %tokSnd, ana karɓa %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">An bayyana nauʼikan token %tokReveal (an kashe zuwa ga kanku, don tabbatar da mallakarsu).</string>

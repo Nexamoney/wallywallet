@@ -62,6 +62,7 @@
     <string name="Processing">işleniyor...</string>
     <string name="receiving">alınıyor</string>
     <string name="sending">gönderiliyor</string>
+    <string name="sharing">paylaşılıyor</string>
     <string name="noAdditionalDetails">ek ayrıntı yok</string>
     <string name="unspecified">belirtilmemiş</string>
     <string name="removed">kaldırıldı</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">hesabınız tarafından işlenebilir</string>
     <string name="TpAssetMatches" formatted="false">Bu hizmete sahip olduğunuz %num varlık hakkında bilgi sağlanacaktır.</string>
     <string name="TpAssetInfoNotXfer">Bu isteği kabul etmek, hizmete yalnızca sahipliğiniz hakkında bilgi verir. Herhangi bir transferi yetkilendirmez.</string>
+    <string name="TpAssetInfoAsk">hangi varlıklara sahip olduğunuzu görmek istiyor</string>
+    <string name="TpAssetsYouOwn">Sahip olduğunuz varlıklar</string>
     <string name="ForAFeeOf" formatted="false">%fee %units ücret dahil</string>
     <string name="TpExchangingTokens" formatted="false">ve token takas ediliyor (%tokSnd gönderiliyor, %tokRcv alınıyor).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal tür token açığa çıkarılır (kendinize harcanarak sahip olduğunuz kanıtlanır).</string>

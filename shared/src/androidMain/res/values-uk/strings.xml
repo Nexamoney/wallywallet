@@ -62,6 +62,7 @@
     <string name="Processing">обробка...</string>
     <string name="receiving">отримання</string>
     <string name="sending">надсилання</string>
+    <string name="sharing">надання</string>
     <string name="noAdditionalDetails">немає додаткових деталей</string>
     <string name="unspecified">не вказано</string>
     <string name="removed">видалено</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">ваш рахунок може це опрацювати</string>
     <string name="TpAssetMatches" formatted="false">Цьому сервісу буде надано інформацію про %num ваших активів.</string>
     <string name="TpAssetInfoNotXfer">Прийнявши цей запит, ви лише надаєте сервісу інформацію про ваше право власності. Це не дозволяє жодних переказів.</string>
+    <string name="TpAssetInfoAsk">хоче побачити, які активи у вас є</string>
+    <string name="TpAssetsYouOwn">Ваші активи</string>
     <string name="ForAFeeOf" formatted="false">включно з комісією %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">та обмін токенів (надсилання %tokSnd, отримання %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">Розкрито %tokReveal типів токенів (витрачено на себе — це доводить, що вони ваші).</string>

@@ -62,6 +62,7 @@
     <string name="Processing">کارروائی جاری...</string>
     <string name="receiving">وصولی</string>
     <string name="sending">ارسال</string>
+    <string name="sharing">اشتراک</string>
     <string name="noAdditionalDetails">کوئی اضافی تفصیل نہیں</string>
     <string name="unspecified">غیر متعین</string>
     <string name="removed">ہٹا دیا گیا</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">آپ کا اکاؤنٹ اسے سنبھال سکتا ہے</string>
     <string name="TpAssetMatches" formatted="false">آپ کی ملکیت کے %num اثاثوں کے بارے میں معلومات اس سروس کو فراہم کی جائیں گی۔</string>
     <string name="TpAssetInfoNotXfer">اس درخواست کو قبول کرنے سے سروس کو صرف آپ کی ملکیت کی معلومات ملتی ہیں۔ یہ کسی منتقلی کی اجازت نہیں دیتا۔</string>
+    <string name="TpAssetInfoAsk">دیکھنا چاہتا ہے کہ آپ کے پاس کون سے اثاثے ہیں</string>
+    <string name="TpAssetsYouOwn">آپ کے اثاثے</string>
     <string name="ForAFeeOf" formatted="false">بشمول %fee %units فیس</string>
     <string name="TpExchangingTokens" formatted="false">اور ٹوکنز کا تبادلہ (%tokSnd بھیجنا، %tokRcv وصول کرنا)۔</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal ٹوکن اقسام ظاہر کی جاتی ہیں (اپنے ہی پتے پر خرچ کر کے، جس سے ملکیت ثابت ہوتی ہے)۔</string>

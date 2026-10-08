@@ -139,6 +139,7 @@ Good luck!
     <string name="Processing">processing...</string>
     <string name="receiving">receiving</string>
     <string name="sending">sending</string>
+    <string name="sharing">sharing</string>
     <string name="noAdditionalDetails">no additional details</string>
     <!-- User didn't enter any value into this field but that's ok -->
     <string name="unspecified">unspecified</string>
@@ -707,6 +708,8 @@ Good luck!
     <string name="TpHandledByAccount">can be handled by your account</string>
     <string name="TpAssetMatches" formatted="false">Information about %num assets that you own will be provided to this service.</string>
     <string name="TpAssetInfoNotXfer">Accepting this request simply gives the service information about your ownership.  It does not authorize any transfers.</string>
+    <string name="TpAssetInfoAsk">wants to see which assets you hold</string>
+    <string name="TpAssetsYouOwn">Assets you own</string>
     <string name="ForAFeeOf" formatted="false">including a fee of %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">and exchanging tokens (sending %tokSnd, receiving %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal token types are revealed (spent to yourself, proving you own them).</string>

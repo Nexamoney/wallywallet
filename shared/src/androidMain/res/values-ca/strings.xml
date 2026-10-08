@@ -62,6 +62,7 @@
     <string name="Processing">processant...</string>
     <string name="receiving">rebent</string>
     <string name="sending">enviant</string>
+    <string name="sharing">compartint</string>
     <string name="noAdditionalDetails">sense detalls addicionals</string>
     <string name="unspecified">sense especificar</string>
     <string name="removed">eliminat</string>
@@ -497,6 +498,8 @@
     <string name="TpHandledByAccount">pot ser gestionat pel vostre compte</string>
     <string name="TpAssetMatches" formatted="false">La informació sobre %num actius que teniu es proporcionarà a aquest servei.</string>
     <string name="TpAssetInfoNotXfer">Acceptar aquesta sol·licitud només dona al servei informació sobre la vostra propietat. No autoritza cap transferència.</string>
+    <string name="TpAssetInfoAsk">vol veure quins actius tens</string>
+    <string name="TpAssetsYouOwn">Actius que tens</string>
     <string name="ForAFeeOf" formatted="false">inclosa una comissió de %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">i intercanvi de tokens (enviant %tokSnd, rebent %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">Es revelen %tokReveal tipus de tokens (enviats a vós mateix per demostrar-ne la propietat).</string>

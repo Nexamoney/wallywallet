@@ -62,6 +62,7 @@
     <string name="Processing">bearbetar...</string>
     <string name="receiving">tar emot</string>
     <string name="sending">skickar</string>
+    <string name="sharing">delar</string>
     <string name="noAdditionalDetails">inga ytterligare detaljer</string>
     <string name="unspecified">ospecificerad</string>
     <string name="removed">borttagen</string>
@@ -500,6 +501,8 @@
     <string name="TpHandledByAccount">kan hanteras av ditt konto</string>
     <string name="TpAssetMatches" formatted="false">Information om %num tillgångar som du äger kommer att tillhandahållas till denna tjänst.</string>
     <string name="TpAssetInfoNotXfer">Att acceptera denna begäran ger helt enkelt tjänsten information om ditt ägande.  Det tillåter inte några överföringar.</string>
+    <string name="TpAssetInfoAsk">vill se vilka tillgångar du har</string>
+    <string name="TpAssetsYouOwn">Dina tillgångar</string>
     <string name="ForAFeeOf" formatted="false">inklusive en avgift på %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">och växlar tokens (skickar %tokSnd, tar emot %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal tokentyper avslöjas (spenderas till dig själv, vilket bevisar att du äger dem).</string>

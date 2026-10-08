@@ -62,6 +62,7 @@
     <string name="Processing">memproses...</string>
     <string name="receiving">menerima</string>
     <string name="sending">mengirim</string>
+    <string name="sharing">membagikan</string>
     <string name="noAdditionalDetails">tidak ada rincian tambahan</string>
     <string name="unspecified">tidak ditentukan</string>
     <string name="removed">dihapus</string>
@@ -497,6 +498,8 @@
     <string name="TpHandledByAccount">dapat ditangani oleh akun Anda</string>
     <string name="TpAssetMatches" formatted="false">Informasi tentang %num aset yang Anda miliki akan diberikan ke layanan ini.</string>
     <string name="TpAssetInfoNotXfer">Menerima permintaan ini hanya memberikan informasi kepemilikan Anda kepada layanan tersebut. Ini tidak mengotorisasi transfer apa pun.</string>
+    <string name="TpAssetInfoAsk">ingin melihat aset apa saja yang Anda miliki</string>
+    <string name="TpAssetsYouOwn">Aset yang Anda miliki</string>
     <string name="ForAFeeOf" formatted="false">termasuk biaya %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">dan bertukar token (mengirim %tokSnd, menerima %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal jenis token diungkapkan (dibelanjakan ke diri sendiri, membuktikan bahwa Anda memilikinya).</string>

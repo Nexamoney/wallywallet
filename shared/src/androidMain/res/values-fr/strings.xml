@@ -62,6 +62,7 @@
     <string name="Processing">traitement...</string>
     <string name="receiving">réception</string>
     <string name="sending">envoi</string>
+    <string name="sharing">partage</string>
     <string name="noAdditionalDetails">aucun détail supplémentaire</string>
     <string name="unspecified">non spécifié</string>
     <string name="removed">retiré</string>
@@ -500,6 +501,8 @@
     <string name="TpHandledByAccount">peut être traité par votre compte</string>
     <string name="TpAssetMatches" formatted="false">Des informations sur %num actifs que vous possédez seront transmises à ce service.</string>
     <string name="TpAssetInfoNotXfer">Accepter cette demande donne simplement au service des informations sur ce que vous possédez.  Cela n\'autorise aucun transfert.</string>
+    <string name="TpAssetInfoAsk">souhaite voir quels actifs vous détenez</string>
+    <string name="TpAssetsYouOwn">Vos actifs</string>
     <string name="ForAFeeOf" formatted="false">dont des frais de %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">et échange de jetons (envoi de %tokSnd, réception de %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal types de jetons sont révélés (dépensés vers vous-même, prouvant que vous les possédez).</string>

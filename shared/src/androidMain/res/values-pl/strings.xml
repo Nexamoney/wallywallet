@@ -62,6 +62,7 @@
     <string name="Processing">przetwarzanie...</string>
     <string name="receiving">odbieranie</string>
     <string name="sending">wysyłanie</string>
+    <string name="sharing">udostępnianie</string>
     <string name="noAdditionalDetails">brak dodatkowych szczegółów</string>
     <string name="unspecified">nieokreślone</string>
     <string name="removed">usunięto</string>
@@ -496,6 +497,8 @@
     <string name="TpHandledByAccount">może być obsłużone przez konto</string>
     <string name="TpAssetMatches" formatted="false">Do tej usługi zostaną przekazane informacje o posiadanych aktywach (%num).</string>
     <string name="TpAssetInfoNotXfer">Akceptacja tej prośby przekazuje usłudze jedynie informację o posiadaniu aktywów. Nie autoryzuje żadnych transferów.</string>
+    <string name="TpAssetInfoAsk">chce zobaczyć, jakie aktywa posiadasz</string>
+    <string name="TpAssetsYouOwn">Twoje aktywa</string>
     <string name="ForAFeeOf" formatted="false">w tym opłata: %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">oraz wymianę tokenów (wysyłka: %tokSnd, odbiór: %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">Ujawnione typy tokenów: %tokReveal (wydane na własne konto, co potwierdza ich posiadanie).</string>

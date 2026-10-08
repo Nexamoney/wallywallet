@@ -62,6 +62,7 @@
     <string name="Processing">در حال پردازش...</string>
     <string name="receiving">در حال دریافت</string>
     <string name="sending">در حال ارسال</string>
+    <string name="sharing">در حال اشتراک‌گذاری</string>
     <string name="noAdditionalDetails">جزئیات بیشتری نیست</string>
     <string name="unspecified">نامشخص</string>
     <string name="removed">حذف شد</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">با حساب شما قابل انجام است</string>
     <string name="TpAssetMatches" formatted="false">اطلاعات %num دارایی متعلق به شما در اختیار این سرویس قرار می‌گیرد.</string>
     <string name="TpAssetInfoNotXfer">پذیرش این درخواست فقط اطلاعات مالکیت شما را به سرویس می‌دهد. هیچ انتقالی را مجاز نمی‌کند.</string>
+    <string name="TpAssetInfoAsk">می‌خواهد ببیند چه دارایی‌هایی دارید</string>
+    <string name="TpAssetsYouOwn">دارایی‌های شما</string>
     <string name="ForAFeeOf" formatted="false">شامل کارمزد %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">و تبادل توکن (ارسال %tokSnd، دریافت %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal نوع توکن آشکار می‌شود (به خودتان پرداخت می‌شود تا مالکیت آن‌ها اثبات شود).</string>

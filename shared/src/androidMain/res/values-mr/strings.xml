@@ -62,6 +62,7 @@
     <string name="Processing">प्रक्रिया सुरू...</string>
     <string name="receiving">मिळत आहे</string>
     <string name="sending">पाठवत आहे</string>
+    <string name="sharing">शेअर करत आहे</string>
     <string name="noAdditionalDetails">अधिक तपशील नाहीत</string>
     <string name="unspecified">नमूद केलेले नाही</string>
     <string name="removed">काढले</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">तुमचे खाते हे हाताळू शकते</string>
     <string name="TpAssetMatches" formatted="false">तुमच्या मालकीच्या %num ॲसेट्सबद्दलची माहिती या सेवेला दिली जाईल.</string>
     <string name="TpAssetInfoNotXfer">ही विनंती स्वीकारल्याने सेवेला फक्त तुमच्या मालकीबद्दल माहिती मिळते. यामुळे कोणताही व्यवहार अधिकृत होत नाही.</string>
+    <string name="TpAssetInfoAsk">तुमच्याकडे कोणते ॲसेट आहेत ते पाहू इच्छिते</string>
+    <string name="TpAssetsYouOwn">तुमचे ॲसेट</string>
     <string name="ForAFeeOf" formatted="false">%fee %units शुल्कासह</string>
     <string name="TpExchangingTokens" formatted="false">आणि टोकनची देवाणघेवाण (%tokSnd पाठवत आहे, %tokRcv मिळत आहे).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal टोकन प्रकार उघड केले जातात (स्वतःलाच खर्च करून, ते तुमच्या मालकीचे असल्याचे सिद्ध करत).</string>

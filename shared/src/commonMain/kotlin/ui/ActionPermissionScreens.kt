@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.RequestQuote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import com.eygraber.uri.Uri
 import org.nexa.libnexakotlin.*
 import org.nexa.assets.*
@@ -35,7 +37,9 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.S.withholdingMandatoryInfo
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.colorPrimaryDark
+import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple2
+import info.bitcoinunlimited.www.wally.ui.theme.wallyPurpleLight
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -715,45 +719,108 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
     }
     val fromEntity = sess.host + tpc
 
-    Column {
-        val tm = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.CenterHorizontally)
-        val ts = TextStyle(fontStyle = FontStyle.Italic, fontSize = FontScale(1.5))
+    // The list was gathered from one account when the request arrived, so the pill must not swipe off it
+    LaunchedEffect(acc) { sess.pill.choices = listOf(acc) }
 
-        CenteredSectionText(S.TpAssetRequestFrom)
-        Text(fromEntity, modifier = tm, style = ts, textAlign = TextAlign.Center)
-
-        CenteredSectionText(S.TpHandledByAccount)
-        val fromAccount = acc.nameAndChain
-        Text(fromAccount, modifier = tm, style = ts, textAlign = TextAlign.Center)
-
-        Spacer(Modifier.height(10.dp))
-        val alist = sess.assetInfoList?.assets
-        // combine utxos of assets of the same type for display purposes
-        val aset = mutableSetOf<GroupId>()
-        if (alist != null) for (a in alist)
+    val alist = sess.assetInfoList?.assets
+    val assetVm = remember { AssetViewModel(false) }
+    // combine utxos of assets of the same type for display purposes, off the recomposition path
+    val numAssetsToShare = remember(alist, acc) {
+        val amounts = mutableMapOf<GroupId, Long>()
+        val infos = mutableMapOf<GroupId, AssetInfo>()
+        for (a in alist ?: listOf())
         {
             val prevout = txOutputFor(acc.wallet.chainSelector, BCHserialized(a.prevout.fromHex(), SerializationType.NETWORK))
-            val tmpl = prevout.script.parseTemplate(prevout.amount)
-            val gi = tmpl?.groupInfo
-            if (gi != null)
-            {
-                aset.add(gi.groupId)
-                val ai = wallyApp!!.assetManager.assets[gi.groupId]
-                LogIt.info("info: ${a.amt} ${a.prevout} ${gi.groupId.toString()} ${ai?.ticker}")
-            }
-            else
+            val gi = prevout.script.parseTemplate(prevout.amount)?.groupInfo
+            if (gi == null)
             {
                 LogIt.warning(sourceLoc() +": All non-asset prevouts should already be filtered out")
+                continue
+            }
+            amounts[gi.groupId] = (amounts[gi.groupId] ?: 0L) + gi.tokenAmount
+            (acc.assets[gi.groupId]?.assetInfo ?: wallyApp!!.assetManager.assets[gi.groupId])?.let { infos[gi.groupId] = it }
+        }
+        assetVm.amounts.value = amounts
+        assetVm.assets.value = infos.values.toList()
+        amounts.size
+    }
+
+    Column(Modifier.fillMaxSize()) {
+        Spacer(Modifier.height(16.dp))
+        sess.pill.draw(false)
+
+        Column(Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState())) {
+            Column(
+              modifier = Modifier.fillMaxWidth().padding(16.dp, 22.dp, 16.dp, 18.dp),
+              horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                  text = i18n(S.TpAssetRequestFrom).uppercase(),
+                  style = MaterialTheme.typography.labelSmall,
+                  color = wallyPurple,
+                  fontWeight = FontWeight.SemiBold,
+                  letterSpacing = 0.12.em,
+                  textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(6.dp))
+                CenteredFittedWithinSpaceText(fromEntity, 1.5, FontWeight.Bold, Color.Black)
+                Spacer(Modifier.height(6.dp))
+                Text(
+                  text = i18n(S.TpAssetInfoAsk),
+                  style = MaterialTheme.typography.bodyMedium,
+                  color = Color.Gray,
+                  textAlign = TextAlign.Center
+                )
+            }
+
+            /*
+                What you are sharing
+             */
+            Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp, 0.dp, 16.dp, 16.dp)) {
+                Text(
+                  text = i18n(S.sharing),
+                  modifier = Modifier.fillMaxWidth(),
+                  style = MaterialTheme.typography.headlineSmall,
+                  textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(8.dp))
+                Box(
+                  modifier = Modifier.fillMaxWidth()
+                    .wrapContentHeight()
+                    .border(
+                      width = 1.dp,
+                      color = Color.LightGray,
+                      shape = RoundedCornerShape(16.dp)
+                    )
+                ) {
+                    Column(
+                      modifier = Modifier.fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp)
+                    ) {
+                        IconLabelValueRow(
+                          icon = Icons.Outlined.Image,
+                          labelRes = S.TpAssetsYouOwn,
+                          value = numAssetsToShare.toString()
+                        )
+                        AssetTinyTable(assetVm)
+                    }
+                }
+            }
+
+            // The read-only guarantee is the calmest sentence here, so it is a quiet note rather than a heading
+            Row(
+              modifier = Modifier.fillMaxWidth()
+                .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                .background(wallyPurpleLight, RoundedCornerShape(12.dp))
+                .padding(14.dp)
+            ) {
+                Icon(Icons.Outlined.Lock, i18n(S.TpAssetInfoNotXfer), tint = wallyPurple, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(10.dp))
+                Text(i18n(S.TpAssetInfoNotXfer), style = MaterialTheme.typography.bodyMedium)
             }
         }
 
-        val numAssetsToShare = aset.size
-        Text(i18n(S.TpAssetMatches) % mapOf("num" to numAssetsToShare.toString() ), modifier = tm, textAlign = TextAlign.Center)
-
-        Spacer(Modifier.height(20.dp))
-        SectionText(S.TpAssetInfoNotXfer)
-
-        Spacer(Modifier.defaultMinSize(1.dp,10.dp).weight(1f))
         WallyDivider()
         Spacer(Modifier.height(5.dp))
 

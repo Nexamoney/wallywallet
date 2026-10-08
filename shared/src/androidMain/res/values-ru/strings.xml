@@ -62,6 +62,7 @@
     <string name="Processing">обработка...</string>
     <string name="receiving">получение</string>
     <string name="sending">отправка</string>
+    <string name="sharing">передача</string>
     <string name="noAdditionalDetails">нет подробностей</string>
     <string name="unspecified">не указано</string>
     <string name="removed">убрано</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">может обработать ваш счёт</string>
     <string name="TpAssetMatches" formatted="false">Сервису будут переданы данные о ваших активах (%num).</string>
     <string name="TpAssetInfoNotXfer">Если принять этот запрос, сервис лишь узнает, чем вы владеете. Никаких переводов это не разрешает.</string>
+    <string name="TpAssetInfoAsk">хочет узнать, какие активы у вас есть</string>
+    <string name="TpAssetsYouOwn">Ваши активы</string>
     <string name="ForAFeeOf" formatted="false">включая комиссию %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">и обмен токенов (отправка %tokSnd, получение %tokRcv).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal типов токенов раскрывается (отправка себе, подтверждение владения).</string>

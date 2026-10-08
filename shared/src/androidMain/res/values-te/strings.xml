@@ -62,6 +62,7 @@
     <string name="Processing">ప్రాసెస్ అవుతోంది...</string>
     <string name="receiving">స్వీకరిస్తోంది</string>
     <string name="sending">పంపుతోంది</string>
+    <string name="sharing">షేర్ చేస్తోంది</string>
     <string name="noAdditionalDetails">అదనపు వివరాలు లేవు</string>
     <string name="unspecified">పేర్కొనలేదు</string>
     <string name="removed">తీసివేయబడింది</string>
@@ -499,6 +500,8 @@
     <string name="TpHandledByAccount">మీ ఖాతా ద్వారా నిర్వహించవచ్చు</string>
     <string name="TpAssetMatches" formatted="false">మీకు ఉన్న %num అసెట్‌ల గురించి సమాచారం ఈ సేవకు అందించబడుతుంది.</string>
     <string name="TpAssetInfoNotXfer">ఈ అభ్యర్థనను అంగీకరిస్తే మీ యాజమాన్యం గురించిన సమాచారం మాత్రమే ఈ సేవకు అందుతుంది.  ఇది ఎలాంటి బదిలీలకూ అనుమతి ఇవ్వదు.</string>
+    <string name="TpAssetInfoAsk">మీ వద్ద ఏ అసెట్‌లు ఉన్నాయో చూడాలనుకుంటోంది</string>
+    <string name="TpAssetsYouOwn">మీ అసెట్‌లు</string>
     <string name="ForAFeeOf" formatted="false">%fee %units రుసుముతో సహా</string>
     <string name="TpExchangingTokens" formatted="false">మరియు టోకెన్‌లను మార్చుకోవడం (%tokSnd పంపడం, %tokRcv స్వీకరించడం).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal టోకెన్ రకాలు వెల్లడి చేయబడతాయి (మీకే మీరు పంపుకుని, అవి మీవేనని నిరూపిస్తారు).</string>

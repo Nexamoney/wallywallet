@@ -62,6 +62,7 @@
     <string name="Processing">처리 중...</string>
     <string name="receiving">받는 중</string>
     <string name="sending">보내는 중</string>
+    <string name="sharing">공유 중</string>
     <string name="noAdditionalDetails">추가 정보 없음</string>
     <string name="unspecified">미지정</string>
     <string name="removed">삭제됨</string>
@@ -498,6 +499,8 @@
     <string name="TpHandledByAccount">내 계정으로 처리할 수 있습니다</string>
     <string name="TpAssetMatches" formatted="false">보유하신 자산 %num개의 정보가 이 서비스에 제공됩니다.</string>
     <string name="TpAssetInfoNotXfer">이 요청을 승인하면 소유권 정보만 서비스에 제공됩니다. 어떠한 전송도 승인되지 않습니다.</string>
+    <string name="TpAssetInfoAsk">보유한 자산을 확인하려고 합니다</string>
+    <string name="TpAssetsYouOwn">보유 자산</string>
     <string name="ForAFeeOf" formatted="false">%fee %units 수수료 포함</string>
     <string name="TpExchangingTokens" formatted="false">그리고 토큰 교환(%tokSnd 보내고 %tokRcv 받음).</string>
     <string name="TpShowingTokens" formatted="false">%tokReveal 토큰 유형이 공개됩니다 (본인에게 소비하여 보유 사실을 증명함).</string>
