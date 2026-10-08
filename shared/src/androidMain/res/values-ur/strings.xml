@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">ٹرانزیکشن قبول</string>
     <string name="TpNetworkTimeout">ٹرانزیکشن ٹائم آؤٹ</string>
     <string name="TpPartialSubmitted">پیشکش جمع ہو گئی</string>
+    <string name="TpInsufficientWillRetry">اس درخواست کے لیے آپ کے والٹ میں اس وقت کافی دستیاب رقم نہیں ہے۔ جیسے جیسے آپ کا والٹ سنک ہوتا ہے، یہ اسکرین خود بخود دوبارہ جانچ کرتی ہے۔</string>
+    <string name="TpRecheckingFunds">رقم دوبارہ جانچی جا رہی ہے…</string>
+    <string name="TpProposalSuperseded">اس سائٹ کی ایک نئی درخواست نے پچھلی درخواست کی جگہ لے لی۔</string>
+    <string name="TpUseReservedCoins">محفوظ کیے گئے کوائنز استعمال کریں</string>
+    <string name="TpUseReservedTokens">محفوظ کیے گئے ٹوکنز استعمال کریں</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host کی ایک پچھلی درخواست، جو کبھی مکمل نہیں ہوئی، نے آپ کے کچھ کوائنز اب بھی محفوظ کر رکھے ہیں۔ انہیں صرف اسی صورت میں استعمال کریں جب وہ پچھلی درخواست منسوخ یا ترک کر دی گئی ہو؛ ورنہ دونوں لین دین میں سے ایک ناکام ہو جائے گا۔</string>
+    <string name="TpUsingReservedCoins">ایک پچھلی درخواست کے محفوظ کیے گئے کوائنز استعمال کیے جا رہے ہیں</string>
+    <string name="TpReservedCoinsUnverified">نیٹ ورک سے یہ تصدیق نہیں ہو سکی کہ محفوظ کیے گئے کوائنز ابھی تک خرچ نہیں ہوئے۔ والٹ کے سنک ہونے کا انتظار کریں اور دوبارہ کوشش کریں۔</string>
     <string name="TpAssetRequestDenied">اثاثے کی معلومات روک لی گئیں</string>
     <string name="TpAssetRequestAccepted">اثاثے کی معلومات بھیج دی گئیں</string>
     <string name="Actions">اقدامات</string>

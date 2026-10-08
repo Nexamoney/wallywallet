@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">A fara mọ́ ìdúnàdúrà</string>
     <string name="TpNetworkTimeout">Àkókò ìdúnàdúrà tán</string>
     <string name="TpPartialSubmitted">Ìfilọ̀ ti lọ</string>
+    <string name="TpInsufficientWillRetry">Àpamọ́wọ́ yín kò ní owó tó pọ̀ tó wà lárọ̀ọ́wọ́tó fún ìbéèrè yìí báyìí. Ojú ìbòjú yìí máa ń tún ṣàyẹ̀wò fúnra rẹ̀ bí àpamọ́wọ́ yín ṣe ń mú dọ́gba.</string>
+    <string name="TpRecheckingFunds">Ń tún ṣàyẹ̀wò owó…</string>
+    <string name="TpProposalSuperseded">Ìbéèrè tuntun láti ojú ìwé yìí ti rọ́pò èyí tí ó ṣáájú.</string>
+    <string name="TpUseReservedCoins">Lo àwọn owó tí a fi pamọ́</string>
+    <string name="TpUseReservedTokens">Lo àwọn tókìnnì tí a fi pamọ́</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Àwọn kan lára owó yín ṣì wà ní ìfipamọ́ nípasẹ̀ ìbéèrè àtẹ̀yìnwá láti %host tí kò parí rárá. Ẹ lò wọ́n kìkì bí a bá ti fagilé tàbí kọ ìbéèrè àtẹ̀yìnwá náà sílẹ̀; bí bẹ́ẹ̀ kọ́, ọ̀kan nínú àwọn ìdúnàádúrà méjèèjì yóò kùnà.</string>
+    <string name="TpUsingReservedCoins">Ń lo àwọn owó tí ìbéèrè àtẹ̀yìnwá kan fi pamọ́</string>
+    <string name="TpReservedCoinsUnverified">A kò lè fi ìdí rẹ̀ múlẹ̀ láti ọ̀dọ̀ nẹ́tíwọ̀ọ̀kì pé a kò tíì ná àwọn owó tí a fi pamọ́. Ẹ dúró kí àpamọ́wọ́ mú dọ́gba kí ẹ sì tún gbìyànjú.</string>
     <string name="TpAssetRequestDenied">A fa ìsọfúnni dúkìá sẹ́yìn</string>
     <string name="TpAssetRequestAccepted">Ń fi ìsọfúnni dúkìá ránṣẹ́</string>
     <string name="Actions">Ìṣe</string>

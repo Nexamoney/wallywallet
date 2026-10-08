@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">कारोबार स्वीकार भयो</string>
     <string name="TpNetworkTimeout">कारोबार टाइमआउट</string>
     <string name="TpPartialSubmitted">प्रस्ताव पेस भयो</string>
+    <string name="TpInsufficientWillRetry">यो अनुरोधका लागि तपाईंको वालेटमा अहिले पर्याप्त उपलब्ध रकम छैन। तपाईंको वालेट सिंक हुँदै जाँदा यो स्क्रिनले स्वतः फेरि जाँच गर्छ।</string>
+    <string name="TpRecheckingFunds">रकम फेरि जाँच गर्दै…</string>
+    <string name="TpProposalSuperseded">यस साइटबाट आएको नयाँ अनुरोधले अघिल्लोलाई प्रतिस्थापन गर्‍यो।</string>
+    <string name="TpUseReservedCoins">आरक्षित कोइन प्रयोग गर्नुहोस्</string>
+    <string name="TpUseReservedTokens">आरक्षित टोकन प्रयोग गर्नुहोस्</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host बाट आएको, कहिल्यै पूरा नभएको अघिल्लो अनुरोधले तपाईंका केही कोइन अझै आरक्षित राखेको छ। त्यो अघिल्लो अनुरोध रद्द वा त्यागिएको भए मात्र तिनलाई प्रयोग गर्नुहोस्; नत्र दुई कारोबारमध्ये एउटा असफल हुनेछ।</string>
+    <string name="TpUsingReservedCoins">अघिल्लो अनुरोधले आरक्षित गरेका कोइन प्रयोग गर्दै</string>
+    <string name="TpReservedCoinsUnverified">आरक्षित कोइन अझै खर्च भएका छैनन् भनी नेटवर्कबाट पुष्टि गर्न सकिएन। वालेट सिंक नहुन्जेल पर्खनुहोस् र फेरि प्रयास गर्नुहोस्।</string>
     <string name="TpAssetRequestDenied">एसेट जानकारी दिइएन</string>
     <string name="TpAssetRequestAccepted">एसेट जानकारी पठाउँदै</string>
     <string name="Actions">कार्यहरू</string>

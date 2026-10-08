@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Transação aceite</string>
     <string name="TpNetworkTimeout">Tempo limite da transação</string>
     <string name="TpPartialSubmitted">Oferta enviada</string>
+    <string name="TpInsufficientWillRetry">A sua carteira não tem fundos disponíveis suficientes para este pedido neste momento. Este ecrã volta a verificar automaticamente à medida que a carteira sincroniza.</string>
+    <string name="TpRecheckingFunds">A verificar novamente os fundos…</string>
+    <string name="TpProposalSuperseded">Um pedido mais recente deste site substituiu o anterior.</string>
+    <string name="TpUseReservedCoins">Usar moedas reservadas</string>
+    <string name="TpUseReservedTokens">Usar tokens reservados</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Algumas das suas moedas continuam reservadas por um pedido anterior de %host que nunca foi concluído. Use-as apenas se esse pedido anterior tiver sido cancelado ou abandonado; caso contrário, uma das duas transações falhará.</string>
+    <string name="TpUsingReservedCoins">A usar moedas reservadas por um pedido anterior</string>
+    <string name="TpReservedCoinsUnverified">Não foi possível confirmar com a rede que as moedas reservadas ainda não foram gastas. Aguarde a sincronização da carteira e tente novamente.</string>
     <string name="TpAssetRequestDenied">Informação do ativo retida</string>
     <string name="TpAssetRequestAccepted">A enviar informação do ativo</string>
     <string name="Actions">Ações</string>

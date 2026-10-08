@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Транзакция принята</string>
     <string name="TpNetworkTimeout">Таймаут транзакции</string>
     <string name="TpPartialSubmitted">Предложение отправлено</string>
+    <string name="TpInsufficientWillRetry">В вашем кошельке сейчас недостаточно доступных средств для этого запроса. Этот экран автоматически проверяет их снова по мере синхронизации кошелька.</string>
+    <string name="TpRecheckingFunds">Повторная проверка средств…</string>
+    <string name="TpProposalSuperseded">Более новый запрос с этого сайта заменил предыдущий.</string>
+    <string name="TpUseReservedCoins">Использовать зарезервированные монеты</string>
+    <string name="TpUseReservedTokens">Использовать зарезервированные токены</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Часть ваших монет всё ещё зарезервирована более ранним запросом с %host, который так и не был завершён. Используйте их, только если тот запрос был отменён или заброшен; иначе одна из двух транзакций не пройдёт.</string>
+    <string name="TpUsingReservedCoins">Используются монеты, зарезервированные более ранним запросом</string>
+    <string name="TpReservedCoinsUnverified">Не удалось подтвердить через сеть, что зарезервированные монеты ещё не потрачены. Дождитесь синхронизации кошелька и попробуйте снова.</string>
     <string name="TpAssetRequestDenied">Данные об активах скрыты</string>
     <string name="TpAssetRequestAccepted">Отправка данных об активах</string>
     <string name="Actions">Действия</string>

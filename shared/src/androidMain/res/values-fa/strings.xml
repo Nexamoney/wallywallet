@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">تراکنش پذیرفته شد</string>
     <string name="TpNetworkTimeout">اتمام زمان تراکنش</string>
     <string name="TpPartialSubmitted">پیشنهاد ارسال شد</string>
+    <string name="TpInsufficientWillRetry">کیف پول شما در حال حاضر موجودی در دسترس کافی برای این درخواست ندارد. این صفحه هنگام همگام‌سازی کیف پول به‌طور خودکار دوباره بررسی می‌کند.</string>
+    <string name="TpRecheckingFunds">در حال بررسی مجدد موجودی…</string>
+    <string name="TpProposalSuperseded">درخواست جدیدتری از این سایت جایگزین درخواست قبلی شد.</string>
+    <string name="TpUseReservedCoins">استفاده از سکه‌های رزروشده</string>
+    <string name="TpUseReservedTokens">استفاده از توکن‌های رزروشده</string>
+    <string name="TpReservedCoinsExplain" formatted="false">برخی از سکه‌های شما هنوز توسط درخواست قبلی از %host که هرگز کامل نشد رزرو شده‌اند. فقط در صورتی از آن‌ها استفاده کنید که آن درخواست قبلی لغو یا رها شده باشد؛ در غیر این صورت یکی از دو تراکنش ناموفق خواهد بود.</string>
+    <string name="TpUsingReservedCoins">در حال استفاده از سکه‌های رزروشده توسط یک درخواست قبلی</string>
+    <string name="TpReservedCoinsUnverified">نتوانستیم از شبکه تأیید بگیریم که سکه‌های رزروشده هنوز خرج نشده‌اند. تا همگام‌سازی کیف پول صبر کنید و دوباره تلاش کنید.</string>
     <string name="TpAssetRequestDenied">اطلاعات دارایی ارسال نشد</string>
     <string name="TpAssetRequestAccepted">ارسال اطلاعات دارایی</string>
     <string name="Actions">عملیات</string>

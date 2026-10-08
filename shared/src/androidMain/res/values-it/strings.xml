@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Transazione accettata</string>
     <string name="TpNetworkTimeout">Timeout transazione</string>
     <string name="TpPartialSubmitted">Offerta inviata</string>
+    <string name="TpInsufficientWillRetry">Al momento il portafoglio non ha fondi disponibili sufficienti per questa richiesta. Questa schermata ricontrolla automaticamente man mano che il portafoglio si sincronizza.</string>
+    <string name="TpRecheckingFunds">Nuovo controllo dei fondi…</string>
+    <string name="TpProposalSuperseded">Una richiesta più recente di questo sito ha sostituito la precedente.</string>
+    <string name="TpUseReservedCoins">Usa le monete riservate</string>
+    <string name="TpUseReservedTokens">Usa i token riservati</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Alcune delle tue monete sono ancora riservate da una richiesta precedente di %host che non è mai stata completata. Usale solo se quella richiesta precedente è stata annullata o abbandonata; altrimenti una delle due transazioni fallirà.</string>
+    <string name="TpUsingReservedCoins">Uso di monete riservate da una richiesta precedente</string>
+    <string name="TpReservedCoinsUnverified">Impossibile confermare con la rete che le monete riservate non siano ancora state spese. Attendi la sincronizzazione del portafoglio e riprova.</string>
     <string name="TpAssetRequestDenied">Info asset non inviate</string>
     <string name="TpAssetRequestAccepted">Invio info asset</string>
     <string name="Actions">Azioni</string>

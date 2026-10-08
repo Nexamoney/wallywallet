@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Transakcja przyjęta</string>
     <string name="TpNetworkTimeout">Limit czasu transakcji</string>
     <string name="TpPartialSubmitted">Oferta wysłana</string>
+    <string name="TpInsufficientWillRetry">Twój portfel nie ma obecnie wystarczających dostępnych środków na tę prośbę. Ten ekran sprawdza to ponownie automatycznie w miarę synchronizacji portfela.</string>
+    <string name="TpRecheckingFunds">Ponowne sprawdzanie środków…</string>
+    <string name="TpProposalSuperseded">Nowsza prośba z tej witryny zastąpiła poprzednią.</string>
+    <string name="TpUseReservedCoins">Użyj zarezerwowanych monet</string>
+    <string name="TpUseReservedTokens">Użyj zarezerwowanych tokenów</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Część Twoich monet jest nadal zarezerwowana przez wcześniejszą prośbę z %host, która nigdy nie została ukończona. Użyj ich tylko wtedy, gdy tamta prośba została anulowana lub porzucona; w przeciwnym razie jedna z dwóch transakcji się nie powiedzie.</string>
+    <string name="TpUsingReservedCoins">Używane są monety zarezerwowane przez wcześniejszą prośbę</string>
+    <string name="TpReservedCoinsUnverified">Nie udało się potwierdzić w sieci, że zarezerwowane monety nadal nie zostały wydane. Poczekaj na synchronizację portfela i spróbuj ponownie.</string>
     <string name="TpAssetRequestDenied">Odmówiono informacji o aktywach</string>
     <string name="TpAssetRequestAccepted">Wysyłanie informacji o aktywach</string>
     <string name="Actions">Operacje</string>

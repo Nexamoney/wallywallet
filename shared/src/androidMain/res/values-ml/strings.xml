@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">ഇടപാട് അംഗീകരിച്ചു</string>
     <string name="TpNetworkTimeout">ഇടപാട് സമയപരിധി കഴിഞ്ഞു</string>
     <string name="TpPartialSubmitted">ഓഫർ സമർപ്പിച്ചു</string>
+    <string name="TpInsufficientWillRetry">ഈ അഭ്യർത്ഥനയ്ക്ക് ഇപ്പോൾ നിങ്ങളുടെ വാലറ്റിൽ മതിയായ ലഭ്യമായ ഫണ്ട് ഇല്ല. നിങ്ങളുടെ വാലറ്റ് സിങ്ക് ആകുന്നതനുസരിച്ച് ഈ സ്ക്രീൻ സ്വയമേവ വീണ്ടും പരിശോധിക്കും.</string>
+    <string name="TpRecheckingFunds">ഫണ്ട് വീണ്ടും പരിശോധിക്കുന്നു…</string>
+    <string name="TpProposalSuperseded">ഈ സൈറ്റിൽ നിന്നുള്ള പുതിയൊരു അഭ്യർത്ഥന മുമ്പത്തേതിനെ മാറ്റിസ്ഥാപിച്ചു.</string>
+    <string name="TpUseReservedCoins">റിസർവ് ചെയ്ത കോയിനുകൾ ഉപയോഗിക്കുക</string>
+    <string name="TpUseReservedTokens">റിസർവ് ചെയ്ത ടോക്കണുകൾ ഉപയോഗിക്കുക</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host-ൽ നിന്നുള്ള, ഒരിക്കലും പൂർത്തിയാകാത്ത ഒരു മുൻ അഭ്യർത്ഥന നിങ്ങളുടെ ചില കോയിനുകൾ ഇപ്പോഴും റിസർവ് ചെയ്തിരിക്കുന്നു. ആ മുൻ അഭ്യർത്ഥന റദ്ദാക്കുകയോ ഉപേക്ഷിക്കുകയോ ചെയ്തിട്ടുണ്ടെങ്കിൽ മാത്രം അവ ഉപയോഗിക്കുക; അല്ലെങ്കിൽ രണ്ട് ഇടപാടുകളിൽ ഒന്ന് പരാജയപ്പെടും.</string>
+    <string name="TpUsingReservedCoins">ഒരു മുൻ അഭ്യർത്ഥന റിസർവ് ചെയ്ത കോയിനുകൾ ഉപയോഗിക്കുന്നു</string>
+    <string name="TpReservedCoinsUnverified">റിസർവ് ചെയ്ത കോയിനുകൾ ഇപ്പോഴും ചെലവഴിച്ചിട്ടില്ലെന്ന് നെറ്റ്‌വർക്കിൽ നിന്ന് സ്ഥിരീകരിക്കാനായില്ല. വാലറ്റ് സിങ്ക് ആകുന്നതുവരെ കാത്തിരുന്ന് വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="TpAssetRequestDenied">ആസ്തി വിവരം നൽകിയില്ല</string>
     <string name="TpAssetRequestAccepted">ആസ്തി വിവരം അയയ്ക്കുന്നു</string>
     <string name="Actions">പ്രവർത്തനങ്ങൾ</string>

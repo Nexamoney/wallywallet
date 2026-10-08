@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">An amince da maʼamala</string>
     <string name="TpNetworkTimeout">Lokacin maʼamala ya ƙare</string>
     <string name="TpPartialSubmitted">An aika tayi</string>
+    <string name="TpInsufficientWillRetry">Walat ɗinku ba shi da isassun kuɗi da ake iya amfani da su don wannan buƙata a yanzu. Wannan allon yana sake dubawa ta atomatik yayin da walat ɗinku ke daidaitawa.</string>
+    <string name="TpRecheckingFunds">Ana sake duba kuɗi…</string>
+    <string name="TpProposalSuperseded">Wata sabuwar buƙata daga wannan shafin ta maye gurbin ta baya.</string>
+    <string name="TpUseReservedCoins">Yi amfani da tsabar kuɗin da aka ajiye</string>
+    <string name="TpUseReservedTokens">Yi amfani da tokens da aka ajiye</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Wasu daga cikin tsabar kuɗinku har yanzu wata buƙata ta baya daga %host da ba ta taɓa kammaluwa ba ta ajiye su. Ku yi amfani da su ne kawai idan an soke ko an watsar da wannan buƙatar ta baya; in ba haka ba ɗaya daga cikin ma\'amalolin biyu za ta gaza.</string>
+    <string name="TpUsingReservedCoins">Ana amfani da tsabar kuɗin da wata buƙata ta baya ta ajiye</string>
+    <string name="TpReservedCoinsUnverified">Ba a iya tabbatarwa daga hanyar sadarwa cewa ba a kashe tsabar kuɗin da aka ajiye ba tukuna. Ku jira walat ɗin ya daidaita sannan ku sake gwadawa.</string>
     <string name="TpAssetRequestDenied">An hana bayanan kadara</string>
     <string name="TpAssetRequestAccepted">Ana aika bayanan kadara</string>
     <string name="Actions">Ayyuka</string>

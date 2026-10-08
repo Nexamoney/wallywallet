@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">লেনদেন গ্ৰহণ কৰা হ\'ল</string>
     <string name="TpNetworkTimeout">লেনদেনৰ সময় উকলিল</string>
     <string name="TpPartialSubmitted">প্ৰস্তাৱ দাখিল কৰা হ\'ল</string>
+    <string name="TpInsufficientWillRetry">এই অনুৰোধৰ বাবে আপোনাৰ ৱালেটত এতিয়া পৰ্যাপ্ত উপলব্ধ ধন নাই। আপোনাৰ ৱালেট ছিংক হোৱাৰ লগে লগে এই স্ক্ৰীনে স্বয়ংক্ৰিয়ভাৱে পুনৰ পৰীক্ষা কৰে।</string>
+    <string name="TpRecheckingFunds">ধন পুনৰ পৰীক্ষা কৰি থকা হৈছে…</string>
+    <string name="TpProposalSuperseded">এই ছাইটৰ পৰা অহা এটা নতুন অনুৰোধে আগৰটো সলনি কৰিলে।</string>
+    <string name="TpUseReservedCoins">সংৰক্ষিত মুদ্ৰা ব্যৱহাৰ কৰক</string>
+    <string name="TpUseReservedTokens">সংৰক্ষিত টোকেন ব্যৱহাৰ কৰক</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%hostৰ পৰা অহা এটা আগৰ অনুৰোধে, যিটো কেতিয়াও সম্পূৰ্ণ নহ\'ল, আপোনাৰ কিছুমান মুদ্ৰা এতিয়াও সংৰক্ষিত কৰি ৰাখিছে। সেই আগৰ অনুৰোধটো বাতিল বা পৰিত্যক্ত হ\'লেহে সেইবোৰ ব্যৱহাৰ কৰক; নহ\'লে দুয়োটা লেনদেনৰ এটা বিফল হ\'ব।</string>
+    <string name="TpUsingReservedCoins">আগৰ এটা অনুৰোধে সংৰক্ষিত কৰা মুদ্ৰা ব্যৱহাৰ কৰি থকা হৈছে</string>
+    <string name="TpReservedCoinsUnverified">সংৰক্ষিত মুদ্ৰাবোৰ এতিয়াও খৰচ হোৱা নাই বুলি নেটৱৰ্কৰ পৰা নিশ্চিত কৰিব পৰা নগ\'ল। ৱালেট ছিংক হোৱালৈ অপেক্ষা কৰি পুনৰ চেষ্টা কৰক।</string>
     <string name="TpAssetRequestDenied">এছেটৰ তথ্য দিয়া নহ\'ল</string>
     <string name="TpAssetRequestAccepted">এছেটৰ তথ্য পঠোৱা হৈছে</string>
     <string name="Actions">কাৰ্য</string>

@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">பரிவர்த்தனை ஏற்கப்பட்டது</string>
     <string name="TpNetworkTimeout">பரிவர்த்தனை நேரம் முடிந்தது</string>
     <string name="TpPartialSubmitted">முன்மொழிவு சமர்ப்பிக்கப்பட்டது</string>
+    <string name="TpInsufficientWillRetry">இந்தக் கோரிக்கைக்கு உங்கள் பணப்பையில் இப்போது போதுமான கிடைக்கக்கூடிய நிதி இல்லை. உங்கள் பணப்பை ஒத்திசைக்கும்போது இந்தத் திரை தானாகவே மீண்டும் சரிபார்க்கிறது.</string>
+    <string name="TpRecheckingFunds">நிதியை மீண்டும் சரிபார்க்கிறது…</string>
+    <string name="TpProposalSuperseded">இந்தத் தளத்திலிருந்து வந்த புதிய கோரிக்கை முந்தையதை மாற்றியது.</string>
+    <string name="TpUseReservedCoins">ஒதுக்கப்பட்ட நாணயங்களைப் பயன்படுத்து</string>
+    <string name="TpUseReservedTokens">ஒதுக்கப்பட்ட டோக்கன்களைப் பயன்படுத்து</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host இலிருந்து வந்த, ஒருபோதும் நிறைவடையாத முந்தைய கோரிக்கை உங்கள் சில நாணயங்களை இன்னும் ஒதுக்கி வைத்துள்ளது. அந்த முந்தைய கோரிக்கை ரத்து செய்யப்பட்டிருந்தால் அல்லது கைவிடப்பட்டிருந்தால் மட்டுமே அவற்றைப் பயன்படுத்துங்கள்; இல்லையெனில் இரண்டு பரிவர்த்தனைகளில் ஒன்று தோல்வியடையும்.</string>
+    <string name="TpUsingReservedCoins">முந்தைய கோரிக்கையால் ஒதுக்கப்பட்ட நாணயங்களைப் பயன்படுத்துகிறது</string>
+    <string name="TpReservedCoinsUnverified">ஒதுக்கப்பட்ட நாணயங்கள் இன்னும் செலவழிக்கப்படவில்லை என்பதை நெட்வொர்க்கில் உறுதிப்படுத்த முடியவில்லை. பணப்பை ஒத்திசையும் வரை காத்திருந்து மீண்டும் முயற்சிக்கவும்.</string>
     <string name="TpAssetRequestDenied">சொத்துத் தகவல் மறுக்கப்பட்டது</string>
     <string name="TpAssetRequestAccepted">சொத்துத் தகவல் அனுப்பப்படுகிறது</string>
     <string name="Actions">செயல்கள்</string>

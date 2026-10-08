@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,9 @@ import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.RequestQuote
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,6 +39,7 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.S.withholdingMandatoryInfo
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.colorPrimaryDark
+import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple2
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
@@ -298,22 +303,21 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
     }
 
     // Every time the account change, we need to recalculate what it will take to solve this TX
-    LaunchedEffect(Unit) {
+    LaunchedEffect(sess) {
         sess.pill.account.collectLatest {
-            sess.originalTx?.let {
-                // If the account changes to something different, redo the analysis
-                val pa = sess.proposalAnalysis.value
-                if (sess.getRelevantAccount() != pa?.account)
-                {
-                    // TODO copy the tx in a nice API
-                    val tx = txFor(it.chainSelector, BCHserialized(SerializationType.NETWORK, it.toByteArray()))
-                    sess.abortProposal()
-                    sess.proposedTx = tx
-                    sess.proposalAnalysis.value = sess.analyzeCompleteAndSignTx(tx, sess.inputSatoshis, sess.tflags)
-                }
-            }
+            // If the account changes to something different, redo the analysis (on a worker thread: it completes a transaction)
+            if (sess.originalTx != null && sess.getRelevantAccount() != sess.proposalAnalysis.value?.account) sess.requestReanalysis(force = true)
         }
     }
+
+    // While this screen is showing, a proposal that could not be completed is re-checked as the wallet changes.  Leaving the screen
+    // without deciding gives back whatever the proposal was holding; coming back re-analyses so the user never sees stale state.
+    DisposableEffect(sess) {
+        sess.startWatching()
+        onDispose { sess.screenHidden() }
+    }
+    val analyzing = sess.analyzing.collectAsState().value
+    val usingReserved = sess.usingReservedCoins.collectAsState().value
 
     val fromAccount = acc.nameAndChain
     val currencyCode = acc.currencyCode
@@ -323,9 +327,8 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
     var isSendingSomething by remember { mutableStateOf(false) }
     var isReceiving by remember { mutableStateOf(false) }
     var isDemonstratingOwnership by remember { mutableStateOf(false) }
-    var error: String by remember { mutableStateOf("") }
-
-    // auto-complete if already accepted and sess.accepted = true (needed to unlock the account)
+    // Derived from the current analysis on every composition (not remembered: a re-analysis that succeeds must clear it)
+    var error = ""
 
     val pTx = sess.proposedTx
     val panalysis = sess.proposalAnalysis.collectAsState().value
@@ -411,8 +414,15 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
 
         panalysis.completionException?.let {
             // A raw exception (with tx hex appended after a newline) is not fit for the screen; log has the details
-            error = if (panalysis.foreignUnsignedInputs.isNotEmpty()) i18n(S.TpProposalMissingSignature)
-                    else (it.message ?: "").substringBefore('\n')
+            // A funding failure comes first: a partial request legitimately carries the counterparty's unsigned inputs, and those are
+            // only a problem once the wallet has actually funded its side
+            error = when
+            {
+                it is WalletNotEnoughTokenBalanceException -> i18n(S.insufficentTokenBalance)
+                it is WalletNotEnoughBalanceException -> i18n(S.insufficentBalance)
+                panalysis.foreignUnsignedInputs.isNotEmpty() -> i18n(S.TpProposalMissingSignature)
+                else -> (it.message ?: "").substringBefore('\n')
+            }
         }
 
         if (error.isNotEmpty())  // If there's an exception, the only possibility is to abort
@@ -441,15 +451,19 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
             // Step 1, unlock if needed, otherwise accept & done
             if ((pTx != null) && (panalysis != null))
             {
-                sess.accepted = true
-
                 if (panalysis.account.locked)
                 {
-                    unlock.triggerUnlockDialog(true) { }
+                    // The continuation also runs after a wrong PIN, so check that the unlock actually happened
+                    unlock.triggerUnlockDialog(true) { if (!panalysis.account.locked) acceptProposal() }
                 }
                 else
                 {
-                    sess.acceptSpecialTx(breakIt)
+                    // Not accepted if a re-analysis is running right now or the proposal cannot be completed; the screen catches up
+                    if (!sess.tryAccept(breakIt))
+                    {
+                        displayNotice(S.TpRecheckingFunds)
+                        return
+                    }
                     nav.back()
                 }
             }
@@ -529,6 +543,15 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
                       color = Color.Black
                     )
                 }
+                if (analyzing)
+                {
+                    VSpacer(0.01f, 8.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag("SpecialTxAnalyzing")) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                        Spacer(Modifier.width(8.dp))
+                        Text(i18n(S.TpRecheckingFunds), style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
                 VSpacer(0.04f, 16.dp)
             }
 
@@ -547,6 +570,11 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
                           style = MaterialTheme.typography.headlineSmall,
                           textAlign = TextAlign.Center
                         )
+                        if (usingReserved)
+                        {
+                            VSpacer(0.01f, 8.dp)
+                            WallyBrightEmphasisBox(Modifier.fillMaxWidth()) { Text(i18n(S.TpUsingReservedCoins), modifier = Modifier.fillMaxWidth().testTag("SpecialTxUsingReserved"), color = colorPrimaryDark, textAlign = TextAlign.Center) }
+                        }
                         VSpacer(0.01f, 16.dp)
                         Box(
                           modifier = Modifier.fillMaxWidth()
@@ -685,6 +713,23 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
                     CenteredSectionText(S.CannotCompleteTransaction)
                     VSpacer(0.01f, 8.dp)
                     Text(error, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, maxLines = 10)
+                    if (panalysis.isInsufficientFunds)
+                    {
+                        VSpacer(0.01f, 16.dp)
+                        Text(i18n(S.TpInsufficientWillRetry), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
+                        if (panalysis.reservedCoinsWouldHelp && !analyzing)
+                        {
+                            VSpacer(0.01f, 16.dp)
+                            Text(i18n(S.TpReservedCoinsExplain) % mapOf("host" to (sess.host ?: "")), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
+                            VSpacer(0.01f, 8.dp)
+                            Button(
+                              onClick = { sess.requestRetryIgnoringReserved() },
+                              modifier = Modifier.align(Alignment.CenterHorizontally).height(48.dp).testTag("SpecialTxUseReserved"),
+                              shape = CircleShape,
+                              colors = ButtonDefaults.buttonColors(containerColor = wallyPurple, contentColor = Color.White),
+                            ) { Text(i18n(if (panalysis.reservedCoinsIncludeTokens) S.TpUseReservedTokens else S.TpUseReservedCoins), style = MaterialTheme.typography.labelLarge) }
+                        }
+                    }
                 }
             }
 
@@ -697,12 +742,14 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
             Spacer(Modifier.defaultMinSize(1.dp,10.dp).weight(0.05f))
         }
 
-        // Bottom button row; a failed proposal can only be acknowledged, not accepted or denied
+        // Bottom button row; a failed proposal can only be acknowledged, not accepted or denied, and one being re-checked cannot be accepted yet.
+        // While the wallet is still re-checking an underfunded proposal the button is honest about what it does: it denies the request.
         val isError = GuiCustomTxError != ""
+        val acknowledgeOnly = isError && !panalysis.isInsufficientFunds
         ButtonRowAcceptDeny({acceptProposal()}, { rejectProposal() },
-          Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().wrapContentHeight().background(Color.White), acceptEnabled = !isError,
-          denyText = if (isError) S.Okay else S.deny,
-          denyIcon = if (isError) Icons.Outlined.CheckCircle else Icons.Outlined.Cancel)
+          Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().wrapContentHeight().background(Color.White), acceptEnabled = !isError && !analyzing,
+          denyText = if (acknowledgeOnly) S.Okay else S.deny,
+          denyIcon = if (acknowledgeOnly) Icons.Outlined.CheckCircle else Icons.Outlined.Cancel)
     }
 }
 

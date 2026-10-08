@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Transacción aceptada</string>
     <string name="TpNetworkTimeout">Tiempo de espera agotado</string>
     <string name="TpPartialSubmitted">Oferta enviada</string>
+    <string name="TpInsufficientWillRetry">Su billetera no tiene suficientes fondos disponibles para esta solicitud en este momento. Esta pantalla vuelve a comprobarlo automáticamente a medida que la billetera se sincroniza.</string>
+    <string name="TpRecheckingFunds">Volviendo a comprobar los fondos…</string>
+    <string name="TpProposalSuperseded">Una solicitud más reciente de este sitio reemplazó a la anterior.</string>
+    <string name="TpUseReservedCoins">Usar monedas reservadas</string>
+    <string name="TpUseReservedTokens">Usar tokens reservados</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Algunas de sus monedas siguen reservadas por una solicitud anterior de %host que nunca se completó. Úselas solo si esa solicitud anterior fue cancelada o abandonada; de lo contrario, una de las dos transacciones fallará.</string>
+    <string name="TpUsingReservedCoins">Usando monedas reservadas por una solicitud anterior</string>
+    <string name="TpReservedCoinsUnverified">No se pudo confirmar con la red que las monedas reservadas siguen sin gastar. Espere a que la billetera se sincronice y vuelva a intentarlo.</string>
     <string name="TpAssetRequestDenied">Información de activos retenida</string>
     <string name="TpAssetRequestAccepted">Enviando información de activos</string>
     <string name="Actions">Acciones</string>

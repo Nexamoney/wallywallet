@@ -490,6 +490,14 @@
     <string name="TpTxAccepted">İşlem kabul edildi</string>
     <string name="TpNetworkTimeout">İşlem zaman aşımı</string>
     <string name="TpPartialSubmitted">Teklif gönderildi</string>
+    <string name="TpInsufficientWillRetry">Cüzdanınızda şu anda bu istek için yeterli kullanılabilir bakiye yok. Cüzdanınız eşitlenirken bu ekran otomatik olarak yeniden kontrol eder.</string>
+    <string name="TpRecheckingFunds">Bakiye yeniden kontrol ediliyor…</string>
+    <string name="TpProposalSuperseded">Bu siteden gelen daha yeni bir istek öncekinin yerini aldı.</string>
+    <string name="TpUseReservedCoins">Ayrılmış coinleri kullan</string>
+    <string name="TpUseReservedTokens">Ayrılmış tokenleri kullan</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Coinlerinizin bir kısmı, %host kaynaklı ve hiç tamamlanmamış önceki bir istek tarafından hâlâ ayrılmış durumda. Bunları yalnızca o önceki istek iptal edildiyse veya terk edildiyse kullanın; aksi hâlde iki işlemden biri başarısız olur.</string>
+    <string name="TpUsingReservedCoins">Önceki bir isteğin ayırdığı coinler kullanılıyor</string>
+    <string name="TpReservedCoinsUnverified">Ayrılmış coinlerin hâlâ harcanmadığı ağ üzerinden doğrulanamadı. Cüzdanın eşitlenmesini bekleyip yeniden deneyin.</string>
     <string name="TpAssetRequestDenied">Varlık bilgisi paylaşılmadı</string>
     <string name="TpAssetRequestAccepted">Varlık bilgisi gönderiliyor</string>
     <string name="Actions">Eylemler</string>

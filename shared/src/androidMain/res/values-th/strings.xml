@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">ยอมรับธุรกรรม</string>
     <string name="TpNetworkTimeout">ธุรกรรมหมดเวลา</string>
     <string name="TpPartialSubmitted">ส่งข้อเสนอแล้ว</string>
+    <string name="TpInsufficientWillRetry">ขณะนี้กระเป๋าเงินของคุณมีเงินที่ใช้ได้ไม่พอสำหรับคำขอนี้ หน้าจอนี้จะตรวจสอบซ้ำโดยอัตโนมัติขณะที่กระเป๋าเงินซิงค์</string>
+    <string name="TpRecheckingFunds">กำลังตรวจสอบเงินอีกครั้ง…</string>
+    <string name="TpProposalSuperseded">คำขอที่ใหม่กว่าจากเว็บไซต์นี้ได้แทนที่คำขอก่อนหน้า</string>
+    <string name="TpUseReservedCoins">ใช้เหรียญที่ถูกจองไว้</string>
+    <string name="TpUseReservedTokens">ใช้โทเค็นที่ถูกจองไว้</string>
+    <string name="TpReservedCoinsExplain" formatted="false">เหรียญบางส่วนของคุณยังคงถูกจองโดยคำขอก่อนหน้าจาก %host ที่ไม่เคยเสร็จสมบูรณ์ ใช้เหรียญเหล่านี้เฉพาะเมื่อคำขอก่อนหน้านั้นถูกยกเลิกหรือถูกละทิ้งแล้วเท่านั้น มิฉะนั้นธุรกรรมหนึ่งในสองรายการจะล้มเหลว</string>
+    <string name="TpUsingReservedCoins">กำลังใช้เหรียญที่ถูกจองไว้โดยคำขอก่อนหน้า</string>
+    <string name="TpReservedCoinsUnverified">ไม่สามารถยืนยันกับเครือข่ายได้ว่าเหรียญที่ถูกจองไว้ยังไม่ถูกใช้ โปรดรอให้กระเป๋าเงินซิงค์แล้วลองอีกครั้ง</string>
     <string name="TpAssetRequestDenied">ไม่ให้ข้อมูลสินทรัพย์</string>
     <string name="TpAssetRequestAccepted">กำลังส่งข้อมูลสินทรัพย์</string>
     <string name="Actions">การดำเนินการ</string>

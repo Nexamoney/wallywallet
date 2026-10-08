@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">Tinanggap na transaksyon</string>
     <string name="TpNetworkTimeout">Timeout ang transaksyon</string>
     <string name="TpPartialSubmitted">Naisumite ang offer</string>
+    <string name="TpInsufficientWillRetry">Wala pang sapat na available na pondo ang iyong wallet para sa kahilingang ito. Awtomatikong sinusuri ulit ng screen na ito habang nagsi-sync ang iyong wallet.</string>
+    <string name="TpRecheckingFunds">Sinusuri ulit ang pondo…</string>
+    <string name="TpProposalSuperseded">Pinalitan ng mas bagong kahilingan mula sa site na ito ang nauna.</string>
+    <string name="TpUseReservedCoins">Gamitin ang mga nakareserbang coin</string>
+    <string name="TpUseReservedTokens">Gamitin ang mga nakareserbang token</string>
+    <string name="TpReservedCoinsExplain" formatted="false">May ilan sa iyong mga coin na nakareserba pa rin ng isang naunang kahilingan mula sa %host na hindi kailanman nakumpleto. Gamitin lamang ang mga ito kung kinansela o inabandona ang naunang kahilingang iyon; kung hindi, mabibigo ang isa sa dalawang transaksyon.</string>
+    <string name="TpUsingReservedCoins">Ginagamit ang mga coin na nakareserba ng isang naunang kahilingan</string>
+    <string name="TpReservedCoinsUnverified">Hindi makumpirma sa network na hindi pa nagagastos ang mga nakareserbang coin. Hintaying mag-sync ang wallet at subukan ulit.</string>
     <string name="TpAssetRequestDenied">Hindi ibinigay ang asset info</string>
     <string name="TpAssetRequestAccepted">Ipinapadala ang asset info</string>
     <string name="Actions">Mga aksyon</string>

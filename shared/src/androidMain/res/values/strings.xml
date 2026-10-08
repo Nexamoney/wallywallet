@@ -696,6 +696,14 @@ Good luck!
     <string name="TpTxAccepted">Accepted transaction</string>
     <string name="TpNetworkTimeout">Transaction timeout</string>
     <string name="TpPartialSubmitted">Offer submitted</string>
+    <string name="TpInsufficientWillRetry">Your wallet does not have enough available funds for this request right now. This screen re-checks automatically as your wallet syncs.</string>
+    <string name="TpRecheckingFunds">Re-checking funds…</string>
+    <string name="TpProposalSuperseded">A newer request from this site replaced the previous one.</string>
+    <string name="TpUseReservedCoins">Use reserved coins</string>
+    <string name="TpUseReservedTokens">Use reserved tokens</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Some of your coins are still reserved by an earlier request from %host that never completed. Use them only if that earlier request was cancelled or abandoned; otherwise one of the two transactions will fail.</string>
+    <string name="TpUsingReservedCoins">Using coins reserved by an earlier request</string>
+    <string name="TpReservedCoinsUnverified">Could not confirm with the network that the reserved coins are still unspent. Wait for the wallet to sync and try again.</string>
     <string name="TpAssetRequestDenied">Asset info withheld</string>
     <string name="TpAssetRequestAccepted">Sending asset info</string>
     <string name="Actions">Actions</string>

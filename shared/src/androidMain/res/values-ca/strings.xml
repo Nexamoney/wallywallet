@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Transacció acceptada</string>
     <string name="TpNetworkTimeout">Transacció: temps esgotat</string>
     <string name="TpPartialSubmitted">Oferta enviada</string>
+    <string name="TpInsufficientWillRetry">La vostra cartera no té prou fons disponibles per a aquesta sol·licitud ara mateix. Aquesta pantalla ho torna a comprovar automàticament a mesura que la cartera se sincronitza.</string>
+    <string name="TpRecheckingFunds">S\'estan tornant a comprovar els fons…</string>
+    <string name="TpProposalSuperseded">Una sol·licitud més recent d\'aquest lloc ha substituït l\'anterior.</string>
+    <string name="TpUseReservedCoins">Utilitzeu les monedes reservades</string>
+    <string name="TpUseReservedTokens">Utilitzeu els tokens reservats</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Algunes de les vostres monedes encara estan reservades per una sol·licitud anterior de %host que no es va completar mai. Utilitzeu-les només si aquella sol·licitud anterior es va cancel·lar o abandonar; altrament, una de les dues transaccions fallarà.</string>
+    <string name="TpUsingReservedCoins">S\'estan utilitzant monedes reservades per una sol·licitud anterior</string>
+    <string name="TpReservedCoinsUnverified">No s\'ha pogut confirmar amb la xarxa que les monedes reservades encara no s\'han gastat. Espereu que la cartera se sincronitzi i torneu-ho a provar.</string>
     <string name="TpAssetRequestDenied">Informació d\'actius retinguda</string>
     <string name="TpAssetRequestAccepted">Enviant informació d\'actius</string>
     <string name="Actions">Accions</string>

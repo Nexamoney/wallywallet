@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">লেনদেন মঞ্জুর</string>
     <string name="TpNetworkTimeout">লেনদেনের সময় শেষ</string>
     <string name="TpPartialSubmitted">অফার জমা হয়েছে</string>
+    <string name="TpInsufficientWillRetry">এই অনুরোধের জন্য আপনার ওয়ালেটে এই মুহূর্তে পর্যাপ্ত উপলব্ধ তহবিল নেই। আপনার ওয়ালেট সিঙ্ক হওয়ার সাথে সাথে এই স্ক্রিন স্বয়ংক্রিয়ভাবে আবার পরীক্ষা করে।</string>
+    <string name="TpRecheckingFunds">তহবিল আবার পরীক্ষা করা হচ্ছে…</string>
+    <string name="TpProposalSuperseded">এই সাইট থেকে আসা একটি নতুন অনুরোধ আগেরটি প্রতিস্থাপন করেছে।</string>
+    <string name="TpUseReservedCoins">সংরক্ষিত কয়েন ব্যবহার করুন</string>
+    <string name="TpUseReservedTokens">সংরক্ষিত টোকেন ব্যবহার করুন</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host থেকে আসা একটি আগের অনুরোধ, যা কখনও সম্পূর্ণ হয়নি, আপনার কিছু কয়েন এখনও সংরক্ষিত করে রেখেছে। সেই আগের অনুরোধটি বাতিল বা পরিত্যক্ত হলে তবেই সেগুলি ব্যবহার করুন; নইলে দুটি লেনদেনের একটি ব্যর্থ হবে।</string>
+    <string name="TpUsingReservedCoins">আগের একটি অনুরোধে সংরক্ষিত কয়েন ব্যবহার করা হচ্ছে</string>
+    <string name="TpReservedCoinsUnverified">সংরক্ষিত কয়েনগুলি এখনও খরচ হয়নি তা নেটওয়ার্ক থেকে নিশ্চিত করা যায়নি। ওয়ালেট সিঙ্ক হওয়া পর্যন্ত অপেক্ষা করে আবার চেষ্টা করুন।</string>
     <string name="TpAssetRequestDenied">অ্যাসেটের তথ্য দেওয়া হয়নি</string>
     <string name="TpAssetRequestAccepted">অ্যাসেটের তথ্য পাঠানো হচ্ছে</string>
     <string name="Actions">কাজ</string>

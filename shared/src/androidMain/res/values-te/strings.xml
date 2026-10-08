@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">అంగీకరించిన లావాదేవీ</string>
     <string name="TpNetworkTimeout">లావాదేవీ సమయం ముగిసింది</string>
     <string name="TpPartialSubmitted">ఆఫర్ సమర్పించబడింది</string>
+    <string name="TpInsufficientWillRetry">ఈ అభ్యర్థన కోసం మీ వాలెట్‌లో ప్రస్తుతం తగినంత అందుబాటులో ఉన్న నిధులు లేవు. మీ వాలెట్ సింక్ అవుతున్నప్పుడు ఈ స్క్రీన్ ఆటోమేటిక్‌గా మళ్లీ తనిఖీ చేస్తుంది.</string>
+    <string name="TpRecheckingFunds">నిధులను మళ్లీ తనిఖీ చేస్తోంది…</string>
+    <string name="TpProposalSuperseded">ఈ సైట్ నుండి వచ్చిన కొత్త అభ్యర్థన మునుపటిదాన్ని భర్తీ చేసింది.</string>
+    <string name="TpUseReservedCoins">రిజర్వ్ చేసిన కాయిన్‌లను ఉపయోగించండి</string>
+    <string name="TpUseReservedTokens">రిజర్వ్ చేసిన టోకెన్‌లను ఉపయోగించండి</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host నుండి వచ్చిన, ఎప్పుడూ పూర్తి కాని మునుపటి అభ్యర్థన మీ కొన్ని కాయిన్‌లను ఇంకా రిజర్వ్ చేసి ఉంచింది. ఆ మునుపటి అభ్యర్థన రద్దు చేయబడితే లేదా వదిలివేయబడితే మాత్రమే వాటిని ఉపయోగించండి; లేకపోతే రెండు లావాదేవీలలో ఒకటి విఫలమవుతుంది.</string>
+    <string name="TpUsingReservedCoins">మునుపటి అభ్యర్థన రిజర్వ్ చేసిన కాయిన్‌లను ఉపయోగిస్తోంది</string>
+    <string name="TpReservedCoinsUnverified">రిజర్వ్ చేసిన కాయిన్‌లు ఇంకా ఖర్చు కాలేదని నెట్‌వర్క్ నుండి నిర్ధారించలేకపోయాము. వాలెట్ సింక్ అయ్యే వరకు వేచి ఉండి మళ్లీ ప్రయత్నించండి.</string>
     <string name="TpAssetRequestDenied">అసెట్ సమాచారం ఇవ్వలేదు</string>
     <string name="TpAssetRequestAccepted">అసెట్ సమాచారం పంపుతోంది</string>
     <string name="Actions">చర్యలు</string>

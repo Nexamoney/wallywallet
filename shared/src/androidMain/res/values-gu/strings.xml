@@ -491,6 +491,14 @@
     <string name="TpTxAccepted">વ્યવહાર સ્વીકાર્યો</string>
     <string name="TpNetworkTimeout">વ્યવહાર ટાઇમઆઉટ</string>
     <string name="TpPartialSubmitted">ઑફર સબમિટ કરી</string>
+    <string name="TpInsufficientWillRetry">આ વિનંતી માટે તમારા વૉલેટમાં અત્યારે પૂરતું ઉપલબ્ધ ભંડોળ નથી. તમારું વૉલેટ સિંક થાય તેમ આ સ્ક્રીન આપમેળે ફરી તપાસે છે.</string>
+    <string name="TpRecheckingFunds">ભંડોળ ફરી તપાસી રહ્યાં છીએ…</string>
+    <string name="TpProposalSuperseded">આ સાઇટની નવી વિનંતીએ પાછલી વિનંતીને બદલી નાખી.</string>
+    <string name="TpUseReservedCoins">અનામત સિક્કા વાપરો</string>
+    <string name="TpUseReservedTokens">અનામત ટોકન વાપરો</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host તરફથી આવેલી એક અગાઉની વિનંતી, જે ક્યારેય પૂર્ણ થઈ નહીં, તેના દ્વારા તમારા કેટલાક સિક્કા હજુ પણ અનામત છે. તે અગાઉની વિનંતી રદ અથવા છોડી દેવાઈ હોય તો જ તેનો ઉપયોગ કરો; નહીંતર બે વ્યવહારોમાંથી એક નિષ્ફળ જશે.</string>
+    <string name="TpUsingReservedCoins">અગાઉની વિનંતી દ્વારા અનામત સિક્કા વાપરી રહ્યાં છીએ</string>
+    <string name="TpReservedCoinsUnverified">અનામત સિક્કા હજુ ખર્ચાયા નથી તેની નેટવર્ક સાથે પુષ્ટિ થઈ શકી નહીં. વૉલેટ સિંક થાય ત્યાં સુધી રાહ જુઓ અને ફરી પ્રયાસ કરો.</string>
     <string name="TpAssetRequestDenied">એસેટ માહિતી રોકી રાખી</string>
     <string name="TpAssetRequestAccepted">એસેટ માહિતી મોકલાય છે</string>
     <string name="Actions">ક્રિયાઓ</string>

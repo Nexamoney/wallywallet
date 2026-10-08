@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">स्वीकृत लेन-देन</string>
     <string name="TpNetworkTimeout">लेन-देन टाइमआउट</string>
     <string name="TpPartialSubmitted">ऑफर सबमिट किया गया</string>
+    <string name="TpInsufficientWillRetry">इस अनुरोध के लिए आपके वॉलेट में अभी पर्याप्त उपलब्ध धनराशि नहीं है। जैसे-जैसे आपका वॉलेट सिंक होता है, यह स्क्रीन अपने आप फिर से जाँच करती है।</string>
+    <string name="TpRecheckingFunds">धनराशि की फिर से जाँच हो रही है…</string>
+    <string name="TpProposalSuperseded">इस साइट के एक नए अनुरोध ने पिछले अनुरोध को बदल दिया।</string>
+    <string name="TpUseReservedCoins">आरक्षित सिक्के इस्तेमाल करें</string>
+    <string name="TpUseReservedTokens">आरक्षित टोकन इस्तेमाल करें</string>
+    <string name="TpReservedCoinsExplain" formatted="false">%host के एक पुराने अनुरोध ने, जो कभी पूरा नहीं हुआ, आपके कुछ सिक्के अभी भी आरक्षित रखे हैं। इनका इस्तेमाल तभी करें जब वह पुराना अनुरोध रद्द या छोड़ दिया गया हो; नहीं तो दोनों लेन-देन में से एक विफल हो जाएगा।</string>
+    <string name="TpUsingReservedCoins">एक पुराने अनुरोध द्वारा आरक्षित सिक्के इस्तेमाल किए जा रहे हैं</string>
+    <string name="TpReservedCoinsUnverified">नेटवर्क से यह पुष्टि नहीं हो सकी कि आरक्षित सिक्के अभी भी खर्च नहीं हुए हैं। वॉलेट के सिंक होने तक प्रतीक्षा करें और फिर से प्रयास करें।</string>
     <string name="TpAssetRequestDenied">एसेट जानकारी नहीं दी गई</string>
     <string name="TpAssetRequestAccepted">एसेट जानकारी भेजी जा रही है</string>
     <string name="Actions">कार्रवाइयां</string>

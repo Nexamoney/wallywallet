@@ -488,6 +488,14 @@
     <string name="TpTxAccepted">Transaktion akzeptiert</string>
     <string name="TpNetworkTimeout">Zeitüberschreitung</string>
     <string name="TpPartialSubmitted">Angebot übermittelt</string>
+    <string name="TpInsufficientWillRetry">Ihr Wallet hat im Moment nicht genügend verfügbare Mittel für diese Anfrage. Dieser Bildschirm prüft das automatisch erneut, während Ihr Wallet synchronisiert.</string>
+    <string name="TpRecheckingFunds">Mittel werden erneut geprüft…</string>
+    <string name="TpProposalSuperseded">Eine neuere Anfrage dieser Website hat die vorherige ersetzt.</string>
+    <string name="TpUseReservedCoins">Reservierte Coins verwenden</string>
+    <string name="TpUseReservedTokens">Reservierte Token verwenden</string>
+    <string name="TpReservedCoinsExplain" formatted="false">Einige Ihrer Coins sind noch durch eine frühere Anfrage von %host reserviert, die nie abgeschlossen wurde. Verwenden Sie sie nur, wenn diese frühere Anfrage abgebrochen oder aufgegeben wurde; andernfalls schlägt eine der beiden Transaktionen fehl.</string>
+    <string name="TpUsingReservedCoins">Coins werden verwendet, die eine frühere Anfrage reserviert hat</string>
+    <string name="TpReservedCoinsUnverified">Es konnte nicht über das Netzwerk bestätigt werden, dass die reservierten Coins noch nicht ausgegeben sind. Warten Sie, bis das Wallet synchronisiert ist, und versuchen Sie es erneut.</string>
     <string name="TpAssetRequestDenied">Asset-Infos zurückgehalten</string>
     <string name="TpAssetRequestAccepted">Asset-Infos werden gesendet</string>
     <string name="Actions">Aktionen</string>
