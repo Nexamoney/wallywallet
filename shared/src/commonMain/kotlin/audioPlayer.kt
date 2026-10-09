@@ -24,7 +24,7 @@ class AudioPlayerViewModel: ViewModel() {
     val audioPlayer = AudioPlayer()
 
     fun playScanQrSound() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             audioPlayer.playSound(1)
         }
     }

@@ -56,6 +56,8 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.exceptionHandler
@@ -413,6 +415,52 @@ data class MediaInfo(val width: Int, val height: Int,
 
 expect fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 
+/** Run [decode] off the UI thread, keyed by [keys].  Returns the image (null until the decode lands, or if it
+ * failed) and whether a decode is still outstanding, so a caller can hold back its "unsupported media" fallback.
+ * Pass retry when the decode hunts for a file that another thread may still be writing: a null result is then
+ * re-attempted for a few seconds rather than remembered as the final answer. */
+@Composable
+fun offThreadDecode(vararg keys: Any?, retry: Boolean = false, decode: () -> ImageBitmap?): Pair<ImageBitmap?, Boolean>
+{
+    val im = remember(*keys) { mutableStateOf<ImageBitmap?>(null) }
+    val pending = remember(*keys) { mutableStateOf(true) }
+    LaunchedEffect(*keys) {
+        var tries = if (retry) 6 else 1
+        var wait = 150L
+        while (true)
+        {
+            val done = CompletableDeferred<ImageBitmap?>()
+            later {
+                var bmp: ImageBitmap? = null
+                try
+                {
+                    bmp = decode()
+                }
+                catch (e: Exception)
+                {
+                    LogIt.warning(sourceLoc() + ": media decode failed: $e")
+                }
+                finally
+                {
+                    done.complete(bmp)
+                }
+            }
+            val result = done.await()
+            tries--
+            if (result != null)
+            {
+                im.value = result
+                break
+            }
+            if (tries <= 0) break
+            delay(wait)
+            wait *= 2
+        }
+        pending.value = false
+    }
+    return Pair(im.value, pending.value)
+}
+
 @Composable fun WallyBoldText(textRes: Int)
 {
     val textstyle = TextStyle.Default.copy(lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
@@ -550,7 +598,7 @@ fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean= true, modifier
             ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() })
         else
         {
-            val imbytes = getResourceFile(iconRes).readByteArray()
+            val imbytes = remember(iconRes) { getResourceBytes(iconRes) }
             MpMediaView(null, imbytes, iconRes) { mediaInfo, drawer ->
                 drawer(Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() })
             }

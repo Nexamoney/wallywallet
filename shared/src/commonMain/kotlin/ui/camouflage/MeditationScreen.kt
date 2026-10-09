@@ -231,7 +231,7 @@ class MeditationViewModelReal: MeditationViewModel()
         countdownJob?.cancel()
 
         if (_uiState.value.sound) {
-            viewModelScope.launch(Dispatchers.Main) {
+            viewModelScope.launch(Dispatchers.Default) {
                 audioPlayer.playSound(1)           // starting sound
             }
         }
@@ -244,7 +244,7 @@ class MeditationViewModelReal: MeditationViewModel()
                           if (tick.display == "00:00")
                           {
                               if (_uiState.value.sound)
-                                  viewModelScope.launch(Dispatchers.Main) {
+                                  viewModelScope.launch(Dispatchers.Default) {
                                       audioPlayer.playSound(3)
                                   }
                               _uiState.update { it.copy(timeLeft = "00:00", progress = MeditationProgress.ENDED) }
@@ -257,8 +257,7 @@ class MeditationViewModelReal: MeditationViewModel()
 
                       CountdownTick.MinutePassed -> {
                           if (_uiState.value.sound && _uiState.value.intervalSound) {
-                              // Important: play on Main thread
-                              launch(Dispatchers.Main) {
+                              launch(Dispatchers.Default) {
                                   audioPlayer.playSound(2)
                               }
                           }

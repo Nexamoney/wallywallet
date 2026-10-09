@@ -12,15 +12,32 @@ actual class AudioPlayer {
         NSURL.URLWithString(URLString = uri)
     }
 
+    // kept after the first play: prepareToPlay() holds the decoded buffer
+    private val players: MutableList<AVAudioPlayer?> = MutableList(mediaItems.size) { null }
+
     @OptIn(ExperimentalForeignApi::class)
     actual suspend fun playSound(id: Int) {
-        if (soundEnabled.value)
-        {
-            val avAudioPlayer = AVAudioPlayer(mediaItems[id]!!, error = null)
-            avAudioPlayer.prepareToPlay()
-            avAudioPlayer.play()
-        }
+        if (!soundEnabled.value) return
+        if (id !in players.indices) return
+
+        val player = players[id] ?: prepare(id)?.also { players[id] = it } ?: return
+        player.currentTime = 0.0
+        player.play()
     }
 
-    actual fun release() {}
+    @OptIn(ExperimentalForeignApi::class)
+    private fun prepare(id: Int): AVAudioPlayer? {
+        val url = mediaItems[id] ?: return null
+        val p = AVAudioPlayer(url, error = null)
+        p.prepareToPlay()
+        return p
+    }
+
+    actual fun release() {
+        for (i in players.indices)
+        {
+            players[i]?.stop()
+            players[i] = null
+        }
+    }
 }

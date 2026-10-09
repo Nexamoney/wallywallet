@@ -235,6 +235,71 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     throw UnimplementedException("video icons")
 }
 
+/** True when a null mediaData can still be satisfied from a local file.  A remote URI is a categorical
+ *  refusal in both decoders, so retrying one only delays the "unsupported media" fallback. */
+private fun isLocalMedia(url: Url): Boolean =
+  url.protocol == null || url.protocol.name == "file" || url.toString().contains("://localhost")
+
+private fun decodeSvgMedia(mediaData: ByteArray?, name: String, url: Url): ImageBitmap?
+{
+    val svg = try
+    {
+        if (mediaData == null)
+        {
+            if (isLocalMedia(url))
+            {
+                SVG.getFromInputStream(FileInputStream(name))
+            }
+            else throw UnimplementedException("non-local data in NFT")
+        }
+        else
+        {
+            SVG.getFromInputStream(ByteArrayInputStream(mediaData))
+        }
+    }
+    catch(e: Exception) { null }
+    if (svg == null) return null
+
+    // This doesn't make sense because SVG is generally scalable and might be given to us with crazy dimensions
+    // val bitmap = Bitmap.createBitmap(svg.documentWidth.toInt(), svg.documentHeight.toInt(), Bitmap.Config.ARGB_8888)
+    val width = (512 * svg.documentAspectRatio).toInt()
+    val height = 512
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = android.graphics.Canvas(bitmap)
+    svg.setDocumentHeight(height.toFloat())  // This tells the renderer to scale the SVG to fit the whole canvas
+    svg.setDocumentWidth(width.toFloat())
+    svg.renderToCanvas(canvas)
+    return bitmap.asImageBitmap()
+}
+
+private fun decodeRasterMedia(mediaData: ByteArray?, name: String, url: Url): ImageBitmap?
+{
+    val bitmap = if (mediaData == null)
+    {
+        if (isLocalMedia(url))
+        {
+            val localname = if (name.startsWith("file:///")) name.drop(7) else name
+            var tmp = BitmapFactory.decodeFile(localname)
+            if (tmp == null)  // given the troubles with android directory prefixes, leave this code in until we see stability
+            {
+                val justname = name.replaceBeforeLast(File.separator, "").drop(1)
+                val dir = androidContext!!.filesDir
+                if (tmp == null) tmp = BitmapFactory.decodeFile(justname)
+                if (tmp == null) tmp = BitmapFactory.decodeFile(dir.absolutePath + File.separator + justname)
+                if (tmp == null) tmp = BitmapFactory.decodeFile("/data/data/info.bitcoinunlimited.www.wally/files" + File.separator + justname)
+            }
+            tmp
+        }
+        else null
+    }
+    else
+    {
+        // BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+        BitmapFactory.decodeByteArray(mediaData,0,mediaData.size)
+    }
+    return bitmap?.asImageBitmap()
+}
+
 @OptIn(UnstableApi::class) @Composable
 actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, autoplay: Boolean, hideMusicView: Boolean, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
 {
@@ -260,35 +325,9 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
 
     if (ext.endsWith(".svg", true))
     {
-        val svg = try
+        val (im, pending) = offThreadDecode(mediaData, name, retry = mediaData == null && isLocalMedia(url)) { decodeSvgMedia(mediaData, name, url) }
+        if (im != null)
         {
-            if (mediaData == null)
-            {
-                if (url.protocol == null || url.protocol.name == "file" || url.toString().contains("://localhost"))
-                {
-                    SVG.getFromInputStream(FileInputStream(name))
-                }
-                else throw UnimplementedException("non-local data in NFT")
-            }
-            else
-            {
-                SVG.getFromInputStream(ByteArrayInputStream(mediaData))
-            }
-        }
-        catch(e: Exception) { null }
-
-        if (svg != null)
-        {
-            // This doesn't make sense because SVG is generally scalable and might be given to us with crazy dimensions
-            // val bitmap = Bitmap.createBitmap(svg.documentWidth.toInt(), svg.documentHeight.toInt(), Bitmap.Config.ARGB_8888)
-            val width = (512 * svg.documentAspectRatio).toInt()
-            val height = 512
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            val canvas = android.graphics.Canvas(bitmap)
-            svg.setDocumentHeight(height.toFloat())  // This tells the renderer to scale the SVG to fit the whole canvas
-            svg.setDocumentWidth(width.toFloat())
-            svg.renderToCanvas(canvas)
-            val im: ImageBitmap = bitmap.asImageBitmap()
             wrapper(MediaInfo(im.width, im.height, false)) { mod ->
                 val m = mod ?: Modifier
                   .fillMaxSize()
@@ -296,7 +335,7 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
                 Image(im, null, m, contentScale = ContentScale.Fit)
             }
         }
-        else
+        else if (!pending)  // hold back the "unsupported" icon until the decode has actually failed
         {
             val mi = MediaInfo(200, 200, false, false)
             wrapper(mi) { mod ->
@@ -318,32 +357,9 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
       ext.endsWith(".heif", true)
     )
     {
-        val bitmap = if (mediaData == null)
-        {
-            if (url.protocol == null || url.protocol.name == "file" || url.toString().contains("://localhost"))
-            {
-                var localname = if (name.startsWith("file:///")) name.drop(7) else name
-                var tmp = BitmapFactory.decodeFile(localname)
-                if (tmp == null)  // given the troubles with android directory prefixes, leave this code in until we see stability
-                {
-                    val justname = name.replaceBeforeLast(File.separator, "").drop(1)
-                    val dir = androidContext!!.filesDir
-                    if (tmp == null) tmp = BitmapFactory.decodeFile(justname)
-                    if (tmp == null) tmp = BitmapFactory.decodeFile(dir.absolutePath + File.separator + justname)
-                    if (tmp == null) tmp = BitmapFactory.decodeFile("/data/data/info.bitcoinunlimited.www.wally/files" + File.separator + justname)
-                }
-                tmp
-            }
-            else return false //throw UnimplementedException("non-local data in NFT: protocol: ${url.protocol} url is $url, name is $name")
-        }
-        else
-        {
-            // BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
-            BitmapFactory.decodeByteArray(mediaData,0,mediaData.size)
-        }
-        if (bitmap == null) return false
+        val im = offThreadDecode(mediaData, name, retry = mediaData == null && isLocalMedia(url)) { decodeRasterMedia(mediaData, name, url) }.first
+        if (im == null) return false
 
-        val im: ImageBitmap = bitmap.asImageBitmap()
         wrapper(MediaInfo(im.width, im.height, false)) { mod ->
             val m = mod ?: Modifier
               .fillMaxSize()

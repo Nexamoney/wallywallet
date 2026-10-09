@@ -665,6 +665,18 @@ fun formatLocalEpochMilliseconds(epochMs:Long, splitter:String=" "): String
 
 expect fun getResourceFile(name: String): BufferedSource
 
+private val resourceBytesLock = org.nexa.threads.Mutex()
+private val resourceBytesCache = HashMap<String, ByteArray>()
+
+/** Contents of a bundled resource, read once and cached.  The returned array is shared: read it, never modify it. */
+fun getResourceBytes(name: String): ByteArray
+{
+    // the read is outside the lock: it blocks (runBlocking on iOS) and a caller must never wait on someone else's read
+    resourceBytesLock.lock { resourceBytesCache[name] }?.let { return it }
+    val bytes = getResourceFile(name).readByteArray()
+    return resourceBytesLock.lock { resourceBytesCache.getOrPut(name) { bytes } }
+}
+
 expect fun openUrl(url: String)
 
 interface VersionI

@@ -81,7 +81,8 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
     )
     {
         // remember or the bytes are re-decoded into a new UIImage on every recomposition
-        val im = remember(mediaData, mu) {
+        val local = if (mediaData == null) rememberLocalFilename(mu) else null
+        val im = remember(mediaData, local) {
             mediaData?.usePinned { pinned ->
                 val b = NSData.create(bytes = pinned.addressOf(0), length = pinned.get().size.toULong())
                 try
@@ -94,8 +95,7 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
                     null
                 }
             } ?: run {
-                val tmp = resolveLocalFilename(mu)
-                if (tmp!=null) UIImage(tmp.toString()) else UIImage()
+                if (local != null) UIImage(local.toString()) else UIImage()
             }
         }
         if (im == null) return false
@@ -135,7 +135,7 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
       name.endsWith(".3gp", true) ||
       name.endsWith(".mkv", true))
     {
-        val tmp = resolveLocalFilename(mu)
+        val tmp = rememberLocalFilename(mu)
         if (tmp!=null)
         {
             val furl = "file://" + tmp.toString()
@@ -172,7 +172,7 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
       name.endsWith(".mp3", true) ||
       name.endsWith(".wav", true))
     {
-        val tmp = resolveLocalFilename(mu)
+        val tmp = rememberLocalFilename(mu)
         if (tmp!=null && !hideMusicView)
         {
             val furl = "file://" + tmp.toString()
@@ -225,6 +225,16 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
         // return im.toImageBitmap()
     }
     throw UnimplementedException("other icon formats")
+}
+
+/** Walk the document directories once, but only keep a hit: the asset loader may still be writing the file, so a
+ * miss has to be re-probed on the next recomposition rather than cached for the life of this composition. */
+@Composable
+private fun rememberLocalFilename(filename: String): Path?
+{
+    val found = remember(filename) { mutableStateOf<Path?>(null) }
+    if (found.value == null) found.value = resolveLocalFilename(filename)
+    return found.value
 }
 
 fun resolveLocalFilename(filename: String): Path?
