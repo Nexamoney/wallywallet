@@ -612,8 +612,7 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="Price">Harga</string>
     <string name="NexaPrice">Masukkan harga Nexa</string>
     <string name="AssetAmountName" formatted="false">Anda memiliki %amount %assetName</string>
-    <string name="scanToBuyOne">Pindai untuk membeli %name</string>
-    <string name="scanToBuySeveral">Pindai untuk membeli %amount %name</string>
+    <string name="scanToBuy">Pindai untuk membeli</string>
     <string name="nexaOfferAmount" formatted="false">Seharga %amount NEXA</string>
     <string name="purchaseComplete">Pembelian selesai</string>
     <string name="setTheNexaPrice">Tetapkan harga Nexa</string>

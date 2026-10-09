@@ -612,8 +612,7 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="Price">Precio</string>
     <string name="NexaPrice">Precio en Nexa</string>
     <string name="AssetAmountName" formatted="false">Tiene %amount %assetName</string>
-    <string name="scanToBuyOne">Escanee para comprar %name</string>
-    <string name="scanToBuySeveral">Escanee para comprar %amount %name</string>
+    <string name="scanToBuy">Escanee para comprar</string>
     <string name="nexaOfferAmount" formatted="false">Por %amount NEXA</string>
     <string name="purchaseComplete">Compra completada</string>
     <string name="setTheNexaPrice">Establezca el precio en Nexa</string>

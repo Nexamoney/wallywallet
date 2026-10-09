@@ -616,8 +616,7 @@ Tack och njut av din nya plånbok!</string>
     <string name="Price">Pris</string>
     <string name="NexaPrice">Ange Nexa-pris</string>
     <string name="AssetAmountName" formatted="false">Du har %amount %assetName</string>
-    <string name="scanToBuyOne">Skanna för att köpa %name</string>
-    <string name="scanToBuySeveral">Skanna för att köpa %amount %name</string>
+    <string name="scanToBuy">Skanna för att köpa</string>
     <string name="nexaOfferAmount" formatted="false">För %amount NEXA</string>
     <string name="purchaseComplete">Köpet är klart</string>
     <string name="setTheNexaPrice">Ange Nexa-priset</string>

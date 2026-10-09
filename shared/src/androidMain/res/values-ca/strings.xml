@@ -612,8 +612,7 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="Price">Preu</string>
     <string name="NexaPrice">Introduïu el preu en Nexa</string>
     <string name="AssetAmountName" formatted="false">Teniu %amount %assetName</string>
-    <string name="scanToBuyOne">Escanegeu per comprar %name</string>
-    <string name="scanToBuySeveral">Escanegeu per comprar %amount %name</string>
+    <string name="scanToBuy">Escanegeu per comprar</string>
     <string name="nexaOfferAmount" formatted="false">Per %amount NEXA</string>
     <string name="purchaseComplete">Compra completada</string>
     <string name="setTheNexaPrice">Establiu el preu en Nexa</string>

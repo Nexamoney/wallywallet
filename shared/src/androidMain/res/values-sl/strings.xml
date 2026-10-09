@@ -612,8 +612,7 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="Price">Cena</string>
     <string name="NexaPrice">Vnesite ceno Nexa</string>
     <string name="AssetAmountName" formatted="false">Imate %amount %assetName</string>
-    <string name="scanToBuyOne">Skenirajte za nakup %name</string>
-    <string name="scanToBuySeveral">Skenirajte za nakup %amount %name</string>
+    <string name="scanToBuy">Skenirajte za nakup</string>
     <string name="nexaOfferAmount" formatted="false">Za %amount NEXA</string>
     <string name="purchaseComplete">Nakup zaključen</string>
     <string name="setTheNexaPrice">Nastavite ceno Nexa</string>
