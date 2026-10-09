@@ -356,14 +356,14 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     }
 
     /** Create a notification of a pending intent */
-    fun notify(intent: Intent, title: String, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1, priority: Int = NotificationCompat.PRIORITY_DEFAULT): Int
+    fun notify(intent: Intent, title: String, content: String, context: Context, actionRequired: Boolean = true, overwrite: Int = -1, priority: Int = NotificationCompat.PRIORITY_DEFAULT): Int
     {
         // Save the notification id into the Intent so we can remove it when needed
         val nid = if (overwrite == -1) notifId++ else overwrite  // reminder: this is a post-increment!
         intent.putExtra("wallyNotificationId", nid)
 
-        val pendingIntent = PendingIntent.getActivity(activity, nid, intent, PendingIntent.FLAG_IMMUTABLE)
-        val builder = NotificationCompat.Builder(activity, if (priority == NotificationCompat.PRIORITY_DEFAULT) NORMAL_NOTIFICATION_CHANNEL_ID else PRIORITY_NOTIFICATION_CHANNEL_ID)
+        val pendingIntent = PendingIntent.getActivity(context, nid, intent, PendingIntent.FLAG_IMMUTABLE)
+        val builder = NotificationCompat.Builder(context, if (priority == NotificationCompat.PRIORITY_DEFAULT) NORMAL_NOTIFICATION_CHANNEL_ID else PRIORITY_NOTIFICATION_CHANNEL_ID)
           //.setSmallIcon(R.drawable.ic_notifications_black_24dp)
           .setSmallIcon(R.mipmap.icon2024)
           .setContentTitle(title)
