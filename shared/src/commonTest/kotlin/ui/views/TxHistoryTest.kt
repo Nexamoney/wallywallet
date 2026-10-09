@@ -20,6 +20,7 @@ import dev.mokkery.answering.calls
 import dev.mokkery.every
 import dev.mokkery.matcher.any
 import info.bitcoinunlimited.www.wally.Account
+import info.bitcoinunlimited.www.wally.ui.TxAssetFlow
 import info.bitcoinunlimited.www.wally.ui.views.RecentTransactionUIData
 import info.bitcoinunlimited.www.wally.ui.views.TransactionsList
 import info.bitcoinunlimited.www.wally.ui.views.TxHistoryViewModel
@@ -35,6 +36,7 @@ import ui.createAssetInfo
 import ui.createAssetPerAccount
 import ui.mockAccount
 import ui.settle
+import kotlinx.atomicfu.atomic
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -47,6 +49,7 @@ class TxHistoryTest : WallyUiTestBase()
     private fun fakeTxHistory(i: Int): TransactionHistory
     {
         val tx = txFor(ChainSelector.NEXA)
+        tx.lockTime = i.toLong()  // distinct idem per fake: the view model lists each tx once
         val txh = TransactionHistory(ChainSelector.NEXA, tx)
         // Spread dates widely so after sortByDescending the order matches our
         // construction order (newest first).
@@ -75,6 +78,30 @@ class TxHistoryTest : WallyUiTestBase()
         every { txStore.forEach(any(), any(), any()) } calls {
             (doit: (TransactionHistory) -> Boolean, _: Long, _: Long) ->
             for (txh in txes)
+            {
+                if (doit(txh)) break
+            }
+            Unit
+        }
+    }
+
+    /**
+     * Stub the wallet's tx database the way the real one pages: newest first, only records dated at or below
+     * startingDate, [count] records plus every other record sharing the last one's date.  [beforeChunk] runs before
+     * each call with its 0-based index, outside any lock, standing in for whatever the wallet does between chunks.
+     */
+    private fun stubWalletWithChunkedTxs(account: Account, txes: List<TransactionHistory>, beforeChunk: (Int) -> Unit = {})
+    {
+        val txStore = account.walletDb!!.tx
+        val calls = atomic(0)
+        every { txStore.forEach(any(), any(), any()) } calls {
+            (doit: (TransactionHistory) -> Boolean, startingDate: Long, count: Long) ->
+            beforeChunk(calls.getAndIncrement())
+            val eligible = txes.filter { it.date <= startingDate }.sortedByDescending { it.date }
+            val page = eligible.take(count.coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
+            val lastDate = page.lastOrNull()?.date
+            val chunk = page + eligible.drop(page.size).filter { it.date == lastDate }
+            for (txh in chunk)
             {
                 if (doit(txh)) break
             }
@@ -220,6 +247,72 @@ class TxHistoryTest : WallyUiTestBase()
         assertEquals(0, viewModel.txHistory.value.size)
     }
 
+    @Test
+    fun getAllTransactionsWalksEveryChunk()
+    {
+        val account = mockAccount()
+        stubWalletWithChunkedTxs(account, (0 until 120).map { fakeTxHistory(it) })
+
+        val viewModel = TxHistoryViewModel()
+        viewModel.getAllTransactions(account)
+
+        assertTrue(waitForTxHistorySize(viewModel, 120))
+        assertEquals((0 until 120).map { "mock-tx-$it" }, viewModel.txHistory.value.map { it.transaction.note })
+    }
+
+    @Test
+    fun getAllTransactionsListsATxOnceWhenItsDateMovesBackMidWalk()
+    {
+        val account = mockAccount()
+        val fakes = (0 until 60).map { fakeTxHistory(it) }
+        // Between the first and second chunk, "confirm" the newest tx with a block time older than everything else,
+        // so the second chunk hands it back again
+        stubWalletWithChunkedTxs(account, fakes) { chunk ->
+            if (chunk == 1) fakes[0].date = fakes.last().date - 1
+        }
+
+        val viewModel = TxHistoryViewModel()
+        viewModel.getAllTransactions(account)
+
+        assertTrue(waitForTxHistorySize(viewModel, 60), "got ${viewModel.txHistory.value.size} rows")
+        val notes = viewModel.txHistory.value.map { it.transaction.note }
+        assertEquals(60, notes.toSet().size)
+        assertEquals("mock-tx-0", notes.last())
+    }
+
+    @Test
+    fun getAllTransactionsServesARequestQueuedBehindAFailedWalk()
+    {
+        val failing = mockAccount()
+        val next = mockAccount()
+        val entered = atomic(false)
+        val release = atomic(false)
+        val txStore = failing.walletDb!!.tx
+        every { txStore.forEach(any(), any(), any()) } calls {
+            (_: (TransactionHistory) -> Boolean, _: Long, _: Long) ->
+            entered.value = true
+            val deadline = millinow() + 10_000L
+            while (!release.value && millinow() < deadline) millisleep(10U)
+            throw IllegalStateException("wallet went away")
+        }
+        stubWalletWithTxs(next, (0 until 10).map { fakeTxHistory(it) })
+
+        val viewModel = TxHistoryViewModel()
+        viewModel.getAllTransactions(failing)
+        val deadline = millinow() + 10_000L
+        while (!entered.value && millinow() < deadline) millisleep(10U)
+        assertTrue(entered.value)
+
+        // Lands while the failing walk holds the worker: give its own job time to find the worker busy and bail out,
+        // so the request can only be served by the worker whose walk is about to fail
+        viewModel.getAllTransactions(next)
+        millisleep(500U)
+        release.value = true
+
+        assertTrue(waitForTxHistorySize(viewModel, 10))
+        assertTrue(waitForNotLoading(viewModel))
+    }
+
     // --- TransactionsList composable tests ---
 
     @Test
@@ -327,7 +420,7 @@ class TxHistoryTest : WallyUiTestBase()
           amount = "7777.77",
           currency = "NEXA",
           dateEpochMiliseconds = txh.date,
-          assets = listOf(mockedAsset)
+          assets = listOf(TxAssetFlow(mockedAsset, received = true))
         )
         viewModel.txHistory.value = listOf(fakeTx)
         waitForIdle()
