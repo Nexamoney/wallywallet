@@ -10,11 +10,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.ui.views.MediaInfo
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import info.bitcoinunlimited.www.wally.ui.views.WallyBoringIconButton
 import kotlinx.cinterop.*
+import kotlin.concurrent.Volatile
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.nexa.libnexakotlin.GetLog
@@ -31,8 +38,12 @@ data class MusicViewState(
 
 @OptIn(ExperimentalForeignApi::class)
 class MusicViewModel (musicViewState: MusicViewState, val filePath: String): ViewModel() {
-    private var audioPlayer: AVAudioPlayer? = null
+    @Volatile private var audioPlayer: AVAudioPlayer? = null
     private var timer: NSTimer? = null
+    @Volatile private var loadedPath: String? = null
+    @Volatile private var wantPlaying = false
+    private var loadJob: Job? = null
+    private var playJob: Job? = null
 
     /*
         the `state` variable can be read and observed in Compose.
@@ -43,23 +54,26 @@ class MusicViewModel (musicViewState: MusicViewState, val filePath: String): Vie
     val state = _state.asStateFlow()
 
     init {
-        initPlayer()
+        loadJob = viewModelScope.launch(Dispatchers.Default) { initPlayer() }
     }
 
-    fun initPlayer()
+    fun initPlayer(path: String = filePath)
     {
-        val filePathUrl = NSURL(string = filePath)
+        val filePathUrl = NSURL(string = path)
         try
         {
             audioPlayer = throwError { errorPointer: CPointer<ObjCObjectVar<NSError?>> ->
                 AVAudioPlayer(contentsOfURL = filePathUrl, error = errorPointer)
             }
+            loadedPath = path
             _state.value = _state.value.copy(isPlaying = false, currentTime = 0, duration = audioPlayer?.duration?.toInt() ?: 0)
         }
         catch (e: NSErrorException) {
+            loadedPath = null
             LogIt.error("Error creating AVAudioPlayer(): $e")
         }
         catch (e: Exception) {
+            loadedPath = null
             LogIt.error("Error creating AVAudioPlayer(): $e")
         }
     }
@@ -79,36 +93,66 @@ class MusicViewModel (musicViewState: MusicViewState, val filePath: String): Vie
     }
 
     fun play(filePath: String) {
-        val filePathUrl = NSURL(string = filePath)
-        try {
-            audioPlayer = throwError { errorPointer: CPointer<ObjCObjectVar<NSError?>> ->
-                AVAudioPlayer(contentsOfURL = filePathUrl, error = errorPointer)
+        wantPlaying = true
+        val p = audioPlayer
+        if (p != null && loadedPath == filePath)
+        {
+            startPlayback(p)
+            return
+        }
+        if (playJob?.isActive == true) return  // a second tap while the file is still opening
+        playJob = viewModelScope.launch(Dispatchers.Default) {
+            try
+            {
+                loadJob?.join()
+                if (loadedPath != filePath) initPlayer(filePath)
+                val np = audioPlayer
+                if (np == null || loadedPath != filePath || !wantPlaying) return@launch
+                np.prepareToPlay()
+                // NSTimer needs the main run loop, and stop() may have run while the file was opening
+                withContext(Dispatchers.Main) { if (wantPlaying) startPlayback(np) }
             }
-            audioPlayer?.currentTime = 0.0
-            audioPlayer?.prepareToPlay()
-            audioPlayer?.play()
-            observeSongProgressWithInterval(1.0)
-            _state.value = _state.value.copy(isPlaying = true, currentTime = 0, duration = audioPlayer?.duration?.toInt() ?: 0)
+            catch (e: CancellationException) { throw e }
+            catch (e: Exception) { LogIt.error("Error starting playback: $e") }
         }
-        catch (e: NSErrorException) {
-            LogIt.error("Error creating AVAudioPlayer(): $e")
-        }
-        catch (e: Exception) {
-            LogIt.error("Error creating AVAudioPlayer(): $e")
-        }
+    }
+
+    private fun startPlayback(p: AVAudioPlayer) {
+        p.currentTime = 0.0
+        p.play()
+        timer?.invalidate()
+        observeSongProgressWithInterval(1.0)
+        _state.value = _state.value.copy(isPlaying = true, currentTime = 0, duration = p.duration.toInt())
     }
 
     fun pause()
     {
+        wantPlaying = false
+        playJob?.cancel()
+        timer?.invalidate()
+        timer = null
         audioPlayer?.pause()
         _state.value = _state.value.copy(isPlaying = false)
     }
 
     fun stop()
     {
+        wantPlaying = false
+        playJob?.cancel()
+        timer?.invalidate()
+        timer = null
         audioPlayer?.stop()
         audioPlayer?.currentTime = 0.0
         _state.value = _state.value.copy(isPlaying = false, currentTime = 0)
+    }
+
+    override fun onCleared()
+    {
+        timer?.invalidate()
+        timer = null
+        audioPlayer?.stop()
+        audioPlayer = null
+        super.onCleared()
     }
 
     /**

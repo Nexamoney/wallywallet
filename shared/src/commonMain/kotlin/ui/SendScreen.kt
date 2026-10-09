@@ -613,7 +613,7 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
                             displayNotice(S.sendSuccess, "$atomAmt -> $sendAddress: ${tx.idem}")
                             requestInAppReview()
                             sendSuccessAnimationIsPlaying.update { it + 1 }
-                            viewModelScope.launch(Dispatchers.Main) {
+                            viewModelScope.launch(Dispatchers.Default) {
                                 audioPlayer.playSound(0)
                             }
                         }

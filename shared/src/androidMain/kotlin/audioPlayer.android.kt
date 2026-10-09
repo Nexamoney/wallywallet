@@ -3,8 +3,6 @@ import android.media.AudioAttributes
 import android.media.SoundPool
 import info.bitcoinunlimited.www.wally.ui.soundEnabled
 import info.bitcoinunlimited.www.wally.wallyAndroidApp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.GetLog
 import wpw.src.generated.resources.Res
@@ -53,16 +51,14 @@ actual class AudioPlayer {
     actual suspend fun playSound(id: Int) {
         if (!soundEnabled.value) return
 
-        withContext(Dispatchers.Main.immediate) {
-            try {
-                val soundId = soundIds.getOrNull(id) ?: return@withContext
-                if (soundId != 0) {
-                    soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
-                }
-            } catch (e: Exception) {
-                LogIt.error(e.message ?: "Error playing sound with id: $id")
-                LogIt.error(e.stackTraceToString())
+        try {
+            val soundId = soundIds.getOrNull(id) ?: return
+            if (soundId != 0) {
+                soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f)
             }
+        } catch (e: Exception) {
+            LogIt.error(e.message ?: "Error playing sound with id: $id")
+            LogIt.error(e.stackTraceToString())
         }
     }
 

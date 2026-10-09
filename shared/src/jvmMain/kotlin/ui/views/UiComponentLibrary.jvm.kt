@@ -92,6 +92,59 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 }
 
 
+/** True when a null byte array can still be satisfied from a local file.  A remote URI is a categorical
+ *  refusal in both decoders, so retrying one only delays the fallback. */
+private fun isLocalMedia(mediaUri: String): Boolean =
+  mediaUri.startsWith("http://localhost") || mediaUri.startsWith("file:") || mediaUri.startsWith("/")
+
+private fun decodeSvgMedia(mediaData: ByteArray?, mediaUri: String): ImageBitmap?
+{
+    val loader = SVGLoader()
+    val svgdoc = if (mediaData != null) loader.load(ByteArrayInputStream(mediaData), null, LoaderContext.createDefault() )
+    else try
+    {
+        loader.load(java.net.URL(mediaUri))
+    }
+    catch(e:Exception)
+    {
+        logThreadException(e, "loading svg image")
+        null
+    }
+    svgdoc?.let {
+        val size = it.size()
+        val x = min(1000, size.width.toInt())
+        val y = min(1000, size.height.toInt())
+        val im = BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB)
+        val g: Graphics2D = im.createGraphics()
+        it.render(null, g)
+        g.dispose()
+        return im.toComposeImageBitmap()
+    }
+    return null
+}
+
+private fun decodeRasterMedia(mediaData: ByteArray?, mu: String): ImageBitmap?
+{
+    var bitmap:BufferedImage? = null
+
+    if (mediaData != null) bitmap = ImageIO.read(ByteArrayInputStream(mediaData))
+    else
+    {
+        // Try to grab it locally if its cached here
+        // ImageIO.read(URL) puts up an ugly dialog and aborts if URL does not exist
+        var tryname:String? = null
+        if (mu.startsWith("http://localhost")) tryname = mu.drop("http://localhost".length)
+        else if (mu.startsWith("file://")) tryname = mu.drop(7)
+        else if (mu.startsWith("file:")) tryname = mu.drop(5)
+        else if (mu.startsWith("/")) tryname = mu
+        if ((tryname != null)&& File(tryname).exists())
+        {
+            bitmap = ImageIO.read(File(tryname))
+        }
+    }
+    return bitmap?.toComposeImageBitmap()
+}
+
 /** Provide a view for this piece of media.  If mediaData is non-null, use it as the media file contents.
  * However, still provide mediaUri (or at least dummy.ext) so that we can determine the media type from the file name within the Uri.
  * This composable is "unique" in that rather than providing a callback for contents, it provides a callback that allows you to wrap the final
@@ -121,28 +174,12 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     }
     else if (lcasename.endsWith(".svg", true))
     {
-        val loader = SVGLoader()
-        val svgdoc = if (mediaData != null) loader.load(ByteArrayInputStream(mediaData), null, LoaderContext.createDefault() )
-        else try
+        val im = offThreadDecode(bytes, mu, retry = bytes == null && isLocalMedia(mu)) { decodeSvgMedia(bytes, mu) }.first
+        if (im != null)
         {
-            loader.load(java.net.URL(mediaUri))
-        }
-        catch(e:Exception)
-        {
-            logThreadException(e, "loading svg image")
-            null
-        }
-        svgdoc?.let {
-            val size = it.size()
-            val x = min(1000, size.width.toInt())
-            val y = min(1000, size.height.toInt())
-            val im = BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB)
-            val g: Graphics2D = im.createGraphics()
-            it.render(null, g)
-            g.dispose()
             wrapper(MediaInfo(im.width,im.height,false)) { mod ->
                 val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
-                Image(im.toComposeImageBitmap(), null, m, contentScale = ContentScale.Fit)
+                Image(im, null, m, contentScale = ContentScale.Fit)
             }
         }
     }
@@ -155,27 +192,9 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
       lcasename.endsWith(".heif", true)
     )
     {
-        var bitmap:BufferedImage? = null
+        val im = offThreadDecode(bytes, mu, retry = bytes == null && isLocalMedia(mu)) { decodeRasterMedia(bytes, mu) }.first
+        if (im == null) return false
 
-        if (bytes != null) bitmap = ImageIO.read(ByteArrayInputStream(bytes))
-        else
-        {
-            // Try to grab it locally if its cached here
-            // ImageIO.read(URL) puts up an ugly dialog and aborts if URL does not exist
-            var tryname:String? = null
-            if (mu.startsWith("http://localhost")) tryname = mu.drop("http://localhost".length)
-            else if (mu.startsWith("file://")) tryname = mu.drop(7)
-            else if (mu.startsWith("file:")) tryname = mu.drop(5)
-            else if (mu.startsWith("/")) tryname = mu
-            if ((tryname != null)&& File(tryname).exists())
-            {
-                bitmap = ImageIO.read(File(tryname))
-            }
-        }
-        if (bitmap == null) return false
-
-
-        val im: ImageBitmap = bitmap.toComposeImageBitmap()
         wrapper(MediaInfo(im.width,im.height,false)) { mod ->
             val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
             Image(im, null, m, contentScale = ContentScale.Fit)

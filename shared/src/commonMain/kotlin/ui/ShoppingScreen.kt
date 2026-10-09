@@ -9,6 +9,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +26,6 @@ import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.WallyShoppingRowColors
 import info.bitcoinunlimited.www.wally.ui.views.MpMediaView
 import info.bitcoinunlimited.www.wally.ui.views.WallyBoldText
-import okio.FileNotFoundException
 
 @Composable
 fun ShoppingDestination.compose()
@@ -34,16 +36,13 @@ fun ShoppingDestination.compose()
 
         if (name != null)
         {
-            val imageBytes = try
-            {
-                getResourceFile(name)
+            val imageBytes = remember(name) { mutableStateOf<ByteArray?>(null) }
+            LaunchedEffect(name) {
+                // iOS has no such resource at all, so a missing icon must stay silent
+                later { imageBytes.value = try { getResourceBytes(name) } catch (e: Exception) { null } }
             }
-            catch(e: FileNotFoundException)
-            {
-                null
-            }
-            imageBytes?.let {
-                MpMediaView(null, it.readByteArray(), name) { mi, draw ->
+            imageBytes.value?.let {
+                MpMediaView(null, it, name) { mi, draw ->
                     draw(Modifier.size(64.dp).background(Color.Transparent))
                 }
             }

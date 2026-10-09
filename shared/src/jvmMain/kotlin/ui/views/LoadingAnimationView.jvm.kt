@@ -24,7 +24,7 @@ actual fun LoadingAnimationContent()
     // - https://github.com/JetBrains/compose-multiplatform/issues/3152
 
     loadingAnimation?.let {
-        val animation = Animation.makeFromString(it)
+        val animation = remember(it) { Animation.makeFromString(it) }
         InfiniteAnimation(animation, Modifier.fillMaxSize())
     }
 }
