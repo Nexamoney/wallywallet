@@ -63,7 +63,8 @@ actual fun notify(title: String?, content: String, onlyIfBackground: Boolean): I
             val intent = Intent(wallyAndroidApp, ComposeActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
-            notificationId = app.notify(intent, t, content, currentActivity as AppCompatActivity, overwrite = notificationId)
+            // The app, not an activity: there may be none (backgrounded, or device tests)
+            notificationId = app.notify(intent, t, content, app, overwrite = notificationId)
         }
     }
     return notificationId

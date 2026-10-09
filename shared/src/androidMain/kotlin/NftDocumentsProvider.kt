@@ -65,15 +65,23 @@ class NftDocumentsProvider : ContentProvider()
         fun authority(ctx: Context) = ctx.packageName + ".nfts"
 
         /** Tells anyone browsing the folder that its contents changed (an NFT file was added or removed). */
-        fun notifyChanged(ctx: Context)
-        {
-            ctx.contentResolver.notifyChange(DocumentsContract.buildChildDocumentsUri(authority(ctx), ROOT_DOC_ID), null)
-        }
+        fun notifyChanged(ctx: Context) = notifyChange(ctx, DocumentsContract.buildChildDocumentsUri(authority(ctx), ROOT_DOC_ID))
 
         /** Tells observers that the folder appeared or disappeared (camouflage mode was changed). */
-        fun notifyRootsChanged(ctx: Context)
+        fun notifyRootsChanged(ctx: Context) = notifyChange(ctx, DocumentsContract.buildRootsUri(authority(ctx)))
+
+        /** Android throws if no provider is registered for the authority.  This provider is declared in androidApp's
+         * manifest, so a package without it (e.g. the shared module's device test APK) has nobody to notify. */
+        private fun notifyChange(ctx: Context, uri: Uri)
         {
-            ctx.contentResolver.notifyChange(DocumentsContract.buildRootsUri(authority(ctx)), null)
+            try
+            {
+                ctx.contentResolver.notifyChange(uri, null)
+            }
+            catch (e: SecurityException)
+            {
+                LogIt.info("No NFT documents provider registered for ${uri.authority}: ${e.message}")
+            }
         }
 
         /** The NFT files currently allowed to be shown */
