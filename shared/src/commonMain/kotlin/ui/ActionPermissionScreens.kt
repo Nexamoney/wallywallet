@@ -1188,7 +1188,6 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
     }
 
     Column(Modifier.fillMaxSize()) {
-        Spacer(Modifier.height(16.dp))
         UnlockTile(sess.unlock)
         Spacer(Modifier.height(16.dp))
         sess.pill.draw(false)

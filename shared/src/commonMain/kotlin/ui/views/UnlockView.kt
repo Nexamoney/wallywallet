@@ -91,7 +91,7 @@ fun UnlockTile(vm: UnlockViewModel, enterPin: String = i18n(S.EnterPIN))
     if (curSz != 0)
     {
         LaunchedEffect(Unit) { withFrameNanos { }; focusRequester.requestFocus() }
-        Box(modifier = Modifier.fillMaxWidth().padding(8.dp, 8.dp, 8.dp, 8.dp).wallyTile(wallyAttention).heightIn(0.dp, curSz.dp),
+        Box(modifier = Modifier.fillMaxWidth().padding(8.dp, 16.dp, 8.dp, 8.dp).wallyTile(wallyAttention).heightIn(0.dp, curSz.dp),
           contentAlignment = Alignment.Center) {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.widthIn(2.dp, 8.dp).weight(0.05f))

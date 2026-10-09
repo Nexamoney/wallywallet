@@ -158,8 +158,7 @@ fun IdentityScreen(sess: IdentitySession, nav: ScreenNav)
     val d = sess.idData.collectAsState().value
 
     Column(Modifier.fillMaxSize()) {
-        Spacer(Modifier.height(16.dp))
-        sess?.unlock?.let { UnlockTile(it) }
+        UnlockTile(sess.unlock)
         Spacer(Modifier.height(16.dp))
         sess.pill.draw(false)
         Spacer(Modifier.height(16.dp))
