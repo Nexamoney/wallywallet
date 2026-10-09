@@ -599,8 +599,7 @@
     <string name="Price">कीमत</string>
     <string name="NexaPrice">Nexa कीमत डालें</string>
     <string name="AssetAmountName" formatted="false">आपके पास %amount %assetName है</string>
-    <string name="scanToBuyOne">%name खरीदने के लिए स्कैन करें</string>
-    <string name="scanToBuySeveral">%amount %name खरीदने के लिए स्कैन करें</string>
+    <string name="scanToBuy">खरीदने के लिए स्कैन करें</string>
     <string name="nexaOfferAmount" formatted="false">%amount NEXA में</string>
     <string name="purchaseComplete">खरीद पूरी हुई</string>
     <string name="setTheNexaPrice">Nexa कीमत तय करें</string>

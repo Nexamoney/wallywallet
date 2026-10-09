@@ -601,8 +601,7 @@ Na gode, ku ji daɗin sabon walat ɗinku!</string>
     <string name="Price">Farashi</string>
     <string name="NexaPrice">Shigar da farashin Nexa</string>
     <string name="AssetAmountName" formatted="false">Kuna da %amount %assetName</string>
-    <string name="scanToBuyOne">Duba QR don sayen %name</string>
-    <string name="scanToBuySeveral">Duba QR don sayen %amount %name</string>
+    <string name="scanToBuy">Duba QR don saya</string>
     <string name="nexaOfferAmount" formatted="false">Kan %amount NEXA</string>
     <string name="purchaseComplete">An kammala sayayya</string>
     <string name="setTheNexaPrice">Saita farashin Nexa</string>

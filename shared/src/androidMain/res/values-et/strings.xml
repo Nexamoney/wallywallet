@@ -599,8 +599,7 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="Price">Hind</string>
     <string name="NexaPrice">Sisestage Nexa hind</string>
     <string name="AssetAmountName" formatted="false">Teil on %amount %assetName</string>
-    <string name="scanToBuyOne">Skannige, et osta %name</string>
-    <string name="scanToBuySeveral">Skannige, et osta %amount %name</string>
+    <string name="scanToBuy">Skannige, et osta</string>
     <string name="nexaOfferAmount" formatted="false">Hinnaga %amount NEXA</string>
     <string name="purchaseComplete">Ost sooritatud</string>
     <string name="setTheNexaPrice">Määrake Nexa hind</string>

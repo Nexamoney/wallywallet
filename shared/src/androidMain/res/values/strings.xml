@@ -830,8 +830,7 @@ Thank you and enjoy your new wallet!</string>
     <string name="NexaPrice">Enter Nexa price</string>
     <string name="AssetAmountName" formatted="false">You have %amount %assetName</string>
 
-    <string name="scanToBuyOne">Scan to buy %name</string>
-    <string name="scanToBuySeveral">Scan to buy %amount %name</string>
+    <string name="scanToBuy">Scan to buy</string>
     <string name="nexaOfferAmount" formatted="false">For %amount NEXA</string>
     <string name="purchaseComplete">Purchase Complete</string>
     <string name="setTheNexaPrice">Set the Nexa price</string>

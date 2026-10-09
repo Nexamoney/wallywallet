@@ -601,8 +601,7 @@ Asante na furahia pochi yako mpya!</string>
     <string name="Price">Bei</string>
     <string name="NexaPrice">Weka bei ya Nexa</string>
     <string name="AssetAmountName" formatted="false">Una %amount %assetName</string>
-    <string name="scanToBuyOne">Changanua ili kununua %name</string>
-    <string name="scanToBuySeveral">Changanua ili kununua %amount %name</string>
+    <string name="scanToBuy">Changanua ili kununua</string>
     <string name="nexaOfferAmount" formatted="false">Kwa %amount NEXA</string>
     <string name="purchaseComplete">Ununuzi umekamilika</string>
     <string name="setTheNexaPrice">Weka bei ya Nexa</string>

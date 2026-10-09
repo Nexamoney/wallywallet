@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -113,11 +114,11 @@ fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferVie
     val devMode = preferenceDB.getBoolean(DEV_MODE_PREF, false)
     val name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value) ?: ""
     // If the offer is a unique non-fungible token/asset then the amount should not be displayed
-    val buyText = if (offer.assetQty == 1L && offer.uniqueAsset)
-        i18n(S.scanToBuyOne) % mapOf("name" to name)
+    val itemText = if (offer.assetQty == 1L && offer.uniqueAsset)
+        name
     // Display the amount if the offer is for a fungible token/asset
     else
-        i18n(S.scanToBuySeveral) % mapOf("amount" to  asset.tokenDecimalFromFinestUnit(offer.assetQty).toPlainString(), "name" to name)
+        asset.tokenDecimalFromFinestUnit(offer.assetQty).toPlainString() + " " + name
 
     // If the user leaves without the offer being taken, release the inputs back into the pool of usable UTXOs
     nav.onDepart {
@@ -147,16 +148,36 @@ fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferVie
       verticalArrangement = Arrangement.Top
     ) {
         Spacer(Modifier.height(16.dp))
+        MpMediaView(null, asset.iconBytes.collectAsState().value, asset.iconUri.toString(), hideMusicView = true) { mi, draw ->
+            // aspectRatio() sizes the Surface to the largest media-shaped rect that fits, so the border hugs the media
+            val ar = if (mi.width > 0 && mi.height > 0) mi.width.toFloat()/mi.height.toFloat() else 1f
+            val surfShape = RoundedCornerShape(20.dp)
+            Box(Modifier.fillMaxWidth().height(150.dp), contentAlignment = Alignment.Center) {
+                Surface(shape = surfShape, border = WallyModalOutline, modifier = Modifier.aspectRatio(ar))
+                {
+                    draw(null)
+                }
+            }
+        }
+        Spacer(Modifier.height(16.dp))
         Text(
-          buyText,
+          i18n(S.scanToBuy),
           style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-          color = MaterialTheme.colorScheme.primary
+          color = MaterialTheme.colorScheme.primary,
+          textAlign = TextAlign.Center
+        )
+        Text(
+          itemText,
+          style = MaterialTheme.typography.headlineMedium,
+          color = MaterialTheme.colorScheme.primary,
+          textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(16.dp))
         Text(
           i18n(S.nexaOfferAmount) % mapOf("amount" to offer.priceFormatted),
           style = MaterialTheme.typography.headlineMedium,
-          color = MaterialTheme.colorScheme.primary
+          color = MaterialTheme.colorScheme.primary,
+          textAlign = TextAlign.Center
         )
         if (devMode)
         {
@@ -180,35 +201,6 @@ fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferVie
             .testTag("offerQrCode")
             .clickable { setTextClipboard(offer.uri) }
         )
-
-        Spacer(Modifier.height(16.dp))
-
-        MpMediaView(null, asset.iconBytes.collectAsState().value, asset.iconUri.toString(), hideMusicView = true) { mi, draw ->
-            // Fill the media available space's x or y with the media, but draw a nice box around that space.
-            // Its is amazing that this is so hard.
-            // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.
-            // If the image AR is > the space AR, then the image is relatively wider than the space so we should fill max width, and
-            // set the height as appropriate.  Otherwise do the equivalent but fill max height
-
-            val ar = mi.width.toFloat()/mi.height.toFloat()
-            val surfShape = RoundedCornerShape(20.dp)
-            BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
-                // maxWidth and maxHeight provide the screen size
-                // min W and H appears to provide not 0dp which makes sense but is trivial, but the minimum size of the Box with the modifiers
-                // applied, in this case fillMaxSize(), so the size of the view
-                val spaceAr = this.minWidth/this.minHeight
-
-                val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
-                    Modifier.fillMaxWidth().aspectRatio(ar)
-                else
-                    Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
-
-                Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
-                {
-                    draw(null)
-                }
-            }
-        }
         Spacer(Modifier.height(16.dp))
     }
 }

@@ -600,8 +600,7 @@
     <string name="Price">가격</string>
     <string name="NexaPrice">Nexa 가격 입력</string>
     <string name="AssetAmountName" formatted="false">%amount %assetName 보유 중</string>
-    <string name="scanToBuyOne">스캔하여 %name 구매</string>
-    <string name="scanToBuySeveral">스캔하여 %amount %name 구매</string>
+    <string name="scanToBuy">스캔하여 구매</string>
     <string name="nexaOfferAmount" formatted="false">가격: %amount NEXA</string>
     <string name="purchaseComplete">구매 완료</string>
     <string name="setTheNexaPrice">Nexa 가격을 설정하세요</string>

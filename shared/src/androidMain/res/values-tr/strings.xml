@@ -601,8 +601,7 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="Price">Fiyat</string>
     <string name="NexaPrice">Nexa fiyatını girin</string>
     <string name="AssetAmountName" formatted="false">Elinizde %amount %assetName var</string>
-    <string name="scanToBuyOne">%name satın almak için tarayın</string>
-    <string name="scanToBuySeveral">%amount %name satın almak için tarayın</string>
+    <string name="scanToBuy">Satın almak için tarayın</string>
     <string name="nexaOfferAmount" formatted="false">%amount NEXA karşılığında</string>
     <string name="purchaseComplete">Satın Alma Tamamlandı</string>
     <string name="setTheNexaPrice">Nexa fiyatını belirleyin</string>

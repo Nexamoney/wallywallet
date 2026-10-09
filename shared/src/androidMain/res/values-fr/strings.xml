@@ -602,8 +602,7 @@ Merci et profitez bien de votre nouveau portefeuille !</string>
     <string name="Price">Prix</string>
     <string name="NexaPrice">Saisir le prix en Nexa</string>
     <string name="AssetAmountName" formatted="false">Vous avez %amount %assetName</string>
-    <string name="scanToBuyOne">Scanner pour acheter %name</string>
-    <string name="scanToBuySeveral">Scanner pour acheter %amount %name</string>
+    <string name="scanToBuy">Scanner pour acheter</string>
     <string name="nexaOfferAmount" formatted="false">Pour %amount NEXA</string>
     <string name="purchaseComplete">Achat terminé</string>
     <string name="setTheNexaPrice">Définir le prix en Nexa</string>

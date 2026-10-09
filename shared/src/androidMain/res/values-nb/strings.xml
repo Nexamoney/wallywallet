@@ -594,8 +594,7 @@
     <string name="Price">Pris</string>
     <string name="NexaPrice">Skriv inn Nexa-pris</string>
     <string name="AssetAmountName" formatted="false">Du har %amount %assetName</string>
-    <string name="scanToBuyOne">Skann for å kjøpe %name</string>
-    <string name="scanToBuySeveral">Skann for å kjøpe %amount %name</string>
+    <string name="scanToBuy">Skann for å kjøpe</string>
     <string name="nexaOfferAmount" formatted="false">For %amount NEXA</string>
     <string name="purchaseComplete">Kjøp fullført</string>
     <string name="setTheNexaPrice">Angi Nexa-prisen</string>
