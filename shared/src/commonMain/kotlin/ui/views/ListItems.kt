@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -56,7 +58,7 @@ class AssetListItemViewModel(): ViewModel()
 }
 
 @Composable
-fun AssetListItem(asset: AssetPerAccount, tx: RecentTransactionUIData)
+fun AssetListItem(asset: AssetPerAccount, received: Boolean)
 {
     val viewModel = viewModel { AssetListItemViewModel() }
     val assetInfo = asset.assetInfo
@@ -68,15 +70,15 @@ fun AssetListItem(asset: AssetPerAccount, tx: RecentTransactionUIData)
       colors = ListItemDefaults.colors(
         containerColor = wallyPurpleExtraLight
       ),
-      // Show receive or send
+      // Show whether this asset was received or sent; it need not match the way the native coin moved
       leadingContent = {
           Row {
               Icon(
-                tx.icon,
-                tx.contentDescription,
+                if (received) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward,
+                if (received) "Received asset" else "Sent asset",
               )
               Text(
-                text = tx.type
+                text = if (received) "Received" else "Send"
               )
           }
       },
@@ -117,7 +119,7 @@ fun AssetListItem(asset: AssetPerAccount, tx: RecentTransactionUIData)
                   }
               }
               IconButton(
-                onClick = { openUrl(tx.transaction.chainSelector.explorer("/token/${asset.groupInfo.groupId}")) },
+                onClick = { openUrl(asset.groupInfo.groupId.blockchain.explorer("/token/${asset.groupInfo.groupId}")) },
                 modifier = Modifier.testTag("AssetExplorerButton")
               ) {
                   Icon(

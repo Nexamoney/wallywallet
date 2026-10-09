@@ -35,11 +35,10 @@ class ListItemsTest : WallyUiTestBase()
         val nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri", "info")
         val assetInfo = createAssetInfo("assetName", docUrl, nft)
         val asset = createAssetPerAccount(assetInfo, tokenAmount)
-        val tx = createRecentTransactionUIData(txType)
 
         setContent {
             CompositionLocalProvider(LocalViewModelStoreOwner provides createViewModelStoreOwner()) {
-                AssetListItem(asset, tx)
+                AssetListItem(asset, received = true)
             }
         }
         settle()
@@ -58,11 +57,10 @@ class ListItemsTest : WallyUiTestBase()
         val docUrl = "https://mock.pages.dev"
         val assetInfo = createAssetInfo(assetName, docUrl, null)
         val asset = createAssetPerAccount(assetInfo, 50L)
-        val tx = createRecentTransactionUIData(txType)
 
         setContent {
             CompositionLocalProvider(LocalViewModelStoreOwner provides createViewModelStoreOwner()) {
-                AssetListItem(asset, tx)
+                AssetListItem(asset, received = false)
             }
         }
         settle()
@@ -80,11 +78,10 @@ class ListItemsTest : WallyUiTestBase()
         val nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri", "info")
         val assetInfo = createAssetInfo("uniqueAsset", null, nft)
         val asset = createAssetPerAccount(assetInfo, 1L)
-        val tx = createRecentTransactionUIData()
 
         setContent {
             CompositionLocalProvider(LocalViewModelStoreOwner provides createViewModelStoreOwner()) {
-                AssetListItem(asset, tx)
+                AssetListItem(asset, received = true)
             }
         }
         settle()
@@ -98,11 +95,10 @@ class ListItemsTest : WallyUiTestBase()
     fun assetListItemShowsExplorerButton() = runComposeUiTest {
         val assetInfo = createAssetInfo("explorerAsset", null)
         val asset = createAssetPerAccount(assetInfo, 5L)
-        val tx = createRecentTransactionUIData()
 
         setContent {
             CompositionLocalProvider(LocalViewModelStoreOwner provides createViewModelStoreOwner()) {
-                AssetListItem(asset, tx)
+                AssetListItem(asset, received = true)
             }
         }
         settle()

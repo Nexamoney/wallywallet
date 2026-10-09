@@ -186,21 +186,36 @@ fun TransactionHistoryHeaderCSV(): String
 }
 
 
-fun iTransaction.gatherAssets(addrFilter: (PayAddress?) -> Boolean = { true}):List<AssetPerAccount>
+/** An asset a transaction moved into ([received]) or out of this wallet; [asset]'s tokenAmount is how much moved */
+class TxAssetFlow(val asset: AssetPerAccount, val received: Boolean)
+
+/** How many tokens of each group this transaction moved into (positive) or out of (negative) this wallet.  Each group's
+ * tokens in the outputs paying this wallet ([TransactionHistory.incomingIdxes]) are netted against those in the wallet's
+ * own txos the inputs spend ([TransactionHistory.spentTxos]), so token change cancels out and each group's direction
+ * does not depend on which way the native coin moved (a mint or a swap can receive tokens while paying out native coin).
+ * A group that nets to zero is left out. */
+fun TransactionHistory.netTokenFlows(): Map<GroupId, Long>
 {
-    val ret = mutableListOf<AssetPerAccount>()
-    for (i in outputs)
+    val net = mutableMapOf<GroupId, Long>()
+    fun tally(out: iTxOutput, sign: Long)
     {
-        val addr = i.script.address
-        if (addrFilter(addr))  // only gather assets relevant to this wallet
-        {
-            val gi = i.script.groupInfo(i.amount)
-            if ((gi != null) && (!gi.isAuthority()))  // TODO not dealing with authority txos in Wally mobile
-            {
-                val ai = wallyApp?.assetManager?.track(gi.groupId, null)
-                ai?.let { ret.add(AssetPerAccount(gi, ai)) }
-            }
-        }
+        val gi = out.script.groupInfo(out.amount)
+        if ((gi != null) && (!gi.isAuthority()))  // TODO not dealing with authority txos in Wally mobile
+            net[gi.groupId] = (net[gi.groupId] ?: 0L) + sign * gi.tokenAmount
+    }
+    for (i in incomingIdxes) tx.outputs.getOrNull(i.toInt())?.let { tally(it, 1) }
+    for (txo in spentTxos) tally(txo, -1)
+    return net.filterValues { it != 0L }
+}
+
+/** The assets this transaction moved into or out of this wallet, per [netTokenFlows] */
+fun TransactionHistory.gatherAssets(): List<TxAssetFlow>
+{
+    val ret = mutableListOf<TxAssetFlow>()
+    for ((groupId, amt) in netTokenFlows())
+    {
+        val ai = wallyApp?.assetManager?.track(groupId, null)
+        ai?.let { ret.add(TxAssetFlow(AssetPerAccount(GroupInfo(groupId, if (amt > 0) amt else -amt), ai), amt > 0)) }
     }
     return ret
 }
@@ -425,19 +440,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                             }
 
                             if (txh.note.isNotBlank()) CenteredText(text = txh.note)
-                            val assets = txh.tx.gatherAssets({
-                                // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
-                                // If its sending, just look for assets that left this wallet
-                                // If its receiving, look for assets coming in.
-                                // TODO: look at inputs and accurately describing sending/receiving
-                                if (it == null) false
-                                else
-                                {
-                                    val result: Boolean = if (amt > 0) acc.wallet.isWalletAddress(it)
-                                    else !acc.wallet.isWalletAddress(it)
-                                    result
-                                }
-                            })
+                            val assets = txh.gatherAssets().map { it.asset }
                             if (assets.isNotEmpty())
                             {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
