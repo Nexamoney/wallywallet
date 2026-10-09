@@ -29,7 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.DoneButtonOptional
+import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.assignAccountsGuiSlots
+import info.bitcoinunlimited.www.wally.ui.nav
 import info.bitcoinunlimited.www.wally.ui.theme.wallyAttention
 import info.bitcoinunlimited.www.wally.ui.theme.wallyTile
 import info.bitcoinunlimited.www.wally.ui.theme.wallyTileHeader
@@ -46,6 +48,9 @@ class UnlockViewModel(val account:MutableStateFlow<Account?>): ViewModel()
     val unlockTileSize = MutableStateFlow<Int>(0)
     var unlockThen: (() -> Unit)? = null
 
+    // The screen that asked for the PIN, so that leaving it can abandon the request
+    var requestedOnScreen: ScreenId? = null
+
     val pin = MutableStateFlow<String>("")
 
     fun triggerUnlockDialog(show: Boolean = true, then: (() -> Unit)? = {})
@@ -54,12 +59,22 @@ class UnlockViewModel(val account:MutableStateFlow<Account?>): ViewModel()
         {
             clearAlerts()
             unlockThen = then
+            requestedOnScreen = nav.currentScreen.value
             unlockTileSize.interpolate(300, null, 300)
         }
         else
         {
+            requestedOnScreen = null
             unlockTileSize.interpolate(300, null, 0)
         }
+    }
+
+    /** The user navigated off the screen that asked for the PIN, so drop the request and whatever it was going to do. */
+    fun abandonUnlockDialog()
+    {
+        pin.value = ""
+        unlockThen = null
+        triggerUnlockDialog(false)
     }
 
     internal fun attemptUnlock(pin: String, dismissOnFailure: Boolean = true)
@@ -87,8 +102,29 @@ fun UnlockTile(vm: UnlockViewModel, enterPin: String = i18n(S.EnterPIN))
     //val pin = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val curSz = vm.unlockTileSize.collectAsState().value
+    val focusManager = LocalFocusManager.current
+    val ime = LocalSoftwareKeyboardController.current
+    val currentScreen = nav.currentScreen.collectAsState().value
+    val showing = curSz != 0
 
-    if (curSz != 0)
+    // Navigating away (typically the back button) abandons the PIN request rather than carrying it to the next screen
+    LaunchedEffect(currentScreen) {
+        if (showing && (vm.requestedOnScreen != currentScreen)) vm.abandonUnlockDialog()
+    }
+
+    // Whatever dismissed the tile, the soft keyboard it opened has to go with it
+    var wasShowing by remember { mutableStateOf(false) }
+    LaunchedEffect(showing) {
+        if (showing) wasShowing = true
+        else if (wasShowing)
+        {
+            wasShowing = false
+            focusManager.clearFocus(true)
+            ime?.hide()
+        }
+    }
+
+    if (showing)
     {
         LaunchedEffect(Unit) { withFrameNanos { }; focusRequester.requestFocus() }
         Box(modifier = Modifier.fillMaxWidth().padding(8.dp, 16.dp, 8.dp, 8.dp).wallyTile(wallyAttention).heightIn(0.dp, curSz.dp),
