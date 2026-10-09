@@ -91,9 +91,19 @@ final class DeepLinkUITests: XCTestCase {
 
     private func dismissSafariOnboarding() {
         // First-run Safari shows onboarding popovers ("close" / "Close" buttons).
-        for label in ["close", "Close"] {
-            let button = safari.buttons[label]
-            if button.waitForExistence(timeout: 2) { button.tap() }
+        // Tapping one popover can animate another "Close" button out, so only
+        // tap a button that is still hittable, and wait for it to disappear
+        // before looking again. Otherwise tap() re-resolves a vanished element
+        // and hard-fails the test.
+        let closeButtons = safari.buttons.matching(
+            NSPredicate(format: "identifier ==[c] 'close' OR label ==[c] 'close'"))
+        for _ in 0..<3 {
+            let button = closeButtons.firstMatch
+            guard button.waitForExistence(timeout: 2), button.isHittable else { return }
+            button.tap()
+            let gone = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "exists == false"), object: button)
+            _ = XCTWaiter.wait(for: [gone], timeout: 3)
         }
     }
 }
