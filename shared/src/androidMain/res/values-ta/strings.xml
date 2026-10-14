@@ -763,4 +763,6 @@
     <string name="tlvView">காண்க</string>
     <string name="tlvNoEarlyOpen">இந்த வால்ட்டை முன்கூட்டியே திறக்க வழியில்லை. அதுவே டைம் லாக் வால்ட்டின் நோக்கம்.</string>
     <string name="tlvPublicOnChain">இந்த வால்ட்டிற்கு நிதி வந்த கணத்திலிருந்து திறப்பு உயரமும் தொகையும் செயினில் பொதுவானவை — முகவரி உள்ள எவரும் அவற்றைப் படிக்கலாம்.</string>
+    <string name="scanToBuy">வாங்க ஸ்கேன் செய்யவும்</string>
+    <string name="nftFilesPerm">சொத்து கோப்புகளை அணுகு</string>
 </resources>

@@ -766,4 +766,6 @@ Salamat at mag-enjoy sa bago mong wallet!</string>
     <string name="tlvView">Tingnan</string>
     <string name="tlvNoEarlyOpen">Walang paraan para buksan nang maaga ang vault na ito. Iyon ang layunin ng time lock vault.</string>
     <string name="tlvPublicOnChain">Ang unlock height at ang halaga ay pampubliko sa chain mula nang mapondohan ang vault na ito — mababasa ito ng sinumang may address.</string>
+    <string name="scanToBuy">I-scan para bumili</string>
+    <string name="nftFilesPerm">I-access ang mga file ng asset</string>
 </resources>

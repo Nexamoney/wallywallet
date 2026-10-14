@@ -763,4 +763,6 @@
     <string name="tlvView">দেখুন</string>
     <string name="tlvNoEarlyOpen">এই ভল্ট আগে খোলার কোনো উপায় নেই। টাইম লক ভল্টের উদ্দেশ্যই এটি।</string>
     <string name="tlvPublicOnChain">এই ভল্টে তহবিল আসার মুহূর্ত থেকে আনলক উচ্চতা ও পরিমাণ চেইনে প্রকাশ্য — ঠিকানা থাকলে যে কেউ পড়তে পারে।</string>
+    <string name="scanToBuy">কিনতে স্ক্যান করুন</string>
+    <string name="nftFilesPerm">সম্পদের ফাইলে অ্যাক্সেস</string>
 </resources>

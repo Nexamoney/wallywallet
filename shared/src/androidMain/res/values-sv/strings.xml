@@ -768,4 +768,5 @@ Tack och njut av din nya plånbok!</string>
     <string name="tlvView">Visa</string>
     <string name="tlvNoEarlyOpen">Det finns inget sätt att öppna det här valvet i förtid. Det är hela poängen med ett tidslås.</string>
     <string name="tlvPublicOnChain">Upplåsningshöjden och beloppet är offentliga på kedjan från det ögonblick valvet finansierades — alla med adressen kan läsa dem.</string>
+    <string name="nftFilesPerm">Åtkomst till tillgångsfiler</string>
 </resources>

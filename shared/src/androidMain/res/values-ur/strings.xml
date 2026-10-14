@@ -766,4 +766,6 @@
     <string name="tlvView">دیکھیں</string>
     <string name="tlvNoEarlyOpen">اس والٹ کو وقت سے پہلے کھولنے کا کوئی طریقہ نہیں۔ ٹائم لاک والٹ کا مقصد یہی ہے۔</string>
     <string name="tlvPublicOnChain">ان لاک ہائٹ اور رقم اس والٹ میں رقم آنے کے لمحے سے چین پر عوامی ہیں — ایڈریس رکھنے والا کوئی بھی انہیں پڑھ سکتا ہے۔</string>
+    <string name="scanToBuy">خریدنے کے لیے اسکین کریں</string>
+    <string name="nftFilesPerm">اثاثہ فائلوں تک رسائی</string>
 </resources>

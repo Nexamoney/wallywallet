@@ -763,4 +763,6 @@
     <string name="tlvView">查看</string>
     <string name="tlvNoEarlyOpen">没有任何办法提前打开此保险库。这正是时间锁保险库的用途。</string>
     <string name="tlvPublicOnChain">从此保险库注资的那一刻起，解锁高度和金额就在链上公开 — 任何持有该地址的人都能读取。</string>
+    <string name="scanToBuy">扫码购买</string>
+    <string name="nftFilesPerm">访问资产文件</string>
 </resources>

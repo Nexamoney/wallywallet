@@ -764,4 +764,5 @@ Terima kasih dan selamat menikmati dompet baru Anda!</string>
     <string name="tlvView">Lihat</string>
     <string name="tlvNoEarlyOpen">Tidak ada cara membuka brankas ini lebih awal. Itulah tujuan kunci waktu.</string>
     <string name="tlvPublicOnChain">Tinggi pembukaan dan jumlahnya bersifat publik di rantai sejak brankas ini didanai — siapa pun yang memiliki alamatnya dapat membacanya.</string>
+    <string name="nftFilesPerm">Akses file aset</string>
 </resources>

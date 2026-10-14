@@ -766,4 +766,6 @@ Obrigado e boa utilização da sua nova carteira!</string>
     <string name="tlvView">Ver</string>
     <string name="tlvNoEarlyOpen">Não há como abrir este cofre antes do prazo. Esse é justamente o propósito de um cofre com bloqueio temporal.</string>
     <string name="tlvPublicOnChain">A altura de desbloqueio e o valor são públicos na cadeia desde o momento em que este cofre foi financiado — qualquer pessoa com o endereço pode lê-los.</string>
+    <string name="scanToBuy">Digitalizar para comprar</string>
+    <string name="nftFilesPerm">Aceder aos ficheiros dos ativos</string>
 </resources>

@@ -766,4 +766,6 @@
     <string name="tlvView">ଦେଖନ୍ତୁ</string>
     <string name="tlvNoEarlyOpen">ଏହି ଭଲ୍ଟ ଶୀଘ୍ର ଖୋଲିବାର କୌଣସି ଉପାୟ ନାହିଁ। ଟାଇମ୍ ଲକ୍ ଭଲ୍ଟର ଉଦ୍ଦେଶ୍ୟ ହିଁ ତାହା।</string>
     <string name="tlvPublicOnChain">ଏହି ଭଲ୍ଟରେ ପାଣ୍ଠି ଆସିବା ମୁହୂର୍ତ୍ତରୁ ଅନଲକ୍ ଉଚ୍ଚତା ଏବଂ ପରିମାଣ ଚେନ୍‌ରେ ସାର୍ବଜନୀନ — ଠିକଣା ଥିବା ଯେକେହି ପଢ଼ିପାରିବେ।</string>
+    <string name="scanToBuy">କିଣିବା ପାଇଁ ସ୍କାନ କରନ୍ତୁ</string>
+    <string name="nftFilesPerm">ସମ୍ପତ୍ତି ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ କରନ୍ତୁ</string>
 </resources>

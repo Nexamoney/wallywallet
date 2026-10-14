@@ -766,4 +766,6 @@ Matur nuwun lan sugeng nganggo dompet anyar panjenengan!</string>
     <string name="tlvView">Deleng</string>
     <string name="tlvNoEarlyOpen">Ora ana cara mbukak brankas iki luwih awal. Iku tujuane brankas kunci wektu.</string>
     <string name="tlvPublicOnChain">Dhuwur bukak lan jumlahe umum ing rantai wiwit brankas iki diisi dana — sapa wae sing duwe alamat bisa maca.</string>
+    <string name="scanToBuy">Pindai kanggo tuku</string>
+    <string name="nftFilesPerm">Akses berkas aset</string>
 </resources>

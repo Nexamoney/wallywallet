@@ -766,4 +766,6 @@
     <string name="tlvView">જુઓ</string>
     <string name="tlvNoEarlyOpen">આ વૉલ્ટ વહેલું ખોલવાનો કોઈ રસ્તો નથી. ટાઇમ લૉક વૉલ્ટનો હેતુ જ એ છે.</string>
     <string name="tlvPublicOnChain">આ વૉલ્ટમાં ભંડોળ આવ્યું તે ક્ષણથી અનલૉક ઊંચાઈ અને રકમ ચેઇન પર જાહેર છે — સરનામું ધરાવનાર કોઈપણ તે વાંચી શકે છે.</string>
+    <string name="scanToBuy">ખરીદવા માટે સ્કેન કરો</string>
+    <string name="nftFilesPerm">એસેટ ફાઇલો ઍક્સેસ કરો</string>
 </resources>

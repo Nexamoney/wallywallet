@@ -766,4 +766,6 @@
     <string name="tlvView">Переглянути</string>
     <string name="tlvNoEarlyOpen">Відкрити це сховище раніше неможливо. У цьому й полягає сенс часового замка.</string>
     <string name="tlvPublicOnChain">Висота розблокування та сума публічні в ланцюжку з моменту поповнення сховища — їх може прочитати будь-хто, хто має адресу.</string>
+    <string name="scanToBuy">Скануйте, щоб купити</string>
+    <string name="nftFilesPerm">Доступ до файлів активів</string>
 </resources>

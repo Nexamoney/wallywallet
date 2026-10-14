@@ -764,4 +764,5 @@ Cuando termine, presione la flecha atrás (arriba a la izquierda).</string>
     <string name="tlvView">Ver</string>
     <string name="tlvNoEarlyOpen">No hay forma de abrir esta bóveda antes de tiempo. Ese es el propósito de un bloqueo temporal.</string>
     <string name="tlvPublicOnChain">La altura de desbloqueo y el importe son públicos en la cadena desde que se financió esta bóveda — cualquiera con la dirección puede leerlos.</string>
+    <string name="nftFilesPerm">Acceder a los archivos de activos</string>
 </resources>

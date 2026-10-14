@@ -766,4 +766,6 @@
     <string name="tlvView">हेर्नुहोस्</string>
     <string name="tlvNoEarlyOpen">यो भल्ट चाँडो खोल्ने कुनै उपाय छैन। टाइम लक भल्टको उद्देश्य नै त्यही हो।</string>
     <string name="tlvPublicOnChain">यो भल्टमा रकम आएको क्षणदेखि अनलक उचाइ र रकम चेनमा सार्वजनिक छन् — ठेगाना भएको जोकोहीले पढ्न सक्छ।</string>
+    <string name="scanToBuy">किन्न स्क्यान गर्नुहोस्</string>
+    <string name="nftFilesPerm">सम्पत्ति फाइलहरूमा पहुँच</string>
 </resources>

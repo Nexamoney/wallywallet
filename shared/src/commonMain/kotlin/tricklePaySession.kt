@@ -627,6 +627,27 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     /** The outpoints the request itself named as inputs (ours or not); everything else in a completed tx was added by the completer */
     private fun requestNamedOutpoints(): Set<iTxOutpoint> = originalTx?.inputs?.mapNotNull { it.spendable.outpoint }?.toSet() ?: emptySet()
 
+    fun accountsOwningInputs(tx: iTransaction): List<Account>
+    {
+        val outpoints = tx.inputs.mapNotNull { it.spendable.outpoint }
+        if (outpoints.isEmpty()) return emptyList()
+        return (pill.choices ?: emptyList()).filter { acc -> outpoints.any { acc.wallet.getTxo(it) != null } }
+    }
+
+    /** Only an account holding the coins [tx] spends can sign them */
+    private fun selectAccountOwningInputs(tx: iTransaction)
+    {
+        val owners = accountsOwningInputs(tx)
+        if (owners.isEmpty()) return
+        pill.choices = owners
+        val cur = pill.account.value
+        if (cur == null || cur !in owners)
+        {
+            LogIt.info(sourceLoc() + ": TDPP request spends coins of account ${owners[0].name}, not of the selected ${cur?.name}: using ${owners[0].name}")
+            pill.account.value = owners[0]
+        }
+    }
+
     /** The inputs the completer added to [tx] */
     private fun completerAddedOutpoints(tx: iTransaction): Set<iTxOutpoint>
     {
@@ -1492,6 +1513,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         //originalTx = tx.clone()
         originalTx = txFor(chainSelector!!, BCHserialized(txBin, SerializationType.NETWORK))  // TODO tx.clone()
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
+        selectAccountOwningInputs(tx)
 
         // Analyze and sign transaction
         proposalLock.lock {
@@ -2240,14 +2262,9 @@ fun submitTdppCompletion(
             }
             LogIt.info(sourceLoc() + " TP originator response: $data")
 
-            // Match the originator's response against known error/success patterns. Substring
-            // matching mirrors the original logic — keeps the success-by-default behaviour for
-            // bodies we don't recognise. "rejected" is added to cover descriptive error strings
-            // like "Tx rejected by peer" that don't include the literal "invalid" / "error" tokens.
-            val lower = data.lowercase()
-            when
+            when (classifyOriginatorReply(data))
             {
-                data == "unknown session" ->
+                OriginatorReply.UNKNOWN_SESSION ->
                     if (resolved.compareAndSet(false, true))
                     {
                         LogIt.info(sourceLoc() + " TDPP originator response classified as unknown-session")
@@ -2258,7 +2275,7 @@ fun submitTdppCompletion(
                         displayWarning(i18n(S.TpNoSession), i18n(S.TpNoSession))
                     }
 
-                lower.contains("invalid") || lower.contains("error") || lower.contains("rejected") ->
+                OriginatorReply.REJECTED ->
                 {
                     if (resolved.compareAndSet(false, true))
                     {
@@ -2269,7 +2286,7 @@ fun submitTdppCompletion(
                     }
                 }
 
-                else ->
+                OriginatorReply.ACCEPTED ->
                 {
                     if (!completed)
                     {
@@ -2297,3 +2314,14 @@ fun submitTdppCompletion(
     }
 }
 
+enum class OriginatorReply { UNKNOWN_SESSION, REJECTED, ACCEPTED }
+
+/** Unrecognised replies count as accepted */
+fun classifyOriginatorReply(data: String): OriginatorReply
+{
+    if (data == "unknown session") return OriginatorReply.UNKNOWN_SESSION
+    val lower = data.lowercase()
+    if (lower.contains("invalid") || lower.contains("error") || lower.contains("rejected") || lower.contains("not signed"))
+        return OriginatorReply.REJECTED
+    return OriginatorReply.ACCEPTED
+}

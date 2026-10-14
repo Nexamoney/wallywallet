@@ -766,4 +766,6 @@
     <string name="tlvView">表示</string>
     <string name="tlvNoEarlyOpen">この金庫を早く開ける方法はありません。それがタイムロック金庫の目的です。</string>
     <string name="tlvPublicOnChain">解除ブロック高と金額は、この金庫に入金された時点からチェーン上で公開されます — アドレスを知る人なら誰でも読めます。</string>
+    <string name="scanToBuy">スキャンして購入</string>
+    <string name="nftFilesPerm">アセットファイルへのアクセス</string>
 </resources>

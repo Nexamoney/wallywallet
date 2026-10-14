@@ -764,4 +764,5 @@ Aitäh ja head uue rahakoti kasutamist!</string>
     <string name="tlvView">Vaata</string>
     <string name="tlvNoEarlyOpen">Seda varakambrit ei saa ennetähtaegselt avada. See ongi ajaluku mõte.</string>
     <string name="tlvPublicOnChain">Avanemise kõrgus ja summa on ahelas avalikud alates hetkest, mil see varakamber rahastati — igaüks, kellel on aadress, saab neid lugeda.</string>
+    <string name="nftFilesPerm">Juurdepääs varade failidele</string>
 </resources>

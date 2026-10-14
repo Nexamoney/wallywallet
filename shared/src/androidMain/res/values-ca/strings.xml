@@ -764,4 +764,5 @@ Gràcies i gaudiu de la vostra cartera nova!</string>
     <string name="tlvView">Veure</string>
     <string name="tlvNoEarlyOpen">No hi ha manera d\'obrir aquesta caixa forta abans d\'hora. Aquest és el propòsit d\'un bloqueig temporal.</string>
     <string name="tlvPublicOnChain">L\'alçada de desbloqueig i l\'import són públics a la cadena des del moment en què es va finançar aquesta caixa forta — qualsevol persona amb l\'adreça els pot llegir.</string>
+    <string name="nftFilesPerm">Accedeix als fitxers dels actius</string>
 </resources>

@@ -763,4 +763,6 @@ Cảm ơn bạn và chúc bạn dùng ví mới thật vui!</string>
     <string name="tlvView">Xem</string>
     <string name="tlvNoEarlyOpen">Không có cách nào mở két này sớm hơn. Đó chính là mục đích của két khóa thời gian.</string>
     <string name="tlvPublicOnChain">Chiều cao mở khóa và số tiền được công khai trên chuỗi từ lúc két này được nạp — ai có địa chỉ đều có thể đọc.</string>
+    <string name="scanToBuy">Quét để mua</string>
+    <string name="nftFilesPerm">Truy cập tệp tài sản</string>
 </resources>
