@@ -765,4 +765,5 @@ Na gode, ku ji daɗin sabon walat ɗinku!</string>
     <string name="tlvView">Duba</string>
     <string name="tlvNoEarlyOpen">Babu hanyar buɗe wannan taskar da wuri. Wannan shine manufar taskar kulle lokaci.</string>
     <string name="tlvPublicOnChain">Tsayin buɗewa da adadin a bayyane suke a kan chain tun lokacin da aka saka kuɗi a wannan taskar — duk mai adireshin zai iya karanta su.</string>
+    <string name="nftFilesPerm">Samun damar fayilolin kadara</string>
 </resources>

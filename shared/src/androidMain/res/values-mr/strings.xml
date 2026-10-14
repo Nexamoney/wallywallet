@@ -766,4 +766,6 @@
     <string name="tlvView">पहा</string>
     <string name="tlvNoEarlyOpen">हा व्हॉल्ट लवकर उघडण्याचा कोणताही मार्ग नाही. टाइम लॉक व्हॉल्टचा हेतूच तो आहे.</string>
     <string name="tlvPublicOnChain">या व्हॉल्टमध्ये निधी आल्याच्या क्षणापासून अनलॉक उंची आणि रक्कम चेनवर सार्वजनिक आहेत — पत्ता असलेला कोणीही ते वाचू शकतो.</string>
+    <string name="scanToBuy">खरेदी करण्यासाठी स्कॅन करा</string>
+    <string name="nftFilesPerm">मालमत्ता फाइल्समध्ये प्रवेश</string>
 </resources>

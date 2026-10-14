@@ -766,4 +766,6 @@ Nígbà tí ẹ bá parí, ẹ tẹ ọfà ẹ̀yìn (òkè òsì).</string>
     <string name="tlvView">Wo</string>
     <string name="tlvNoEarlyOpen">Kò sí ọ̀nà láti ṣí àpótí yìí ní kùtùkùtù. Ìyẹn ni ète àpótí ìtìpa àkókò.</string>
     <string name="tlvPublicOnChain">Gíga ìṣí àti iye owó wà ní gbangba lórí ẹ̀wọ̀n láti ìgbà tí a ti fi owó sí àpótí yìí — ẹnikẹ́ni tó ní àdírẹ́sì lè kà wọ́n.</string>
+    <string name="scanToBuy">Ṣàyẹ̀wò láti rà</string>
+    <string name="nftFilesPerm">Wọlé sí àwọn fáìlì ohun-ìní</string>
 </resources>

@@ -765,4 +765,5 @@ Asante na furahia pochi yako mpya!</string>
     <string name="tlvView">Tazama</string>
     <string name="tlvNoEarlyOpen">Hakuna njia ya kufungua kasha hili mapema. Ndio kusudi la kasha la kufunga kwa muda.</string>
     <string name="tlvPublicOnChain">Urefu wa kufungua na kiasi ni vya wazi kwenye mnyororo tangu kasha hili lilipowekewa fedha — yeyote mwenye anwani anaweza kuvisoma.</string>
+    <string name="nftFilesPerm">Fikia faili za mali</string>
 </resources>

@@ -766,4 +766,6 @@
     <string name="tlvView">مشاهده</string>
     <string name="tlvNoEarlyOpen">هیچ راهی برای باز کردن زودتر این گاوصندوق نیست. هدف گاوصندوق قفل زمانی همین است.</string>
     <string name="tlvPublicOnChain">ارتفاع باز شدن و مبلغ از لحظهٔ تأمین وجه این گاوصندوق روی زنجیره عمومی است — هرکس آدرس را داشته باشد می‌تواند آن‌ها را بخواند.</string>
+    <string name="scanToBuy">برای خرید اسکن کنید</string>
+    <string name="nftFilesPerm">دسترسی به فایل‌های دارایی</string>
 </resources>

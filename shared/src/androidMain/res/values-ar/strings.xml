@@ -763,4 +763,6 @@
     <string name="tlvView">عرض</string>
     <string name="tlvNoEarlyOpen">لا توجد طريقة لفتح هذه الخزنة مبكرًا. هذا هو الغرض من خزنة القفل الزمني.</string>
     <string name="tlvPublicOnChain">ارتفاع الفتح والمبلغ علنيان على السلسلة منذ لحظة تمويل هذه الخزنة — يمكن لأي شخص لديه العنوان قراءتهما.</string>
+    <string name="scanToBuy">امسح للشراء</string>
+    <string name="nftFilesPerm">الوصول إلى ملفات الأصول</string>
 </resources>

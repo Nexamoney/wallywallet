@@ -762,4 +762,5 @@ Danke und viel Vergnügen mit Ihrem neuen Wallet!</string>
     <string name="tlvView">Anzeigen</string>
     <string name="tlvNoEarlyOpen">Es gibt keine Möglichkeit, diesen Tresor vorzeitig zu öffnen. Genau das ist der Zweck eines Zeitschlosses.</string>
     <string name="tlvPublicOnChain">Die Entsperrhöhe und der Betrag sind ab der Finanzierung dieses Tresors öffentlich auf der Chain — jeder mit der Adresse kann sie lesen.</string>
+    <string name="nftFilesPerm">Zugriff auf Asset-Dateien</string>
 </resources>

@@ -191,4 +191,74 @@ class TricklePayAssetRegtestTest : WallyUiTestBase(openAllAccounts = false)
         val matches = requestAssets(account, "authorityonly.regtest", assetFilterHex(groupId))
         assertEquals(0, matches.size, "an authority-only wallet must offer nothing: $matches")
     }
+
+    /** MR !895: list an asset with one account, select another, then receive the sale offer */
+    @Test
+    fun saleOfferIsSignedByTheAccountHoldingTheAsset()
+    {
+        val rpc = rpcOrNull() ?: return
+        val seller = newFundedAccount(rpc, "tpOfferSeller", 2000)
+        val other = newFundedAccount(rpc, "tpOfferOther", 2000)
+
+        val nodeAddr = rpc.getnewaddress()
+        val (groupIdStr, _) = rpc.tokenNew(address = nodeAddr, tokenTicker = "SOT", tokenName = "SaleOfferTest")
+        rpc.tokenMint(groupIdStr, nodeAddr, 1000)
+        rpc.generate(1)
+        val groupId = GroupId(groupIdStr)
+        val qty = 25L
+        rpc.tokenSend(groupIdStr, seller.wallet.getNewAddress().toString(), qty.toInt())
+        rpc.generate(1)
+        waitUntil(60_000, "seller received the tokens") { groupUtxos(seller, groupId).first.isNotEmpty() }
+
+        val listed = requestAssets(seller, "offer.regtest", assetFilterHex(groupId)).single()
+        val asset = groupUtxos(seller, groupId).first.single()
+        assertEquals(listed.outpointHash, asset.outpoint!!.toHex())
+
+        val buyer = PayAddress(rpc.getnewaddress())
+        fun offer(): iTransaction
+        {
+            val tx = txFor(cs)
+            tx.add(txInputFor(Spendable(cs, asset.outpoint!!, asset.amount)))
+            tx.add(txOutputFor(cs, asset.amount, buyer.groupedLockingScript(groupId, qty)))
+            return tx
+        }
+        fun offerSession(flags: Int): TricklePaySession
+        {
+            val tp = TricklePaySession(wallyApp!!.tpDomains)
+            tp.handleTxAutopay(Uri.parse("tdpp://offer.regtest/tx?chain=${chainToURI[cs]}&tx=${offer().toHex()}&flags=$flags&inamt=${asset.amount}"))
+            return tp
+        }
+        val niftyFlags = TDPP_FLAG_PARTIAL or TDPP_FLAG_NOFUND
+
+        setSelectedAccount(other)
+
+        // The original issue: signed by the selected account, the asset input stays unsigned
+        val old = TricklePaySession(wallyApp!!.tpDomains)
+        old.chainSelector = cs
+        old.pill.account.value = other
+        val unsigned = offer()
+        val oldAnalysis = old.analyzeCompleteAndSignTx(unsigned, asset.amount, niftyFlags)
+        assertEquals(other, oldAnalysis.account)
+        assertTrue(oldAnalysis.myInputTokenInfo.isEmpty())
+        assertEquals(0, unsigned.inputs[0].script.size)
+
+        val partial = offerSession(niftyFlags)
+        val pa = partial.proposalAnalysis.value!!
+        assertEquals(seller, pa.account, "analysed with ${pa.account.name}")
+        assertEquals(listOf(seller), partial.pill.choices)
+        assertEquals(qty, pa.myInputTokenInfo[groupId])
+        assertTrue(partial.proposedTx!!.inputs[0].script.size > 0, "the asset input was left unsigned")
+        partial.stopWatching()
+        partial.releaseIfUndecided()
+
+        // The holder's signature is valid on chain: complete the offer and broadcast it
+        setSelectedAccount(other)
+        val funded = offerSession(0)
+        assertEquals(seller, funded.proposalAnalysis.value!!.account)
+        assertEquals(null, funded.proposalAnalysis.value!!.completionException)
+        rpc.sendrawtransaction(funded.proposedTx!!.toHex())
+        rpc.generate(1)
+        waitUntil(60_000, "the asset left the seller") { groupUtxos(seller, groupId).first.isEmpty() }
+        funded.stopWatching()
+    }
 }

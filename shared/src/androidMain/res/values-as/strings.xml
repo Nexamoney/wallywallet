@@ -763,4 +763,6 @@
     <string name="tlvView">চাওক</string>
     <string name="tlvNoEarlyOpen">এই ভল্ট আগতীয়াকৈ খোলাৰ কোনো উপায় নাই। টাইম লক ভল্টৰ উদ্দেশ্য সেয়াই।</string>
     <string name="tlvPublicOnChain">এই ভল্টত পুঁজি অহাৰ মুহূৰ্তৰ পৰা আনলক উচ্চতা আৰু পৰিমাণ চেইনত ৰাজহুৱা — ঠিকনা থকা যিকোনোৱে পঢ়িব পাৰে।</string>
+    <string name="scanToBuy">কিনিবলৈ স্কেন কৰক</string>
+    <string name="nftFilesPerm">সম্পদৰ ফাইলসমূহ চাওক</string>
 </resources>

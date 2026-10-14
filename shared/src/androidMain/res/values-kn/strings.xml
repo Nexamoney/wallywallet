@@ -766,4 +766,6 @@
     <string name="tlvView">ವೀಕ್ಷಿಸಿ</string>
     <string name="tlvNoEarlyOpen">ಈ ವಾಲ್ಟ್ ಅನ್ನು ಮೊದಲೇ ತೆರೆಯಲು ಯಾವುದೇ ಮಾರ್ಗವಿಲ್ಲ. ಟೈಮ್ ಲಾಕ್ ವಾಲ್ಟ್‌ನ ಉದ್ದೇಶವೇ ಅದು.</string>
     <string name="tlvPublicOnChain">ಈ ವಾಲ್ಟ್‌ಗೆ ಹಣ ಬಂದ ಕ್ಷಣದಿಂದ ಅನ್‌ಲಾಕ್ ಎತ್ತರ ಮತ್ತು ಮೊತ್ತ ಚೈನ್‌ನಲ್ಲಿ ಸಾರ್ವಜನಿಕವಾಗಿರುತ್ತದೆ — ವಿಳಾಸ ಇರುವ ಯಾರಾದರೂ ಅವುಗಳನ್ನು ಓದಬಹುದು.</string>
+    <string name="scanToBuy">ಖರೀದಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</string>
+    <string name="nftFilesPerm">ಆಸ್ತಿ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</string>
 </resources>

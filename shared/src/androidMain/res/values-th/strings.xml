@@ -763,4 +763,6 @@
     <string name="tlvView">ดู</string>
     <string name="tlvNoEarlyOpen">ไม่มีทางเปิดตู้นิรภัยนี้ก่อนกำหนด นั่นคือจุดประสงค์ของตู้นิรภัยล็อกเวลา</string>
     <string name="tlvPublicOnChain">ความสูงที่ปลดล็อกและจำนวนเงินเป็นข้อมูลสาธารณะบนเชนตั้งแต่ตอนที่ตู้นิรภัยนี้ได้รับเงิน — ใครก็ตามที่มีที่อยู่สามารถอ่านได้</string>
+    <string name="scanToBuy">สแกนเพื่อซื้อ</string>
+    <string name="nftFilesPerm">เข้าถึงไฟล์สินทรัพย์</string>
 </resources>

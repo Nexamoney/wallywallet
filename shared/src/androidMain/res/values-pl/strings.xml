@@ -763,4 +763,6 @@ Dziękujemy i życzymy udanego korzystania z nowego portfela!</string>
     <string name="tlvView">Pokaż</string>
     <string name="tlvNoEarlyOpen">Nie da się otworzyć tego skarbca wcześniej. Na tym właśnie polega skarbiec z blokadą czasową.</string>
     <string name="tlvPublicOnChain">Wysokość odblokowania i kwota są publiczne w łańcuchu od chwili zasilenia tego skarbca — każdy, kto zna adres, może je odczytać.</string>
+    <string name="scanToBuy">Zeskanuj, aby kupić</string>
+    <string name="nftFilesPerm">Dostęp do plików zasobów</string>
 </resources>

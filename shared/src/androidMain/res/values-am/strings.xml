@@ -766,4 +766,6 @@
     <string name="tlvView">ተመልከት</string>
     <string name="tlvNoEarlyOpen">ይህን ካዝና ቀድሞ ለመክፈት ምንም መንገድ የለም። የጊዜ ቁልፍ ካዝና ዓላማ ያ ነው።</string>
     <string name="tlvPublicOnChain">የመክፈቻ ቁመቱ እና መጠኑ ይህ ካዝና ገንዘብ ከገባበት ቅጽበት ጀምሮ በሰንሰለቱ ላይ ይፋ ናቸው — አድራሻው ያለው ማንኛውም ሰው ሊያነባቸው ይችላል።</string>
+    <string name="scanToBuy">ለመግዛት ይቃኙ</string>
+    <string name="nftFilesPerm">የንብረት ፋይሎችን ይድረሱ</string>
 </resources>
