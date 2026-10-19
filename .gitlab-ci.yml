@@ -292,7 +292,7 @@ jvmTest-ubuntu-docker:
   <<: *skip-on-schedule
   stage: test
   tags:
-    - berlin
+    - newport # Wally's own Docker runner; the job starts the regtest node bundled in the nexaadk image
   script:
     # Start the regtest Nexa node bundled in the docker image, because our tests use it.
     - /root/nexa/bin/nexad --daemon
@@ -314,7 +314,7 @@ systemTestRecoverTestnet:
     - when: manual
   stage: test
   tags:
-    - berlin
+    - newport
   allow_failure: true
   script:
     - ./gradlew :shared:cleanJvmTest :shared:jvmTest -PsystemTests --tests "ui.RecoverTestnetSystemTest"
