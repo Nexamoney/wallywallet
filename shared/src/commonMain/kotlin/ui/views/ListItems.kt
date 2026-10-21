@@ -165,7 +165,11 @@ fun AssetListItem(asset: AssetPerAccount, received: Boolean)
 @Composable
 fun RecentTransactionListItem(tx: RecentTransactionUIData)
 {
+    val txh = tx.transaction
+    // Regtest explorers are localhost, so no link
+    val uri = txh.chainSelector.explorer("/tx/${txh.tx.idem.toHex()}").takeIf { it.startsWith("https://") }
     ListItem(
+      modifier = if (uri != null) Modifier.clickable { openUrl(uri) } else Modifier,
       colors = ListItemDefaults.colors(
         containerColor = wallyPurpleExtraLight
       ),
