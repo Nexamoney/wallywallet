@@ -99,8 +99,10 @@ final class DeepLinkUITests: XCTestCase {
             NSPredicate(format: "identifier ==[c] 'close' OR label ==[c] 'close'"))
         for _ in 0..<3 {
             let button = closeButtons.firstMatch
-            guard button.waitForExistence(timeout: 2), button.isHittable else { return }
-            button.tap()
+            guard button.waitForExistence(timeout: 2), button.isHittable,
+                  let frame = try? button.snapshot().frame else { return }
+            safari.coordinate(withNormalizedOffset: .zero)
+                .withOffset(CGVector(dx: frame.midX, dy: frame.midY)).tap()
             let gone = XCTNSPredicateExpectation(
                 predicate: NSPredicate(format: "exists == false"), object: button)
             _ = XCTWaiter.wait(for: [gone], timeout: 3)
