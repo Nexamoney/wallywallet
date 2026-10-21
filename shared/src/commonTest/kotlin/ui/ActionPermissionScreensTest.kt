@@ -24,9 +24,13 @@ import kotlin.random.Random
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.sourceLoc
+import com.eygraber.uri.Uri
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
-private val LogIt = GetLog("BU.wally.perm")
+private const val SENDTO_ADDRESS = "nexa:nqtsq5g5fxz9qyup04g288qy2pxf9aemxjysnzqnn2nky4xw"
 
 @OptIn(ExperimentalTestApi::class)
 class ActionPermissionScreensTest : WallyUiTestBase()
@@ -129,6 +133,21 @@ class ActionPermissionScreensTest : WallyUiTestBase()
             onNodeWithText(i18n(S.accept)).assertIsDisplayed()
             onNodeWithText(i18n(S.deny)).assertIsDisplayed()
         }
+    }
+
+    /** A proposal spending 123456 finest units (1,234.56 NEXA, but native DecimalFormat omits the grouping separator) */
+    private fun sendToSession(whenDone: ((String, String, Boolean?) -> Unit)? = null): TricklePaySession
+    {
+        val tp = TricklePaySession(wallyApp!!.tpDomains, whenDone)
+        tp.proposalUrl = Uri.parse("https://shop.example.com/sendto?cookie=k1")
+        tp.host = "shop.example.com"
+        tp.port = 443
+        tp.cookie = "k1"
+        tp.topic = "checkout"
+        tp.reason = "Coffee and a bun"
+        tp.askReasons.add("over the automatic limit")
+        tp.proposedDestinations = listOf(Pair(PayAddress(SENDTO_ADDRESS), 123456L))
+        return tp
     }
 
     @Test
@@ -382,19 +401,92 @@ class ActionPermissionScreensTest : WallyUiTestBase()
     @Test
     fun sendToPermScreenTest()
     {
-        val account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
-        try
-        {
-            runComposeUiTest {
-                val tp = TricklePaySession(wallyApp!!.tpDomains)
-                setContent {
-                    SendToPermScreen( tp, ScreenNav())
-                }
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val tp = sendToSession()
+            tp.pill.account.value = account
+            setContent {
+                SendToPermScreen(tp, ScreenNav())
             }
+            settle()
+
+            onNodeWithText(i18n(S.TpSendToTitle)).assertIsDisplayed()
+            // The merchant is identified by authority plus topic so the user can see who is asking
+            onNodeWithText("shop.example.com:checkout").assertIsDisplayed()
+            onNodeWithText(i18n(S.TpInAccount)).assertIsDisplayed()
+            onNodeWithText(account.nameAndChain).assertIsDisplayed()
+            onNodeWithText(i18n(S.TpSpends)).assertIsDisplayed()
+            onNodeWithText(account.cryptoFormat.format(account.fromFinestUnit(123456L)) + " " + account.currencyCode).assertIsDisplayed()
+            onNodeWithText("Coffee and a bun").assertIsDisplayed()
+            onNodeWithText(i18n(S.TpWhyNotAuto)).assertIsDisplayed()
+            onNodeWithText("over the automatic limit").assertIsDisplayed()
+            onNodeWithText(i18n(S.accept)).assertIsDisplayed()
+            onNodeWithText(i18n(S.deny)).assertIsDisplayed()
         }
-        finally
-        {
-            wallyApp!!.deleteAccount(account)
+    }
+
+    @Test
+    fun sendToPermScreenNoProposalTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            // Nothing has been proposed, so there is nothing to approve and the screen draws nothing
+            val tp = TricklePaySession(wallyApp!!.tpDomains)
+            tp.pill.account.value = account
+            setContent {
+                SendToPermScreen(tp, ScreenNav())
+            }
+            settle()
+            onNodeWithTag("ActionPermissionScreensColumn").assertDoesNotExist()
+        }
+    }
+
+    @Test
+    fun sendToPermScreenNoDestinationsTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            // A proposal url without destinations is equally unapprovable
+            val tp = TricklePaySession(wallyApp!!.tpDomains)
+            tp.proposalUrl = Uri.parse("https://shop.example.com/sendto?cookie=k1")
+            tp.pill.account.value = account
+            setContent {
+                SendToPermScreen(tp, ScreenNav())
+            }
+            settle()
+            onNodeWithTag("ActionPermissionScreensColumn").assertDoesNotExist()
+        }
+    }
+
+    @Test
+    fun sendToPermScreenDenyTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            var replyUrl: String? = null
+            val tp = sendToSession { url, _, _ -> replyUrl = url }
+            tp.pill.account.value = account
+            val screenNav = ScreenNav()
+            screenNav.go(ScreenId.SendToPerm)
+            setContent {
+                SendToPermScreen(tp, screenNav)
+            }
+            settle()
+
+            val before = alerts.size
+            onNodeWithText(i18n(S.deny)).performClick()
+            settle()
+
+            // A denial is reported back to the merchant rather than silently dropped
+            val url = assertNotNull(replyUrl)
+            assertTrue(url.startsWith("https://shop.example.com:443/sendto?cookie=k1"), url)
+            assertTrue(url.contains("resultcode=300"), url)
+            assertAlerted(before, i18n(S.TpSendRequestDenied), AlertLevel.NOTICE)
+            assertEquals(ScreenId.Splash, screenNav.currentScreen.value)
         }
     }
 
@@ -434,24 +526,140 @@ class ActionPermissionScreensTest : WallyUiTestBase()
     @Test
     fun identityPermScreenUriNullTest()
     {
-        val account = AccountImpl("identityPerm", chainSelector = cs)
-        try
-        {
-            runComposeUiTest {
-                setSelectedAccount(account)
-                val nav = ScreenNav()
-                val sess = IdentitySession(null)
-                setContent {
-                    IdentityPermScreen(sess, nav)
-                }
-                LogIt.info("Identity perm screen up")
-                settle()
-                LogIt.info("Identity perm test done")
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val screenNav = ScreenNav()
+            screenNav.go(ScreenId.IdentityOp)
+            val before = alerts.size
+            val sess = IdentitySession(null)
+            setContent {
+                IdentityPermScreen(sess, screenNav)
             }
+            settle()
+
+            // Without a uri there is nothing to consent to, so the screen refuses and pops itself
+            assertAlerted(before, i18n(S.badQR))
+            assertEquals(ScreenId.Splash, screenNav.currentScreen.value)
+            onNodeWithText(i18n(S.yes)).assertDoesNotExist()
         }
-        finally
-        {
-            account.delete()
+    }
+
+    @Test
+    fun identityPermScreenLoginTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val sess = IdentitySession(Uri.parse("nexid://perm.example.com/?op=login&chal=c1"))
+            setContent {
+                IdentityPermScreen(sess, ScreenNav())
+            }
+            settle()
+
+            onNodeWithText(i18n(S.provideLoginQuestion)).assertIsDisplayed()
+            // The user must be able to see which service is asking and which account answers
+            onNodeWithText("perm.example.com").assertIsDisplayed()
+            onNodeWithText(i18n(S.TpInAccount)).assertIsDisplayed()
+            // The name appears both in the account pill and under the "in account" heading
+            assertTrue(onAllNodesWithText(account.name).fetchSemanticsNodes().isNotEmpty())
+            onNodeWithText(i18n(S.yes)).assertIsDisplayed()
+            onNodeWithText(i18n(S.no)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun identityPermScreenSignTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val sess = IdentitySession(Uri.parse("nexid://signperm.example.com/?op=sign&sign=Marzipan"))
+            setContent {
+                IdentityPermScreen(sess, ScreenNav())
+            }
+            settle()
+
+            onNodeWithText(i18n(S.signDataQuestion)).assertIsDisplayed()
+            // Never sign something the user has not been shown
+            onNodeWithText(i18n(S.textToSign)).assertIsDisplayed()
+            onNodeWithText("Marzipan").assertIsDisplayed()
+            onNodeWithText(i18n(S.yes)).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun identityPermScreenSignBinaryTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val sess = IdentitySession(Uri.parse("nexid://signhex.example.com/?op=sign&signhex=68656c6c6f"))
+            setContent {
+                IdentityPermScreen(sess, ScreenNav())
+            }
+            settle()
+
+            onNodeWithText(i18n(S.binaryToSign)).assertIsDisplayed()
+            onNodeWithText("68656c6c6f").assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun identityPermScreenSignWithoutDataTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val before = alerts.size
+            val sess = IdentitySession(Uri.parse("nexid://nodata.example.com/?op=sign"))
+            setContent {
+                IdentityPermScreen(sess, ScreenNav())
+            }
+            settle()
+            assertAlerted(before, i18n(S.nothingToSign))
+        }
+    }
+
+    @Test
+    fun identityPermScreenInvalidOpTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val screenNav = ScreenNav()
+            screenNav.go(ScreenId.IdentityOp)
+            val before = alerts.size
+            val sess = IdentitySession(Uri.parse("nexid://bogus.example.com/?op=teleport"))
+            setContent {
+                IdentityPermScreen(sess, screenNav)
+            }
+            settle()
+
+            assertAlerted(before, i18n(S.badQR))
+            assertEquals(ScreenId.Splash, screenNav.currentScreen.value)
+        }
+    }
+
+    @Test
+    fun identityPermScreenNoCandidateAccountsTest()
+    {
+        val account = mockAccount()
+        setSelectedAccount(account)
+        runComposeUiTest {
+            val screenNav = ScreenNav()
+            screenNav.go(ScreenId.IdentityOp)
+            val before = alerts.size
+            val sess = IdentitySession(Uri.parse("nexid://nocand.example.com/?op=login&chal=c1"))
+            // An empty list means no account can serve this request; null would mean "any of them"
+            sess.candidateAccounts = ListifyMap(emptyMap(), { true }, Comparator { a: String, b: String -> a.compareTo(b) })
+            setContent {
+                IdentityPermScreen(sess, screenNav)
+            }
+            settle()
+
+            assertAlerted(before, i18n(S.NoAccounts))
+            assertEquals(ScreenId.Splash, screenNav.currentScreen.value)
         }
     }
 
