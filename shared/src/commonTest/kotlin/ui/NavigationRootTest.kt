@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -277,7 +278,7 @@ class NavigationRootTest: WallyUiTestBase()
 {
     @Test fun unlockTest()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             val ap = AccountPill(wallyApp!!.focusedAccount)
             val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
             setContent {
@@ -301,7 +302,7 @@ class NavigationRootTest: WallyUiTestBase()
     }
     @Test fun navRootTest()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {
                 override val viewModelStore: ViewModelStore = ViewModelStore()
@@ -464,7 +465,7 @@ class NavigationRootTest: WallyUiTestBase()
 
         val wInsets = WindowInsets(0, 0, 0, 0)
 
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {
                 override val viewModelStore: ViewModelStore = ViewModelStore()
