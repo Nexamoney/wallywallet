@@ -766,4 +766,5 @@ Merci et profitez bien de votre nouveau portefeuille !</string>
     <string name="tlvNoEarlyOpen">Il n\'existe aucun moyen d\'ouvrir ce coffre plus tôt. C\'est justement le but d\'un coffre à verrouillage temporel.</string>
     <string name="tlvPublicOnChain">La hauteur de déverrouillage et le montant sont publics sur la chaîne dès que ce coffre est approvisionné — quiconque possède l\'adresse peut les lire.</string>
     <string name="nftFilesPerm">Accéder aux fichiers des actifs</string>
+    <string name="signReservedMessage">Signature refusée : ce message pourrait servir à se connecter à un site en votre nom</string>
 </resources>

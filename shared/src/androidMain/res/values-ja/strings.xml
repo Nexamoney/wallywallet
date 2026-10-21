@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">解除ブロック高と金額は、この金庫に入金された時点からチェーン上で公開されます — アドレスを知る人なら誰でも読めます。</string>
     <string name="scanToBuy">スキャンして購入</string>
     <string name="nftFilesPerm">アセットファイルへのアクセス</string>
+    <string name="signReservedMessage">署名を拒否しました：このメッセージはあなたとしてサイトにログインするために使われる可能性があります</string>
 </resources>

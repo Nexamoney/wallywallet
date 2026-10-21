@@ -765,4 +765,5 @@ Cảm ơn bạn và chúc bạn dùng ví mới thật vui!</string>
     <string name="tlvPublicOnChain">Chiều cao mở khóa và số tiền được công khai trên chuỗi từ lúc két này được nạp — ai có địa chỉ đều có thể đọc.</string>
     <string name="scanToBuy">Quét để mua</string>
     <string name="nftFilesPerm">Truy cập tệp tài sản</string>
+    <string name="signReservedMessage">Đã từ chối ký: tin nhắn này có thể được dùng để đăng nhập vào một trang web dưới danh nghĩa của bạn</string>
 </resources>

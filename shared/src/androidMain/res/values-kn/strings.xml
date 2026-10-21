@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">ಈ ವಾಲ್ಟ್‌ಗೆ ಹಣ ಬಂದ ಕ್ಷಣದಿಂದ ಅನ್‌ಲಾಕ್ ಎತ್ತರ ಮತ್ತು ಮೊತ್ತ ಚೈನ್‌ನಲ್ಲಿ ಸಾರ್ವಜನಿಕವಾಗಿರುತ್ತದೆ — ವಿಳಾಸ ಇರುವ ಯಾರಾದರೂ ಅವುಗಳನ್ನು ಓದಬಹುದು.</string>
     <string name="scanToBuy">ಖರೀದಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</string>
     <string name="nftFilesPerm">ಆಸ್ತಿ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</string>
+    <string name="signReservedMessage">ಸಹಿ ಮಾಡಲು ನಿರಾಕರಿಸಲಾಗಿದೆ: ಈ ಸಂದೇಶವನ್ನು ನಿಮ್ಮಂತೆ ಸೈಟ್‌ಗೆ ಲಾಗ್ ಇನ್ ಮಾಡಲು ಬಳಸಬಹುದು</string>
 </resources>

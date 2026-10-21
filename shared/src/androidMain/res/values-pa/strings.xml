@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">ਇਸ ਵਾਲਟ ਵਿੱਚ ਰਕਮ ਆਉਣ ਦੇ ਪਲ ਤੋਂ ਅਨਲਾਕ ਉਚਾਈ ਅਤੇ ਰਕਮ ਚੇਨ \'ਤੇ ਜਨਤਕ ਹਨ — ਪਤਾ ਰੱਖਣ ਵਾਲਾ ਕੋਈ ਵੀ ਇਨ੍ਹਾਂ ਨੂੰ ਪੜ੍ਹ ਸਕਦਾ ਹੈ।</string>
     <string name="scanToBuy">ਖਰੀਦਣ ਲਈ ਸਕੈਨ ਕਰੋ</string>
     <string name="nftFilesPerm">ਸੰਪਤੀ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ</string>
+    <string name="signReservedMessage">ਦਸਤਖਤ ਕਰਨ ਤੋਂ ਇਨਕਾਰ: ਇਸ ਸੁਨੇਹੇ ਨਾਲ ਤੁਹਾਡੇ ਨਾਂ \'ਤੇ ਕਿਸੇ ਸਾਈਟ ਵਿੱਚ ਲੌਗ ਇਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</string>
 </resources>

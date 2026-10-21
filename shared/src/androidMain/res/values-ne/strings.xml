@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">यो भल्टमा रकम आएको क्षणदेखि अनलक उचाइ र रकम चेनमा सार्वजनिक छन् — ठेगाना भएको जोकोहीले पढ्न सक्छ।</string>
     <string name="scanToBuy">किन्न स्क्यान गर्नुहोस्</string>
     <string name="nftFilesPerm">सम्पत्ति फाइलहरूमा पहुँच</string>
+    <string name="signReservedMessage">हस्ताक्षर गर्न अस्वीकार गरियो: यो सन्देश तपाईंको रूपमा कुनै साइटमा लग इन गर्न प्रयोग हुन सक्छ</string>
 </resources>

@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">આ વૉલ્ટમાં ભંડોળ આવ્યું તે ક્ષણથી અનલૉક ઊંચાઈ અને રકમ ચેઇન પર જાહેર છે — સરનામું ધરાવનાર કોઈપણ તે વાંચી શકે છે.</string>
     <string name="scanToBuy">ખરીદવા માટે સ્કેન કરો</string>
     <string name="nftFilesPerm">એસેટ ફાઇલો ઍક્સેસ કરો</string>
+    <string name="signReservedMessage">સહી કરવાનો ઇનકાર કર્યો: આ સંદેશનો ઉપયોગ તમારા નામે કોઈ સાઇટમાં લૉગ ઇન કરવા માટે થઈ શકે છે</string>
 </resources>

@@ -765,4 +765,5 @@ Hvala in uživajte v novi denarnici!</string>
     <string name="tlvNoEarlyOpen">Tega trezorja ni mogoče odpreti predčasno. Prav to je namen časovnega zaklepa.</string>
     <string name="tlvPublicOnChain">Višina odklepa in znesek sta na verigi javna od trenutka, ko je bil trezor financiran — vsakdo z naslovom ju lahko prebere.</string>
     <string name="nftFilesPerm">Dostop do datotek sredstev</string>
+    <string name="signReservedMessage">Podpis zavrnjen: s tem sporočilom bi se lahko nekdo prijavil na spletno mesto kot vi</string>
 </resources>

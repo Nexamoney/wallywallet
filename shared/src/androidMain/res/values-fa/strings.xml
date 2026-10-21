@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">ارتفاع باز شدن و مبلغ از لحظهٔ تأمین وجه این گاوصندوق روی زنجیره عمومی است — هرکس آدرس را داشته باشد می‌تواند آن‌ها را بخواند.</string>
     <string name="scanToBuy">برای خرید اسکن کنید</string>
     <string name="nftFilesPerm">دسترسی به فایل‌های دارایی</string>
+    <string name="signReservedMessage">امضا رد شد: از این پیام می‌توان برای ورود به یک سایت به جای شما استفاده کرد</string>
 </resources>

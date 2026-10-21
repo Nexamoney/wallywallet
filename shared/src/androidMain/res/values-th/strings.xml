@@ -765,4 +765,5 @@
     <string name="tlvPublicOnChain">ความสูงที่ปลดล็อกและจำนวนเงินเป็นข้อมูลสาธารณะบนเชนตั้งแต่ตอนที่ตู้นิรภัยนี้ได้รับเงิน — ใครก็ตามที่มีที่อยู่สามารถอ่านได้</string>
     <string name="scanToBuy">สแกนเพื่อซื้อ</string>
     <string name="nftFilesPerm">เข้าถึงไฟล์สินทรัพย์</string>
+    <string name="signReservedMessage">ปฏิเสธการลงนาม: ข้อความนี้อาจถูกใช้เพื่อเข้าสู่ระบบเว็บไซต์ในนามของคุณ</string>
 </resources>

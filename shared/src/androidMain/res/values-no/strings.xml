@@ -760,4 +760,5 @@
     <string name="tlvNoEarlyOpen">Det finnes ingen måte å åpne dette hvelvet tidlig på. Det er selve poenget med en tidslås.</string>
     <string name="tlvPublicOnChain">Opplåsingshøyden og beløpet er offentlige på kjeden fra det øyeblikket hvelvet ble finansiert — alle med adressen kan lese dem.</string>
     <string name="nftFilesPerm">Tilgang til ressursfiler</string>
+    <string name="signReservedMessage">Nektet å signere: denne meldingen kan brukes til å logge inn på et nettsted som deg</string>
 </resources>

@@ -767,4 +767,5 @@ Teşekkürler, yeni cüzdanınızın keyfini çıkarın!</string>
     <string name="tlvNoEarlyOpen">Bu kasayı erken açmanın bir yolu yok. Zaman kilidinin amacı da budur.</string>
     <string name="tlvPublicOnChain">Kilit açma yüksekliği ve tutar, kasa fonlandığı andan itibaren zincirde herkese açıktır — adrese sahip olan herkes okuyabilir.</string>
     <string name="nftFilesPerm">Varlık dosyalarına erişim</string>
+    <string name="signReservedMessage">İmzalama reddedildi: bu mesaj sizin adınıza bir siteye giriş yapmak için kullanılabilir</string>
 </resources>

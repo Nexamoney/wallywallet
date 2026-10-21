@@ -768,4 +768,5 @@ Grazie e buon uso del tuo nuovo portafoglio!</string>
     <string name="tlvNoEarlyOpen">Non c\'è modo di aprire questa cassaforte in anticipo. È proprio questo lo scopo di un blocco temporale.</string>
     <string name="tlvPublicOnChain">L\'altezza di sblocco e l\'importo sono pubblici sulla catena dal momento in cui questa cassaforte è stata finanziata — chiunque abbia l\'indirizzo può leggerli.</string>
     <string name="nftFilesPerm">Accedi ai file degli asset</string>
+    <string name="signReservedMessage">Firma rifiutata: questo messaggio potrebbe essere usato per accedere a un sito al posto tuo</string>
 </resources>

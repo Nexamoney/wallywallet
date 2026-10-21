@@ -765,4 +765,5 @@
     <string name="tlvPublicOnChain">从此保险库注资的那一刻起，解锁高度和金额就在链上公开 — 任何持有该地址的人都能读取。</string>
     <string name="scanToBuy">扫码购买</string>
     <string name="nftFilesPerm">访问资产文件</string>
+    <string name="signReservedMessage">已拒绝签名：此消息可能被用来以您的身份登录某个网站</string>
 </resources>

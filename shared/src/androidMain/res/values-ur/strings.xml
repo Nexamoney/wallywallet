@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">ان لاک ہائٹ اور رقم اس والٹ میں رقم آنے کے لمحے سے چین پر عوامی ہیں — ایڈریس رکھنے والا کوئی بھی انہیں پڑھ سکتا ہے۔</string>
     <string name="scanToBuy">خریدنے کے لیے اسکین کریں</string>
     <string name="nftFilesPerm">اثاثہ فائلوں تک رسائی</string>
+    <string name="signReservedMessage">دستخط سے انکار: یہ پیغام آپ کے نام سے کسی سائٹ میں لاگ ان کرنے کے لیے استعمال ہو سکتا ہے</string>
 </resources>

@@ -768,4 +768,5 @@ Matur nuwun lan sugeng nganggo dompet anyar panjenengan!</string>
     <string name="tlvPublicOnChain">Dhuwur bukak lan jumlahe umum ing rantai wiwit brankas iki diisi dana — sapa wae sing duwe alamat bisa maca.</string>
     <string name="scanToBuy">Pindai kanggo tuku</string>
     <string name="nftFilesPerm">Akses berkas aset</string>
+    <string name="signReservedMessage">Ora gelem tandha tangan: pesen iki bisa digunakake kanggo mlebu situs minangka sampeyan</string>
 </resources>
