@@ -475,7 +475,10 @@ fun mockAccount(
         every { flags } calls { flagsBacking }
         every { flags = any() } calls { (v: ULong) -> flagsBacking = v }
 
-        // Fastforward
+        // Fastforward.  autoFastForwardAttempted is pinned true (and writes swallowed) because
+        // fastForwardAvailable() is an unmockable extension that is always true for a mock's
+        // wallet (syncedDate 0), so a focused mock would otherwise send the
+        // autoFastForwardFocusedAccount collector into fastForwardAccount().
         every { fastforward } returns null
         every { fastforwardStatus } returns null
         every { fastForwardStatusState } returns fastForwardStatusFlow
