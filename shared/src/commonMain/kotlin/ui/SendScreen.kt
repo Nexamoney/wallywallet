@@ -209,6 +209,11 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
 
     override fun setAccount(account: Account)
     {
+        // What is being confirmed was checked against the previous account (lock, chain, balance), so a different account must go
+        // through onSendButtonClicked again before anything is sent from it
+        val prior = this@SendScreenViewModelImpl.account.value
+        if ((prior != null) && (prior != account) && uiState.value.isConfirming)
+            uiState.value = uiState.value.copy(isConfirming = false)
         // Always set this, regardless of whether it was already set
         // because state may have changed (like other assets chosen)
         this@SendScreenViewModelImpl.account.value = account
@@ -524,6 +529,23 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
         }
         // Smart cast to non-nullable types
         val sendAddress: PayAddress = sendAddressTmp
+
+        // The account may have changed (or been locked) since onSendButtonClicked checked it, so check again right before spending
+        if (account.locked)
+        {
+            uiState.value = uiState.value.copy(isConfirming = false)
+            unlock.triggerUnlockDialog(true) {
+                onSendButtonClicked()
+            }
+            displayWarning(i18n(S.accountLocked), "")
+            return
+        }
+        if (account.wallet.chainSelector != sendAddress.blockchain)
+        {
+            uiState.value = uiState.value.copy(isConfirming = false)
+            displayError(S.chainIncompatibleWithAddress, sendAddress.toString())
+            return
+        }
 
         displayNotice(S.Processing, null)
 
