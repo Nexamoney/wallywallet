@@ -49,6 +49,7 @@ import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.SyncViewModel
 import info.bitcoinunlimited.www.wally.ui.SyncViewModelAccount
 import info.bitcoinunlimited.www.wally.ui.SyncViewModelImpl
+import info.bitcoinunlimited.www.wally.ui.accountGuiSlots
 import info.bitcoinunlimited.www.wally.ui.nav
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyTileHeader
@@ -519,7 +520,8 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         var dupSide by remember { mutableStateOf(0f)}
         var midSnap by remember { mutableStateOf(false) }
 
-        var actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
+        val allAccounts = accountGuiSlots.collectAsState().value
+        var actLst: List<Account> = choices ?: allAccounts
 
         Box(modifier = Modifier.fillMaxWidth().onSizeChanged { boxSize = it }.pointerInput(Unit) {
             var dragAmount = 0f
@@ -534,7 +536,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                       wallyApp?.let {
                           if (account.value == null)  // how would this happen if the pill is showing, but anyway set to first or last depending on swipe dir.
                           {
-                              if (actLst?.isNotEmpty() == true)
+                              if (actLst.isNotEmpty())
                               {
                                   changed = true
                               }
@@ -558,7 +560,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                           // Animate the box entirely off the screen, pulling the other one into the center
                           animatedOffset.animateTo(boxSize.width.toFloat() * dragAmount.sign, tw, velocity)
                           // reload the current list of accounts whenever I finish a drag
-                          actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
+                          actLst = choices ?: accountGuiSlots.value
                           // go to the next account
                           val nextAccount = nextAct(dupSide, account.value, actLst)
                           midSnap = true  // Tell the render to use the same account for both pills since we are transitioning them

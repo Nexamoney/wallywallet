@@ -267,6 +267,12 @@ fun TransactionHistory.gatherRelevantAddresses():Set<PayAddress>
 internal val txHistoryInfo = MutableStateFlow<Array<MutableStateFlow<TransactionHistory?>>?>(null)
 internal val txHistoryAccount = MutableStateFlow<Account?>(null)
 private val txHistoryMutex = Mutex("txHistory")
+
+// Assets per transaction idem, computed once off the UI thread.  Only touched from composition, null means not computed yet.
+private val txAssetInfo = mutableMapOf<String, MutableStateFlow<List<AssetPerAccount>?>>()
+// Idems already handed to the pool, so a scroll pass that recomposes a row whose job is still running does
+// not enqueue it a second time.  Composition-only, and cleared with txAssetInfo.
+private val txAssetsQueued = mutableSetOf<String>()
 fun calcTxHistoryInfo(acc : Account)
 {
     val numTxes = min(10000, acc.wallet.getTxCount()+10)
@@ -312,14 +318,6 @@ fun makeShareableHistory(acc : Account):String
 }
 
 
-@Composable
-internal fun allNull(txes: Array<MutableStateFlow<TransactionHistory?>>):Boolean
-{
-    for (tx in txes)
-        if (tx.collectAsState().value != null) return false
-    return true
-}
-
 /**
  * Transaction history for an account
  */
@@ -335,6 +333,8 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
     if (txHistoryAccount.value != acc)
     {
         txHistoryInfo.value = null
+        txAssetInfo.clear()
+        txAssetsQueued.clear()
     }
     if ((txHistoryInfo.value == null) || (txHistoryAccount.value != acc)) laterJob {
         calcTxHistoryInfo(acc)
@@ -346,6 +346,8 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
     nav.onDepart {
         // actually keep this around in case the user goes back
         txHistoryInfo.value = null
+        txAssetInfo.clear()  // one StateFlow per transaction ever scrolled past, so do not hold them off-screen
+        txAssetsQueued.clear()
         ToBeShared = oldshare
     }
 
@@ -360,7 +362,8 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
     {
         CenteredSectionText(S.Processing, Modifier.padding(16.dp, 24.dp, 16.dp))
     }
-    else if (txes.isEmpty() || allNull(txes))
+    // calcTxHistoryInfo fills the array from index 0 upwards, so slot 0 decides empty vs populated
+    else if (txes.isEmpty() || (txes[0].collectAsState().value == null))
     {
         CenteredText(i18n(S.NoAccountActivity), Modifier.padding(16.dp, 24.dp, 16.dp))
     } else
@@ -430,7 +433,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                                 }
                             Spacer(Modifier.size(3.dp))
 
-                            val addrs = txh.gatherRelevantAddresses()
+                            val addrs = remember(txh) { txh.gatherRelevantAddresses() }
                             for (a in addrs)
                             {
                                 // padding indents the starting side
@@ -440,7 +443,28 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                             }
 
                             if (txh.note.isNotBlank()) CenteredText(text = txh.note)
-                            val assets = txh.gatherAssets().map { it.asset }
+                            val idem = remember(txh) { txh.tx.idem.toHex() }
+                            val assetsFlow = remember(idem) { txAssetInfo.getOrPut(idem) { MutableStateFlow<List<AssetPerAccount>?>(null) } }
+                            LaunchedEffect(idem, acc) {
+                                // One stable job name: the pool keeps a permanent JobStats entry per distinct
+                                // name, so "txAssets:<idem>" leaked one per transaction for the process life.
+                                // tlater does not de-dup, hence the queued set.
+                                if ((assetsFlow.value == null) && txAssetsQueued.add(idem)) tlater("txAssets")
+                                {
+                                    try
+                                    {
+                                        // The net token flows of the transaction say which assets came in or went out; tracking each
+                                        // one in the asset manager is the part that must stay out of composition.
+                                        assetsFlow.value = txh.gatherAssets().map { it.asset }
+                                    }
+                                    catch (e: Exception)
+                                    {
+                                        LogIt.error(sourceLoc() + ": gathering assets for $idem: $e")
+                                        assetsFlow.value = listOf()  // do not re-enqueue this transaction on every scroll pass
+                                    }
+                                }
+                            }
+                            val assets = assetsFlow.collectAsState().value ?: listOf()
                             if (assets.isNotEmpty())
                             {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {

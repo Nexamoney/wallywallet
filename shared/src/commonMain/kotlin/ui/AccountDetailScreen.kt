@@ -187,10 +187,6 @@ open class AccountStatisticsViewModel(val account:MutableStateFlow<Account?>) : 
 
 
     init {
-        account.value?.let {
-            updateStats(it)
-            fetchCurAddressText(it)
-        }
         observeAccount()
     }
 
@@ -268,9 +264,13 @@ open class AccountStatisticsViewModel(val account:MutableStateFlow<Account?>) : 
 
 class AccountStatisticsViewModelFake(act: Account) : AccountStatisticsViewModel(act)
 {
+    // The real observer collects on Dispatchers.Default, which the UI test cannot settle on
     override fun observeAccount()
     {
-        // Do nothing or else the UI test fails...
+        account.value?.let {
+            updateStats(it)
+            fetchCurAddressText(it)
+        }
     }
 }
 

@@ -28,7 +28,7 @@ import org.nexa.threads.*
 /**
  * Address information to display in view
  */
-data class AddressInfo(val address: PayAddress, val givenOut: Boolean, val amountHeld: Long, val totalReceived: Long, val firstRecv: Long, val lastRecv: Long, val assetTypesReceived:Long, val index: Long)
+data class AddressInfo(val address: PayAddress, val givenOut: Boolean, val amountHeld: Long, val totalReceived: Long, val firstRecv: Long, val lastRecv: Long, val assetTypesReceived:Long, val index: Long, val dest: PayDestination? = null)
 
 val addressInfoComparator = object:  Comparator<AddressInfo>
 {
@@ -108,7 +108,7 @@ fun calcAddressHistoryInfo(acc : Account)
                 false
             }
 
-            addresses.add(AddressInfo(a, used, holding, totalReceived, first, last, assetTypes, dest?.index ?: Long.MAX_VALUE))
+            addresses.add(AddressInfo(a, used, holding, totalReceived, first, last, assetTypes, dest?.index ?: Long.MAX_VALUE, dest))
         }
 
         addresses.sortWith(addressInfoComparator)
@@ -197,7 +197,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                     Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
                         onAddressCopied(it.address.toString())
                     }) {
-                        val dest = acc.wallet.walletDestination(it.address)
+                        val dest = it.dest
                         val addrText = if (devMode && (dest != null)) "${dest.index}:$address" else address
                         FittedText(text = addrText, fontWeight = FontWeight.Bold, modifier = Modifier)
 

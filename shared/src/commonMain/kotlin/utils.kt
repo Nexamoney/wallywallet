@@ -8,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -284,16 +285,19 @@ fun String.onlyDecimal(): Boolean
 @Composable fun impreciseDisplayHtml(html: String, textAlign: TextAlign = TextAlign.Unspecified)
 {
     // XML parser preserves whitespace.  We need this because this might not even be html
-    val body = try
+    val body = remember(html)
     {
-        //val document: Document = Ksoup.parse(html, Parser.xmlParser())
-        val document: Document = Ksoup.parse(html)
-        document
-    }
-    catch(e: Exception)
-    {
-        LogIt.warning(e.toString())
-        null  // Its probably text
+        try
+        {
+            //val document: Document = Ksoup.parse(html, Parser.xmlParser())
+            val document: Document = Ksoup.parse(html)
+            document
+        }
+        catch (e: Exception)
+        {
+            LogIt.warning(e.toString())
+            null  // Its probably text
+        }
     }
     if (body != null)
     {
