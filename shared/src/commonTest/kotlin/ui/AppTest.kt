@@ -152,6 +152,7 @@ class AppTest : WallyUiTestBase()
         app.accounts[account.name] = account
 
         val result = app.accountsFor(account.wallet.chainSelector)
+        assertTrue(result.contains(account))
         for (a in result)
         {
             assertEquals(account.wallet.chainSelector, a.wallet.chainSelector)
@@ -164,6 +165,75 @@ class AppTest : WallyUiTestBase()
         val app = wallyApp!!
         val result = app.accountsFor(ChainSelector.BCHREGTEST)
         assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun accountsForPutsFocusedAccountFirst()
+    {
+        val app = wallyApp!!
+        val cs = ChainSelector.NEXAREGTEST
+        // The rest of the list is sorted by name, so a "zzz" account can only lead it by being focused
+        val focused = mockAccount(name = "zzzAccountsForFocused", chainSelector = cs)
+        val other = mockAccount(name = "aaaAccountsForOther", chainSelector = cs)
+        app.accounts[focused.name] = focused
+        app.accounts[other.name] = other
+        app.focusedAccount.value = focused
+
+        try
+        {
+            val result = app.accountsFor(cs)
+            assertEquals(focused, result.first())
+            assertTrue(result.contains(other))
+        }
+        finally
+        {
+            app.focusedAccount.value = null
+            app.accounts.remove(focused.name)
+            app.accounts.remove(other.name)
+        }
+    }
+
+    @Test
+    fun accountsForReturnsOnlyVisibleAccounts()
+    {
+        val app = wallyApp!!
+        val cs = ChainSelector.NEXAREGTEST
+        val shown = mockAccount(name = "accountsForVisible", chainSelector = cs)
+        val hidden = mockAccount(name = "accountsForHidden", chainSelector = cs, visible = false)
+        app.accounts[shown.name] = shown
+        app.accounts[hidden.name] = hidden
+
+        try
+        {
+            val result = app.accountsFor(cs)
+            assertTrue(result.contains(shown))
+            assertFalse(result.contains(hidden))
+        }
+        finally
+        {
+            app.accounts.remove(shown.name)
+            app.accounts.remove(hidden.name)
+        }
+    }
+
+    @Test
+    fun accountsForOmitsHiddenFocusedAccount()
+    {
+        val app = wallyApp!!
+        val cs = ChainSelector.NEXAREGTEST
+        val hiddenFocused = mockAccount(name = "accountsForHiddenFocused", chainSelector = cs, visible = false)
+        app.accounts[hiddenFocused.name] = hiddenFocused
+        app.focusedAccount.value = hiddenFocused
+
+        try
+        {
+            assertFalse(app.accountsFor(cs).contains(hiddenFocused))
+        }
+        finally
+        {
+            app.focusedAccount.value = null
+            app.accounts.remove(hiddenFocused.name)
+        }
     }
 
     // --- hasAssetsState tests ---
