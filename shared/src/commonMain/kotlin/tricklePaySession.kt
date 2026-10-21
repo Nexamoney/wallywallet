@@ -905,14 +905,14 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     {
         if (originalTx == null) return
         stopWatching()
-        tlater("tdppRelease_$sessionId") { releaseIfUndecided() }
+        tlater("tdppRelease_$sessionId") { releaseIfUndecided(onlyIfHidden = true) }
     }
 
     /** Give back what the current attempt is holding but keep the analysis on screen; an undecided proposal is marked for re-analysis */
-    fun releaseIfUndecided()
+    fun releaseIfUndecided(onlyIfHidden: Boolean = false)
     {
         proposalLock.lock {
-            if (originalTx == null) return@lock
+            if (originalTx == null || (onlyIfHidden && watching)) return@lock
             if (!accepted && !proposalClosed) needsReanalysis = true
             releaseHeld()
         }
