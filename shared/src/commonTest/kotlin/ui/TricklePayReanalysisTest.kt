@@ -249,6 +249,20 @@ class TricklePayReanalysisTest
     }
 
     @Test
+    fun releaseQueuedByLeavingIsSkippedOnceBack()
+    {
+        val account = makeAccount()
+        fundWallet(account.wallet, 100_000L)
+        val session = requestSession(flags = TDPP_FLAG_NOFUND or TDPP_FLAG_PARTIAL)
+        session.startWatching()
+        session.releaseIfUndecided(onlyIfHidden = true)
+        assertFalse(session.needsReanalysis)
+        assertTrue(session.tryAccept())
+        session.stopWatching()
+        wallyApp!!.deleteAccount(account)
+    }
+
+    @Test
     fun rejectClosesTheProposal()
     {
         val account = makeAccount()
