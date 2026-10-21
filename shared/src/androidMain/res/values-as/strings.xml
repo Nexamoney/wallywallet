@@ -765,4 +765,5 @@
     <string name="tlvPublicOnChain">এই ভল্টত পুঁজি অহাৰ মুহূৰ্তৰ পৰা আনলক উচ্চতা আৰু পৰিমাণ চেইনত ৰাজহুৱা — ঠিকনা থকা যিকোনোৱে পঢ়িব পাৰে।</string>
     <string name="scanToBuy">কিনিবলৈ স্কেন কৰক</string>
     <string name="nftFilesPerm">সম্পদৰ ফাইলসমূহ চাওক</string>
+    <string name="signReservedMessage">স্বাক্ষৰ কৰিবলৈ অস্বীকাৰ কৰা হ’ল: এই বাৰ্তাটো আপোনাৰ নামত কোনো ছাইটত লগ ইন কৰিবলৈ ব্যৱহাৰ কৰিব পাৰি</string>
 </resources>

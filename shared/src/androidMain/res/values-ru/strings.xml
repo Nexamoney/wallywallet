@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">Высота разблокировки и сумма публичны в блокчейне с момента пополнения хранилища — их может прочитать любой, у кого есть адрес.</string>
     <string name="scanToBuy">Сканируйте для покупки</string>
     <string name="nftFilesPerm">Доступ к файлам активов</string>
+    <string name="signReservedMessage">Подпись отклонена: это сообщение можно использовать для входа на сайт от вашего имени</string>
 </resources>

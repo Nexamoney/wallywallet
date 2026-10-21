@@ -766,4 +766,5 @@
     <string name="tlvNoEarlyOpen">이 금고를 미리 열 방법은 없습니다. 그것이 타임락의 목적입니다.</string>
     <string name="tlvPublicOnChain">잠금 해제 높이와 금액은 금고에 자금이 들어온 순간부터 체인에 공개됩니다 — 주소를 아는 누구나 읽을 수 있습니다.</string>
     <string name="nftFilesPerm">자산 파일 접근</string>
+    <string name="signReservedMessage">서명 거부됨: 이 메시지는 사용자로 사이트에 로그인하는 데 사용될 수 있습니다</string>
 </resources>

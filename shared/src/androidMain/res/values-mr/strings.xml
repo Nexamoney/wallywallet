@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">या व्हॉल्टमध्ये निधी आल्याच्या क्षणापासून अनलॉक उंची आणि रक्कम चेनवर सार्वजनिक आहेत — पत्ता असलेला कोणीही ते वाचू शकतो.</string>
     <string name="scanToBuy">खरेदी करण्यासाठी स्कॅन करा</string>
     <string name="nftFilesPerm">मालमत्ता फाइल्समध्ये प्रवेश</string>
+    <string name="signReservedMessage">स्वाक्षरी करण्यास नकार: हा संदेश तुमच्या नावाने एखाद्या साइटवर लॉग इन करण्यासाठी वापरला जाऊ शकतो</string>
 </resources>

@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">ഈ വോൾട്ടിലേക്ക് ഫണ്ട് എത്തിയ നിമിഷം മുതൽ അൺലോക്ക് ഉയരവും തുകയും ചെയിനിൽ പരസ്യമാണ് — വിലാസമുള്ള ആർക്കും അവ വായിക്കാം.</string>
     <string name="scanToBuy">വാങ്ങാൻ സ്കാൻ ചെയ്യുക</string>
     <string name="nftFilesPerm">അസറ്റ് ഫയലുകൾ ആക്സസ് ചെയ്യുക</string>
+    <string name="signReservedMessage">ഒപ്പിടാൻ വിസമ്മതിച്ചു: ഈ സന്ദേശം നിങ്ങളായി ഒരു സൈറ്റിൽ ലോഗിൻ ചെയ്യാൻ ഉപയോഗിക്കാം</string>
 </resources>

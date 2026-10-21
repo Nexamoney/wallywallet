@@ -765,4 +765,5 @@ Dziękujemy i życzymy udanego korzystania z nowego portfela!</string>
     <string name="tlvPublicOnChain">Wysokość odblokowania i kwota są publiczne w łańcuchu od chwili zasilenia tego skarbca — każdy, kto zna adres, może je odczytać.</string>
     <string name="scanToBuy">Zeskanuj, aby kupić</string>
     <string name="nftFilesPerm">Dostęp do plików zasobów</string>
+    <string name="signReservedMessage">Odmówiono podpisu: ta wiadomość mogłaby posłużyć do zalogowania się do witryny jako Ty</string>
 </resources>

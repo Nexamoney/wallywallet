@@ -132,6 +132,8 @@ Good luck!
     <string name="badSignature">bad signature</string>
     <!-- A service asked this wallet to sign with a signature algorithm (sigalg) this wallet version does not implement -->
     <string name="unsupportedSigAlg">unsupported signature algorithm requested</string>
+    <!-- A service asked this wallet to sign a message in the form of a nexid login challenge, which could log the user in to another site -->
+    <string name="signReservedMessage">Refused to sign: this message could be used to log in to a site as you</string>
 
     <string name="unknownCurrency">unknown currency</string>
     <string name="unknownCryptoCurrency">unknown cryptocurrency or blockchain</string>

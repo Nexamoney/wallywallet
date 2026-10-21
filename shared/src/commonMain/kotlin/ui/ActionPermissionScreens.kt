@@ -912,6 +912,24 @@ internal fun ecdsvTaggedDigest(msg: ByteArray): ByteArray
     return libnexa.sha256(tagHash + tagHash + msg)
 }
 
+// The login, reg and info challenges are signed as "<host><port>_nexid_<op>_<chal>" with the same identity key and signMessage format that
+// op=sign uses.  A sign request for a message carrying that marker could be a challenge of another site, turning a signature approval into
+// a login (or registration) at that site as this user, so op=sign refuses such messages.
+internal val NEXID_RESERVED_SIGN_MARKER = "_nexid_".encodeToByteArray()
+
+internal fun isReservedNexidSignMessage(msg: ByteArray): Boolean
+{
+    val m = NEXID_RESERVED_SIGN_MARKER
+    if (msg.size < m.size) return false
+    for (i in 0..(msg.size - m.size))
+    {
+        var j = 0
+        while ((j < m.size) && (msg[i + j] == m[j])) j++
+        if (j == m.size) return true
+    }
+    return false
+}
+
 @OptIn(ExperimentalUnsignedTypes::class)
 fun AcceptIdentityPermHandler(op:String, sess: IdentitySession, msg: ByteArray?, destToSignWith: PayDestination?, nav: ScreenNav)
 {
@@ -943,6 +961,12 @@ fun AcceptIdentityPermHandler(op:String, sess: IdentitySession, msg: ByteArray?,
         else if (msg == null)
         {
             displayError(S.nothingToSign)
+            nav.back()
+        }
+        else if (isReservedNexidSignMessage(msg))
+        {
+            sess.sendErrorReply("reserved_message")
+            displayError(S.signReservedMessage)
             nav.back()
         }
         else
@@ -1182,6 +1206,15 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
         {
             sess.sendErrorReply("unsupported_sigalg")
             displayError(S.unsupportedSigAlg, sigalg)
+            nav.back()
+            return
+        }
+        // nor one asking for a message that could be another site's login challenge (see isReservedNexidSignMessage)
+        val reqMsg = queries["sign"]?.urlDecode()?.toByteArray() ?: queries["signhex"]?.let { runCatching { it.fromHex() }.getOrNull() }
+        if ((reqMsg != null) && isReservedNexidSignMessage(reqMsg))
+        {
+            sess.sendErrorReply("reserved_message")
+            displayError(S.signReservedMessage)
             nav.back()
             return
         }
@@ -1494,6 +1527,12 @@ fun onProvideIdentity(sess: IdentitySession): Boolean?
                     {
                         displayError(S.nothingToSign)
                         return  false
+                    }
+                    else if (isReservedNexidSignMessage(msg))
+                    {
+                        sess.sendErrorReply("reserved_message")
+                        displayError(S.signReservedMessage)
+                        return false
                     }
                     else
                     {

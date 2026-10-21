@@ -2,8 +2,10 @@ package ui
 
 import com.eygraber.uri.Uri
 import info.bitcoinunlimited.www.wally.ui.identityErrorReply
+import info.bitcoinunlimited.www.wally.ui.isReservedNexidSignMessage
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -71,5 +73,18 @@ class IdentityErrorReplyTest
         val u = Uri.parse("nexid://example.com:443/cb?op=sign&sign=hello&proto=https&cookie=Z")
         val (req, _) = identityErrorReply(u, "sign", "Z", "unsupported_sigalg")!!
         assertTrue(req.startsWith("https://example.com/cb?"), "default port must be elided: $req")
+    }
+
+    @Test
+    fun signRefusesMessagesShapedLikeAChallenge()
+    {
+        // op=sign signs with the same identity key and signMessage format as login, so a message shaped like another site's
+        // challenge ("<host><port>_nexid_<op>_<chal>") must never be signed
+        assertTrue(isReservedNexidSignMessage("bank.example.com_nexid_login_1234".encodeToByteArray()))
+        assertTrue(isReservedNexidSignMessage("bank.example.com:8443_nexid_reg_abcd".encodeToByteArray()))
+        assertTrue(isReservedNexidSignMessage("_nexid_".encodeToByteArray()))
+        assertFalse(isReservedNexidSignMessage("list pass 0001".encodeToByteArray()))
+        assertFalse(isReservedNexidSignMessage("_nexid".encodeToByteArray()))
+        assertFalse(isReservedNexidSignMessage(ByteArray(0)))
     }
 }

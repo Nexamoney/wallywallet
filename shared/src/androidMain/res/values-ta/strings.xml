@@ -765,4 +765,5 @@
     <string name="tlvPublicOnChain">இந்த வால்ட்டிற்கு நிதி வந்த கணத்திலிருந்து திறப்பு உயரமும் தொகையும் செயினில் பொதுவானவை — முகவரி உள்ள எவரும் அவற்றைப் படிக்கலாம்.</string>
     <string name="scanToBuy">வாங்க ஸ்கேன் செய்யவும்</string>
     <string name="nftFilesPerm">சொத்து கோப்புகளை அணுகு</string>
+    <string name="signReservedMessage">கையொப்பமிட மறுக்கப்பட்டது: இந்தச் செய்தியைப் பயன்படுத்தி உங்களாக ஒரு தளத்தில் உள்நுழையலாம்</string>
 </resources>

@@ -768,4 +768,5 @@
     <string name="tlvPublicOnChain">የመክፈቻ ቁመቱ እና መጠኑ ይህ ካዝና ገንዘብ ከገባበት ቅጽበት ጀምሮ በሰንሰለቱ ላይ ይፋ ናቸው — አድራሻው ያለው ማንኛውም ሰው ሊያነባቸው ይችላል።</string>
     <string name="scanToBuy">ለመግዛት ይቃኙ</string>
     <string name="nftFilesPerm">የንብረት ፋይሎችን ይድረሱ</string>
+    <string name="signReservedMessage">ለመፈረም ተከልክሏል፦ ይህ መልእክት በእርስዎ ስም ወደ አንድ ጣቢያ ለመግባት ሊያገለግል ይችላል</string>
 </resources>

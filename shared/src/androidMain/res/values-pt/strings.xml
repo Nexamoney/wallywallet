@@ -768,4 +768,5 @@ Obrigado e boa utilização da sua nova carteira!</string>
     <string name="tlvPublicOnChain">A altura de desbloqueio e o valor são públicos na cadeia desde o momento em que este cofre foi financiado — qualquer pessoa com o endereço pode lê-los.</string>
     <string name="scanToBuy">Digitalizar para comprar</string>
     <string name="nftFilesPerm">Aceder aos ficheiros dos ativos</string>
+    <string name="signReservedMessage">Assinatura recusada: esta mensagem poderia ser usada para entrar em um site como você</string>
 </resources>
