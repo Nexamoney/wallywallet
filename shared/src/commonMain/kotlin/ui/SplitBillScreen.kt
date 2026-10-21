@@ -36,8 +36,12 @@ private val tipAmounts = listOf(-1, 0, 5, 10, 15, 20, 25, 30,50)
 val FiatInputFormat = DecimalFormat("#########0.00")
 
 @Composable
-fun SplitBillScreen(acct: Account? = wallyApp?.preferredVisibleAccountOrNull() )
+fun SplitBillScreen(account: Account? = null)
 {
+    // Re-resolve whenever the focused account or the visible account list changes, but not on every keystroke
+    val focused = wallyApp!!.focusedAccount.collectAsState().value
+    val visibleAccounts = accountGuiSlots.collectAsState().value
+    val acct = remember(account, focused, visibleAccounts) { account ?: wallyApp?.preferredVisibleAccountOrNull() }
     val cryptoCurrencyCode = acct?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
     var usingCurrency by remember { mutableStateOf(fiatCurrencyCode) }
     var usingFiatCurrency by remember { mutableStateOf(true) }
@@ -162,6 +166,10 @@ fun SplitBillScreen(acct: Account? = wallyApp?.preferredVisibleAccountOrNull() )
         updateGivenTotal()
     }
 
+    // qrString / finalSplitString / finalSplitCrypto are only ever written by the input callbacks, so
+    // re-resolving acct (a PIN unlock through the tile, or an account switch) would otherwise leave the
+    // previous account's QR and fiat conversion on screen.
+    LaunchedEffect(acct, addr) { updateGivenTotal() }
 
     val localFocusManager = LocalFocusManager.current
     val sendPadding = if (platform().spaceConstrained) 5.dp else 8.dp

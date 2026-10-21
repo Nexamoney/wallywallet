@@ -37,6 +37,7 @@ import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
@@ -265,7 +266,10 @@ enum class ScreenId
     {
         fun pva(): String
         {
-            return wallyApp?.preferredVisibleAccountOrNull()?.name ?: ""
+            val app = wallyApp ?: return ""
+            app.focusedAccount.value?.let { if (it.visible) return it.name }
+            app.nullablePrimaryAccount?.let { if (it.visible) return it.name }
+            return accountGuiSlots.value.firstOrNull()?.name ?: ""
         }
         return when (this)
         {
@@ -911,18 +915,28 @@ fun NavigationRoot(
         Select an account when opening the app.
         Either user an account name from local preferences or use the first account found.
      */
-    try
+    // Collect inside the effect so republishing the slots does not invalidate this whole composable
+    LaunchedEffect(selectedAccount)
     {
-        setSelectedAccount(wallyApp!!.preferredVisibleAccount())
-    }
-    catch(e: Exception)
-    {
+        accountGuiSlots.collect {
+            if (wallyApp?.focusedAccount?.value?.visible != true) onetlater("selectAccount")
+            {
+                try
+                {
+                    setSelectedAccount(wallyApp!!.preferredVisibleAccount())
+                }
+                catch (e: Exception)  // PrimaryWalletInvalidException: nothing visible to select yet
+                {
+                    LogIt.info(sourceLoc() + ": no visible account to select: $e")
+                }
+            }
+        }
     }
 
     @Composable
     fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
-        val pa = selectedAccount ?: wallyApp!!.focusedAccount.collectAsState().value ?: wallyApp?.nullablePrimaryAccount
+        val pa = selectedAccount ?: wallyApp!!.focusedAccount.collectAsState().value ?: wallyApp?.nullablePrimaryAccount?.takeIf { it.visible }
         if (pa == null)
         {
             displayErrorAndGoBack(S.NoAccounts)
@@ -1269,21 +1283,13 @@ fun NavigationRoot(
                                             }
                                             else
                                             {
-                                                val account: Account? = wallyApp!!.accounts[toDomain.accountName] ?: wallyApp!!.accounts[fromSession.domain?.accountName] ?: run {
-                                                    if (toDomain.uoa == "") wallyApp!!.primaryAccount
-                                                    else
-                                                    {
-                                                        val acts = wallyApp!!.accountsFor(toDomain.uoa)
-                                                        if (acts.size > 0) acts[0]
-                                                        else
-                                                        {
-                                                            displayErrorAndGoBack(S.NoAccounts)
-                                                            null
-                                                        }
-                                                    }
+                                                val account: Account? = remember(fromSession, toDomain.accountName, toDomain.uoa, fromSession.domain?.accountName) {
+                                                    wallyApp!!.accounts[toDomain.accountName] ?: wallyApp!!.accounts[fromSession.domain?.accountName]
+                                                      ?: if (toDomain.uoa == "") wallyApp!!.primaryAccount
+                                                         else wallyApp!!.accountsFor(toDomain.uoa).firstOrNull()
                                                 }
-                                                if (account != null)
-                                                    ConfigureTricklePayScreen(fromSession, toDomain, account)
+                                                if (account == null) displayErrorAndGoBack(S.NoAccounts)
+                                                else ConfigureTricklePayScreen(fromSession, toDomain, account)
                                             }
                                         }
                                     }
