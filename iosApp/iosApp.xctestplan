@@ -24,6 +24,13 @@
         "identifier" : "0B53DA122BA282B300EFA082",
         "name" : "iosAppUITests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:iosApp.xcodeproj",
+        "identifier" : "8DC75511EB1F2C516FB3F151",
+        "name" : "iosAppTests"
+      }
     }
   ],
   "version" : 1
