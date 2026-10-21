@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -98,6 +99,7 @@ class SendScreenTest:WallyUiTestBase()
             // val uiState = sendScreenViewModel.uiState.value
             // println(uiState)
             settle()
+            hideKeyboard()
         }
         }
         finally
@@ -209,6 +211,7 @@ class SendScreenTest:WallyUiTestBase()
         onNodeWithTag(inputTag).assertTextContains("100")
         assertEquals(quantity, "100")
         settle()
+        hideKeyboard()
     }
 
     @Test

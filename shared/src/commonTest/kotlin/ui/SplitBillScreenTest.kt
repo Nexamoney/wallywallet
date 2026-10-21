@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.SplitBillScreen
@@ -64,6 +65,7 @@ class SplitBillScreenTest
             onNodeWithTag("SplitBillScreenTipInput").performTextInput("42")
             settle()
             onNodeWithText("42").assertIsDisplayed()
+            hideKeyboard()
         }
     }
 }

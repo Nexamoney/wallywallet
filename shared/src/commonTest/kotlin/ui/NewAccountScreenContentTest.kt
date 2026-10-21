@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -153,6 +154,7 @@ class NewAccountScreenContentTest: WallyUiTestBase(false)
         onNodeWithTag("AccountNameInput").performTextInput("wallet")
         settle()
         assertEquals("wallet", name)
+        hideKeyboard()
     }
 
     /** Typing a recovery phrase reports it */
@@ -165,6 +167,7 @@ class NewAccountScreenContentTest: WallyUiTestBase(false)
         onNodeWithTag("RecoveryPhraseInput").performTextInput("legal")
         settle()
         assertEquals("legal", phrase?.text)
+        hideKeyboard()
     }
 
     /** Typing a PIN reports it, and non-digits never reach the callback */
@@ -182,6 +185,7 @@ class NewAccountScreenContentTest: WallyUiTestBase(false)
         onNodeWithTag("NewAccountPinInput").performTextInput("abc")
         settle()
         assertNull(pin)
+        hideKeyboard()
     }
 
     /** The hidden-account checkbox only reports while a usable PIN is set */

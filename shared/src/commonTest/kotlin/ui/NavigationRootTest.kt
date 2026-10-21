@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.CompositionLocalProvider
@@ -297,6 +298,7 @@ class NavigationRootTest: WallyUiTestBase()
             waitForCatching { onNodeWithTag("EnterPIN", useUnmergedTree = true).isDisplayed() }
             onNodeWithTag("EnterPIN", useUnmergedTree = true).performTextInput("1111")
             onNodeWithTag("EnterPIN", useUnmergedTree = true).multiplatformImeAction()
+            hideKeyboard()
         }
     }
     @Test fun navRootTest()

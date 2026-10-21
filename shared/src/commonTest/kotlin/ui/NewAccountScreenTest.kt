@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.test.*
@@ -111,6 +112,7 @@ class NewAccountScreenTest: WallyUiTestBase(false)
             settle()
             assertTrue { newAccountState.value.accountName == "" }
             settle()
+            hideKeyboard()
         }
     }
 
@@ -153,6 +155,7 @@ class NewAccountScreenTest: WallyUiTestBase(false)
             // Put values back the way they were for other tests
             onNodeWithTag("AccountNameInput").performTextReplacement("nexa")
             settle()
+            hideKeyboard()
         }
     }
 
@@ -195,6 +198,7 @@ class NewAccountScreenTest: WallyUiTestBase(false)
             // If the account is unable to be created for some reason, the view state will not be cleared
             waitForCatching(5000) { newAccountState.value.accountName == "" }
             settle()
+            hideKeyboard()
         }
         }
         finally
@@ -246,6 +250,7 @@ class NewAccountScreenTest: WallyUiTestBase(false)
             // Strangely the account name gets cleared when the pin is bad
             // onNodeWithTag("AccountNameInput").assertTextContains("nexa")
             settle()
+            hideKeyboard()
         }
         println("TEST enterTooShortPin completed")
     }
@@ -279,6 +284,7 @@ class NewAccountScreenTest: WallyUiTestBase(false)
         onNodeWithTag("pin_C").assertExists()
         onNodeWithTag("pin_X").assertDoesNotExist()
         settle()
+        hideKeyboard()
     }
 
     @Test

@@ -1,5 +1,6 @@
 package ui.views
 
+import hideKeyboard
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
@@ -1039,6 +1040,7 @@ class UiComponentLibraryTest
         }
         onNode(hasSetTextAction()).performTextInput("hello")
         assertEquals("hello", changed)
+        hideKeyboard()
     }
 
     @Test
@@ -1059,6 +1061,7 @@ class UiComponentLibraryTest
         }
         onNode(hasSetTextAction()).performTextInput("typed")
         assertEquals("typed", changed?.text)
+        hideKeyboard()
     }
 
     // --- WallyTextEntry tests ---
@@ -1079,6 +1082,7 @@ class UiComponentLibraryTest
         }
         onNode(hasSetTextAction()).performTextInput("new value")
         assertEquals("new value", changed)
+        hideKeyboard()
     }
 
     // --- WallyDecimalEntry tests ---
@@ -1101,6 +1105,7 @@ class UiComponentLibraryTest
         }
         onNode(hasSetTextAction()).performTextInput("12.34")
         assertEquals("12.34", lastValue)
+        hideKeyboard()
     }
 
     // --- WallyDigitEntry tests ---
@@ -1121,6 +1126,7 @@ class UiComponentLibraryTest
         }
         onNode(hasSetTextAction()).performTextInput("456")
         assertEquals("456", lastValue)
+        hideKeyboard()
     }
 
     // --- WallyOutlineDataEntry tests ---
@@ -1199,6 +1205,7 @@ class UiComponentLibraryTest
         }
         onNode(hasSetTextAction()).performTextInput("typed")
         assertEquals("typed", changed)
+        hideKeyboard()
     }
 
     // --- WallyNumericInputFieldBalance tests ---
@@ -1439,6 +1446,7 @@ class UiComponentLibraryTest
         }
         onNode(hasSetTextAction()).performTextInput("3.14")
         assertEquals("3.14", text.value)
+        hideKeyboard()
     }
 
     // --- LongInputField tests ---

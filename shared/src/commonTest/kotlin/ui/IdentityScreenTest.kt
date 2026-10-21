@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -102,6 +103,7 @@ class IdentityScreenTest : WallyUiTestBase(false)
             settle()
             assertEquals("hello-alice", captured)
             onNodeWithTag("thin").assertTextEquals("hello-alice")
+            hideKeyboard()
         }
     }
 
@@ -402,6 +404,7 @@ class IdentityScreenTest : WallyUiTestBase(false)
                 assertEquals("1 Post Rd", info.postal)
                 assertEquals("1 Billing Rd", info.billing)
                 assertEquals("@alice", info.sm)
+                hideKeyboard()
             }
         }
         finally
@@ -436,6 +439,7 @@ class IdentityScreenTest : WallyUiTestBase(false)
 
                 assertTrue(account.wallet.allIdentityInfo().isEmpty())
                 assertTrue(account.wallet.identityInfoChanged)
+                hideKeyboard()
             }
         }
         finally
@@ -469,6 +473,7 @@ class IdentityScreenTest : WallyUiTestBase(false)
 
                 onNodeWithText(i18n(S.done)).performClick()
                 settle()
+                hideKeyboard()
             }
 
             // back() popped the prior Splash screen off the stack.

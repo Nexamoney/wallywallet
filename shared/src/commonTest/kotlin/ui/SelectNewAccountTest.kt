@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.test.*
@@ -68,6 +69,7 @@ class SelectNewAccountTest: WallyUiTestBase(false)
             waitUntil(timeoutMillis = ACCOUNT_CREATION_TIMEOUT_MS) { wallyApp!!.focusedAccount.value != null }
 
             assertEquals(NEW_ACCOUNT_NAME, wallyApp!!.focusedAccount.value?.name)
+            hideKeyboard()
         }
     }
 

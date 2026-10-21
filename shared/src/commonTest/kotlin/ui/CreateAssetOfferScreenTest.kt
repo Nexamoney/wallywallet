@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsFocused
@@ -98,6 +99,7 @@ class CreateAssetOfferScreenTest: WallyUiTestBase()
 
         onNodeWithText(i18n(S.confirm)).assertIsDisplayed()
         onNodeWithText(i18n(S.confirm)).performClick()
+        hideKeyboard()
     }
 
     @Test
@@ -130,6 +132,7 @@ class CreateAssetOfferScreenTest: WallyUiTestBase()
 
         onNodeWithText(i18n(S.confirm)).assertIsDisplayed()
         onNodeWithText(i18n(S.confirm)).performClick()
+        hideKeyboard()
     }
 
     // ---------- CreateAssetOfferViewModelImpl.createOffer ----------
