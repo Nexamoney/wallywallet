@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -76,7 +77,7 @@ class TimeLockNavigationTest : WallyUiTestBase()
     @Test
     fun clickingTimeLockVaultRowRoutesToTimeLock()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             // Home on the Contracts tab → tap the Time Lock Vault row. The row's onClick is
             // wired to nav.go(ScreenId.TimeLock); assert the router actually moved
             // there (system-level routing, independent of screen-render timing).
@@ -103,7 +104,7 @@ class TimeLockNavigationTest : WallyUiTestBase()
         wallyApp!!.focusedAccount.value = account
         try
         {
-            androidx.compose.ui.test.v2.runComposeUiTest {
+            runComposeUiTest {
                 showHome()
                 nav.go(ScreenId.TimeLock)
                 settle()
@@ -131,7 +132,7 @@ class TimeLockNavigationTest : WallyUiTestBase()
     @Test
     fun backFromTimeLockReturnsHome()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             showHome()
             nav.go(ScreenId.TimeLock)
             settle()
@@ -148,7 +149,7 @@ class TimeLockNavigationTest : WallyUiTestBase()
     @Test
     fun contractsTabListsTimeLockVault()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             // Home on the Contracts tab (3rd tab); the Time Lock Vault summary row is there.
             showHome(tab = 2)
             waitForCatching { onNodeWithText(i18n(S.tlvTitle)).isDisplayed() }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.v2.runComposeUiTest
 import info.bitcoinunlimited.www.wally.ui.HomeTabRow
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
@@ -143,7 +144,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun overviewShowsHeaderAndCreate()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 TimeLockScreenContent(
                     vaults = emptyList(),
@@ -164,7 +165,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun emptyLoadedListShowsCreatePrompt()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 TimeLockScreenContent(
                     vaults = emptyList(),
@@ -186,7 +187,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun emptyLoadingListShowsLoadingIndicator()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 TimeLockScreenContent(
                     vaults = emptyList(),
@@ -208,7 +209,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun loadedListWithVaultsHidesEmptyAndLoadingStates()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 TimeLockScreenContent(
                     vaults = listOf(lockedVault()),
@@ -241,7 +242,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
                 testBaton(batonGroup, GroupAuthorityFlags.MINT, GroupAuthorityFlags.MELT),
             ),
         )
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -288,7 +289,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
             )
         )
         val vault = claimableVault(tokenBalances = mapOf(testGroup(tokenGroup) to 100L))
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -347,7 +348,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
                 authorities = emptyList(),
             ),
         )
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 VaultTxListScreen(
                     unitName = "tNexa",
@@ -372,7 +373,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun createCardDefaultsAmountToTwentyNexa()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var create by remember { mutableStateOf(false) }
                 TimeLockScreenContent(
@@ -402,7 +403,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     fun createFlowReachesSuccessCard()
     {
         var requested: Pair<Long, Long>? = null
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var create by remember { mutableStateOf(false) }
                 TimeLockScreenContent(
@@ -462,7 +463,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun failedCreateReturnsToOverview()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var create by remember { mutableStateOf(false) }
                 TimeLockScreenContent(
@@ -508,7 +509,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun createFlowResumesAfterBackButDropsStaleSuccess()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             var create by mutableStateOf(false)
             setContent {
                 TimeLockScreenContent(
@@ -570,7 +571,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     {
         val target = claimableVault(name = "vault-2", nativeBalanceSat = 5_000L)
         val sibling = claimableVault(name = "vault-3", nativeBalanceSat = 7_000L)
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -612,7 +613,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
         val vault = claimableVault(nativeBalanceSat = 2_000L,
             tokenBalances = mapOf(testGroup(tokenGroup) to 5L),
         )
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -641,7 +642,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun backFromConfirmKeepsTheForm()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var create by remember { mutableStateOf(false) }
                 TimeLockScreenContent(
@@ -676,7 +677,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun createCancelClosesChildAndResets()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var create by remember { mutableStateOf(false) }
                 TimeLockScreenContent(
@@ -704,7 +705,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun blockHeightOverMaxBlocksReview()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var create by remember { mutableStateOf(false) }
                 TimeLockScreenContent(
@@ -745,7 +746,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun claimableVaultRunsClaimFlowToClaimedCard()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -796,7 +797,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
                 testBaton(batonGroup, GroupAuthorityFlags.MINT, GroupAuthorityFlags.BATON),
             ),
         )
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -838,7 +839,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
         val vault = claimableVault(nativeBalanceSat = 0L,
             tokenBalances = mapOf(testGroup(tokenGroup) to 9L),
         )
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -866,7 +867,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun lockedVaultClaimIsDisabled()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -904,7 +905,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun claimedAndEmptyVaultShowsClaimedStatusAndHidesClaimButton()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -952,7 +953,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun claimedVaultWithResidualBalanceOffersReclaim()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -1005,7 +1006,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun claimedCardSurvivesVaultVanishingFromSnapshot()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             var vaults by mutableStateOf(listOf(claimableVault()))
             var closed = false
             setContent {
@@ -1059,7 +1060,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     fun factsCardTogglesDepositQr()
     {
         val vault = claimableVault()
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -1099,7 +1100,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun claimableEmptyVaultDisablesClaim()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -1132,7 +1133,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun homeHeaderShownOnMasterAndDetail()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -1161,7 +1162,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun homeHeaderShownOnDetailOfVanishedVault()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 TimeLockScreenContent(
                     vaults = emptyList(),
@@ -1181,7 +1182,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun homeHeaderShownOnCreate()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 TimeLockScreenContent(
                     vaults = emptyList(),
@@ -1202,7 +1203,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun homeHeaderShownOnVaultTxList()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 VaultTxListScreen(
                     unitName = "tNexa",
@@ -1219,7 +1220,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
     @Test
     fun homeTabRowReportsTapsAndSelection()
     {
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             var picked = -1
             setContent {
                 HomeTabRow(selectedIndex = 2) { picked = it }

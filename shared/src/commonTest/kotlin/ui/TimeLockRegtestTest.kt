@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -642,7 +643,7 @@ class TimeLockRegtestTest : WallyUiTestBase(openAllAccounts = false)
         }
         val payout = h.repo.nextReceiveAddress()!!
 
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent {
                 var detail by remember { mutableStateOf<String?>(null) }
                 TimeLockScreenContent(
@@ -714,7 +715,7 @@ class TimeLockRegtestTest : WallyUiTestBase(openAllAccounts = false)
         }
 
         // Render the actual home transaction list and assert the claim row shows.
-        androidx.compose.ui.test.v2.runComposeUiTest {
+        runComposeUiTest {
             setContent { TransactionsList(viewModel = homeVm) }
             settle()
             onNodeWithText(claimEntry.amount).assertIsDisplayed()

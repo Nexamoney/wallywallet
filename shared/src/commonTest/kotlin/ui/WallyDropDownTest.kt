@@ -2,6 +2,7 @@ package ui
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.v2.runComposeUiTest
 import info.bitcoinunlimited.www.wally.ui.WallyDropDown
 import info.bitcoinunlimited.www.wally.ui.supportedBlockchains
 import org.nexa.libnexakotlin.ChainSelector

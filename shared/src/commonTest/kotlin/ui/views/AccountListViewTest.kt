@@ -3,6 +3,7 @@ package ui.views
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.v2.runComposeUiTest
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountItemView
 import info.bitcoinunlimited.www.wally.ui.views.AccountUIData

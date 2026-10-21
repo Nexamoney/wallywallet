@@ -20,7 +20,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import info.bitcoinunlimited.www.wally.*
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.swipeUp

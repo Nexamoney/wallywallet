@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.text.AnnotatedString
 import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.S
