@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.ui.Modifier
@@ -116,6 +117,7 @@ class AccountDetailScreenTest:WallyUiTestBase()
             onNodeWithTag("CurrentPinCheckIcon").assertIsDisplayed()
             onNodeWithText(i18n(S.accept)).performClick()
             onNodeWithText(i18n(S.SetChangePin)).assertIsDisplayed()
+            hideKeyboard()
         }
         }
         finally

@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
@@ -93,6 +94,7 @@ class SettingsScreenTest: WallyUiTestBase()
 
         assertEquals(textInput, confirmAbove)
         settle()
+        hideKeyboard()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -414,6 +416,7 @@ class SettingsScreenTest: WallyUiTestBase()
 
         val stored = prefs.getString(CONFIRM_ABOVE_PREF, "unset") ?: "unset"
         assertEquals("0.00", stored)
+        hideKeyboard()
     }
 
     // ======================================================================

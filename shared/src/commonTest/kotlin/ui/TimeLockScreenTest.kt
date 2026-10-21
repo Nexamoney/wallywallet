@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -456,6 +457,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
             settle()
             onNodeWithText("vault-1").assertDoesNotExist()
             onNodeWithText(i18n(S.tlvNewVault)).assertIsDisplayed()
+            hideKeyboard()
         }
         check(requested == 1_100_000L to 3_000L) { "onAddVault got unexpected args: $requested" }
     }
@@ -498,6 +500,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
             settle()
             onNodeWithText(i18n(S.tlvCreateTitle).uppercase()).assertIsDisplayed()
             onNodeWithText(i18n(S.tlvNewTimeLockVault)).assertDoesNotExist()
+            hideKeyboard()
         }
     }
 
@@ -559,6 +562,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
             settle()
             onNodeWithText("vault-1").assertDoesNotExist()
             onNodeWithText(i18n(S.tlvCreateTitle).uppercase()).assertIsDisplayed()
+            hideKeyboard()
         }
     }
 
@@ -670,6 +674,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
             settle()
             onNodeWithTag("VaultAmountInput").assertTextEquals("37")
             onNodeWithTag("VaultBlockInput").assertTextEquals("1100000")
+            hideKeyboard()
         }
     }
 
@@ -740,6 +745,7 @@ class TimeLockScreenTest : WallyUiTestBase(openAllAccounts = false)
             settle()
             onNodeWithText(i18n(S.tlvMaxBlockHeight) % mapOf("num" to max.toString())).assertDoesNotExist()
             onNodeWithText(i18n(S.tlvReview)).assertIsEnabled()
+            hideKeyboard()
         }
     }
 

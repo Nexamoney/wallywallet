@@ -1,5 +1,6 @@
 package ui.views
 
+import hideKeyboard
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.v2.runComposeUiTest
 import info.bitcoinunlimited.www.wally.S
@@ -36,6 +37,7 @@ class UnlockViewTest:WallyUiTestBase()
         if (platform().hasDoneButton)
             onNodeWithTag("UnlockTileAccept").assertIsDisplayed()
         println("unlockViewTest complete")
+        hideKeyboard()
     }
 
     /** Issue #393: the PIN request belongs to the screen that raised it, so backing out of that screen drops it. */
@@ -71,5 +73,6 @@ class UnlockViewTest:WallyUiTestBase()
         // Leave the navigation where the rest of the suite expects to find it
         runOnIdle { nav.switch(ScreenId.Home) }
         println("unlockTileDismissedByBackTest complete")
+        hideKeyboard()
     }
 }

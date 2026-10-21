@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -60,6 +61,7 @@ class RecoveryPhraseInputTest: WallyUiTestBase(false)
         assertTrue(callbacks > 0)
         assertEquals("legal", phrase.text)
         onNodeWithTag("RecoveryPhraseInput").assertTextEquals("legal")
+        hideKeyboard()
     }
 
     /** A partial word offers bip39 completions, and picking one replaces just that word */

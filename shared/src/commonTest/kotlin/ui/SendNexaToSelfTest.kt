@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -185,6 +186,7 @@ class SendNexaToSelfTest : WallyUiTestBase()
             // And it must be visible in the account pill itself.
             val pillTextAfter = nexaFormat.format(finalBalance)
             onNodeWithTag("AccountPillBalance").assertTextEquals(pillTextAfter)
+            hideKeyboard()
         }
     }
 }

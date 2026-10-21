@@ -1,4 +1,5 @@
 package ui
+import hideKeyboard
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -139,6 +140,7 @@ class AccountLockTest:WallyUiTestBase(false)
             settle()
             LogIt.info("testLockAccount Complete")
             LogIt.info("sync check finished")
+            hideKeyboard()
             }
         }
         finally

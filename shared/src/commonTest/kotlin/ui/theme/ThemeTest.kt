@@ -1,5 +1,6 @@
 package ui.theme
 
+import hideKeyboard
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
@@ -148,6 +149,7 @@ class ThemeTest
             onNodeWithText(valueMock.value).assertIsDisplayed()
             onNodeWithTag("WallyDataEntryTextField").assertIsDisplayed()
             onNodeWithTag("WallyDataEntryTextField").performTextInput("0.1")
+            hideKeyboard()
         }
     }
 }

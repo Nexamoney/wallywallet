@@ -1,5 +1,6 @@
 package ui
 
+import hideKeyboard
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -208,6 +209,7 @@ class TricklePayScreenTest: WallyUiTestBase()
         onAllNodesWithTag("amountToSendInput")[targetIndex].performTextInput(typed)
         settle()
         verify(req, day, week, month)
+        hideKeyboard()
     }
 
     @Test
