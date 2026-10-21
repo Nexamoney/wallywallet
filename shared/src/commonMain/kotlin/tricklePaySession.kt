@@ -273,25 +273,32 @@ class TricklePayDomains()
 
     fun insert(d: TdppDomain)
     {
-        val tmp = domains.value.toMutableMap()
-        tmp[domainKey(d.domain, d.topic)] = d
-        domains.value = tmp
+        dataLock.lock {
+            readStoreIfNeeded()
+            val tmp = domains.value.toMutableMap()
+            tmp[domainKey(d.domain, d.topic)] = d
+            domains.value = tmp
+        }
         save()
     }
 
     fun remove(d: TdppDomain)
     {
-        val tmp = domains.value.toMutableMap()
-        tmp.remove(domainKey(d.domain, d.topic))
-        domains.value = tmp
+        dataLock.lock {
+            readStoreIfNeeded()
+            val tmp = domains.value.toMutableMap()
+            tmp.remove(domainKey(d.domain, d.topic))
+            domains.value = tmp
+        }
         save()
     }
 
     fun clear()
     {
-        val tmp = domains.value.toMutableMap()
-        tmp.clear()
-        domains.value = tmp
+        dataLock.lock {
+            readStoreIfNeeded()
+            domains.value = mapOf()
+        }
         save()
     }
 
@@ -299,11 +306,10 @@ class TricklePayDomains()
     fun loadCreateDomain(host: String, topic:String): TdppDomain
     {
         return dataLock.lock {
-            if (!domainsLoaded) load()
+            readStoreIfNeeded()
             var d = domains.value[domainKey(host, topic)]
             if (d == null)
             {
-                // delay and try again because load() cannot happen in the gui thread
                 d = TdppDomain(host, topic)
                 val tmp = domains.value.toMutableMap()
                 tmp[domainKey(host, topic)] = d
@@ -318,43 +324,44 @@ class TricklePayDomains()
     fun loadDomain(host: String, topic:String): TdppDomain?
     {
         return dataLock.lock {
-            if (!domainsLoaded) load()
-            val d = domains.value[domainKey(host, topic)]
-            d
+            readStoreIfNeeded()
+            domains.value[domainKey(host, topic)]
         }
     }
 
     fun load()
     {
-        laterJob {
-            dataLock.lock {
-                if (db == null)
-                {
-                    db = openKvpDB("wallyData")
-                }
+        dataLock.lock { readStoreIfNeeded() }
+    }
 
-                db?.let {
-                    try
+    private fun readStoreIfNeeded()
+    {
+        if (domainsLoaded) return
+        domainsLoaded = true
+        if (db == null)
+        {
+            db = openKvpDB("wallyData")
+        }
+
+        db?.let {
+            try
+            {
+                val ser = it.get("tdppDomains")
+                if (ser.size != 0) // No data saved
+                {
+                    val bchser = BCHserialized(ser, SerializationType.DISK)
+                    val ver = bchser.debytes(1)[0]
+                    if (ver == SER_VERSION)
                     {
-                        val ser = it.get("tdppDomains")
-                        if (ser.size != 0) // No data saved
-                        {
-                            val bchser = BCHserialized(ser, SerializationType.DISK)
-                            val ver = bchser.debytes(1)[0]
-                            if (ver == SER_VERSION)
-                                domains.value = bchser.demap({ it.deString() }, { TdppDomain(it) })
-                        }
-                    } catch (e: DataMissingException)
-                    {
-                        domainsLoaded = true
-                        LogIt.info(sourceLoc() + "Note that no TDPP domains are registered (this is expected if the user has not registered with any services)")
-                    } catch (e: Exception)
-                    {
-                        domainsLoaded = true  // well we tried anyway
-                        logThreadException(e, "TDPP domain data corruption (or updated)", sourceLoc())
+                        domains.value = bchser.demap({ it.deString() }, { TdppDomain(it) }) + domains.value
                     }
                 }
-                domainsLoaded = true
+            } catch (e: DataMissingException)
+            {
+                LogIt.info(sourceLoc() + "Note that no TDPP domains are registered (this is expected if the user has not registered with any services)")
+            } catch (e: Exception)
+            {
+                logThreadException(e, "TDPP domain data corruption (or updated)", sourceLoc())
             }
         }
     }
@@ -1746,6 +1753,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
         catch(e: TdppException)
         {
+            LogIt.info(sourceLoc() + ": TDPP transaction request from ${iuri.host} refused: ${e.message}")
             return TdppAction.DENY
         }
         val result = handleTxAutopay(iuri)

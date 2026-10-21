@@ -7,6 +7,8 @@ import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import kotlinx.serialization.json.Json
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millinow
+import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -17,6 +19,7 @@ import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 import kotlin.test.assertFails
 import kotlin.test.assertNotNull
+import kotlin.test.fail
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class TricklePaySessionTest
@@ -321,6 +324,72 @@ class TricklePaySessionTest
         val domains = TricklePayDomains()
         domains.domainsLoaded = true
         assertNull(domains.loadDomain("noexist.com", ""))
+    }
+
+    private fun storeHolding(vararg stored: Pair<String, String>): KvpDatabase
+    {
+        val db = openKvpDB("tdppDomainStoreTest")!!
+        try
+        {
+            db.delete("tdppDomains".encodeToByteArray())
+        }
+        catch (_: Throwable)
+        {
+        }
+        val seed = TricklePayDomains().also { it.db = db; it.domainsLoaded = true }
+        for ((host, topic) in stored)
+        {
+            seed.insert(makeDomain(domain = host, topic = topic))
+            waitUntilSaved(db, host, topic)
+        }
+        return db
+    }
+
+    private fun freshStore(db: KvpDatabase): TricklePayDomains = TricklePayDomains().also { it.db = db }
+
+    private fun isSaved(db: KvpDatabase, host: String, topic: String): Boolean
+    {
+        val bytes = db.getOrNull("tdppDomains") ?: return false
+        return bytes.decodeToString().contains("$host/$topic")
+    }
+
+    private fun waitUntilSaved(db: KvpDatabase, host: String, topic: String)
+    {
+        val deadline = millinow() + 5000
+        while (millinow() < deadline)
+        {
+            if (isSaved(db, host, topic)) return
+            millisleep(50U)
+        }
+        fail("$host/$topic was never saved")
+    }
+
+    @Test
+    fun tricklePayDomainsStoredDomainIsFoundOnTheFirstLookup()
+    {
+        val db = storeHolding("stored.example" to "t")
+        assertNotNull(freshStore(db).loadDomain("stored.example", "t"), "a stored domain must be found on the first lookup")
+    }
+
+    @Test
+    fun tricklePayDomainsReadingTheStoreKeepsADomainCreatedSince()
+    {
+        val db = storeHolding("other.example" to "")
+        val store = freshStore(db)
+        store.loadCreateDomain("nft.example", "ncshld")
+        store.load()
+        millisleep(500U)
+        assertNotNull(store.loadDomain("nft.example", "ncshld"), "the domain created before the store was read again is gone")
+        assertNotNull(store.loadDomain("other.example", ""), "the stored domain is gone")
+    }
+
+    @Test
+    fun tricklePayDomainsCreatedDomainIsSavedAlongsideTheStoredOnes()
+    {
+        val db = storeHolding("other.example" to "")
+        freshStore(db).loadCreateDomain("nft.example", "ncshld")
+        waitUntilSaved(db, "nft.example", "ncshld")
+        assertTrue(isSaved(db, "other.example", ""), "saving the new domain lost the stored one")
     }
 
     // --- TricklePaySession property tests ---
