@@ -239,7 +239,11 @@ class AssetsScreenTests:WallyUiTestBase()
 
         // Android draws the gear in its native title bar, which is outside of the compose tree
         if (platform().hasNativeTitleBar) nav.go(ScreenId.Settings)
-        else onNodeWithContentDescription("Settings").performClick()
+        else
+        {
+            waitForCatching { onNodeWithContentDescription("Settings").isDisplayed() }
+            onNodeWithContentDescription("Settings").performClick()
+        }
         settle()
 
         waitForCatching { onNodeWithTag("SettingsScreenScrollable").isDisplayed() }
