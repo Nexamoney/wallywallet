@@ -634,17 +634,23 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     /** The outpoints the request itself named as inputs (ours or not); everything else in a completed tx was added by the completer */
     private fun requestNamedOutpoints(): Set<iTxOutpoint> = originalTx?.inputs?.mapNotNull { it.spendable.outpoint }?.toSet() ?: emptySet()
 
-    fun accountsOwningInputs(tx: iTransaction): List<Account>
+    /** The accounts holding coins that [tx] spends and that still need a signature.
+     *
+     * Only unsigned inputs count: the completer leaves an input alone once its satisfier script is filled in, so a pre-signed
+     * input (a seller's side of a purchase, for example) says nothing about which account should fund and sign the rest -- even
+     * when that seller is another of our own accounts.
+     */
+    private fun accountsOwningUnsignedInputs(tx: iTransaction): List<Account>
     {
-        val outpoints = tx.inputs.mapNotNull { it.spendable.outpoint }
+        val outpoints = tx.inputs.filter { it.script.size == 0 }.mapNotNull { it.spendable.outpoint }
         if (outpoints.isEmpty()) return emptyList()
         return (pill.choices ?: emptyList()).filter { acc -> outpoints.any { acc.wallet.getTxo(it) != null } }
     }
 
-    /** Only an account holding the coins [tx] spends can sign them */
+    /** Only an account holding the (still unsigned) coins [tx] spends can sign them */
     private fun selectAccountOwningInputs(tx: iTransaction)
     {
-        val owners = accountsOwningInputs(tx)
+        val owners = accountsOwningUnsignedInputs(tx)
         if (owners.isEmpty()) return
         pill.choices = owners
         val cur = pill.account.value
