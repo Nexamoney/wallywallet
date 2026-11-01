@@ -125,6 +125,76 @@ class TricklePayOwningAccountTest
         wallyApp!!.deleteAccount(holder)
     }
 
+    /** A purchase of [coin] as a marketplace would send it to the buyer: the seller's input is already signed, the buyer pays [price] on top */
+    private fun preSignedPurchaseTx(seller: Account, coin: Spendable, price: Long): iTransaction
+    {
+        val tx = txFor(cs)
+        tx.add(txInputFor(coin))
+        tx.add(NexaTxOutput(cs, coin.amount + price, PayAddress(SELLER_PAYOUT).outputScript()))
+        seller.wallet.txCompleter(tx, 0, TxCompletionFlags.SIGN or TxCompletionFlags.PARTIAL or TxCompletionFlags.BIND_OUTPUT_PARAMETERS, null)
+        assertTrue(tx.inputs[0].script.size > 0, "the seller's input was not signed")
+        return tx
+    }
+
+    private fun purchaseSession(tx: iTransaction, flags: Int, inamt: Long): TricklePaySession
+    {
+        val domains = TricklePayDomains()
+        domains.domainsLoaded = true
+        val session = TricklePaySession(domains)
+        session.chainSelector = cs
+        session.handleTxAutopay(Uri.parse("https://market.example/tx?tx=${tx.toHex()}&flags=$flags&inamt=$inamt&chain=nexa"))
+        assertNotNull(session.proposalAnalysis.value)
+        return session
+    }
+
+    @Test
+    fun aPreSignedInputOfAnotherAccountDoesNotTakeOverTheSelectedAccount()
+    {
+        val seller = newAccount("tpseller")
+        val buyer = newAccount("tpbuyer")
+        val nft = fundWallet(seller.wallet, 10_000)
+        setSelectedAccount(buyer)
+
+        val tx = preSignedPurchaseTx(seller, nft, 0)
+        val sellerSig = tx.inputs[0].script.toHex()
+        val session = purchaseSession(tx, TDPP_FLAG_PARTIAL or TDPP_FLAG_NOFUND, nft.amount)
+
+        val pa = session.proposalAnalysis.value!!
+        assertEquals(buyer, pa.account, "analysed with ${pa.account.name}")
+        assertEquals(buyer, session.getRelevantAccount())
+        assertTrue(session.pill.choices!!.containsAll(listOf(seller, buyer)), "the pill must still offer both accounts")
+        assertEquals(sellerSig, session.proposedTx!!.inputs[0].script.toHex(), "the seller's signature was touched")
+
+        wallyApp!!.deleteAccount(buyer)
+        wallyApp!!.deleteAccount(seller)
+    }
+
+    @Test
+    fun theSelectedAccountFundsAPurchaseOfAnotherAccountsPreSignedCoin()
+    {
+        val seller = newAccount("tpseller2")
+        val buyer = newAccount("tpbuyer2")
+        val nft = fundWallet(seller.wallet, 10_000)
+        fundWallet(buyer.wallet, 50_000)
+        setSelectedAccount(buyer)
+
+        val tx = preSignedPurchaseTx(seller, nft, 5_000)
+        val sellerSig = tx.inputs[0].script.toHex()
+        val session = purchaseSession(tx, TDPP_FLAG_PARTIAL, nft.amount)
+
+        val pa = session.proposalAnalysis.value!!
+        assertEquals(buyer, pa.account, "analysed with ${pa.account.name}")
+        assertEquals(null, pa.completionException)
+        val completed = session.proposedTx!!
+        assertEquals(sellerSig, completed.inputs[0].script.toHex(), "the seller's signature was touched")
+        assertTrue(completed.inputs.size > 1, "the buyer added no funding input")
+        assertTrue(completed.inputs.drop(1).all { buyer.wallet.getTxo(it.spendable.outpoint!!) != null }, "funding did not come from the buyer")
+        assertTrue(session.pill.choices!!.containsAll(listOf(seller, buyer)), "the pill must still offer both accounts")
+
+        wallyApp!!.deleteAccount(buyer)
+        wallyApp!!.deleteAccount(seller)
+    }
+
     @Test
     fun aMarketplaceRefusingAnUnsignedOfferIsARejection()
     {
